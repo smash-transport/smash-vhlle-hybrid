@@ -1,2 +1,2 @@
-# annas_hybrid
-Hybrid model for the description of high-energy heavy ion collisions (SMASH + vHLLE)
+# Annas-Hybrid
+Hybrid model for the description of high-energy heavy ion collisions (SMASH + vHLLE).
