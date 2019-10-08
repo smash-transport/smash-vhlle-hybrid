@@ -1,0 +1,26 @@
+outputDir       hydro_output/AuAu8.8GeV_frozenFM/
+
+eosType       1
+
+etaS      0.2
+zetaS     0.0
+e_crit    0.5
+
+nx        201
+ny        201
+nz        201
+xmin     -20.0
+xmax      20.0
+ymin     -20.0
+ymax      20.0
+etamin   -10.0
+etamax    10.0
+
+icModel    3
+icInputFile ic_smash/SMASH_IC_AuAu8.8GeV_frozenFM.dat
+Rg      1.4
+Rgz     0.5
+
+tau0       2.7842
+tauMax     20.0
+dtau       0.05
