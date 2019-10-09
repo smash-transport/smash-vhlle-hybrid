@@ -7,8 +7,11 @@ import re
     vHLLE and reformats it such that:
     - No trailing whitespaces at the beginning of the line
     - Different line entries are separated by only whitespace
-    - Hypersurface elements with vanishing energy density or temperature are
-      removed
+    - Hypersurface patches with vanishing energy density or temperature are
+      removed. Those patches usually originate from the boundaries of the EoS,
+      where the baryon density may become unphysically large for certain regions
+      of the energy density. Since those patches are seemingly unphysical, they
+      can be ignored.
 
     The reformatted file can be applied within Sangwook's Cooper-Frye sampler
     for particlization.
