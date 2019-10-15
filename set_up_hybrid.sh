@@ -29,16 +29,18 @@ echo "Succesfully compiled and copied SMASH."
 
 # Compile and copy vHLLE
 cd $vhlle_path
-git checkout schaefer/output_Sampler_Ryu
+git checkout schaefer/output_Sampler_Ryu_inMilne
 make
 cp hlle_visc $binaries/hlle_visc
+# also copy eos files that are necessary for the hydro run
+cp -r eos $binaries/eos
 echo "Succesfully compiled and copied vHLLE."
 
-# Compile and copy vHLLE
-cd $sampler_path
-make
-cp mpiCooperFrye.x86_64 $binaries/samplerCooperFrye
-echo "Succesfully compiled and copied sampler."
+# # Compile and copy sampler
+# cd $sampler_path
+# make
+# cp mpiCooperFrye.x86_64 $binaries/samplerCooperFrye
+# echo "Succesfully compiled and copied sampler."
 
 
 # Call CMake Script to configure hybrid run with all collected ingredients
