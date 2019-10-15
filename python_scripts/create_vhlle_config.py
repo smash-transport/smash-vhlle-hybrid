@@ -2,18 +2,27 @@ import numpy as np
 import argparse
 import os
 
+'''
+    This script generates a configuration file for vHLLE based on the 'default'
+    file located in configs/AuAu_8.8GeV. For this, the example file is copied
+    line by line, where the paths to the SMASH IC input file as well as to the
+    output directory are replaced by the correct paths. Furthermore, the initial
+    proper time for the hydro evolution is read from the SMASH output and also
+    inserted to the vHLLE config file.
+'''
+
 # pass arguments from the command line to the script
 parser = argparse.ArgumentParser()
-parser.add_argument("vhlle_config",
+parser.add_argument("--vhlle_config", required = True,
                     help="Config file to set up vhlle.")
-parser.add_argument("smash_ic",
+parser.add_argument("--smash_ic", required = True,
                     help="SMASH_IC output in ASCII format.")
-parser.add_argument("output_file",
+parser.add_argument("--output_file", required = True,
                     help="Updated vhlle config file")
 args = parser.parse_args()
 
 # Relative path to the AuAu_8.8 Directory
-basepath = '/'.join(os.path.dirname(args.smash_ic).split('/')[:-1])
+basepath = '../build/' + os.path.dirname(args.smash_ic).split('/build/')[1].split('IC')[0]
 
 # Extract proper time of hypersurface from SMASH output, to pass it to
 # vhlle configuration file
@@ -34,7 +43,7 @@ with open(args.vhlle_config, 'r') as f:
             if line.split()[0] == 'outputDir':
                 newline = 'outputDir       ' + basepath + '/Hydro/' + '\n'
             elif line.split()[0] == 'icInputFile':
-                newline = 'icInputFile       ' + basepath + 'IC/SMASH_IC.dat' + '\n'
+                newline = 'icInputFile       ' + basepath + '/IC/SMASH_IC.dat' + '\n'
             elif line.split()[0] == 'tau0':
                 newline = 'tau0       ' + str(proper_time) + '\n'
             else:
