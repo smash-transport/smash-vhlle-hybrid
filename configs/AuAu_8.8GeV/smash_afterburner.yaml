@@ -6,14 +6,14 @@ General:
     Modus:         List
     Time_Step_Mode: None
     Delta_Time:    0.1
-    End_Time:      500.0
+    End_Time:      10000.0    # make sure runtime is long enough for back-propagation
     Randomseed:    -1
     Nevents:       100
 
 Output:
     Output_Interval: 10.0
     Particles:
-        Format:          ["Oscar2013"]
+        Format:          ["Binary"]
 
 Modi:
     List:
