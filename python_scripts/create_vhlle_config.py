@@ -41,9 +41,9 @@ with open(args.vhlle_config, 'r') as f:
     for line in f:
         if line[0] != '\n':
             if line.split()[0] == 'outputDir':
-                newline = 'outputDir       ' + basepath + '/Hydro/' + '\n'
+                newline = 'outputDir       ' + basepath + 'Hydro/' + '\n'
             elif line.split()[0] == 'icInputFile':
-                newline = 'icInputFile       ' + basepath + '/IC/SMASH_IC.dat' + '\n'
+                newline = 'icInputFile       ' + basepath + 'IC/SMASH_IC.dat' + '\n'
             elif line.split()[0] == 'tau0':
                 newline = 'tau0       ' + str(proper_time) + '\n'
             else:

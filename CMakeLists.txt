@@ -146,7 +146,7 @@ function(run_one_energy
   # Run SMASH as afterburner
   #----------------------------------------------------------------------------#
 
-  add_custom_command(OUTPUT "${smash_IC_file}" "${data_folder}/config.yaml"
+  add_custom_command(OUTPUT "${final_particle_list}" "${data_folder}/config.yaml"
   COMMAND "${CMAKE_BINARY_DIR}/smash"
       "-i" "${smash_afterburner_config}"
       "-c" "Modi: { List: { File_Directory: ${sampler_dir}} }"
