@@ -31,7 +31,7 @@ echo "Succesfully compiled and copied SMASH."
 # Compile and copy vHLLE
 echo "Compiling vHLLE ..."
 cd $vhlle_path
-git checkout schaefer/output_Sampler_Ryu_inMilne
+git checkout schaefer/Output_for_Sampler_Ryu_inMilne
 make
 cp hlle_visc $binaries/hlle_visc
 # also copy eos files that are necessary for the hydro run
