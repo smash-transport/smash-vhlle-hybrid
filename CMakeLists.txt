@@ -54,6 +54,39 @@ else()
     file(COPY "${SAMPLER_PATH}/EOS" DESTINATION ${CMAKE_BINARY_DIR})
 endif()
 
+# Decide whether to automatically analyze the data by means of the
+# SMASH-analysis. If so, the path to the analysis suite needs to be passed.
+if(SMASH_ANALYSIS_PATH)
+   option(WITH_ANALYSIS "Automatically analyze output to yield y, mT, pT, v2, N, ... tables." ON)
+endif(SMASH_ANALYSIS_PATH)
+
+if(WITH_ANALYSIS)
+  if(SMASH_ANALYSIS_PATH)
+    message(STATUS "Found SMASH-analysis: ${SMASH_ANALYSIS_PATH}")
+    message(STATUS "Automatic analysis of results is available.")
+  else()
+    message(WARNING "SMASH-analysis not found. Provide path to SMASH-analysis directory via
+    cmake .. -DSMASH_ANALYSIS_PATH=path/to/SMASH_ANALYSIS")
+  endif(SMASH_ANALYSIS_PATH)
+endif(WITH_ANALYSIS)
+
+# Decide whether to plot experimental data as well. Note that in this case,
+# the path to the experimental_data directory needs to be passed
+if(EXP_DATA)
+   option(WITH_EXP_DATA "Plot experimental data points as well." ON)
+endif(EXP_DATA)
+
+if(WITH_EXP_DATA)
+  if(EXP_DATA)
+    message(STATUS "Found experimental data: ${EXP_DATA}")
+    message(STATUS "Comparison to experimental measurements will be plotted.")
+  else()
+    message(WARNING "Experimental data not found and will not be plotted. Provide path to experimental_data directory via
+                     cmake .. -DEXP_DATA=path/to/exp/data")
+  endif(EXP_DATA)
+endif(WITH_EXP_DATA)
+
+
 
 function(run_one_energy
         energy_and_system
@@ -67,6 +100,7 @@ function(run_one_energy
   file(MAKE_DIRECTORY "${results_folder}/Hydro")    # subdir for hydro run
   file(MAKE_DIRECTORY "${results_folder}/Sampler")  # subdir for particle sampling
   file(MAKE_DIRECTORY "${results_folder}/Afterburner")  # subdir for afterburner
+  file(MAKE_DIRECTORY "${results_folder}/Spectra")  # subdir for analyzed spectra
 
   # Set variables for files
   set(smash_IC_file "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/IC/SMASH_IC.dat")
@@ -160,6 +194,33 @@ function(run_one_energy
   COMMENT "Running SMASH afterburner for ${system} @ ${energy} GeV."
   )
 
+  #----------------------------------------------------------------------------#
+  # Analyse data
+  #----------------------------------------------------------------------------#
+
+  # Define filenames for particle spectra and create list of those
+  set(spectra_fnames "${results_folder}/Spectra/yspectra.txt" ;
+                     "${results_folder}/Spectra/mtspectra.txt" ;
+                     "${results_folder}/Spectra/ptspectra.txt" ;
+                     "${results_folder}/Spectra/v2spectra.txt" ;
+                     "${results_folder}/Spectra/meanmt0_midrapidity.txt" ;
+                     "${results_folder}/Spectra/meanpt_midrapidity.txt" ;
+                     "${results_folder}/Spectra/midrapidity_yield.txt" ;
+                     "${results_folder}/Spectra/total_multiplicity.txt")
+  set(analysis_outputs "")
+      foreach(j ${spectra_fnames})
+          list(APPEND analysis_outputs "${j}")
+      endforeach(j)
+
+  # Perform analysis
+  add_custom_command(OUTPUT ${analysis_outputs}
+          COMMAND "python2" "${SMASH_ANALYSIS_PATH}/test/energy_scan/mult_and_spectra.py"
+                  "--output_files" ${analysis_outputs}
+                  "--input_files" "${final_particle_list}"
+          COMMENT "Analyzing spectra for ${system} @ ${energy} GeV."
+      )
+
+
   # Define subtargets to enable separated running of the hybrid submodules
   set(target ${system}_${energy}_IC)
   add_custom_target(${target} ALL DEPENDS ${smash_IC_file})
@@ -172,6 +233,9 @@ function(run_one_energy
 
   set(target ${system}_${energy}_afterburner)
   add_custom_target(${target} ALL DEPENDS ${final_particle_list})
+
+  set(target ${system}_${energy}_analysis)
+  add_custom_target(${target} ALL DEPENDS ${analysis_outputs})
 
 endfunction()
 
