@@ -34,3 +34,5 @@ which will start the full chain of simulations and run the entire hybrid evoluti
     make AuAu_8.8_hydro
     make AuAu_8.8_sampler
     make AuAu_8.8_afterburner
+
+Note: Apart from the binaries, the equations of state are also necessary, to run the hydro evolution as well as to perform the particlization for the afterburner. For this, the directories `eos` and `EOS` are also copied to the build directory and contain the input for vHLLE and the Cooper-Frye sampler, respectively.

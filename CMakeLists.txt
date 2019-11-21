@@ -41,16 +41,18 @@ else()
 endif()
 
 # Find and copy sampler
-# find_program(SAMPLER samplerCooperFrye PATHS ${SAMPLER_PATH})
-# if(NOT SAMPLER)
-#     message(FATAL_ERROR
-#         "Sampler not found. Please specify a path to the Sampler directory "
-#         "by passing '-DSAMPLER_PATH=...' to cmake.")
-# else()
-#     message(STATUS "Found Sampler: ${SAMPLER}")
-#     # copy executable
-#     file(COPY ${SAMPLER} DESTINATION ${CMAKE_BINARY_DIR})
-# endif()
+find_program(SAMPLER mpiCooperFrye.x86_64 PATHS ${SAMPLER_PATH})
+if(NOT SAMPLER)
+    message(FATAL_ERROR
+        "Sampler not found. Please specify a path to the Sampler directory "
+        "by passing '-DSAMPLER_PATH=...' to cmake.")
+else()
+    message(STATUS "Found Sampler: ${SAMPLER}")
+    # copy executable
+    file(COPY ${SAMPLER} DESTINATION ${CMAKE_BINARY_DIR})
+    # copy EoS files
+    file(COPY "${SAMPLER_PATH}/EOS" DESTINATION ${CMAKE_BINARY_DIR})
+endif()
 
 
 function(run_one_energy
@@ -129,12 +131,11 @@ function(run_one_energy
   COMMENT "Removing hypersurface patches with T = p = 0."
   )
 
-
   #----------------------------------------------------------------------------#
   # Run Cooper-Frye sampler for particlization of freezeout surface
   #----------------------------------------------------------------------------#
   add_custom_command(OUTPUT ${sampled_particle_list}
-  COMMAND "mpirun -n 10" "${CMAKE_BINARY_DIR}/mpiCooperFrye.x86_64"
+  COMMAND "mpirun" "-n" "4" "${CMAKE_BINARY_DIR}/mpiCooperFrye.x86_64"
           "${sampler_input_hypersurface}" "2000"
           "${sampler_dir}"
   DEPENDS
@@ -167,7 +168,7 @@ function(run_one_energy
   add_custom_target(${target} ALL DEPENDS ${vhlle_freezeout_hypersurface})
 
   set(target ${system}_${energy}_sampler)
-  add_custom_target(${target} ALL DEPENDS ${sampler_input_hypersurface})
+  add_custom_target(${target} ALL DEPENDS ${sampled_particle_list})
 
   set(target ${system}_${energy}_afterburner)
   add_custom_target(${target} ALL DEPENDS ${final_particle_list})

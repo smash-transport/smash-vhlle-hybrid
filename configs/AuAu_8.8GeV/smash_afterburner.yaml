@@ -8,7 +8,7 @@ General:
     Delta_Time:    0.1
     End_Time:      10000.0    # make sure runtime is long enough for back-propagation
     Randomseed:    -1
-    Nevents:       100
+    Nevents:       2000
 
 Output:
     Output_Interval: 10.0
