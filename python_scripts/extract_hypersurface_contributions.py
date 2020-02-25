@@ -36,7 +36,7 @@ else:
 with open(args.vhlle_hypersurface, 'r') as f:
     for line in f:
         line = re.sub(' +', ' ',line) # remove whitespaces between entries
-        newline = line[1:]
+        newline = line[0:]
         line = line.split()
 
         if ((float(line[13]) > 0.0) and (float(line[12]) > 0.0)):
