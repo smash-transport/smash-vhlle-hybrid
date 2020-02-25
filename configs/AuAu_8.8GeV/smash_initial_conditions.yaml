@@ -7,9 +7,9 @@ General:
     Modus:          Collider
     Time_Step_Mode: Fixed
     Delta_Time:     1.0
-    End_Time:       100.0
+    End_Time:       600.0
     Randomseed:     -1
-    Nevents:        100
+    Nevents:        1
 
 Output:
     Output_Interval: 5.0
