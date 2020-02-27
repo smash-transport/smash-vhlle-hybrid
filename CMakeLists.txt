@@ -212,9 +212,9 @@ function(run_one_energy
                      "${results_folder}/Spectra/midrapidity_yield.txt" ;
                      "${results_folder}/Spectra/total_multiplicity.txt")
   set(analysis_outputs "")
-      foreach(j ${spectra_fnames})
-          list(APPEND analysis_outputs "${j}")
-      endforeach(j)
+  foreach(j ${spectra_fnames})
+      list(APPEND analysis_outputs "${j}")
+  endforeach(j)
 
   # Perform analysis
   add_custom_command(OUTPUT ${analysis_outputs}
@@ -222,8 +222,36 @@ function(run_one_energy
                   "--output_files" ${analysis_outputs}
                   "--input_files" "${final_particle_list}"
           COMMENT "Analyzing spectra for ${system} @ ${energy} GeV."
+          DEPENDS "${SMASH_ANALYSIS_PATH}/test/energy_scan/mult_and_spectra.py"
       )
 
+  #----------------------------------------------------------------------------#
+  # Plot spectra
+  #----------------------------------------------------------------------------#
+  # Define plot names
+  set(plot_names "${results_folder}/Spectra/yspectra.pdf" ;
+                     "${results_folder}/Spectra/mtspectra.pdf" ;
+                     "${results_folder}/Spectra/ptspectra.pdf" ;
+                     "${results_folder}/Spectra/v2spectra.pdf" ;
+                     "${results_folder}/Spectra/meanmt0_midrapidity.pdf" ;
+                     "${results_folder}/Spectra/meanpt_midrapidity.pdf" ;
+                     "${results_folder}/Spectra/midrapidity_yield.pdf" ;
+                     "${results_folder}/Spectra/total_multiplicity.pdf")
+
+  set(plots "")
+  foreach(j ${plot_names})
+     list(APPEND plots "${j}")
+  endforeach(j)
+
+  # Perform plotting
+  add_custom_command(OUTPUT ${plots}
+          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_spectra.py"
+                  "--input_files" "${results_folder}/Spectra/*.txt"
+                  "--energy" "${energy}"
+                  "--system" "${system}"
+                  "--Nevents" "${N_events_afterburner}"
+          COMMENT "Plotting spectra for ${system} @ ${energy} GeV."
+      )
 
   # Define subtargets to enable separated running of the hybrid submodules
   set(target ${system}_${energy}_IC)
@@ -240,6 +268,9 @@ function(run_one_energy
 
   set(target ${system}_${energy}_analysis)
   add_custom_target(${target} ALL DEPENDS ${analysis_outputs})
+
+  set(target ${system}_${energy}_plots)
+  add_custom_target(${target} ALL DEPENDS ${plots})
 
 endfunction()
 
