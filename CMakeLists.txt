@@ -104,6 +104,7 @@ function(run_one_energy
           "--output_file" "${vhlle_updated_config}"
   DEPENDS
           "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_vhlle_config.py"
+          "${vhlle_default_config}"
   COMMENT "Creating input file for vHLLE for ${system} @ ${energy} GeV."
   )
 
@@ -134,12 +135,14 @@ function(run_one_energy
   #----------------------------------------------------------------------------#
   # Run Cooper-Frye sampler for particlization of freezeout surface
   #----------------------------------------------------------------------------#
+  set(N_events_afterburner "2000")
   add_custom_command(OUTPUT ${sampled_particle_list}
   COMMAND "mpirun" "-n" "4" "${CMAKE_BINARY_DIR}/mpiCooperFrye.x86_64"
-          "${sampler_input_hypersurface}" "2000"
+          "${sampler_input_hypersurface}" "${N_events_afterburner}"
           "${sampler_dir}"
   DEPENDS
           "${CMAKE_BINARY_DIR}/mpiCooperFrye.x86_64"
+          "${sampler_input_hypersurface}"
   COMMENT "Sampling particles from freezeout hypersurface."
   )
 
@@ -151,6 +154,7 @@ function(run_one_energy
   COMMAND "${CMAKE_BINARY_DIR}/smash"
       "-i" "${smash_afterburner_config}"
       "-c" "Modi: { List: { File_Directory: ${sampler_dir}} }"
+      "-c" "General: { Nevents: ${N_events_afterburner} }"
       "-o" "${results_folder}/Afterburner"
       "-f"
   #    ">" "/dev/null"
@@ -168,7 +172,7 @@ function(run_one_energy
   add_custom_target(${target} ALL DEPENDS ${vhlle_freezeout_hypersurface})
 
   set(target ${system}_${energy}_sampler)
-  add_custom_target(${target} ALL DEPENDS ${sampled_particle_list})
+  add_custom_target(${target} ALL DEPENDS ${sampled_particle_list} ${sampler_input_hypersurface})
 
   set(target ${system}_${energy}_afterburner)
   add_custom_target(${target} ALL DEPENDS ${final_particle_list})
