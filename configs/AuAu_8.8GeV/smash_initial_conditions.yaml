@@ -14,7 +14,8 @@ General:
 Output:
     Output_Interval: 5.0
     Initial_Conditions:
-      Format: ["ASCII"]
+      Format: ["ASCII", "Binary"]
+      Extended: True
 
 
 Modi:

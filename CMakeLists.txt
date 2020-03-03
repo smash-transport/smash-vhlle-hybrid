@@ -253,6 +253,23 @@ function(run_one_energy
           COMMENT "Plotting spectra for ${system} @ ${energy} GeV."
       )
 
+
+
+  # Check conserved quantities
+  set(smash_IC_binary "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/IC/SMASH_IC.bin")
+  set(output_dir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/")
+  set(E_cons_plot "${output_dir}/Energy_Conservation.pdf")
+  add_custom_command(OUTPUT ${E_cons_plot}
+          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_energy_conservation.py"
+                  "--SMASH_IC" "${smash_IC_binary}"
+                  "--Sampler" "${sampled_particle_list}"
+                  "--SMASH_final_state" "${final_particle_list}"
+                  "--SMASH_ana_path" "${SMASH_ANALYSIS_PATH}"
+                  "--output_path" "${output_dir}"
+          DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_energy_conservation.py"
+          COMMENT "Checking conservation laws for ${system} @ ${energy} GeV."
+      )
+
   # Define subtargets to enable separated running of the hybrid submodules
   set(target ${system}_${energy}_IC)
   add_custom_target(${target} ALL DEPENDS ${smash_IC_file})
@@ -271,6 +288,9 @@ function(run_one_energy
 
   set(target ${system}_${energy}_plots)
   add_custom_target(${target} ALL DEPENDS ${plots})
+
+  set(target ${system}_${energy}_check_conservation)
+  add_custom_target(${target} ALL DEPENDS ${E_cons_plot})
 
 endfunction()
 
