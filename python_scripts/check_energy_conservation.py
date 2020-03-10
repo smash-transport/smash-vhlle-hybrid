@@ -109,7 +109,13 @@ def plotting_E_conservation(IC_energy, Sampler_energy, Final_State_energy):
     system, energy = args.output_path.split('/')[-2].split('_')
 
     plt.plot(x, [IC_energy]*Nevents, label = 'SMASH: Initial Energy', color = 'darkred', lw = 2)
-    plt.bar(x, Sampler_energy, alpha = 0.5, label = 'Sampler: Energy per Event')
+    if (float(energy) == 8.8):
+        hydro_energy = 446.743 + 1103.38
+        plt.plot(x, [hydro_energy]*Nevents, label = 'Hydro: Energy through surface', color = 'limegreen', ls = '-', lw = 2)
+    elif (float(energy) == 200.0):
+        hydro_energy = 3367.28 + 29868.5
+        plt.plot(x, [hydro_energy]*Nevents, label = 'Hydro: Energy through surface', color = 'limegreen', ls = '-', lw = 2)
+    plt.bar(x, Sampler_energy, alpha = 0.3, label = 'Sampler: Energy per Event')
     plt.plot(x, [np.mean(Sampler_energy)]*Nevents, label = 'Sampler: Mean Energy', color = 'midnightblue', lw = 2)
     plt.plot(x, [Final_State_energy]*Nevents, label = 'SMASH: Final State Energy', color = 'orange', lw = 2, ls = '--')
     plt.legend()
@@ -118,6 +124,11 @@ def plotting_E_conservation(IC_energy, Sampler_energy, Final_State_energy):
     plt.xlabel('Event')
     plt.ylabel(r'E$_\mathsf{tot}$ [GeV]')
     plt.tight_layout()
+
+    plt.figtext(0.585, 0.2, r'$\Delta$E (Hydro) = ' + str(round(100*(hydro_energy/IC_energy - 1),2)) + ' %' + '\n'
+    + r'$\Delta$E (Sampler / Hydro) = ' + str(round(100*(np.mean(Sampler_energy)/hydro_energy - 1),2)) + ' %' + '\n'
+    + r'$\Delta$E (Final / Initial) = ' + str(round(100*(np.mean(Final_State_energy)/IC_energy - 1),2)) + ' %',
+    bbox = dict(facecolor='white', alpha=0.8, edgecolor = 'lightgrey', boxstyle='round'))
     plt.savefig(args.output_path + '/Energy_Conservation.pdf')
     plt.close()
 
