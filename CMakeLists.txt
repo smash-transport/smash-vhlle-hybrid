@@ -54,6 +54,39 @@ else()
     file(COPY "${SAMPLER_PATH}/EOS" DESTINATION ${CMAKE_BINARY_DIR})
 endif()
 
+# Decide whether to automatically analyze the data by means of the
+# SMASH-analysis. If so, the path to the analysis suite needs to be passed.
+if(SMASH_ANALYSIS_PATH)
+   option(WITH_ANALYSIS "Automatically analyze output to yield y, mT, pT, v2, N, ... tables." ON)
+endif(SMASH_ANALYSIS_PATH)
+
+if(WITH_ANALYSIS)
+  if(SMASH_ANALYSIS_PATH)
+    message(STATUS "Found SMASH-analysis: ${SMASH_ANALYSIS_PATH}")
+    message(STATUS "Automatic analysis of results is available.")
+  else()
+    message(WARNING "SMASH-analysis not found. Provide path to SMASH-analysis directory via
+    cmake .. -DSMASH_ANALYSIS_PATH=path/to/SMASH_ANALYSIS")
+  endif(SMASH_ANALYSIS_PATH)
+endif(WITH_ANALYSIS)
+
+# Decide whether to plot experimental data as well. Note that in this case,
+# the path to the experimental_data directory needs to be passed
+if(EXP_DATA)
+   option(WITH_EXP_DATA "Plot experimental data points as well." ON)
+endif(EXP_DATA)
+
+if(WITH_EXP_DATA)
+  if(EXP_DATA)
+    message(STATUS "Found experimental data: ${EXP_DATA}")
+    message(STATUS "Comparison to experimental measurements will be plotted.")
+  else()
+    message(WARNING "Experimental data not found and will not be plotted. Provide path to experimental_data directory via
+                     cmake .. -DEXP_DATA=path/to/exp/data")
+  endif(EXP_DATA)
+endif(WITH_EXP_DATA)
+
+
 
 function(run_one_energy
         energy_and_system
@@ -67,6 +100,7 @@ function(run_one_energy
   file(MAKE_DIRECTORY "${results_folder}/Hydro")    # subdir for hydro run
   file(MAKE_DIRECTORY "${results_folder}/Sampler")  # subdir for particle sampling
   file(MAKE_DIRECTORY "${results_folder}/Afterburner")  # subdir for afterburner
+  file(MAKE_DIRECTORY "${results_folder}/Spectra")  # subdir for analyzed spectra
 
   # Set variables for files
   set(smash_IC_file "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/IC/SMASH_IC.dat")
@@ -164,6 +198,78 @@ function(run_one_energy
   COMMENT "Running SMASH afterburner for ${system} @ ${energy} GeV."
   )
 
+  #----------------------------------------------------------------------------#
+  # Analyse data
+  #----------------------------------------------------------------------------#
+
+  # Define filenames for particle spectra and create list of those
+  set(spectra_fnames "${results_folder}/Spectra/yspectra.txt" ;
+                     "${results_folder}/Spectra/mtspectra.txt" ;
+                     "${results_folder}/Spectra/ptspectra.txt" ;
+                     "${results_folder}/Spectra/v2spectra.txt" ;
+                     "${results_folder}/Spectra/meanmt0_midrapidity.txt" ;
+                     "${results_folder}/Spectra/meanpt_midrapidity.txt" ;
+                     "${results_folder}/Spectra/midrapidity_yield.txt" ;
+                     "${results_folder}/Spectra/total_multiplicity.txt")
+  set(analysis_outputs "")
+  foreach(j ${spectra_fnames})
+      list(APPEND analysis_outputs "${j}")
+  endforeach(j)
+
+  # Perform analysis
+  add_custom_command(OUTPUT ${analysis_outputs}
+          COMMAND "python2" "${SMASH_ANALYSIS_PATH}/test/energy_scan/mult_and_spectra.py"
+                  "--output_files" ${analysis_outputs}
+                  "--input_files" "${final_particle_list}"
+          COMMENT "Analyzing spectra for ${system} @ ${energy} GeV."
+          DEPENDS "${SMASH_ANALYSIS_PATH}/test/energy_scan/mult_and_spectra.py"
+      )
+
+  #----------------------------------------------------------------------------#
+  # Plot spectra
+  #----------------------------------------------------------------------------#
+  # Define plot names
+  set(plot_names "${results_folder}/Spectra/yspectra.pdf" ;
+                     "${results_folder}/Spectra/mtspectra.pdf" ;
+                     "${results_folder}/Spectra/ptspectra.pdf" ;
+                     "${results_folder}/Spectra/v2spectra.pdf" ;
+                     "${results_folder}/Spectra/meanmt0_midrapidity.pdf" ;
+                     "${results_folder}/Spectra/meanpt_midrapidity.pdf" ;
+                     "${results_folder}/Spectra/midrapidity_yield.pdf" ;
+                     "${results_folder}/Spectra/total_multiplicity.pdf")
+
+  set(plots "")
+  foreach(j ${plot_names})
+     list(APPEND plots "${j}")
+  endforeach(j)
+
+  # Perform plotting
+  add_custom_command(OUTPUT ${plots}
+          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_spectra.py"
+                  "--input_files" "${results_folder}/Spectra/*.txt"
+                  "--energy" "${energy}"
+                  "--system" "${system}"
+                  "--Nevents" "${N_events_afterburner}"
+          COMMENT "Plotting spectra for ${system} @ ${energy} GeV."
+      )
+
+
+
+  # Check conserved quantities
+  set(smash_IC_binary "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/IC/SMASH_IC.bin")
+  set(output_dir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/")
+  set(E_cons_plot "${output_dir}/Energy_Conservation.pdf")
+  add_custom_command(OUTPUT ${E_cons_plot}
+          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_energy_conservation.py"
+                  "--SMASH_IC" "${smash_IC_binary}"
+                  "--Sampler" "${sampled_particle_list}"
+                  "--SMASH_final_state" "${final_particle_list}"
+                  "--SMASH_ana_path" "${SMASH_ANALYSIS_PATH}"
+                  "--output_path" "${output_dir}"
+          DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_energy_conservation.py"
+          COMMENT "Checking conservation laws for ${system} @ ${energy} GeV."
+      )
+
   # Define subtargets to enable separated running of the hybrid submodules
   set(target ${system}_${energy}_IC)
   add_custom_target(${target} ALL DEPENDS ${smash_IC_file})
@@ -176,6 +282,15 @@ function(run_one_energy
 
   set(target ${system}_${energy}_afterburner)
   add_custom_target(${target} ALL DEPENDS ${final_particle_list})
+
+  set(target ${system}_${energy}_analysis)
+  add_custom_target(${target} ALL DEPENDS ${analysis_outputs})
+
+  set(target ${system}_${energy}_plots)
+  add_custom_target(${target} ALL DEPENDS ${plots})
+
+  set(target ${system}_${energy}_check_conservation)
+  add_custom_target(${target} ALL DEPENDS ${E_cons_plot})
 
 endfunction()
 
