@@ -14,7 +14,7 @@ General:
 Output:
     Output_Interval: 5.0
     Initial_Conditions:
-      Format: ["ASCII", "Binary"]
+      Format: ["ASCII", "Binary", "Oscar2013"]
       Extended: True
 
 

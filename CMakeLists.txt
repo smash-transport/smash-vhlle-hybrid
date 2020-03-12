@@ -41,17 +41,15 @@ else()
 endif()
 
 # Find and copy sampler
-find_program(SAMPLER mpiCooperFrye.x86_64 PATHS ${SAMPLER_PATH})
+find_program(SAMPLER sampler PATHS ${SAMPLER_PATH})
 if(NOT SAMPLER)
     message(FATAL_ERROR
-        "Sampler not found. Please specify a path to the Sampler directory "
+        "Sampler not found. Please specify a path to the Sampler build directory "
         "by passing '-DSAMPLER_PATH=...' to cmake.")
 else()
     message(STATUS "Found Sampler: ${SAMPLER}")
     # copy executable
     file(COPY ${SAMPLER} DESTINATION ${CMAKE_BINARY_DIR})
-    # copy EoS files
-    file(COPY "${SAMPLER_PATH}/EOS" DESTINATION ${CMAKE_BINARY_DIR})
 endif()
 
 # Decide whether to automatically analyze the data by means of the
@@ -70,23 +68,10 @@ if(WITH_ANALYSIS)
   endif(SMASH_ANALYSIS_PATH)
 endif(WITH_ANALYSIS)
 
-# Decide whether to plot experimental data as well. Note that in this case,
-# the path to the experimental_data directory needs to be passed
-if(EXP_DATA)
-   option(WITH_EXP_DATA "Plot experimental data points as well." ON)
-endif(EXP_DATA)
 
-if(WITH_EXP_DATA)
-  if(EXP_DATA)
-    message(STATUS "Found experimental data: ${EXP_DATA}")
-    message(STATUS "Comparison to experimental measurements will be plotted.")
-  else()
-    message(WARNING "Experimental data not found and will not be plotted. Provide path to experimental_data directory via
-                     cmake .. -DEXP_DATA=path/to/exp/data")
-  endif(EXP_DATA)
-endif(WITH_EXP_DATA)
-
-
+#----------------------------------------------------------------------------#
+# Function to set up hybrid evolution depending on system and energy
+#----------------------------------------------------------------------------#
 
 function(run_one_energy
         energy_and_system
@@ -100,17 +85,21 @@ function(run_one_energy
   file(MAKE_DIRECTORY "${results_folder}/Hydro")    # subdir for hydro run
   file(MAKE_DIRECTORY "${results_folder}/Sampler")  # subdir for particle sampling
   file(MAKE_DIRECTORY "${results_folder}/Afterburner")  # subdir for afterburner
-  file(MAKE_DIRECTORY "${results_folder}/Spectra")  # subdir for analyzed spectra
+  file(MAKE_DIRECTORY "${results_folder}/Spectra")  # subdir for analyzed spectra and plots
 
   # Set variables for files
   set(smash_IC_file "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/IC/SMASH_IC.dat")
+  set(smash_IC_oscar "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/IC/SMASH_IC.oscar")
   set(smash_IC_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/${system}_${energy}GeV/smash_initial_conditions.yaml")
   set(vhlle_default_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/${system}_${energy}GeV/vhlle_hydro")
   set(vhlle_updated_config "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/Hydro/vhlle_config")
   set(vhlle_freezeout_hypersurface "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/Hydro/freezeout.dat")
   set(sampler_input_hypersurface "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/Sampler/freezeout.dat")
+  set(sampler_default_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/${system}_${energy}GeV/hadron_sampler")
+  set(sampler_updated_config "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/Sampler/sampler_config")
   set(sampler_dir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/Sampler")
-  set(sampled_particle_list "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/Sampler/sampling0")
+  set(sampled_particle_list "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/Sampler/particle_lists.oscar")
+  set(full_particle_list "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/Sampler/sampling0")
   set(smash_afterburner_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/${system}_${energy}GeV/smash_afterburner.yaml")
   set(final_particle_list "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/Afterburner/particles_binary.bin")
 
@@ -130,6 +119,9 @@ function(run_one_energy
   COMMENT "Running SMASH for Initial Conditions of ${system} @ ${energy} GeV."
   )
 
+  #----------------------------------------------------------------------------#
+  # Feed SMASH initial conditions into vHLLE and run hydro evolution
+  #----------------------------------------------------------------------------#
   # create input file with correct paths for vHLLE
   add_custom_command(OUTPUT "${vhlle_updated_config}"
   COMMAND "python" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_vhlle_config.py"
@@ -143,9 +135,7 @@ function(run_one_energy
   )
 
 
-  #----------------------------------------------------------------------------#
-  # Feed SMASH initial conditions into vHLLE and run hydro evolution
-  #----------------------------------------------------------------------------#
+  # Run hydro
   add_custom_command(OUTPUT "${vhlle_freezeout_hypersurface}"
   COMMAND "${CMAKE_BINARY_DIR}/hlle_visc"
           "${vhlle_updated_config}"
@@ -155,35 +145,49 @@ function(run_one_energy
   COMMENT "Running vHLLE for ${system} @ ${energy} GeV."
   )
 
-  # Extract only those cells from hypersurface with non-zero temperature and
-  # pressure
-  add_custom_command(OUTPUT ${sampler_input_hypersurface}
-  COMMAND "python" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/extract_hypersurface_contributions.py"
-          "--vhlle_hypersurface" "${vhlle_freezeout_hypersurface}"
-          "--output_file" "${sampler_input_hypersurface}"
-  DEPENDS
-          "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/extract_hypersurface_contributions.py"
-  COMMENT "Removing hypersurface patches with T = p = 0."
-  )
-
   #----------------------------------------------------------------------------#
   # Run Cooper-Frye sampler for particlization of freezeout surface
   #----------------------------------------------------------------------------#
-  set(N_events_afterburner "2000")
-  add_custom_command(OUTPUT ${sampled_particle_list}
-  COMMAND "mpirun" "-n" "4" "${CMAKE_BINARY_DIR}/mpiCooperFrye.x86_64"
-          "${sampler_input_hypersurface}" "${N_events_afterburner}"
-          "${sampler_dir}"
+  # create input file with correct paths for sampler
+  set(N_events_afterburner "100")
+  add_custom_command(OUTPUT "${sampler_updated_config}"
+  COMMAND "python" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_sampler_config.py"
+          "--sampler_config" "${sampler_default_config}"
+          "--vhlle_config" "${vhlle_updated_config}"
+          "--output_file" "${sampler_updated_config}"
+          "--Nevents" "${N_events_afterburner}"
   DEPENDS
-          "${CMAKE_BINARY_DIR}/mpiCooperFrye.x86_64"
-          "${sampler_input_hypersurface}"
+          "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_sampler_config.py"
+          "${sampler_default_config}"
+  COMMENT "Creating input file for sampler for ${system} @ ${energy} GeV."
+  )
+
+  # Run sampler
+  add_custom_command(OUTPUT ${sampled_particle_list}
+  COMMAND "${CMAKE_BINARY_DIR}/sampler" "events" "1" "${sampler_updated_config}"
+  DEPENDS
+          "${CMAKE_BINARY_DIR}/sampler"
+          "${sampler_updated_config}"
   COMMENT "Sampling particles from freezeout hypersurface."
   )
 
   #----------------------------------------------------------------------------#
   # Run SMASH as afterburner
   #----------------------------------------------------------------------------#
+  # Add spectators to particle list and rename it to be in accordance
+  # with SMASH list modus input format
+  add_custom_command(OUTPUT ${full_particle_list}
+  COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/add_spectators.py"
+                    "--sampled_particle_list" "${sampler_dir}/particle_lists.oscar"
+                    "--initial_particle_list" "${smash_IC_oscar}"
+                    "--output_file" "${full_particle_list}"
+  DEPENDS
+          "${sampled_particle_list}"
+          "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/add_spectators.py"
+  COMMENT "Adding spectators to sampled particle list for afterburner."
+  )
 
+  # Run afterburner evolution
   add_custom_command(OUTPUT "${final_particle_list}" "${data_folder}/config.yaml"
   COMMAND "${CMAKE_BINARY_DIR}/smash"
       "-i" "${smash_afterburner_config}"
@@ -195,13 +199,13 @@ function(run_one_energy
   DEPENDS
       "${smash_afterburner_config}"
       "${CMAKE_BINARY_DIR}/smash"
+      "${full_particle_list}"
   COMMENT "Running SMASH afterburner for ${system} @ ${energy} GeV."
   )
 
   #----------------------------------------------------------------------------#
   # Analyse data
   #----------------------------------------------------------------------------#
-
   # Define filenames for particle spectra and create list of those
   set(spectra_fnames "${results_folder}/Spectra/yspectra.txt" ;
                      "${results_folder}/Spectra/mtspectra.txt" ;
@@ -255,17 +259,20 @@ function(run_one_energy
 
 
 
+  #----------------------------------------------------------------------------#
   # Check conserved quantities
+  #----------------------------------------------------------------------------#
   set(smash_IC_binary "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/IC/SMASH_IC.bin")
   set(output_dir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/")
   set(E_cons_plot "${output_dir}/Energy_Conservation.pdf")
   add_custom_command(OUTPUT ${E_cons_plot}
           COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_energy_conservation.py"
-                  "--SMASH_IC" "${smash_IC_binary}"
-                  "--Sampler" "${sampled_particle_list}"
+                  "--SMASH_IC" "${smash_IC_oscar}"
+                  "--Sampler" "${full_particle_list}"
                   "--SMASH_final_state" "${final_particle_list}"
                   "--SMASH_ana_path" "${SMASH_ANALYSIS_PATH}"
                   "--output_path" "${output_dir}"
+                  "--Nevents" "${N_events_afterburner}"
           DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_energy_conservation.py"
           COMMENT "Checking conservation laws for ${system} @ ${energy} GeV."
       )
@@ -278,7 +285,7 @@ function(run_one_energy
   add_custom_target(${target} ALL DEPENDS ${vhlle_freezeout_hypersurface})
 
   set(target ${system}_${energy}_sampler)
-  add_custom_target(${target} ALL DEPENDS ${sampled_particle_list} ${sampler_input_hypersurface})
+  add_custom_target(${target} ALL DEPENDS ${sampled_particle_list})
 
   set(target ${system}_${energy}_afterburner)
   add_custom_target(${target} ALL DEPENDS ${final_particle_list})

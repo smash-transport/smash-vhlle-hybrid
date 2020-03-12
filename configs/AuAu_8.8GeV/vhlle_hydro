@@ -1,4 +1,4 @@
-outputDir       hydro_output/AuAu8.8GeV_frozenFM/
+outputDir       path/to/initial/particle/list
 
 eosType       1
 

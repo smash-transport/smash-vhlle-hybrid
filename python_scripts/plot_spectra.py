@@ -69,7 +69,6 @@ def plot_mT_spectra(file, output_path, energy, system, Nevents):
     bin_edges = np.array(bin_edges).astype('float')
     bin_width = bin_edges[1:] - bin_edges[:-1]
 
-
     m_pi = 0.138
     m_kaon = 0.495
     m_proton = 0.938
@@ -116,8 +115,6 @@ def plot_pT_spectra(file, output_path, energy, system, Nevents):
         if element == '': bin_edges.pop(num)
     bin_edges = np.array(bin_edges).astype('float')
     bin_width = bin_edges[1:] - bin_edges[:-1]
-
-    print bin_width
 
     plt.figure(figsize=(10,5))
     plt.subplot(121)
