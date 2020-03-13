@@ -1,0 +1,6 @@
+surface          /path/to/freezeout/surface
+spectra_dir      /path/to/output
+number_of_events 100
+weakContribution 0
+shear            0
+ecrit            0.5
