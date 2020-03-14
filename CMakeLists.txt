@@ -182,7 +182,6 @@ function(run_one_energy
                     "--initial_particle_list" "${smash_IC_oscar}"
                     "--output_file" "${full_particle_list}"
   DEPENDS
-          "${sampled_particle_list}"
           "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/add_spectators.py"
   COMMENT "Adding spectators to sampled particle list for afterburner."
   )

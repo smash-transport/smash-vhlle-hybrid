@@ -27,11 +27,7 @@ Once the prerequisites are met, use the following commands to build the full hyb
 
 where `[...]` denote the paths to the `smash/build` direcory, the `vhlle` directory and the `hadronSampler/build` directory. The binaries of the precompiled submodules are expected to be located therein.
 
-All subtargets corresponding to the predefined collision setups have been created by `cmake`. To run, for example, a Gold-Gold collision at sqrt(s) = 8.8 GeV, execute the following:
-
-    make AuAu_8.8
-
-which will start the full chain of simulations and run the entire hybrid evolution. Alternatively, you can run the different stages step by step by executing the following commands in the given order:
+All subtargets corresponding to the predefined collision setups have been created by `cmake`. To more easily divide to full hybrid run into smaller pieces, different targets are created for all steps of the simulation. They have to be run one after the other in the order specified below. For a Au+Au collision at sqrt(s) = 8.8 GeV, this chain is executed via:
 
     make AuAu_8.8_IC
     make AuAu_8.8_hydro

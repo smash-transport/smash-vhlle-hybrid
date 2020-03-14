@@ -22,10 +22,8 @@ parser.add_argument("--Nevents", required = True,
                     help="Number of events to sample")
 args = parser.parse_args()
 
-# Relative path to the AuAu_8.8 Directory
-basepath = '../build/' + os.path.dirname(args.vhlle_config).split('/build/')[1].split('Hydro')[0]
-
-print basepath
+# Path to the results directory
+basepath = '/'.join(args.vhlle_config.split('/')[:-2]) + '/'
 
 # Extract critical energy density and shear viscosity from hydro config.
 with open(args.vhlle_config, 'r') as f:
@@ -35,7 +33,6 @@ with open(args.vhlle_config, 'r') as f:
         else: continue
 f.close()
 
-print eta_s, e_crit
 # Create new vhlle config, that contains the extracted proper time and the
 # correct paths to the input and output files.
 # The default config file is copied and modified where necessary.

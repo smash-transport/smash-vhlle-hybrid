@@ -21,8 +21,8 @@ parser.add_argument("--output_file", required = True,
                     help="Updated vhlle config file")
 args = parser.parse_args()
 
-# Relative path to the AuAu_8.8 Directory
-basepath = '../build/' + os.path.dirname(args.smash_ic).split('/build/')[1].split('IC')[0]
+# Path to the reults directory
+basepath = '/'.join(args.smash_ic.split('/')[:-2]) + '/'
 
 # Extract proper time of hypersurface from SMASH output, to pass it to
 # vhlle configuration file
