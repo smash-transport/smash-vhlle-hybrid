@@ -10,11 +10,11 @@ Hybrid model for the description of relativistic heavy-ion collisions in the low
 - [cmake](https://cmake.org) version &ge; 3.15.4
 - [SMASH](https://github.com/smash-transport/smash) version &ge; 1.8
 - [vHLLE](https://github.com/akschaefer/vhlle) branch `smash_hybrid`
-- [hadron sampler](https://github.com/yukarpenko/hadronSampler/) branch `smash_hybrid`
+- [hadron sampler](https://github.com/smash-transport/hadron-sampler/)
 - ([SMASH-analysis](https://github.com/smash-transport/smash-analysis) version &ge; 1.7, if automatic generation of particle spectra is desired)
 
 Before building the full hybrid model, please make sure that the sumodules listed above (SMASH, vHLLE, sampler) are available and already compiled. Instructions on how to compile them can be found in the corresponding READMEs.  
-**Note:** For vHLLE and the sampler it is essential that both are compiled on the branch `smash_hybrid`.
+**Note:** For vHLLE it is essential to compile it on the branch `smash_hybrid`.
 
 ## Building the hybrid model
 
