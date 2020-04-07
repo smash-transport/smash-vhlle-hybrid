@@ -78,6 +78,31 @@ def energy_from_binary(file):
 
     return np.mean(Baryon_numbers),  E_tot / (float(args.Nevents))
 
+def energy_from_hydro(file):
+    f = open(file, 'r')
+    lines_header = 37   #to be skipped
+    for index, line in enumerate(f.readlines()):
+        # skip header
+        if index <= 37: continue
+        if line.startswith('corona'): continue
+        # Find values before grid resize
+        if line.startswith('grid'):
+            NB_before = baryon_number
+            E_before = energy
+            baryon_number = 0.0
+            energy = 0.0
+        else:
+            baryon_number, energy = float(line.split()[3]), float(line.split()[5])
+    # Find values before grid resize
+    NB_after = baryon_number
+    E_after = energy
+
+    NB_tot = NB_before + NB_after
+    E_tot = E_before + E_after
+
+    return NB_tot, E_tot
+
+
 def energy_from_oscar(file):
 
     Energies = [0.0]
@@ -102,7 +127,7 @@ def energy_from_oscar(file):
 
     return Net_Baryons, Energies
 
-def plotting_E_conservation(IC_energy, Sampler_energy, Final_State_energy):
+def plotting_E_conservation(IC_energy, hydro_energy, Sampler_energy, Final_State_energy):
 
     Nevents = int(args.Nevents)
     x = np.arange(1, len(Sampler_energy) + 1, 1)
@@ -112,6 +137,7 @@ def plotting_E_conservation(IC_energy, Sampler_energy, Final_State_energy):
     print IC_energy, Nevents
     plt.plot(x, [IC_energy]*Nevents, label = 'SMASH: Initial Energy', color = 'darkred', lw = 2)
     plt.bar(x, Sampler_energy, alpha = 0.3, label = 'Sampler: Energy per Event')
+    plt.plot(x, [hydro_energy] * Nevents, label = 'Hydro: Energy through Surface', color = 'green', lw = 2)
     plt.plot(x, [np.mean(Sampler_energy)]*Nevents, label = 'Sampler: Mean Energy', color = 'midnightblue', lw = 2)
     plt.plot(x, [Final_State_energy]*Nevents, label = 'SMASH: Final State Energy', color = 'orange', lw = 2, ls = '--')
     plt.legend(title = r'$\Delta$E = ' + str(round(100*(np.mean(Final_State_energy)/IC_energy - 1),2)) + ' %')
@@ -125,7 +151,7 @@ def plotting_E_conservation(IC_energy, Sampler_energy, Final_State_energy):
     plt.savefig(args.output_path + '/Energy_Conservation.pdf')
     plt.close()
 
-def plotting_NB_conservation(IC_NB, Sampler_NB, Final_State_NB):
+def plotting_NB_conservation(IC_NB, hydro_NB, Sampler_NB, Final_State_NB):
 
     Nevents = int(args.Nevents)
     x = np.arange(1, len(Sampler_NB) + 1, 1)
@@ -134,6 +160,7 @@ def plotting_NB_conservation(IC_NB, Sampler_NB, Final_State_NB):
 
     plt.plot(x, [IC_NB]*Nevents, label = r'SMASH: Initial N$_\mathsf{B - \bar{B}}$', color = 'darkred', lw = 2)
     plt.bar(x, Sampler_NB, alpha = 0.3, label = r'Sampler: N$_\mathsf{B - \bar{B}}$ per Event')
+    plt.plot(x, [hydro_NB]*Nevents, label = r'Hydro: N$_\mathsf{B - \bar{B}}$', color = 'green', lw = 2)
     plt.plot(x, [np.mean(Sampler_NB)]*Nevents, label = r'Sampler: Mean N$_\mathsf{B - \bar{B}}$', color = 'midnightblue', lw = 2)
     plt.plot(x, [Final_State_NB]*Nevents, label = r'SMASH: Final State N$_\mathsf{B - \bar{B}}$', color = 'orange', lw = 2, ls = '--')
     plt.legend(title = r'$\Delta$N$_\mathsf{B}$ = ' + str(round(100*(np.mean(Final_State_NB)/IC_NB - 1),2)) + ' %')
@@ -149,8 +176,10 @@ def plotting_NB_conservation(IC_NB, Sampler_NB, Final_State_NB):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--SMASH_IC", required = False,
+    parser.add_argument("--SMASH_IC", required = True,
                         help = "SMASH initial conditions.")
+    parser.add_argument("--Hydro_Info", required = True,
+                        help = "File with the vhlle output from the terminal.")
     parser.add_argument("--Sampler", required = True,
                         help = "Sampled particle lists.")
     parser.add_argument("--SMASH_final_state", required = True,
@@ -167,14 +196,16 @@ if __name__ == '__main__':
     import smash_basic_scripts as sbs
 
     NB_SMASH_IC, E_SMASH_IC = energy_from_oscar(args.SMASH_IC)
+    NB_hydro, E_hydro = energy_from_hydro(args.Hydro_Info)
     NB_sampler_per_Event, E_sampler_per_Event = energy_from_oscar(args.Sampler)
     NB_SMASH_final_state, E_SMASH_final_state = energy_from_binary(args.SMASH_final_state)
 
 
-    plotting_E_conservation(E_SMASH_IC, E_sampler_per_Event, E_SMASH_final_state)
+    plotting_E_conservation(E_SMASH_IC, E_hydro, E_sampler_per_Event, E_SMASH_final_state)
 
     print 'Initial SMASH energy: ' + str(E_SMASH_IC)
+    print 'Hydro energy through surface: ' + str(E_hydro)
     print 'Sampler energy: ' + str(np.mean(E_sampler_per_Event))
     print 'Final SMASH energy: ' + str(E_SMASH_final_state)
     print 'Energy gain/loss: ' + str(round(100 * ((E_SMASH_final_state / E_SMASH_IC) -1),2) ) + ' %'
-    plotting_NB_conservation(NB_SMASH_IC, NB_sampler_per_Event, NB_SMASH_final_state)
+    plotting_NB_conservation(NB_SMASH_IC, NB_hydro, NB_sampler_per_Event, NB_SMASH_final_state)

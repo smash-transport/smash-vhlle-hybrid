@@ -1,4 +1,4 @@
-Version: 1.7
+Version: 1.8
 
 Logging:
     default: INFO
@@ -12,7 +12,6 @@ General:
     Nevents:        1
 
 Output:
-    Output_Interval: 5.0
     Initial_Conditions:
       Format: ["ASCII", "Binary", "Oscar2013"]
       Extended: True

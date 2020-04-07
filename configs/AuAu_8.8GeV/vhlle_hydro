@@ -1,4 +1,4 @@
-outputDir       path/to/initial/particle/list
+outputDir       path/to/output/directory
 
 eosType       1
 
@@ -17,9 +17,9 @@ etamin   -10.0
 etamax    10.0
 
 icModel    3
-icInputFile ic_smash/SMASH_IC_AuAu8.8GeV_frozenFM.dat
-Rg      1.5
-Rgz     2.0
+icInputFile path/to/initial/particle/list
+Rg      1.0
+Rgz     1.0
 
 tau0       2.7842
 tauMax     20.0

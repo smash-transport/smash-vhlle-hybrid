@@ -139,6 +139,7 @@ function(run_one_energy
   add_custom_command(OUTPUT "${vhlle_freezeout_hypersurface}"
   COMMAND "${CMAKE_BINARY_DIR}/hlle_visc"
           "${vhlle_updated_config}"
+          ">" "${results_folder}/Hydro/Terminal_Output.txt"
   DEPENDS
           "${vhlle_updated_config}"
           "${CMAKE_BINARY_DIR}/hlle_visc"
@@ -149,7 +150,7 @@ function(run_one_energy
   # Run Cooper-Frye sampler for particlization of freezeout surface
   #----------------------------------------------------------------------------#
   # create input file with correct paths for sampler
-  set(N_events_afterburner "100")
+  set(N_events_afterburner "1000")
   add_custom_command(OUTPUT "${sampler_updated_config}"
   COMMAND "python" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_sampler_config.py"
           "--sampler_config" "${sampler_default_config}"
@@ -265,8 +266,9 @@ function(run_one_energy
   set(output_dir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/")
   set(E_cons_plot "${output_dir}/Energy_Conservation.pdf")
   add_custom_command(OUTPUT ${E_cons_plot}
-          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_energy_conservation.py"
+          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_conservation.py"
                   "--SMASH_IC" "${smash_IC_oscar}"
+                  "--Hydro_Info" "${results_folder}/Hydro/Terminal_Output.txt"
                   "--Sampler" "${full_particle_list}"
                   "--SMASH_final_state" "${final_particle_list}"
                   "--SMASH_ana_path" "${SMASH_ANALYSIS_PATH}"
