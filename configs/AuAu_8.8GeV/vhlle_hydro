@@ -18,9 +18,9 @@ etamax    10.0
 
 icModel    3
 icInputFile path/to/initial/particle/list
-Rg      1.0
+Rg      1.4
 Rgz     1.0
 
 tau0       2.7842
 tauMax     20.0
-dtau       0.05
+dtau       0.1
