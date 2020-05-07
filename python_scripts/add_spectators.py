@@ -21,7 +21,7 @@ def extract_spectators():
            that is passed to write_full_particle_list() where the entries are
            written to the output file.
     '''
-    system = args.initial_particle_list.split('/')[-3].split('_')[0]
+    system = args.initial_particle_list.split('/')[-4].split('_')[0]
     N_nucleons = initial_nucleons[system]
 
     spectator_list = []

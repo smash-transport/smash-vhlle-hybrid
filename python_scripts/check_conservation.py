@@ -132,9 +132,8 @@ def plotting_E_conservation(IC_energy, hydro_energy, Sampler_energy, Final_State
     Nevents = int(args.Nevents)
     x = np.arange(1, len(Sampler_energy) + 1, 1)
 
-    system, energy = args.output_path.split('/')[-2].split('_')
+    system, energy = args.output_path.split('/')[-3].split('_')
 
-    print IC_energy, Nevents
     plt.plot(x, [IC_energy]*Nevents, label = 'SMASH: Initial Energy', color = 'darkred', lw = 2)
     plt.bar(x, Sampler_energy, alpha = 0.3, label = 'Sampler: Energy per Event')
     plt.plot(x, [hydro_energy] * Nevents, label = 'Hydro: Energy through Surface', color = 'green', lw = 2)
@@ -156,7 +155,7 @@ def plotting_NB_conservation(IC_NB, hydro_NB, Sampler_NB, Final_State_NB):
     Nevents = int(args.Nevents)
     x = np.arange(1, len(Sampler_NB) + 1, 1)
 
-    system, energy = args.output_path.split('/')[-2].split('_')
+    system, energy = args.output_path.split('/')[-3].split('_')
 
     plt.plot(x, [IC_NB]*Nevents, label = r'SMASH: Initial N$_\mathsf{B - \bar{B}}$', color = 'darkred', lw = 2)
     plt.bar(x, Sampler_NB, alpha = 0.3, label = r'Sampler: N$_\mathsf{B - \bar{B}}$ per Event')
