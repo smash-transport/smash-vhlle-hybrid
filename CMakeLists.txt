@@ -303,6 +303,9 @@ function(run_one_energy
 
   endforeach(i)
 
+  #----------------------------------------------------------------------------#
+  # Average previously obtained spectra
+  #----------------------------------------------------------------------------#
   file(MAKE_DIRECTORY "${results_folder}/Averaged_Spectra")
   set(averaged_spectra "${results_folder}/pT.txt" ;
                        "${results_folder}/mT.txt" ;
@@ -318,7 +321,9 @@ function(run_one_energy
           COMMENT "Averaging spectra for ${system} @ ${energy} GeV."
       )
 
-
+  #----------------------------------------------------------------------------#
+  # Plot averaged quantities
+  #----------------------------------------------------------------------------#
   set(averaged_plots "${results_folder}/Averaged_Spectra/yspectra.pdf" ;
                      "${results_folder}/Averaged_Spectra/mtspectra.pdf" ;
                      "${results_folder}/Averaged_Spectra/ptspectra.pdf")
