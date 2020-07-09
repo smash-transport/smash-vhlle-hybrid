@@ -211,7 +211,7 @@ function(run_one_energy
         "-c" "General: { Nevents: ${N_events_afterburner} }"
         "-o" "${results_folder}/${i}/Afterburner"
         "-f"
-       ">" "/dev/null"
+        ">" "/dev/null"
     DEPENDS
         "${smash_afterburner_config}"
         "${CMAKE_BINARY_DIR}/smash"
@@ -285,7 +285,10 @@ function(run_one_energy
     set(smash_IC_binary "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/IC/SMASH_IC.bin")
     set(output_dir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/")
     set(E_cons_plot "${output_dir}/Energy_Conservation.pdf")
+    set(Mult_plot "${output_dir}/Pions.pdf")
+
     list(APPEND all_conservation_plots ${E_cons_plot})
+    list(APPEND all_multiplicity_plots ${Mult_plot})
     add_custom_command(OUTPUT ${E_cons_plot}
             COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_conservation.py"
                     "--SMASH_IC" "${smash_IC_oscar}"
@@ -296,7 +299,16 @@ function(run_one_energy
                     "--output_path" "${output_dir}"
                     "--Nevents" "${N_events_afterburner}"
             DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_conservation.py"
-            COMMENT "Checking conservation laws for ${system} @ ${energy} GeV."
+            COMMENT "Checking conservation laws for ${system} @ ${energy} GeV (${i}/${num_runs})."
+        )
+
+    add_custom_command(OUTPUT ${Mult_plot}
+            COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_multiplicities.py"
+                    "--Freezeout_Surface" "${vhlle_freezeout_hypersurface}"
+                    "--Sampler" "${sampled_particle_list}"
+                    "--output_path" "${output_dir}"
+            DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_multiplicities.py"
+            COMMENT "Verifying multiplicities for ${system} @ ${energy} GeV (${i}/${num_runs})."
         )
 
 
@@ -361,6 +373,9 @@ function(run_one_energy
 
   set(target ${system}_${energy}_check_conservation)
   add_custom_target(${target} ALL DEPENDS ${all_conservation_plots})
+
+  set(target ${system}_${energy}_check_multiplicities)
+  add_custom_target(${target} ALL DEPENDS ${all_multiplicity_plots})
 
   # Averaging
   set(target ${system}_${energy}_average_spectra)

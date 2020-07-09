@@ -14,8 +14,10 @@ def get_average(obs):
         data = np.loadtxt(file, unpack = True)
         full_data.append(data)
 
+    Nevents = float(len(files))     # Number of parallel runs
     mean = np.mean(full_data, axis = 0)
-    error = np.std(full_data, axis = 0)
+    sigma = np.std(full_data, axis = 0)
+    error = sigma / np.sqrt(Nevents - 1.0) if Nevents > 1 else 0.0
 
     return mean, error
 
@@ -27,7 +29,7 @@ def print_to_file(mean, error, obs):
 
     file = open(args.output_dir + obs + '.txt', 'w')
     file.write('# ' + obs + ' spectra, already divided by bin width and events\n')
-    file.write('# ' + obs + '_bin_center 211 211_error -211 -211_error 111 111_error 321 321_error -321 -321_error 2112 2112_error -2112 -2112_error 3122 3122_error -3122 -3122_error\n')
+    file.write('# ' + obs + '_bin_center 211 211_error -211 -211_error 111 111_error 321 321_error -321 -321_error 2212 2212_error -2212 -2212_error 3122 3122_error -3122 -3122_error\n')
 
     bin_edges = linecache.getline(files[0], 4)[17:-2].split(' ')
     # Remove white spaces
@@ -38,12 +40,12 @@ def print_to_file(mean, error, obs):
     bin_edges = np.array(bin_edges).astype('float')
     bin_width = bin_edges[1:] - bin_edges[:-1]
 
-    Nevents = float(args.Nevents)
+    Nevents_sampler = float(args.Nevents)
     for i in range(0,len(mean[0])):
         line = ''
         line += str(mean[0][i])
         for particle_index in range(1, 10):
-            line += '\t' + str(mean[particle_index][i]/(bin_width[i] * Nevents)) + '\t' + str(error[particle_index][i]/(bin_width[i] * Nevents))
+            line += '\t' + str(mean[particle_index][i]/(bin_width[i] * Nevents_sampler)) + '\t' + str(error[particle_index][i]/(bin_width[i] * Nevents_sampler))
         line += '\n'
         file.write(line)
 
@@ -62,6 +64,10 @@ if __name__ == '__main__':
     parser.add_argument("--Nevents", required = True, type=float,
                         help = "Number of afterburner events in individual runs.")
     args = parser.parse_args()
+
+    if (len(args.pT_files) != len(args.mT_files)) or (len(args.pT_files) != len(args.y_files)):
+        print 'Loaded ' + str(len(args.pT_files)) + ' pT files, but ' + str(len(args.mT_files)) + ' mT files and ' + str(len(args.y_files)) + '  files.'
+    print 'Averaging over ' + str(len(args.pT_files)) + ' events.'
 
     mean_pT, error_pT = get_average('pT')
     mean_mT, error_mT = get_average('mT')
