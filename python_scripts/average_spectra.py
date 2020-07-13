@@ -17,7 +17,7 @@ def get_average(obs):
     Nevents = float(len(files))     # Number of parallel runs
     mean = np.mean(full_data, axis = 0)
     sigma = np.std(full_data, axis = 0)
-    error = sigma / np.sqrt(Nevents - 1.0) if Nevents > 1 else 0.0
+    error = sigma / np.sqrt(Nevents - 1.0) if Nevents > 1 else np.zeros(sigma.shape)
 
     return mean, error
 
