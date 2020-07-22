@@ -13,8 +13,8 @@ Hybrid model for the description of relativistic heavy-ion collisions in the low
 - [hadron sampler](https://github.com/smash-transport/hadron-sampler/)
 - ([SMASH-analysis](https://github.com/smash-transport/smash-analysis) version &ge; 1.7, if automatic generation of particle spectra is desired)
 
-Before building the full hybrid model, please make sure that the sumodules listed above (SMASH, vHLLE, sampler) are available and already compiled. Instructions on how to compile them can be found in the corresponding READMEs.  
-**Note:** For vHLLE it is essential to compile it on the branch `smash_hybrid`.
+Before building the full hybrid model, please make sure that the submodules listed above (SMASH, vHLLE, sampler) are available and already compiled. Instructions on how to compile them can be found in the corresponding READMEs.
+**Note:** It is essential to compile vHLLE on the branch `smash_hybrid`.
 
 ## Building the hybrid model
 
@@ -22,12 +22,12 @@ Once the prerequisites are met, use the following commands to build the full hyb
 
     mkdir build
     cd build
-    cmake .. -DSMASH_PATH=[...]/smash/build -DVHLLE_PATH=[...]/vhlle -DSAMPLER_PATH=[...]/hadronSampler/build
+    cmake .. -DSMASH_PATH=[...]/smash/build -DVHLLE_PATH=[...]/vhlle -DSAMPLER_PATH=[...]/hadron-sampler/build
     make
 
-where `[...]` denote the paths to the `smash/build` direcory, the `vhlle` directory and the `hadronSampler/build` directory. The binaries of the precompiled submodules are expected to be located therein.
+where `[...]` denote the paths to the `smash/build` direcory, the `vhlle` directory and the `hadron-sampler/build` directory. The binaries of the precompiled submodules are expected to be located therein.
 
-All subtargets corresponding to the predefined collision setups have been created by `cmake`. To more easily divide to full hybrid run into smaller pieces, different targets are created for all steps of the simulation. They have to be run one after the other in the order specified below. For a Au+Au collision at sqrt(s) = 8.8 GeV, this chain is executed via:
+All subtargets corresponding to the predefined collision setups have been created by `cmake`. To more easily divide the full hybrid run into smaller pieces, different targets are created for each step of the hybrid simulation. They have to be run one after the other in the order specified below. For a Au+Au collision at sqrt(s) = 8.8 GeV, this chain is executed via:
 
     make AuAu_8.8_IC
     make AuAu_8.8_hydro
@@ -38,17 +38,17 @@ The output files of the individual submodules as well as the configuration files
 
 **Note:** Apart from the binaries, the equations of state are also necessary to run the hydro evolution as well as to perform the particlization for the afterburner. For this, the directory `eos` is also copied from `[...]/vhlle` to the build directory.
 
-## Building the hyrid including analysis
-To also provide the automatic analysis of the final state, run the following commands to also link to the smash analysis:
+## Building the hybrid model linked to the SMASH-analysis
+To also provide the automatic analysis of the final particle lists, run the following commands to also link the project to the smash-analysis:
 
     mkdir build
     cd build
-    cmake .. -DSMASH_PATH=[...]/smash/build -DVHLLE_PATH=[...]/vhlle -DSAMPLER_PATH=[...]/hadronSampler/build -DSMASH_ANALYSIS_PATH=[...]/smash-analysis
+    cmake .. -DSMASH_PATH=[...]/smash/build -DVHLLE_PATH=[...]/vhlle -DSAMPLER_PATH=[...]/hadron-sampler/build -DSMASH_ANALYSIS_PATH=[...]/smash-analysis
     make
 
-Once the afterurner was run, the resulting particle lists can be analysed and plotted by executing the following commands:
+Once the afterburner was run, the resulting particle lists can be analysed and plotted by executing the following commands:
 
     make AuAu_8.8_analysis
     make AuAu_8.8_plots
 
-The generate plots and lists are then located in `[...]/build/Hybrid_Results/AuAu_8.8GeV/Spectra`.
+The generated plots and output files are then located in `[...]/build/Hybrid_Results/AuAu_8.8GeV/Spectra`.
