@@ -1,0 +1,28 @@
+outputDir       path/to/output/directory
+
+eosType       1
+
+etaS      0.0
+zetaS     0.0
+e_crit    0.5
+
+nx        201
+ny        201
+nz        401
+xmin     -20.0
+xmax      20.0
+ymin     -20.0
+ymax      20.0
+etamin   -5.0
+etamax    5.0
+
+tauGridResize 15.0
+
+icModel    3
+icInputFile path/to/initial/particle/list
+Rg      1.4
+Rgz     1.0
+
+tau0       2.7842
+tauMax     20.0
+dtau       0.05

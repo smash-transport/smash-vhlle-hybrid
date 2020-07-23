@@ -1,0 +1,30 @@
+Version: 1.8
+
+Logging:
+    default: INFO
+
+General:
+    Modus:          Collider
+    Time_Step_Mode: Fixed
+    Delta_Time:     1.0
+    End_Time:       2000.0
+    Randomseed:     -1
+    Nevents:        10
+
+Output:
+    Initial_Conditions:
+      Format: ["ASCII", "Binary", "Oscar2013"]
+      Extended: True
+
+
+Modi:
+    Collider:
+        Projectile:
+            Particles: {2212: 79, 2112: 118} #Gold197
+        Target:
+            Particles: {2212: 79, 2112: 118} #Gold197
+
+        Sqrtsnn: 7.7
+        Fermi_Motion: frozen
+        # Impact:
+        #     Max: 2.3
