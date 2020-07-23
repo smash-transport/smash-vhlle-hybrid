@@ -166,7 +166,7 @@ def plotting_E_conservation(IC_energy, Specs_energy, hydro_energy, Sampler_energ
     plt.plot(x, [hydro_energy + Specs_energy] * Nevents, label = 'Hydro: Energy through Surface + Energy from Spectators', color = 'green', lw = 2)
     plt.plot(x, [np.mean(Sampler_energy)]*Nevents, label = 'Sampler: Mean Energy + Energy from Spectators', color = 'midnightblue', lw = 2)
     plt.plot(x, [Final_State_energy]*Nevents, label = 'SMASH: Final State Energy', color = 'orange', lw = 2, ls = '--')
-    plt.legend(title = r'$\Delta$E = ' + str(round(100*(np.mean(Final_State_energy)/IC_energy - 1),2)) + ' %')
+    plt.legend(title = r'$\Delta$E = ' + str(round(100*(np.mean(Final_State_energy)/IC_energy - 1),2)) + ' %', loc = 'lower center')
     plt.title(system + r' @ $\mathbf{\sqrt{s}}$ = ' + energy + ' GeV', fontweight = 'bold')
     plt.xlim(0,Nevents + 1)
     plt.xlabel('Event')

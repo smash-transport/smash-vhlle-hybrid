@@ -1,11 +1,12 @@
 #!/usr/bin/python
 import numpy as np
-import matplotlib as mpl
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import argparse
 import linecache
 
-mpl.rcParams['lines.linewidth'] = 2.0
+matplotlib.rcParams['lines.linewidth'] = 2.0
 
 def plot_y_spectra(file, output_path, energy, system, Nevents):
     ydata = np.loadtxt(file, unpack = True)
