@@ -34,7 +34,7 @@ All subtargets corresponding to the predefined collision setups have been create
     make AuAu_8.8_sampler
     make AuAu_8.8_afterburner
 
-The output files of the individual submodules as well as the configuration files used can be found in the newly-created directory `[...]/build/Hybrid_Results/AuAu_8.8GeV`.
+The output files of the individual submodules as well as the configuration files used can be found in the newly-created directory `[...]/build/Hybrid_Results/AuAu_8.8GeV/i`, where `i` corresponds to the i-th hybrid run in an event-by-event setup. By default, the full hybrid model is run 100 times in parallel for different initial states. To change the number of parallel runs, modify the parameter `num_runs` in  `CMakeLists.txt`.
 
 **Note:** Apart from the binaries, the equations of state are also necessary to run the hydro evolution as well as to perform the particlization for the afterburner. For this, the directory `eos` is also copied from `[...]/vhlle` to the build directory.
 
@@ -51,4 +51,9 @@ Once the afterburner was run, the resulting particle lists can be analysed and p
     make AuAu_8.8_analysis
     make AuAu_8.8_plots
 
-The generated plots and output files are then located in `[...]/build/Hybrid_Results/AuAu_8.8GeV/Spectra`.
+The generated plots and output files are then located in `[...]/build/Hybrid_Results/AuAu_8.8GeV/i/Spectra`. The above commands analyse and plot the results of each of the 100 parallel hybrid runs. It is useful to  average over the obtained results to obtain meaningful final-state plots. This is done by executing:
+
+    make AuAu_8.8_average_spectra
+    make AuAu_8.8_average_plots
+
+  in this specific order. The final output files are then located in `[...]/build/Hybrid_Results/AuAu_8.8GeV/Averaged_Spectra`.
