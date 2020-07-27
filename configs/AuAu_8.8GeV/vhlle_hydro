@@ -7,7 +7,7 @@ zetaS     0.0
 e_crit    0.5
 
 nx        201
-ny        301
+ny        201
 nz        401
 xmin     -20.0
 xmax      20.0
