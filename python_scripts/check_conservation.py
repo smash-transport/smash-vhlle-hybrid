@@ -80,6 +80,7 @@ def energy_from_binary(file):
         E_tot = 0.0
         num_events = -1         # Counter to dynamically determine event number
         net_baryon_number = 0
+        Charge = 0.0
         Baryon_numbers = [0]
         for block in reader:
             if block["type"] == 'f':
@@ -92,39 +93,47 @@ def energy_from_binary(file):
                 for particle in block['part']:
                     PDG_id = particle[3]
                     E_tot += particle[2][0]
+                    Charge += particle[5]
                     if abs(PDG_id) in PDG_codes:
                         NB = 1 if PDG_id > 0 else -1
                         net_baryon_number += NB
                 Baryon_numbers[num_events + 1] = net_baryon_number
 
-    return np.mean(Baryon_numbers),  E_tot / (float(args.Nevents))
+    return np.mean(Baryon_numbers), Charge / (float(args.Nevents)), E_tot / (float(args.Nevents))
 
 def energy_from_hydro(file):
     f = open(file, 'r')
     lines_header = 37   #to be skipped
     NB_before = 0.0
     E_before = 0.0
+    Q_before = 0.0
     for index, line in enumerate(f.readlines()):
         # skip header
         if index <= 37: continue
-        if line.startswith('corona'): continue
+        if line.startswith('corona'):
+            NB_corona = baryon_number
+            Q_corona = charge
+            continue
         if line.startswith('timestep'): continue
+        if line.startswith('####'): continue
+        if line.startswith('       tau'): continue
         # Find values before grid resize
         if line.startswith('grid'):
             NB_before = baryon_number
+            Q_before = charge
             E_before = energy
-            baryon_number = 0.0
-            energy = 0.0
         else:
-            baryon_number, energy = float(line.split()[3]), float(line.split()[5])
+            baryon_number, charge, energy = float(line.split()[3]), float(line.split()[4]), float(line.split()[6])
     # Find values before grid resize
     NB_after = baryon_number
+    Q_after = charge
     E_after = energy
 
-    NB_tot = NB_before + NB_after
+    NB_tot = NB_corona + NB_before + NB_after
+    Q_tot = Q_corona + Q_before + Q_after
     E_tot = E_before + E_after
 
-    return NB_tot, E_tot
+    return NB_tot, Q_tot, E_tot
 
 def energy_from_oscar(file, specs):
 
@@ -132,6 +141,7 @@ def energy_from_oscar(file, specs):
 
     Energies = [0.0]
     Net_Baryons = [0]
+    Charges = [0]
     i = 0
     with open(file) as f:
         for line in f:
@@ -143,16 +153,19 @@ def energy_from_oscar(file, specs):
                     i = int(line.split(' ')[2]) - 1
                     Energies.append(0.0)
                     Net_Baryons.append(0)
+                    Charges.append(0)
             else:
                 PDG_id = int(line.split()[9])
                 E = float(line.split()[5])
+                Q = float(line.split()[11])
                 if specs and (int(line.split()[12]) != 0): continue
                 else:
                     Energies[i] += float(line.split()[5])
+                    Charges[i] += Q
                     if abs(PDG_id) in PDG_codes:
                         NB = 1 if PDG_id > 0 else -1
                         Net_Baryons[i] += NB
-    return Net_Baryons, Energies
+    return Net_Baryons, Charges, Energies
 
 def plotting_E_conservation(IC_energy, Specs_energy, hydro_energy, Sampler_energy, Sampler_no_specs, Final_State_energy):
 
@@ -198,6 +211,28 @@ def plotting_NB_conservation(IC_NB, hydro_NB, Sampler_NB, Final_State_NB):
     plt.savefig(args.output_path + '/Baryon_Number_Conservation.pdf')
     plt.close()
 
+def plotting_Q_conservation(IC_Q, hydro_Q, Sampler_Q, Final_State_Q):
+
+    Nevents = int(args.Nevents)
+    x = np.arange(1, len(Sampler_Q) + 1, 1)
+
+    Final_State_Q = np.mean(Final_State_Q)
+    system, energy = args.output_path.split('/')[-3].split('_')
+
+    plt.plot(x, [IC_Q]*Nevents, label = r'SMASH: Initial Q', color = 'darkred', lw = 2)
+    plt.bar(x, Sampler_Q, alpha = 0.3, label = r'Sampler: Q per Event')
+    plt.plot(x, [hydro_Q]*Nevents, label = r'Hydro: Q', color = 'green', lw = 2)
+    plt.plot(x, [np.mean(Sampler_Q)]*Nevents, label = r'Sampler: Mean Q', color = 'midnightblue', lw = 2)
+    plt.plot(x, [Final_State_Q]*Nevents, label = r'SMASH: Final State Q', color = 'orange', lw = 2, ls = '--')
+    plt.legend(title = r'$\Delta$Q = ' + str(round(100*(np.mean(Final_State_Q)/IC_Q - 1),2)) + ' %')
+    plt.title(system + r' @ $\mathbf{\sqrt{s}}$ = ' + energy + ' GeV', fontweight = 'bold')
+    plt.xlim(0,Nevents + 1)
+    plt.xlabel('Event')
+    plt.ylabel(r'Q')
+    plt.tight_layout()
+    plt.savefig(args.output_path + '/Charge_Conservation.pdf')
+    plt.close()
+
 
 
 if __name__ == '__main__':
@@ -222,16 +257,17 @@ if __name__ == '__main__':
     import smash_basic_scripts as sbs
 
     Sampler_without_specs = '/'.join(args.Sampler.split('/')[:-1]) + '/particle_lists.oscar'
-    NB_SMASH_IC, E_SMASH_IC = energy_from_oscar(args.SMASH_IC, False)
-    NB_SMASH_IC_specs, E_SMASH_IC_specs = energy_from_oscar(args.SMASH_IC, True)
-    NB_hydro, E_hydro = energy_from_hydro(args.Hydro_Info)
-    NB_sampler_per_Event, E_sampler_per_Event = energy_from_oscar(args.Sampler, False)
-    NB_sampler_per_Event_no_specs, E_sampler_per_Event_no_specs = energy_from_oscar(Sampler_without_specs, False)
-    NB_SMASH_final_state, E_SMASH_final_state = energy_from_binary(args.SMASH_final_state)
+    NB_SMASH_IC, Q_SMASH_IC, E_SMASH_IC = energy_from_oscar(args.SMASH_IC, False)
+    NB_SMASH_IC_specs, Q_SMASH_IC_specs, E_SMASH_IC_specs = energy_from_oscar(args.SMASH_IC, True)
+    NB_hydro, Q_hydro, E_hydro = energy_from_hydro(args.Hydro_Info)
+    NB_sampler_per_Event, Q_sampler_per_Event, E_sampler_per_Event = energy_from_oscar(args.Sampler, False)
+    NB_sampler_per_Event_no_specs, Q_sampler_per_Event_no_specs, E_sampler_per_Event_no_specs = energy_from_oscar(Sampler_without_specs, False)
+    NB_SMASH_final_state, Q_SMASH_final_state, E_SMASH_final_state = energy_from_binary(args.SMASH_final_state)
 
 
     plotting_E_conservation(E_SMASH_IC, E_SMASH_IC_specs[0], E_hydro, E_sampler_per_Event, E_sampler_per_Event_no_specs, E_SMASH_final_state)
     plotting_NB_conservation(NB_SMASH_IC, NB_hydro, NB_sampler_per_Event, NB_SMASH_final_state)
+    plotting_Q_conservation(Q_SMASH_IC, Q_hydro, Q_sampler_per_Event, Q_SMASH_final_state)
 
     print 'Initial SMASH energy: ' + str(E_SMASH_IC[0])
     print 'Spectator energy: ' + str(E_SMASH_IC_specs)
