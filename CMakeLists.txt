@@ -40,6 +40,18 @@ else()
     file(COPY "${VHLLE_PATH}/eos" DESTINATION ${CMAKE_BINARY_DIR})
 endif()
 
+# find parameters: equations of state
+find_path(vHLLE_EoSs eos PATHS ${VHLLE_PARAMS_PATH})
+if(NOT vHLLE_EoSs)
+    message(FATAL_ERROR
+        "Equations of state not found. Please specify a path to the vHLLE params "
+        "directory by passing '-DVHLLE_PARAMS_PATH=...' to cmake.")
+else()
+    message(STATUS "Found EoSs: ${VHLLE_PARAMS_PATH}/eos")
+    # copy EoS files
+    file(COPY "${VHLLE_PARAMS_PATH}/eos" DESTINATION ${CMAKE_BINARY_DIR})
+endif()
+
 # Find and copy sampler
 find_program(SAMPLER sampler PATHS ${SAMPLER_PATH})
 if(NOT SAMPLER)
