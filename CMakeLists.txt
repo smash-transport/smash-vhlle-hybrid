@@ -10,7 +10,7 @@ include(FindPythonModules)
 find_package(PythonInterp 2.7 REQUIRED)
 find_package(PythonLibs 2.7)
 
-find_python_module(numpy VERSION 1.14.0 REQUIRED)
+find_python_module(numpy VERSION 1.8.2 REQUIRED)
 find_python_module(matplotlib VERSION 1.3.1 REQUIRED)
 find_python_module(argparse VERSION 1.1 REQUIRED)
 
