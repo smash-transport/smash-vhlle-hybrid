@@ -3,6 +3,12 @@ import numpy as np
 import argparse
 import linecache
 
+'''
+    This script combines all analysis outputs of the individual event-by-event
+    runs of a specific setup to yield the mean and an error estimate.
+    For now, averaging is only implemented for pT, mT and rapidity spectra.
+'''
+
 def get_average(obs):
     if obs == 'pT': files = args.pT_files
     elif obs == 'dNdy': files = args.y_files

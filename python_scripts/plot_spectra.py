@@ -6,6 +6,12 @@ import matplotlib.pyplot as plt
 import argparse
 import linecache
 
+'''
+   This scripts creates plots of the analyzed particle spectra for
+   mT, pT and rapidity. Either for the individual event-by-event runs or
+   for the averaged results of multiple event-by-event runs.
+'''
+
 matplotlib.rcParams['lines.linewidth'] = 2.0
 
 def plot_y_spectra(file, output_path, energy, system, Nevents):

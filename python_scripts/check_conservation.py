@@ -6,6 +6,16 @@ import argparse
 import linecache
 import sys
 
+'''
+    This script analyzes how the conserved charges E (energy), B (baryon number)
+    and Q (charge) evolve thoughout the evolution of the hybrid siimulation.
+    In the sampling process, they are not conserved event-by event, but only
+    on average, which is why the results of the sampling processes are depicted
+    in terms of a bar chart.
+'''
+
+# PDG codes corresponding to baryons in SMASH, necessary to find the baryon
+# numbers
 PDG_codes = [   1112,      1114,      1116,      1118,      1212,      1214,
                 1216,      1218,      2112,      2114,      2116,      2118,
                 2122,      2124,      2126,      2128,      2212,      2214,
@@ -232,8 +242,6 @@ def plotting_Q_conservation(IC_Q, hydro_Q, Sampler_Q, Final_State_Q):
     plt.tight_layout()
     plt.savefig(args.output_path + '/Charge_Conservation.pdf')
     plt.close()
-
-
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

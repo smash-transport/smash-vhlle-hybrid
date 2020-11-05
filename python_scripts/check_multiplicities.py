@@ -8,6 +8,13 @@ import sys
 from scipy.special import kn #for bessel functions
 import matplotlib.gridspec as gridspec
 
+'''
+    This script determines the expectation values of the particle multiplicites
+    from the freezeout hypersurface and compares the results to the
+    multiplicities sampled by the particle sampler.
+'''
+
+# constant for conversion
 hbarc = 0.197327
 
 def scalar_product(a, b):
@@ -218,7 +225,6 @@ def plot_Multiplicities(Mult_Hyper, Mult_Sampler):
     plt.tight_layout()
     plt.savefig(args.output_path + '/Protons.pdf')
     plt.close()
-
 
 
 if __name__ == '__main__':
