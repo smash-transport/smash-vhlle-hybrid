@@ -113,17 +113,17 @@ function(run_one_energy
     # Set variables for files
     set(smash_IC_file "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/IC/SMASH_IC.dat")
     set(smash_IC_oscar "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/IC/SMASH_IC.oscar")
-    set(smash_IC_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/${system}_${energy}GeV/smash_initial_conditions.yaml")
-    set(vhlle_default_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/${system}_${energy}GeV/vhlle_hydro")
+    set(smash_IC_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/smash_initial_conditions_${system}.yaml")
+    set(vhlle_default_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/vhlle_hydro")
     set(vhlle_updated_config "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Hydro/vhlle_config")
     set(vhlle_freezeout_hypersurface "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Hydro/freezeout.dat")
     set(sampler_input_hypersurface "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Sampler/freezeout.dat")
-    set(sampler_default_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/${system}_${energy}GeV/hadron_sampler")
+    set(sampler_default_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/hadron_sampler")
     set(sampler_updated_config "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Sampler/sampler_config")
     set(sampler_dir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Sampler")
     set(sampled_particle_list "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Sampler/particle_lists.oscar")
     set(full_particle_list "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Sampler/sampling0")
-    set(smash_afterburner_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/${system}_${energy}GeV/smash_afterburner.yaml")
+    set(smash_afterburner_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/smash_afterburner.yaml")
     set(final_particle_list "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Afterburner/particles_binary.bin")
 
     list(APPEND smash_IC_files ${smash_IC_file})
@@ -138,6 +138,7 @@ function(run_one_energy
     COMMAND "${CMAKE_BINARY_DIR}/smash"
         "-o" "${results_folder}/${i}/IC"
         "-i" "${smash_IC_config}"
+        "-c" "Modi: {Collider: {Sqrtsnn: ${energy}}}"
         "-f"
         ">" "/dev/null"
     DEPENDS

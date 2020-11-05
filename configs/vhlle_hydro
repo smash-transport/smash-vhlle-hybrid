@@ -1,14 +1,15 @@
 outputDir       path/to/output/directory
 
 eosType       1
+eosTypeHadron 1
 
-etaS      0.0
+etaS      0.2
 zetaS     0.0
 e_crit    0.5
 
-nx        201
-ny        201
-nz        401
+nx        51
+ny        51
+nz        101
 xmin     -20.0
 xmax      20.0
 ymin     -20.0
@@ -18,11 +19,11 @@ etamax    5.0
 
 tauGridResize 20.0
 
-icModel    3
+icModel    6
 icInputFile path/to/initial/particle/list
 Rg      1.4
 Rgz     1.0
 
 tau0       2.7842
-tauMax     20.0
-dtau       0.05
+tauMax     25.0
+dtau       0.1

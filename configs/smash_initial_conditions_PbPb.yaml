@@ -7,7 +7,7 @@ General:
     Modus:          Collider
     Time_Step_Mode: Fixed
     Delta_Time:     1.0
-    End_Time:       200.0
+    End_Time:       2000.0
     Randomseed:     -1
     Nevents:        1
 
@@ -20,12 +20,10 @@ Output:
 Modi:
     Collider:
         Projectile:
-            Particles: {2212: 79, 2112: 118} #Gold197
+            Particles: {2212: 82, 2112: 126} #Lead208
         Target:
-            Particles: {2212: 79, 2112: 118} #Gold197
+            Particles: {2212: 82, 2112: 126} #Lead208
 
-        Sqrtsnn: 39.0
         Fermi_Motion: frozen
-
-        # Impact:
-        #     Range: [6.43, 7.82]
+        Impact:
+            Max: 2.3
