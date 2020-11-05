@@ -1,4 +1,4 @@
-# Annas-Hybrid
+# SMASH-vHLLE-Hybrid
 Event-by-event hybrid model for the description of relativistic heavy-ion collisions in the low and high baryon-density regime. This model constitutes a chain of different submodules to appropriately describe each phase of the collision with its corresponding degrees of freedom. It consists of the following modules:
 - SMASH hadronic transport approach to provide the initial conditions
 - vHLLE 3+1D viscous hydrodynamics approach to describe the evolution of the hot and dense fireball
@@ -9,14 +9,12 @@ Event-by-event hybrid model for the description of relativistic heavy-ion collis
 ## Prerequisites
 - [cmake](https://cmake.org) version &ge; 3.15.4
 - [SMASH](https://github.com/smash-transport/smash) version &ge; 1.8
-- [vHLLE](https://github.com/akschaefer/vhlle) branch `smash_hybrid`
-- [vHLLE parameters](https://github.com/akschaefer/vhlle_params) branch `smash_hybrid`
-- [hadron sampler](https://github.com/smash-transport/hadron-sampler/)
+- [vHLLE](https://github.com/yukarpenko/vhlle)
+- [vHLLE parameters](https://github.com/yukarpenko/vhlle_params)
+- [hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) version &ge; 1.0
 - ([SMASH-analysis](https://github.com/smash-transport/smash-analysis) version &ge; 1.7, if automatic generation of particle spectra is desired)
 
 Before building the full hybrid model, please make sure that the submodules listed above (SMASH, vHLLE, vHLLE params, sampler) are available and already compiled. Instructions on how to compile them can be found in the corresponding READMEs.
-
-**Note:** It is essential to compile vHLLE on the branch `smash_hybrid`.
 
 ## Building the hybrid model
 
@@ -59,19 +57,20 @@ The generated plots and output files are then located in `[...]/build/Hybrid_Res
 in this specific order. The final output files are then located in `[...]/build/Hybrid_Results/AuAu_8.8GeV/Averaged_Spectra`.
 
 ## Configuring the collision setups
-Four different collision setups for the hybrid model are supported out of the box:
+Five different collision setups for the hybrid model are supported out of the box:
 * AuAu @ sqrt(s) = 7.7 GeV
 * AuAu @ sqrt(s) = 8.8 GeV
+* PbPb @ sqrt(s) = 17.3 GeV
 * AuAu @ sqrt(s) = 39.0 GeV
 * AuAu @ sqrt(s) = 200.0 GeV
 
-To run additional setups it is necessary to add the corresponding targets to the bottom of the `CMakeLists.txt` file and to provide the corresponding configuration files. <br>
-The configuration files for each setup are located in `[...]/configs/(system)_(energy)GeV/`, where `(system)` and `(energy)` need to be replaced by the actual system and collision energy in the center-of-mass frame. Four different collision files are necessary to run the full hybrid model. These are:
-1. `smash_initial_conditions.yaml` for the configuration of the initial setup of the collision. <br> Further information about the configuration of SMASH is available in the [SMASH User Guide](http://theory.gsi.de/~smash/userguide/current/).
+To run additional setups it is necessary to add the corresponding targets to the bottom of the `CMakeLists.txt` file. <br>
+The configuration files are located in `[...]/configs/`. Four different configuration files are necessary to run the full hybrid model. These are:
+1. `smash_initial_conditions_AuAu.yaml` or `smash_initial_conditions_AuAu.yaml` for the configuration of the initial setup of the collision. There are two initial conditions files corresponding to collision systems of Au+Au and Pb+Pb, respectively. If additional collision systems are desired, it is necessary to add an appropriate configuration file to the `[...]/configs/` directory. For details and further information about the configuration of SMASH, consult the [SMASH User Guide](http://theory.gsi.de/~smash/userguide/current/).
 2. `vhlle_hydro` for the configuration of the hydrodynamic evolution. <br>
 Further information about the configuration of vHLLE is provided in the `README.txt` of vHLLE.
 3. `hadron_sampler` for the configuration of the sampler. <br>
 Further information about the configuration of the sampler is provided in the `README.md` of the `hadron-sampler`.
 4. `smash_afterburner.yaml` for the configuration of the SMASH afterburner evolution based on the sampled particle list.
 
-**Note:** In all configuration files, the paths to input files from the previous stages are adjusted automatically. Also cross-parameters that require consistency between the hydrodynamics evolution and the sampler, e.g. viscosities, are taken care of automatically.
+**Note:** In all configuration files, the paths to input files from the previous stages are adjusted automatically. Also cross-parameters that require consistency between the hydrodynamics evolution and the sampler, e.g. viscosities and critical energy density, are taken care of automatically.
