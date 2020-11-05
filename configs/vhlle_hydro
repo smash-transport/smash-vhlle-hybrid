@@ -7,9 +7,9 @@ etaS      0.2
 zetaS     0.0
 e_crit    0.5
 
-nx        51
-ny        51
-nz        101
+nx        201
+ny        201
+nz        401
 xmin     -20.0
 xmax      20.0
 ymin     -20.0
@@ -26,4 +26,4 @@ Rgz     1.0
 
 tau0       2.7842
 tauMax     25.0
-dtau       0.1
+dtau       0.05
