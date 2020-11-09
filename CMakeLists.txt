@@ -36,8 +36,6 @@ else()
     message(STATUS "Found vHLLE: ${vHLLE}")
     # copy executable
     file(COPY ${vHLLE} DESTINATION ${CMAKE_BINARY_DIR})
-    # copy EoS files
-    file(COPY "${VHLLE_PATH}/eos" DESTINATION ${CMAKE_BINARY_DIR})
 endif()
 
 # find parameters: equations of state
