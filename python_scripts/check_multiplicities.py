@@ -44,24 +44,11 @@ def get_multiplicities_bose(g, mass, temp, volume, chem_pot):
             sum += 1/float(k) * kn(2, k * mass / temp)
 
         multiplicity *= sum
+        multiplicity *= np.exp(chem_pot / temp)
     else:
         multiplicity = 0.0
 
     return multiplicity / hbarc**3
-
-def get_multiplicities_iurii(g, mass, temp, volume, chem_pot):
-
-    # density += pow(stat,i+1)*TMath::BesselK(2,i*mass/surf[iel].T)*exp(i*muf/surf[iel].T)/i
-    multiplicity = g * mass * mass * temp * volume / (2.0 * np.pi * np.pi)
-    stat = 1.0
-
-    sum = 0.0
-    for k in range(1, 11):
-        sum += 1/(float(k)**2) * kn(2, k * mass / temp) * np.exp(k * chem_pot / temp) * stat**(k+1)
-
-    if (temp > 0.0):
-        return multiplicity * sum / hbarc**3
-    else: return 0.0
 
 def Multiplicities_from_Hypersurface(file):
     hyp_data = np.loadtxt(file, unpack = True)
@@ -69,6 +56,8 @@ def Multiplicities_from_Hypersurface(file):
     # get T and muB
     temp = hyp_data[12]
     muB = hyp_data[13]
+    muQ = hyp_data[14]
+    muS = hyp_data[15]
 
     # get dSigma and u^mu
     dSigma_mu = []
@@ -80,21 +69,31 @@ def Multiplicities_from_Hypersurface(file):
                hyp_data[10][i], hyp_data[11][i]])
 
     # Determine expected multiplicities:
-    Npion = 0.0
-    Nrho = 0.0
+    Npion_plus = 0.0
+    Npion_minus = 0.0
+    Npion_zero = 0.0
+    Nrho_plus = 0.0
+    Nrho_minus = 0.0
+    Nrho_zero = 0.0
     Nproton = 0.0
-    # Nprot2 = 0.0
+    Nantiproton = 0.0
     for element in range(0, len(temp)):
         V = scalar_product(umu[element], dSigma_mu[element])
         T = temp[element]
 
-        Npion += get_multiplicities_bose(1.0, 0.138, T, V, 0.0)
-        Nrho += get_multiplicities_boltzmann(3.0, 0.776, T, V, 0.0)
-        Nproton += get_multiplicities_boltzmann(2.0, 0.938, T, V, muB[element])
-        # Nprot2 += get_multiplicities_iurii(2.0, 0.938, T, V, muB[element])
-        # Nproton += get_multiplicities_iurii(2.0, 0.938, T, V, muB[element])
+        # pi+: Q = 1, pi-: Q = -1, pi0: Q = 0
+        Npion_plus += get_multiplicities_bose(1.0, 0.138, T, V, muQ[element] * 1.0)
+        Npion_minus += get_multiplicities_bose(1.0, 0.138, T, V, muQ[element] * (-1.0))
+        Npion_zero += get_multiplicities_bose(1.0, 0.138, T, V, 0.0)
+        # rho+: Q = 1, rho-: Q = -1, rho: Q = 0
+        Nrho_plus += get_multiplicities_boltzmann(3.0, 0.776, T, V,  muQ[element] * 1.0)
+        Nrho_minus += get_multiplicities_boltzmann(3.0, 0.776, T, V,  muQ[element] * (-1.0))
+        Nrho_zero += get_multiplicities_boltzmann(3.0, 0.776, T, V,  0.0)
+        # proton: B=Q=+1, antiproton: B=Q=-1
+        Nproton += get_multiplicities_boltzmann(2.0, 0.938, T, V, muB[element] * 1.0 + muQ[element] * 1.0)
+        Nantiproton += get_multiplicities_boltzmann(2.0, 0.938, T, V, -muB[element] * 1.0 - muQ[element] * 1.0)
 
-    return [Npion, Nrho, Nproton]
+    return [[Npion_plus, Npion_minus, Npion_zero], [Nrho_plus, Nrho_minus, Nrho_zero], [Nproton, Nantiproton]]
 
 def Multiplicities_from_Sampled_List(file):
 
@@ -110,8 +109,8 @@ def Multiplicities_from_Sampled_List(file):
             elif line.startswith('# Units:'): continue
             elif line.startswith('# SMASH'): continue
             elif line.startswith('# event'):
-                if i != (int(line.split(' ')[2]) - 1):
-                    i = int(line.split(' ')[2]) - 1
+                if i != (int(line.split(' ')[2])):
+                    i = int(line.split(' ')[2])
                     for value in Multiplicities.values():
                         value.append(0)
             else:
@@ -136,7 +135,7 @@ def plot_Multiplicities(Mult_Hyper, Mult_Sampler):
     plt.bar(x - width, Mult_Sampler['211'], width, label = r'$\pi^+$', color = 'C0')
     plt.bar(x, Mult_Sampler['-211'], width, label = r'$\pi^-$', color = 'C1')
     plt.bar(x + width, Mult_Sampler['111'], width, label = r'$\pi^0$', color = 'darkred')
-    plt.axhline(10 * Mult_Hyper[0], color = 'grey', label = 'Theo. Exp.', lw = 4, alpha = 0.7) #dummy for legend entry
+    plt.axhline(10 * Mult_Hyper[0][0], color = 'grey', label = 'Theo. Exp.', lw = 4, alpha = 0.7) #dummy for legend entry
     plt.legend(ncol = 4)
     plt.xlim(0.5, 20.5)
     plt.ylim(0, 125)
@@ -148,12 +147,11 @@ def plot_Multiplicities(Mult_Hyper, Mult_Sampler):
     plt.bar(1 - width, np.mean(Mult_Sampler['211']), width, label = r'$\pi^+$', color = 'C0')
     plt.bar(1, np.mean(Mult_Sampler['-211']), width, label = r'$\pi^-$', color = 'C1')
     plt.bar(1 + width, np.mean(Mult_Sampler['111']), width, label = r'$\pi^0$', color = 'darkred')
-    plt.axhline(Mult_Hyper[0], color = 'grey', label = 'Theo. Exp.', lw = 4, alpha = 0.7)
-    # plt.axhline(np.mean(Mult_Hyper[0]), color = 'darkred', label = 'Theo. Exp.', lw = 2)
-    # plt.legend()
+    plt.axhline(Mult_Hyper[0][0], color = 'C0', label = 'Theo. Exp.', lw = 4, alpha = 0.7)
+    plt.axhline(Mult_Hyper[0][1], color = 'C1', label = 'Theo. Exp.', lw = 4, alpha = 0.7)
+    plt.axhline(Mult_Hyper[0][2], color = 'darkred', label = 'Theo. Exp.', lw = 4, alpha = 0.7)
     plt.xlim(0.5, 1.5)
     plt.ylim(0, 125)
-    # plt.ylabel('Mean Multiplicity')
     plt.figtext(0.921, 0.85, 'Mean:\n' + str(Nevents) + '\nevents', bbox=dict(facecolor='none', edgecolor='gainsboro', boxstyle='round'), fontsize = 8)
     plt.xticks([], [])
     plt.yticks([], [])
@@ -172,7 +170,7 @@ def plot_Multiplicities(Mult_Hyper, Mult_Sampler):
     plt.bar(x - width, Mult_Sampler['213'], width, label = r'$\rho^+$', color = 'C0')
     plt.bar(x, Mult_Sampler['-213'], width, label = r'$\rho^-$', color = 'C1')
     plt.bar(x + width, Mult_Sampler['113'], width, label = r'$\rho^0$', color = 'darkred')
-    plt.axhline(10 * Mult_Hyper[1], color = 'grey', label = 'Theo. Exp.', lw = 4, alpha = 0.7) #dummy for legend entry
+    plt.axhline(10 * Mult_Hyper[1][1], color = 'grey', label = 'Theo. Exp.', lw = 4, alpha = 0.7) #dummy for legend entry
     plt.legend(ncol = 4)
     plt.xlim(0.5, 20.5)
     plt.ylim(0, 30)
@@ -184,12 +182,11 @@ def plot_Multiplicities(Mult_Hyper, Mult_Sampler):
     plt.bar(1 - width, np.mean(Mult_Sampler['213']), width, label = r'$\pi^+$', color = 'C0')
     plt.bar(1, np.mean(Mult_Sampler['-213']), width, label = r'$\pi^-$', color = 'C1')
     plt.bar(1 + width, np.mean(Mult_Sampler['113']), width, label = r'$\pi^0$', color = 'darkred')
-    plt.axhline(Mult_Hyper[1], color = 'grey', label = 'Theo. Exp.', lw = 4, alpha = 0.7)
-    # plt.axhline(np.mean(Mult_Hyper[0]), color = 'darkred', label = 'Theo. Exp.', lw = 2)
-    # plt.legend()
+    plt.axhline(Mult_Hyper[1][0], color = 'C0', label = 'Theo. Exp.', lw = 4, alpha = 0.7)
+    plt.axhline(Mult_Hyper[1][1], color = 'C1', label = 'Theo. Exp.', lw = 4, alpha = 0.7)
+    plt.axhline(Mult_Hyper[1][2], color = 'darkred', label = 'Theo. Exp.', lw = 4, alpha = 0.7)
     plt.xlim(0.5, 1.5)
     plt.ylim(0, 30)
-    # plt.ylabel('Mean Multiplicity')
     plt.figtext(0.921, 0.85, 'Mean:\n' + str(Nevents) + '\nevents', bbox=dict(facecolor='none', edgecolor='gainsboro', boxstyle='round'), fontsize = 8)
     plt.xticks([], [])
     plt.yticks([], [])
@@ -205,7 +202,8 @@ def plot_Multiplicities(Mult_Hyper, Mult_Sampler):
     plt.figure(figsize=(8,4))
     plt.subplot(gs[:, :18])
     plt.bar(x, Mult_Sampler['2112'], width, label = r'p', color = 'C0')
-    plt.axhline(10 * Mult_Hyper[2], color = 'grey', label = 'Theo. Exp.', lw = 4, alpha = 0.7) #dummy for legend entry
+    plt.bar(x, Mult_Sampler['-2112'], width, label = r'$\bar{\mathrm{p}}$', color = 'C1')
+    plt.axhline(10 * Mult_Hyper[2][0], color = 'grey', label = 'Theo. Exp.', lw = 4, alpha = 0.7) #dummy for legend entry
     plt.legend(ncol = 4)
     plt.xlim(0.5, 20.5)
     plt.ylim(0, 110)
@@ -215,10 +213,11 @@ def plot_Multiplicities(Mult_Hyper, Mult_Sampler):
 
     plt.subplot(gs[:, 18:])
     plt.bar(1, np.mean(Mult_Sampler['2112']), width, color = 'C0')
-    plt.axhline(Mult_Hyper[2], color = 'grey', label = 'Theo. Exp.', lw = 4, alpha = 0.7)
+    plt.bar(1, np.mean(Mult_Sampler['-2112']), width, color = 'C1')
+    plt.axhline(Mult_Hyper[2][0], color = 'C0', label = 'Theo. Exp.', lw = 4, alpha = 0.7)
+    plt.axhline(Mult_Hyper[2][1], color = 'C1', label = 'Theo. Exp.', lw = 4, alpha = 0.7)
     plt.xlim(0.5, 1.5)
     plt.ylim(0, 110)
-    # plt.ylabel('Mean Multiplicity')
     plt.figtext(0.921, 0.85, 'Mean:\n' + str(Nevents) + '\nevents', bbox=dict(facecolor='none', edgecolor='gainsboro', boxstyle='round'), fontsize = 8)
     plt.xticks([], [])
     plt.yticks([], [])
