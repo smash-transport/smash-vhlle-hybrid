@@ -3,7 +3,7 @@ outputDir       path/to/output/directory
 eosType       1
 eosTypeHadron 1
 
-etaS      0.2
+etaS      0.2     # to be updated
 zetaS     0.0
 e_crit    0.5
 
@@ -21,8 +21,8 @@ tauGridResize 20.0
 
 icModel    6
 icInputFile path/to/initial/particle/list
-Rg      1.4
-Rgz     1.0
+Rg      1.4      # to be updated
+Rgz     1.0      # to be updated
 
 tau0       2.7842
 tauMax     25.0
