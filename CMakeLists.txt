@@ -154,6 +154,7 @@ function(run_one_energy
             "--vhlle_config" "${vhlle_default_config}"
             "--smash_ic" "${smash_IC_file}"
             "--output_file" "${vhlle_updated_config}"
+            "--energy" "${energy}"
     DEPENDS
             "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_vhlle_config.py"
             "${vhlle_default_config}"
@@ -398,7 +399,7 @@ function(run_one_energy
 endfunction()
 
 run_one_energy("7.7;AuAu")
-run_one_energy("8.8;AuAu")
+run_one_energy("8.8;PbPb")
+run_one_energy("17.3;PbPb")
 run_one_energy("39.0;AuAu")
 run_one_energy("200.0;AuAu")
-run_one_energy("17.3;PbPb")
