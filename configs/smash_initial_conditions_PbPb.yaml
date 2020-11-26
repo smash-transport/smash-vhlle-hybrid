@@ -7,8 +7,8 @@ General:
     Modus:          Collider
     Time_Step_Mode: Fixed
     Delta_Time:     1.0
-    End_Time:       2000.0
-    Randomseed:     -1
+    End_Time:       600.0
+    Randomseed:     1937203743398002971
     Nevents:        1
 
 Output:
@@ -25,5 +25,5 @@ Modi:
             Particles: {2212: 82, 2112: 126} #Lead208
 
         Fermi_Motion: frozen
-        Impact:
-            Max: 2.3
+        # Impact:
+        #     Max: 2.3

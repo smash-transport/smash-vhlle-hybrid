@@ -100,7 +100,7 @@ function(run_one_energy
   set(all_plots "")
   set(all_conservation_plots "")
 
-  set(num_runs "100")
+  set(num_runs "1")
   foreach(i RANGE 1 ${num_runs})
     file(MAKE_DIRECTORY "${results_folder}/${i}/IC")       # subdir for initial conditions
     file(MAKE_DIRECTORY "${results_folder}/${i}/Hydro")    # subdir for hydro run
@@ -398,7 +398,7 @@ function(run_one_energy
 endfunction()
 
 run_one_energy("7.7;AuAu")
-run_one_energy("8.8;AuAu")
+run_one_energy("8.8;PbPb")
 run_one_energy("39.0;AuAu")
 run_one_energy("200.0;AuAu")
 run_one_energy("17.3;PbPb")
