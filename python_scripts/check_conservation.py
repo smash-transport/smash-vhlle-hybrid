@@ -118,7 +118,7 @@ def energy_from_hydro(file):
     E_before = 0.0
     for index, line in enumerate(f.readlines()):
         # skip header
-        if index <= 37: continue
+        if index <= 38: continue
         if line.startswith('corona'):
             NB_corona = baryon_number
             continue
@@ -213,6 +213,13 @@ def plotting_NB_conservation(IC_NB, hydro_NB, Sampler_NB, Final_State_NB):
     plt.savefig(args.output_path + '/Baryon_Number_Conservation.pdf')
     plt.close()
 
+def write_to_file(E_IC, E_specs, E_hydro, E_sampler_per_Event, E_SMASH_final_state):
+    with open(args.output_path + '/Energy_Conservation.txt', 'w') as f:
+        f.write('# E_IC \tE_hydro/E_IC \tE_sampler/E_IC \tE_afterburner/E_IC \n')
+        f.write(str(E_IC/E_IC) + '\t' + str((E_specs + E_hydro)/E_IC) + '\t' + str(np.mean(E_sampler_per_Event)/E_IC) + '\t' + str(E_SMASH_final_state/E_IC))
+    f.close()
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--SMASH_IC", required = True,
@@ -242,13 +249,14 @@ if __name__ == '__main__':
     NB_sampler_per_Event_no_specs, E_sampler_per_Event_no_specs = energy_from_oscar(Sampler_without_specs, False)
     NB_SMASH_final_state, E_SMASH_final_state = energy_from_binary(args.SMASH_final_state)
 
-
     plotting_E_conservation(E_SMASH_IC, E_SMASH_IC_specs[0], E_hydro, E_sampler_per_Event, E_sampler_per_Event_no_specs, E_SMASH_final_state)
     plotting_NB_conservation(NB_SMASH_IC, NB_hydro, NB_sampler_per_Event, NB_SMASH_final_state)
 
-    print 'Initial SMASH energy: ' + str(E_SMASH_IC[0])
-    print 'Spectator energy: ' + str(E_SMASH_IC_specs)
-    print 'Hydro energy through surface: ' + str(E_hydro)
-    print 'Sampler energy: ' + str(np.mean(E_sampler_per_Event))
-    print 'Final SMASH energy: ' + str(E_SMASH_final_state)
-    print 'Energy gain/loss: ' + str(round(100 * ((np.mean(E_SMASH_final_state) / E_SMASH_IC) -1),2) ) + ' %'
+    write_to_file(E_SMASH_IC[0], E_SMASH_IC_specs[0], E_hydro, E_sampler_per_Event, E_SMASH_final_state)
+
+    # print 'Initial SMASH energy: ' + str(E_SMASH_IC[0])
+    # print 'Spectator energy: ' + str(E_SMASH_IC_specs)
+    # print 'Hydro energy through surface: ' + str(E_hydro)
+    # print 'Sampler energy: ' + str(np.mean(E_sampler_per_Event))
+    # print 'Final SMASH energy: ' + str(E_SMASH_final_state)
+    # print 'Energy gain/loss: ' + str(round(100 * ((np.mean(E_SMASH_final_state) / E_SMASH_IC) -1),2) ) + ' %'

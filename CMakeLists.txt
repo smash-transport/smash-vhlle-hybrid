@@ -83,6 +83,7 @@ endif(WITH_ANALYSIS)
 # Function to set up hybrid evolution depending on system and energy
 #----------------------------------------------------------------------------#
 
+set(E_cons_files "")
 function(run_one_energy
         energy_and_system
         )
@@ -363,6 +364,17 @@ function(run_one_energy
           COMMENT "Plotting averaged spectra for ${system} @ ${energy} GeV."
       )
 
+  #----------------------------------------------------------------------------#
+  # Average energy conservation
+  #----------------------------------------------------------------------------#
+  set(averaged_E_cons "${results_folder}/E_cons.txt")
+  list(APPEND E_cons_files ${averaged_E_cons})
+  add_custom_command(OUTPUT ${averaged_E_cons}
+          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/average_E_cons.py"
+                  "--files" "${results_folder}/*/Energy_Conservation.txt"
+                  "--output_dir" "${results_folder}/Averaged_Spectra/"
+          COMMENT "Averaging energy conservation for ${system} @ ${energy} GeV."
+      )
 
   # Define subtargets to enable separated running of the hybrid submodules
   set(target ${system}_${energy}_afterburner)
@@ -396,10 +408,36 @@ function(run_one_energy
   set(target ${system}_${energy}_average_plots)
   add_custom_target(${target} ALL DEPENDS ${averaged_plots})
 
+  set(target ${system}_${energy}_average_E_cons)
+  add_custom_target(${target} ALL DEPENDS ${averaged_E_cons})
 endfunction()
 
+run_one_energy("4.9;AuAu")
 run_one_energy("7.7;AuAu")
 run_one_energy("8.8;PbPb")
 run_one_energy("17.3;PbPb")
 run_one_energy("39.0;AuAu")
+run_one_energy("64.0;AuAu")
 run_one_energy("200.0;AuAu")
+
+function(E_cons_plot
+        )
+
+  set(outputdir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results")
+  set(E_cons_plot "${outputdir}/E_evolution.pdf"
+                     )
+
+  add_custom_command(OUTPUT ${E_cons_plot}
+          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_E_cons.py"
+                  "--files" "${outputdir}/*/Averaged_Spectra/E_cons.txt"
+                  "--output_dir" "${outputdir}/"
+          DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_E_cons.py"
+          COMMENT "Plotting Energy Conservation."
+      )
+
+  set(target E_plot)
+  add_custom_target(${target} ALL DEPENDS ${E_cons_plot})
+
+endfunction()
+
+E_cons_plot()
