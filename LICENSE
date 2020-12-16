@@ -1,6 +1,6 @@
 
 This document contains the two licenses currently in use for the smash-vhlle-hybrid.
-GPLv3 for all C++ programs
+GPLv3 for all python scripts
 BSD 3-clause for cmake scripts
 
                       GNU GENERAL PUBLIC LICENSE
