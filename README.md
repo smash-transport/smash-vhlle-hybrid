@@ -16,6 +16,8 @@ Event-by-event hybrid model for the description of relativistic heavy-ion collis
 
 Before building the full hybrid model, please make sure that the submodules listed above (SMASH, vHLLE, vHLLE params, sampler) are available and already compiled. Instructions on how to compile them can be found in the corresponding READMEs.
 
+The newer versions of ROOT require C++17 bindings or higher, so please make sure to compile SMASH, ROOT, and the sampler with the same compiler utilizing the same compiler flags, which can be adjusted in CMakeLists.txt of each submodule. It is also recommended to start from a clean build directory whenever changing the compiler or linking to external libraries that were compiled with different compiler flags.
+
 ## Building the hybrid model
 
 Once the prerequisites are met, use the following commands to build the full hybrid model in a separate `build` directory:
@@ -25,7 +27,7 @@ Once the prerequisites are met, use the following commands to build the full hyb
     cmake .. -DSMASH_PATH=[...]/smash/build -DVHLLE_PATH=[...]/vhlle -DVHLLE_PARAMS_PATH=[...]/vhlle_params/ -DSAMPLER_PATH=[...]/hadron-sampler/build
     make
 
-where `[...]` denote the paths to the `smash/build` direcory, the `vhlle` directory, the `vhlle_params` directory and the `hadron-sampler/build` directory. The binaries of the precompiled submodules are expected to be located therein. The `vhlle_params` directory does not contain any binary though, it only holds the equations of state necessary for the hydrodynamic evolution.
+where `[...]` denote the paths to the `smash/build` directory, the `vhlle` directory, the `vhlle_params` directory and the `hadron-sampler/build` directory. The binaries of the precompiled submodules are expected to be located therein. The `vhlle_params` directory does not contain any binary though, it only holds the equations of state necessary for the hydrodynamic evolution.
 
 All subtargets corresponding to the predefined collision setups have been created by `cmake`. To more easily divide the full hybrid run into smaller pieces, different targets are created for each step of the hybrid simulation. They have to be run one after the other in the order specified below. For a Au+Au collision at sqrt(s) = 8.8 GeV, this chain is executed via:
 
