@@ -113,6 +113,7 @@ function(run_one_energy
     set(smash_IC_oscar "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/IC/SMASH_IC.oscar")
     set(smash_IC_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/smash_initial_conditions_${system}.yaml")
     set(vhlle_default_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/vhlle_hydro")
+    set(vhlle_output_dir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Hydro/")
     set(vhlle_updated_config "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Hydro/vhlle_config")
     set(vhlle_freezeout_hypersurface "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Hydro/freezeout.dat")
     set(sampler_input_hypersurface "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Sampler/freezeout.dat")
@@ -165,8 +166,10 @@ function(run_one_energy
     # Run hydro
     add_custom_command(OUTPUT "${vhlle_freezeout_hypersurface}"
     COMMAND "${CMAKE_BINARY_DIR}/hlle_visc"
-            "${vhlle_updated_config}"
-            ">" "${results_folder}/${i}/Hydro/Terminal_Output.txt"
+            "-params" "${vhlle_updated_config}"
+            "-ISinput" "${smash_IC_file}"
+            "-outputDir" "${vhlle_output_dir}"
+            ">" "${vhlle_output_dir}/Terminal_Output.txt"
     DEPENDS
             "${vhlle_updated_config}"
             "${CMAKE_BINARY_DIR}/hlle_visc"

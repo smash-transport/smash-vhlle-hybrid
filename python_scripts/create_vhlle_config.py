@@ -46,12 +46,8 @@ config_updated = open(args.output_file, 'w')
 with open(args.vhlle_config, 'r') as f:
     for line in f:
         if line[0] != '\n':
-            if line.split()[0] == 'outputDir':
-                newline = 'outputDir       ' + basepath + 'Hydro/' + '\n'
-            elif line.split()[0] == 'etaS':
+            if line.split()[0] == 'etaS':
                 newline = 'etaS      ' + str(hydro_params[energy]['etaS']) + '\n'
-            elif line.split()[0] == 'icInputFile':
-                newline = 'icInputFile       ' + basepath + 'IC/SMASH_IC.dat' + '\n'
             elif line.split()[0] == 'Rg':
                 newline = 'Rg      ' + str(hydro_params[energy]['Rg']) + '\n'
             elif line.split()[0] == 'Rgz':
