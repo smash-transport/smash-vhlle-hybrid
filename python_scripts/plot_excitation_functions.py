@@ -108,11 +108,13 @@ def plotting(data, obs):
     plt.xscale('log')
     plt.xlabel(r'$\sqrt{s_\mathrm{NN}}$')
     if obs == 'midyY': plt.ylabel(r'dN/dy$|_{\mathrm{y=0}}$')
-    else: plt.ylabel(r'$v_2^{\mathrm{int}}$')
+    elif obs == 'v2': plt.ylabel(r'$v_2^{\mathrm{int}}$')
+    elif obs == 'meanpT': plt.ylabel(r'$\langle p_\mathrm{T} \rangle |_{\mathrm{y=0}}$')
 
     plt.tight_layout()
     if obs == 'midyY': plt.savefig(args.output_dir + 'midy_yield_exc_func.pdf')
     elif obs == 'v2': plt.savefig(args.output_dir + 'v2_exc_func.pdf')
+    elif obs == 'meanpT': plt.savefig(args.output_dir + 'meanpT_exc_func.pdf')
     plt.close()
 
 
@@ -124,15 +126,20 @@ if __name__ == '__main__':
                         help = "Files containing the analyzed midy particle spectra.")
     parser.add_argument("--v2_files", nargs = '+', required = False,
                         help = "Files containing the analyzed v2 spectra.")
+    parser.add_argument("--meanpT_files", nargs = '+', required = False,
+                        help = "Files containing the analyzed mean pT spectra.")
     parser.add_argument("--output_dir", required = True,
                         help = "Where to store the avareged results.")
     args = parser.parse_args()
 
     data_midyY = collect_data(args.midyY_files)
     data_v2 = collect_data(args.v2_files)
+    data_meanpT = collect_data(args.meanpT_files)
 
     write_data(data_midyY, 'Excitation_Func_midy_Yield.txt')
     write_data(data_v2, 'Excitation_Func_int_v2.txt')
+    write_data(data_meanpT, 'Excitation_Func_meanpT.txt')
 
     plotting(data_midyY, 'midyY')
     plotting(data_v2, 'v2')
+    plotting(data_meanpT, 'meanpT')

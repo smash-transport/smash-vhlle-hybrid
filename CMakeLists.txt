@@ -340,12 +340,13 @@ function(run_one_energy
                      )
   add_custom_command(OUTPUT ${averaged_spectra}
           COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/average_spectra.py"
+                  "--smash_ana_dir" "${SMASH_ANALYSIS_PATH}"
                   "--pT_files" "${results_folder}/*/Spectra/ptspectra.txt"
                   "--mT_files" "${results_folder}/*/Spectra/mtspectra.txt"
                   "--y_files" "${results_folder}/*/Spectra/yspectra.txt"
                   "--midyY_files" "${results_folder}/*/Spectra/midrapidity_yield.txt"
+                  "--meanpT_files" "${results_folder}/*/Spectra/meanpt_midrapidity.txt"
                   "--v2_files" "${results_folder}/*/Spectra/v2spectra.txt"
-                  "--y_files" "${results_folder}/*/Spectra/yspectra.txt"
                   "--Nevents" "${N_events_afterburner}"
                   "--output_dir" "${results_folder}/Averaged_Spectra/"
           COMMENT "Averaging spectra for ${system} @ ${energy} GeV."
@@ -418,24 +419,20 @@ run_one_energy("200.0;AuAu")
 
 function(Excitation_Funcs
         )
-
   set(outputdir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results")
   set(midY_plot "${outputdir}/midy_yield_exc_func.pdf")
-  set(v2_plot "${outputdir}/v2_exc_func.pdf"
-                     )
-
   add_custom_command(OUTPUT ${midY_plot}
           COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_excitation_functions.py"
                   "--midyY_files" "${outputdir}/*/Averaged_Spectra/midyY.txt"
                   "--v2_files" "${outputdir}/*/Averaged_Spectra/v2.txt"
+                  "--meanpT_files" "${outputdir}/*/Averaged_Spectra/meanpT.txt"
                   "--output_dir" "${outputdir}/"
           DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_excitation_functions.py"
           COMMENT "Plotting excitation functions."
       )
-
   set(target exc_funcs)
   add_custom_target(${target} ALL DEPENDS ${midY_plot})
-
 endfunction()
+
 
 Excitation_Funcs()
