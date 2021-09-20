@@ -398,6 +398,8 @@ function(run_one_energy
 
 endfunction()
 
+run_one_energy("4.3;AuAu")
+run_one_energy("6.4;PbPb")
 run_one_energy("7.7;AuAu")
 run_one_energy("8.8;PbPb")
 run_one_energy("17.3;PbPb")
