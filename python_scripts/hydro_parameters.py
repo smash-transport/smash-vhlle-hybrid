@@ -6,14 +6,16 @@
 # etaS: shear vistocosity / entropy density
 # Rg: transversal smearing parameter
 # Rgz: longitudinal smearing parameter
-hydro_params = {'7.7' : {'etaS' : 0.2, 'Rg' : 1.4, 'Rgz' : 1.5},
-                '8.8' : {'etaS' : 0.2, 'Rg' : 1.4, 'Rgz' : 1.2},
-                '17.3' : {'etaS' : 0.15, 'Rg' : 1.4, 'Rgz' : 0.8},
-                '27.0' : {'etaS' : 0.12, 'Rg' : 1.0, 'Rgz' : 0.5},
+hydro_params = {'4.3' : {'etaS' : 0.2, 'Rg' : 1.4, 'Rgz' : 1.3},
+                '6.4' : {'etaS' : 0.2, 'Rg' : 1.4, 'Rgz' : 1.2},
+                '7.7' : {'etaS' : 0.2, 'Rg' : 1.4, 'Rgz' : 1.2},
+                '8.8' : {'etaS' : 0.2, 'Rg' : 1.4, 'Rgz' : 1.0},
+                '17.3' : {'etaS' : 0.15, 'Rg' : 1.4, 'Rgz' : 0.7},
+                '27.0' : {'etaS' : 0.12, 'Rg' : 1.0, 'Rgz' : 0.4},
                 '39.0' : {'etaS' : 0.08, 'Rg' : 1.0, 'Rgz' : 0.3},
                 '62.4' : {'etaS' : 0.08, 'Rg' : 1.0, 'Rgz' : 0.6},
                 '130.0' : {'etaS' : 0.08, 'Rg' : 1.0, 'Rgz' : 0.8},
-                '200.0' : {'etaS' : 0.08, 'Rg' : 1.0, 'Rgz' : 1.0},
+                '200.0' : {'etaS' : 0.08, 'Rg' : 1.0, 'Rgz' : 1.1},
                 'default' : {'etaS' : 0.2, 'Rg' : 1.0, 'Rgz' : 1.2}
               }
 
