@@ -12,6 +12,7 @@ Event-by-event hybrid model for the description of relativistic heavy-ion collis
 - [vHLLE](https://github.com/yukarpenko/vhlle)
 - [vHLLE parameters](https://github.com/yukarpenko/vhlle_params)
 - [hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) version &ge; 1.0
+- python version &ge; 2.7
 - ([SMASH-analysis](https://github.com/smash-transport/smash-analysis) version &ge; 1.7, if automatic generation of particle spectra is desired)
 
 Before building the full hybrid model, please make sure that the submodules listed above (SMASH, vHLLE, vHLLE params, sampler) are available and already compiled. Instructions on how to compile them can be found in the corresponding READMEs.
@@ -29,14 +30,14 @@ Once the prerequisites are met, use the following commands to build the full hyb
 
 where `[...]` denote the paths to the `smash/build` directory, the `vhlle` directory, the `vhlle_params` directory and the `hadron-sampler/build` directory. The binaries of the precompiled submodules are expected to be located therein. The `vhlle_params` directory does not contain any binary though, it only holds the equations of state necessary for the hydrodynamic evolution.
 
-All subtargets corresponding to the predefined collision setups have been created by `cmake`. To more easily divide the full hybrid run into smaller pieces, different targets are created for each step of the hybrid simulation. They have to be run one after the other in the order specified below. For a Au+Au collision at sqrt(s) = 8.8 GeV, this chain is executed via:
+All subtargets corresponding to the predefined collision setups have been created by `cmake`. To more easily divide the full hybrid run into smaller pieces, different targets are created for each step of the hybrid simulation. They have to be run one after the other in the order specified below. For a Pb+Pb collision at sqrt(s) = 8.8 GeV, this chain is executed via:
 
-    make AuAu_8.8_IC
-    make AuAu_8.8_hydro
-    make AuAu_8.8_sampler
-    make AuAu_8.8_afterburner
+    make PbPb_8.8_IC
+    make PbPb_8.8_hydro
+    make PbPb_8.8_sampler
+    make PbPb_8.8_afterburner
 
-The output files of the individual submodules as well as the configuration files used can be found in the newly-created directory `[...]/build/Hybrid_Results/AuAu_8.8GeV/i`, where `i` corresponds to the i-th hybrid run in an event-by-event setup. By default, the full hybrid model is run 100 times in parallel for different initial states. To change the number of parallel runs, modify the parameter `num_runs` in  `CMakeLists.txt`.
+The output files of the individual submodules as well as the configuration files used can be found in the newly-created directory `[...]/build/Hybrid_Results/PbPb_8.8GeV/i`, where `i` corresponds to the i-th hybrid run in an event-by-event setup. By default, the full hybrid model is run 100 times in parallel for different initial states. To change the number of parallel runs, modify the parameter `num_runs` in  `CMakeLists.txt`.
 
 ## Building the hybrid model linked to the SMASH-analysis
 To also provide the automatic analysis of the final particle lists, run the following commands to link the project to the smash-analysis:
@@ -48,23 +49,30 @@ To also provide the automatic analysis of the final particle lists, run the foll
 
 Once the afterburner was run, the resulting particle lists can be analysed and plotted by executing:
 
-    make AuAu_8.8_analysis
-    make AuAu_8.8_plots
+    make PbPb_8.8_analysis
+    make PbPb_8.8_plots
 
-The generated plots and output files are then located in `[...]/build/Hybrid_Results/AuAu_8.8GeV/i/Spectra`. The above commands analyse and plot the results of each of the 100 parallel hybrid runs. It is useful to  average over the obtained results to obtain averaged final-state plots. This is done by executing
+The generated plots and output files are then located in `[...]/build/Hybrid_Results/PbPb_8.8GeV/i/Spectra`. The above commands analyse and plot the results of each of the 100 parallel hybrid runs. It is useful to  average over the obtained results to obtain averaged final-state plots. This is done by executing
 
-    make AuAu_8.8_average_spectra
-    make AuAu_8.8_average_plots
+    make PbPb_8.8_average_spectra
+    make PbPb_8.8_average_plots
 
-in this specific order. The final output files are then located in `[...]/build/Hybrid_Results/AuAu_8.8GeV/Averaged_Spectra`.
+in this specific order. The final output files are then located in `[...]/build/Hybrid_Results/PbPb_8.8GeV/Averaged_Spectra`.
 
 ## Configuring the collision setups
-Five different collision setups for the hybrid model are supported out of the box:
+A number of different collision setups for the hybrid model are supported out of the box. The shear viscosities applied are taken from *Karpenko et al.: Phys.Rev.C 91 (2015)* and the longitudinal and transversal smearing parameters are adjusted to improve agreement with experimental data. The supported collision systems are:
+* AuAu @ sqrt(s) = 4.3 GeV
+* PbPb @ sqrt(s) = 6.4 GeV
 * AuAu @ sqrt(s) = 7.7 GeV
-* AuAu @ sqrt(s) = 8.8 GeV
+* PbPb @ sqrt(s) = 8.8 GeV
 * PbPb @ sqrt(s) = 17.3 GeV
+* AuAu @ sqrt(s) = 27.0 GeV
 * AuAu @ sqrt(s) = 39.0 GeV
+* AuAu @ sqrt(s) = 64.2 GeV
+* AuAu @ sqrt(s) = 130.0 GeV
 * AuAu @ sqrt(s) = 200.0 GeV
+
+They can be executed in analogy to the PbPb @ sqrt(s) = 8.8 GeV example presented above.
 
 To run additional setups it is necessary to add the corresponding targets to the bottom of the `CMakeLists.txt` file. <br>
 The configuration files are located in `[...]/configs/`. Four different configuration files are necessary to run the full hybrid model. These are:

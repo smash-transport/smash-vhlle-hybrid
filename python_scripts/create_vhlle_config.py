@@ -1,6 +1,7 @@
 import numpy as np
 import argparse
 import os
+from hydro_parameters import hydro_params
 
 '''
     This script generates a configuration file for vHLLE based on the 'default'
@@ -19,10 +20,15 @@ parser.add_argument("--smash_ic", required = True,
                     help="SMASH_IC output in ASCII format.")
 parser.add_argument("--output_file", required = True,
                     help="Updated vhlle config file")
+parser.add_argument("--energy", required = True,
+                    help="Collision energy")
 args = parser.parse_args()
 
 # Path to the reults directory
 basepath = '/'.join(args.smash_ic.split('/')[:-2]) + '/'
+
+# Collision energy
+energy = args.energy if args.energy in hydro_params.keys() else 'default'
 
 # Extract proper time of hypersurface from SMASH output, to pass it to
 # vhlle configuration file
@@ -42,8 +48,14 @@ with open(args.vhlle_config, 'r') as f:
         if line[0] != '\n':
             if line.split()[0] == 'outputDir':
                 newline = 'outputDir       ' + basepath + 'Hydro/' + '\n'
+            elif line.split()[0] == 'etaS':
+                newline = 'etaS      ' + str(hydro_params[energy]['etaS']) + '\n'
             elif line.split()[0] == 'icInputFile':
                 newline = 'icInputFile       ' + basepath + 'IC/SMASH_IC.dat' + '\n'
+            elif line.split()[0] == 'Rg':
+                newline = 'Rg      ' + str(hydro_params[energy]['Rg']) + '\n'
+            elif line.split()[0] == 'Rgz':
+                newline = 'Rgz     ' + str(hydro_params[energy]['Rgz']) + '\n'
             elif line.split()[0] == 'tau0':
                 newline = 'tau0       ' + str(proper_time) + '\n'
             else:
