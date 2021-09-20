@@ -118,7 +118,7 @@ def energy_from_hydro(file):
     E_before = 0.0
     for index, line in enumerate(f.readlines()):
         # skip header
-        if index <= 37: continue
+        if index <= 42: continue
         if line.startswith('corona'):
             NB_corona = baryon_number
             continue
@@ -191,7 +191,7 @@ def plotting_E_conservation(IC_energy, Specs_energy, hydro_energy, Sampler_energ
     plt.savefig(args.output_path + '/Energy_Conservation.pdf')
     plt.close()
 
-def plotting_NB_conservation(IC_NB, hydro_NB, Sampler_NB, Final_State_NB):
+def plotting_NB_conservation(IC_NB, Specs_NB, hydro_NB, Sampler_NB, Final_State_NB):
 
     Nevents = int(args.Nevents)
     x = np.arange(1, len(Sampler_NB) + 1, 1)
@@ -201,7 +201,7 @@ def plotting_NB_conservation(IC_NB, hydro_NB, Sampler_NB, Final_State_NB):
 
     plt.plot(x, [IC_NB]*Nevents, label = r'SMASH: Initial N$_\mathsf{B - \bar{B}}$', color = 'darkred', lw = 2)
     plt.bar(x, Sampler_NB, alpha = 0.3, label = r'Sampler: N$_\mathsf{B - \bar{B}}$ per Event')
-    plt.plot(x, [hydro_NB]*Nevents, label = r'Hydro: N$_\mathsf{B - \bar{B}}$', color = 'green', lw = 2)
+    plt.plot(x, [Specs_NB + hydro_NB]*Nevents, label = r'Hydro: N$_\mathsf{B - \bar{B}}$', color = 'green', lw = 2)
     plt.plot(x, [np.mean(Sampler_NB)]*Nevents, label = r'Sampler: Mean N$_\mathsf{B - \bar{B}}$', color = 'midnightblue', lw = 2)
     plt.plot(x, [Final_State_NB]*Nevents, label = r'SMASH: Final State N$_\mathsf{B - \bar{B}}$', color = 'orange', lw = 2, ls = '--')
     plt.legend(title = r'$\Delta$N$_\mathsf{B}$ = ' + str(round(100*(np.mean(Final_State_NB)/IC_NB - 1),2)) + ' %')
@@ -244,7 +244,7 @@ if __name__ == '__main__':
 
 
     plotting_E_conservation(E_SMASH_IC, E_SMASH_IC_specs[0], E_hydro, E_sampler_per_Event, E_sampler_per_Event_no_specs, E_SMASH_final_state)
-    plotting_NB_conservation(NB_SMASH_IC, NB_hydro, NB_sampler_per_Event, NB_SMASH_final_state)
+    plotting_NB_conservation(NB_SMASH_IC, NB_SMASH_IC_specs[0], NB_hydro, NB_sampler_per_Event, NB_SMASH_final_state)
 
     print 'Initial SMASH energy: ' + str(E_SMASH_IC[0])
     print 'Spectator energy: ' + str(E_SMASH_IC_specs)
