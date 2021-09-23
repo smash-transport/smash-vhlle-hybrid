@@ -84,3 +84,71 @@ Further information about the configuration of the sampler is provided in the `R
 4. `smash_afterburner.yaml` for the configuration of the SMASH afterburner evolution based on the sampled particle list.
 
 **Note:** In all configuration files, the paths to input files from the previous stages are adjusted automatically. Also cross-parameters that require consistency between the hydrodynamics evolution and the sampler, e.g. viscosities and critical energy density, are taken care of automatically.
+
+# Module exchanges and further modifications
+It might be desired to run the SMASH-vHLLE-hybrid, but relying on a different initial state, particle sampler or similar. For this, the `CMakeLists.txt` need to be updated accordingly. Exemplary instructions for a number of use cases are provided in the following.
+
+#### Running vHLLE on an averaged initial state from SMASH
+By default, the SMASH-vHLLE-hybrid performs event-by-event simulations. To run a single-shot hydrodynamical event with initial conditions obtained from multiple averaged SMASH events, you can proceed as follows:
+1. Open the configuration file for the SMASH initial state: `configs/smash_initial_conditions_AuAu.yaml` and/or `configs/smash_initial_conditions_PbPb.yaml`.
+2. Update the event counter (`Nevents`) with the number of events you wish to average over for the initial state.
+3. Open the file `CMakeLists.txt` and set the `num_runs` parameter to 1.
+4. **Caveat:** For the moment, the addition of spectators to the sampled particle list for the afterburner evolution is not implemented in the case of averaged initial conditions. In the current state, the totality of spectators extracted from all initial SMASH events would be added to each sampled afterburner event. This is of course wrong. For an approximation in central events it might be sufficient to neglect those spectators. This can be achieved by replacing line 97 in `python_scripts/add_spectators.py`: `write_full_particle_list(spectators)` by `write_full_particle_list([])`. <br>
+Alternatively, one could modify SMASH in order to print participants as well as spectators to the output file that is used as input in vHLLE, such that they also contribute to the averaged initial state. For this, open the SMASH source file `smash/src/icoutput.cc` and navigate to the function `void ICOutput::at_interaction`. Therein, the statement
+```cpp
+if (!is_spectator) {
+    std::fprintf(file_.get(), "%g %g %g %g %g %g %g %g %s %i \n",
+    particle.position().tau(), particle.position()[1],
+    particle.position()[2], particle.position().eta(), m_trans,
+    particle.momentum()[1], particle.momentum()[2], rapidity,
+    particle.pdgcode().string().c_str(), particle.type().charge());
+}
+```
+controls that spectators are not printed to the output. Simply remove the if statement and the corresponding brackets to print all particles to the output. Make sure to re-compile SMASH after this modification and before linking to the hybrid. Additionally, one also needs to replace line 97 in `python_scripts/add_spectators.py`: `write_full_particle_list(spectators)` by `write_full_particle_list([])` to not add the spectators twice.
+4. Run `cmake ..` in the build directory.
+5. Proceed as usual to run the different steps as described above.
+
+#### Using different kinds of initial condition that are supported by vHLLE
+By default, the SMASH-vHLLE-hybrid relies on an initial state from SMASH. In vHLLE however, a number of different initial states are supported. To make use of them, proceed as follows:
+1. Open the vHLLE configuration file in `configs/vhlle_hydro`.
+2. Update the parameter `icModel` with the number corresponding to the initial state you wish to use. For further information about potential IC models, please consult [vHLLE](https://github.com/yukarpenko/vhlle).
+3. If vHLLE requires an external file for the initialization, update line 170 in `CMakeLists.txt`:
+```cmake
+"-ISinput" "${smash_IC_file}"
+```
+by replacing the `smash_IC_file` by whichever file you want to use. It might make sense to define a new parameter (similar to `smash_IC_file`) with the path to the respective file, as done for the `smash_IC_file` in line 112. If no external file is required, simply remove/comment line 170.
+4. Run `cmake ..` in the build directory.
+5. Proceed as usual to run the different steps as described above.
+
+#### Using a different particle sampler
+By default, the SMASH-vHLLE-hybrid relies on the SMASH-hadron-sampler for the particlization process. If desired, this sampler can be exchanged by any other. It is however necessary that the created output fulfills the requirement from SMASH for the afterburner evolution. Information about those requirements is provided in the [SMASH user guide](http://theory.gsi.de/~smash/userguide/2.0.2/input_modi_list_.html).
+The commands to produce the configuration file and execute the particle sampler are located in lines 183-204 of `CMakeLists.txt`. To exchange this sampler, you may proceed as follows:
+1. First, the script `python_scripts/create_sampler_config.py` is executed to create the configuration file which is needed to initialize the sampler execution. If the alternative sampler also requires such a configuration file, you should update the python script accordingly.
+2. Second, the sampler itself is executed. This is achieved with the following command in lines 198-204:
+```cmake
+add_custom_command(OUTPUT ${sampled_particle_list}
+COMMAND "${CMAKE_BINARY_DIR}/sampler" "events" "1" "${sampler_updated_config}"
+        ">" "${results_folder}/${i}/Sampler/Terminal_Output.txt"
+DEPENDS
+        "${CMAKE_BINARY_DIR}/sampler"
+        "${sampler_updated_config}"
+COMMENT "Sampling particles from freezeout hypersurface (${i}/${num_runs})."
+)
+```
+where the lines following 'COMMAND' correspond to whatever one would type in the terminal in order to execute the sampler from there. Note though that ever piece of this command needs to be surrounded by quotation marks within the CMake script.
+The 'OUTPUT' command is followed by the path to the output file that is to be created from the sampler. It usually corresponds to the sampled particle list.  Whatever follows 'DEPENDS' are those files/scripts on which the sampler relies. More concretely, this means that the sampler is re-executed if any of the files/scripts mentioned therein are changed. Finally, 'COMMENT' defines a corresponding comment that is printed to the terminal upon execution of the sampler. <br>
+To exchange the sampler by a different one, the user may exchange the lines described above by a custom command targeted at executing a different sampler.
+3. The sampled particle list is further combined with the spectators, that where not plugged into the hydro evolution in the first place. This is achieved with the script `python_scripts/add_spectators.py`. If desired, update the cmake command in lines 211-219 accordingly, to rely on the sampled particle list obtained from the new sampler.
+4. If a combination with spectators is not desired, the command mentioned under 3 can simply be removed. In that case however the path to the particle list that is read in from SMASH for the afterburner evolution needs to be exchanged by the path to the directory, where the list produced with the new sampler is located. This can be achieved by updating line 225 `"-c" "Modi: { List: { File_Directory: ${sampler_dir}} }"` and replacing the variable `${sampler_dir}` with the correct path. Furthermore, the name of the output file (if not identical to the default, which is `sampling0` within the SMASH-vHLLE-hybrid), needs to be updated in the SMASH afterburner config `configs/smash_afterburner.yaml`:
+```yaml
+Modi:
+    List:
+        File_Directory: "../build/"
+        File_Prefix: "sampling"
+        Shift_Id: 0
+```
+
+ Note that SMASH expects every file to terminate with a number (see [SMASH user guide](http://theory.gsi.de/~smash/userguide/current/) for further details and background), so make sure to name the file accordingly. If the filename does not end with `0`, you need to update the parameter `Shift_Id` accordingly. The prefix of the file name (that is everything except the number) is controlled by the `File_Prefix` argument and may also require being updated. The `File_Directory` is updated automatically from within the `CMakeLists.txt`.
+
+4. Run `cmake ..` in the build directory and make sure it configures without errors.
+5. Proceed as usual to run the different steps as described above.
