@@ -327,6 +327,18 @@ function(run_one_energy
         )
 
 
+  #----------------------------------------------------------------------------#
+  # Plot freezeout diagram for single hydro event
+  #----------------------------------------------------------------------------#
+  set(Freezeout_Diag "${output_dir}/T_muB_diagram.png")
+  list(APPEND all_freezeout_diagram_plots ${Freezeout_Diag})
+  add_custom_command(OUTPUT ${Freezeout_Diag}
+          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_freezeout_T_muB.py"
+                  "--Freezeout_Surface" "${vhlle_freezeout_hypersurface}"
+                  "--output_path" "${output_dir}"
+          DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_freezeout_T_muB.py"
+          COMMENT "Plotting freezeout diagram for ${system} @ ${energy} GeV (${i}/${num_runs})."
+      )
 
   endforeach(i)
 
@@ -350,6 +362,19 @@ function(run_one_energy
                   "--Nevents" "${N_events_afterburner}"
                   "--output_dir" "${results_folder}/Averaged_Spectra/"
           COMMENT "Averaging spectra for ${system} @ ${energy} GeV."
+      )
+
+  #----------------------------------------------------------------------------#
+  # Average freezeout diagram properties
+  #----------------------------------------------------------------------------#
+  set(averaged_T_muB "${results_folder}/Averaged_Spectra/T_muB.txt"
+                     )
+  add_custom_command(OUTPUT ${averaged_T_muB}
+          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/average_freezeout_diagram.py"
+                  "--files" "${results_folder}/*/T_muB.txt"
+                  "--Nevents" "${N_events_afterburner}"
+                  "--output_dir" "${results_folder}/Averaged_Spectra/"
+          COMMENT "Averaging freezeout properties for ${system} @ ${energy} GeV."
       )
 
   #----------------------------------------------------------------------------#
@@ -396,12 +421,18 @@ function(run_one_energy
   set(target ${system}_${energy}_check_multiplicities)
   add_custom_target(${target} ALL DEPENDS ${all_multiplicity_plots})
 
+  set(target ${system}_${energy}_freezeout_diagram)
+  add_custom_target(${target} ALL DEPENDS ${all_freezeout_diagram_plots})
+
   # Averaging
   set(target ${system}_${energy}_average_spectra)
   add_custom_target(${target} ALL DEPENDS ${averaged_spectra})
 
   set(target ${system}_${energy}_average_plots)
   add_custom_target(${target} ALL DEPENDS ${averaged_plots})
+
+  set(target ${system}_${energy}_average_TmuB)
+  add_custom_target(${target} ALL DEPENDS ${averaged_T_muB})
 
 endfunction()
 
@@ -434,5 +465,21 @@ function(Excitation_Funcs
   add_custom_target(${target} ALL DEPENDS ${midY_plot})
 endfunction()
 
+function(Freezeout_Diagram
+        )
+  set(outputdir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results")
+  set(Phase_Diagram_Freezeout "${outputdir}/Freezeout_Diagram.txt")
+  add_custom_command(OUTPUT ${Phase_Diagram_Freezeout}
+          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/collect_T_muB.py"
+                  "--files" "${outputdir}/*/Averaged_Spectra/T_muB.txt"
+                  "--output_dir" "${outputdir}/"
+          DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/collect_T_muB.py"
+          COMMENT "Assembling freezeout coordinates."
+      )
+  set(target freezeout_diagram)
+  add_custom_target(${target} ALL DEPENDS ${Phase_Diagram_Freezeout})
+endfunction()
 
 Excitation_Funcs()
+
+Freezeout_Diagram()
