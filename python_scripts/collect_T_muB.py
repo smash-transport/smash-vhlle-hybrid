@@ -64,6 +64,18 @@ def plot_freezeout(data):
     plt.close()
 
 
+def write_file(data):
+    with open(args.output_dir + 'Freezeout_Diagram.txt', 'w') as f:
+        f.write('# energy \t muB \t muB_sigma \t T \t T_sigma \n')
+        for i in range(0, len(data[0])):
+            line = ''
+            for k in range(0, 5):
+                if k == 0: line += str(data[k][i])
+                else: line += '\t' + str(data[k][i])
+            line += '\n'
+            f.write(line)
+    f.close()
+
 
 if __name__ == '__main__':
 
@@ -77,3 +89,4 @@ if __name__ == '__main__':
 
     coordinates = assemble_coordinates()
     plot_freezeout(coordinates)
+    write_file(coordinates)
