@@ -15,7 +15,7 @@ find_python_module(matplotlib VERSION 1.3.1 REQUIRED)
 find_python_module(argparse VERSION 1.1 REQUIRED)
 
 # Find and copy SMASH
-find_program(SMASH smash PATHS ${SMASH_PATH})
+find_program(SMASH smash PATHS ${SMASH_PATH} NO_DEFAULT_PATH)
 if(NOT SMASH)
     message(FATAL_ERROR
         "SMASH not found. Please specify a path to the SMASH build directory "
@@ -27,7 +27,7 @@ else()
 endif()
 
 # Find and copy vHLLE
-find_program(vHLLE hlle_visc PATHS ${VHLLE_PATH})
+find_program(vHLLE hlle_visc PATHS ${VHLLE_PATH} NO_DEFAULT_PATH)
 if(NOT vHLLE)
     message(FATAL_ERROR
         "vHLLE not found. Please specify a path to the vHLLE directory "
@@ -39,7 +39,7 @@ else()
 endif()
 
 # find parameters: equations of state
-find_path(vHLLE_EoSs eos PATHS ${VHLLE_PARAMS_PATH})
+find_path(vHLLE_EoSs eos PATHS ${VHLLE_PARAMS_PATH} NO_DEFAULT_PATH)
 if(NOT vHLLE_EoSs)
     message(FATAL_ERROR
         "Equations of state not found. Please specify a path to the vHLLE params "
@@ -51,7 +51,7 @@ else()
 endif()
 
 # Find and copy sampler
-find_program(SAMPLER sampler PATHS ${SAMPLER_PATH})
+find_program(SAMPLER sampler PATHS ${SAMPLER_PATH} NO_DEFAULT_PATH)
 if(NOT SAMPLER)
     message(FATAL_ERROR
         "Sampler not found. Please specify a path to the Sampler build directory "
