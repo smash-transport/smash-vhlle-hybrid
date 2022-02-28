@@ -6,6 +6,8 @@ Event-by-event hybrid model for the description of relativistic heavy-ion collis
 - Cooper-Frye sampler to perform particlization of the elements on the freezeout hypersurface
 - SMASH hadronic transport approach to perform the afterburner evolution
 
+If you are using the SMASH-vHLLE-hybrid, please cite [arXiv:2212.08724](https://arxiv.org/abs/2112.08724). You may also consult this reference for further details about the hybrid approach.
+
 ## Prerequisites
 - [cmake](https://cmake.org) version &ge; 3.15.4
 - [SMASH](https://github.com/smash-transport/smash) version &ge; 1.8
