@@ -46,7 +46,6 @@ To also provide the automatic analysis of the final particle lists, run the foll
     mkdir build
     cd build
     cmake .. -DSMASH_PATH=[...]/smash/build -DVHLLE_PATH=[...]/vhlle -DVHLLE_PARAMS_PATH=[...]/vhlle_params/ -DSAMPLER_PATH=[...]/hadron-sampler/build -DSMASH_ANALYSIS_PATH=[...]/smash-analysis
-    make
 
 Once the afterburner was run, the resulting particle lists can be analysed and plotted by executing:
 
