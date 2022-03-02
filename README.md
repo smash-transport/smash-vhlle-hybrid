@@ -28,7 +28,6 @@ Once the prerequisites are met, use the following commands to build the full hyb
     mkdir build
     cd build
     cmake .. -DSMASH_PATH=[...]/smash/build -DVHLLE_PATH=[...]/vhlle -DVHLLE_PARAMS_PATH=[...]/vhlle_params/ -DSAMPLER_PATH=[...]/hadron-sampler/build
-    make
 
 where `[...]` denote the paths to the `smash/build` directory, the `vhlle` directory, the `vhlle_params` directory and the `hadron-sampler/build` directory. The binaries of the precompiled submodules are expected to be located therein. The `vhlle_params` directory does not contain any binary though, it only holds the equations of state necessary for the hydrodynamic evolution.
 
