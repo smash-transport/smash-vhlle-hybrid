@@ -27,9 +27,9 @@ Once the prerequisites are met, use the following commands to build the full hyb
 
     mkdir build
     cd build
-    cmake .. -DSMASH_PATH=[...]/smash/build -DVHLLE_PATH=[...]/vhlle -DVHLLE_PARAMS_PATH=[...]/vhlle_params/ -DSAMPLER_PATH=[...]/hadron-sampler/build
+    cmake .. -DSMASH_PATH=[...]/smash/build -DVHLLE_PATH=[...]/vhlle -DVHLLE_PARAMS_PATH=[...]/vhlle_params/ -DSAMPLER_PATH=[...]/smash-hadron-sampler/build
 
-where `[...]` denote the paths to the `smash/build` directory, the `vhlle` directory, the `vhlle_params` directory and the `hadron-sampler/build` directory. The binaries of the precompiled submodules are expected to be located therein. The `vhlle_params` directory does not contain any binary though, it only holds the equations of state necessary for the hydrodynamic evolution.
+where `[...]` denote the paths to the `smash/build` directory, the `vhlle` directory, the `vhlle_params` directory and the `smash-hadron-sampler/build` directory. The binaries of the precompiled submodules are expected to be located therein. The `vhlle_params` directory does not contain any binary though, it only holds the equations of state necessary for the hydrodynamic evolution.
 
 All subtargets corresponding to the predefined collision setups have been created by `cmake`. To more easily divide the full hybrid run into smaller pieces, different targets are created for each step of the hybrid simulation. They have to be run one after the other in the order specified below. For a Pb+Pb collision at sqrt(s) = 8.8 GeV, this chain is executed via:
 
@@ -45,7 +45,7 @@ To also provide the automatic analysis of the final particle lists, run the foll
 
     mkdir build
     cd build
-    cmake .. -DSMASH_PATH=[...]/smash/build -DVHLLE_PATH=[...]/vhlle -DVHLLE_PARAMS_PATH=[...]/vhlle_params/ -DSAMPLER_PATH=[...]/hadron-sampler/build -DSMASH_ANALYSIS_PATH=[...]/smash-analysis
+    cmake .. -DSMASH_PATH=[...]/smash/build -DVHLLE_PATH=[...]/vhlle -DVHLLE_PARAMS_PATH=[...]/vhlle_params/ -DSAMPLER_PATH=[...]/smash-hadron-sampler/build -DSMASH_ANALYSIS_PATH=[...]/smash-analysis
 
 Once the afterburner was run, the resulting particle lists can be analysed and plotted by executing:
 
