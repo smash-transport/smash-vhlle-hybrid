@@ -55,9 +55,10 @@ def print_to_file(mean, error, obs):
 
     # create files and write content
     file = open(args.output_dir + obs + '.txt', 'w')
-    if obs in ['v2', 'midyY', 'meanpT']: file.write('# ' + obs + ' spectra, already divided by events\n')
+    if obs in ['midyY', 'meanpT']: file.write('# ' + obs + ' spectra, already divided by events\n')
     else: file.write('# ' + obs + ' spectra, already divided by bin width and events\n')
-    file.write('# ' + obs + '_bin_center 211 211_error -211 -211_error 111 111_error 321 321_error -321 -321_error 2212 2212_error -2212 -2212_error 3122 3122_error -3122 -3122_error\n')
+    if obs == 'v2': file.write('# pT_bin_center 211 211_error -211 -211_error 111 111_error 321 321_error -321 -321_error 2212 2212_error -2212 -2212_error 3122 3122_error -3122 -3122_error\n')
+    else: file.write('# ' + obs + '_bin_center 211 211_error -211 -211_error 111 111_error 321 321_error -321 -321_error 2212 2212_error -2212 -2212_error 3122 3122_error -3122 -3122_error\n')
 
     if obs not in ['midyY', 'meanpT']:
         if obs == 'mT': bin_width = mtbin_edges[1:] - mtbin_edges[:-1]
@@ -70,7 +71,7 @@ def print_to_file(mean, error, obs):
             line += str(mean[0][i])
             for particle_index in range(1, 10):
                 if obs != 'v2': line += '\t' + str(mean[particle_index][i]/(bin_width[i] * Nevents_sampler)) + '\t' + str(error[particle_index][i]/(bin_width[i] * Nevents_sampler))
-                else: line += '\t' + str(mean[particle_index][i]/(Nevents_sampler)) + '\t' + str(error[particle_index][i]/(Nevents_sampler))
+                else: line += '\t' + str(mean[particle_index][i]/(bin_width[i] * midy_bin_width)) + '\t' + str(error[particle_index][i]/(bin_width[i] * midy_bin_width))
             line += '\n'
             file.write(line)
     elif obs == 'meanpT':

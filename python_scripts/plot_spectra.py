@@ -243,6 +243,53 @@ def plot_pT_spectra(file, output_path, energy, system, Nevents):
     plt.close()
 
 
+def plot_v2(file, output_path, energy, system):
+    data = np.loadtxt(file, unpack = True)
+
+    plt.figure(figsize=(10,5))
+    plt.subplot(121)
+    plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
+
+    plt.plot(data[0], data[1], label = r'$\pi^+$')
+    plt.plot(data[0], data[3], label = r'$\pi^-$')
+    plt.plot(data[0], data[5], label = r'$\pi^0$', color = 'darkred')
+    plt.plot(data[0], data[7], label = r'$K^+$', ls = '--', color = 'C0')
+    plt.plot(data[0], data[9], label = r'$K^-$', ls = '--', color = 'C1')
+
+    plt.fill_between(data[0], data[1] - data[2], data[1] + data[2], alpha = 0.5, lw = 0.0)
+    plt.fill_between(data[0], data[3] - data[4], data[3] + data[4], alpha = 0.5, lw = 0.0)
+    plt.fill_between(data[0], data[5] - data[6], data[5] + data[6], alpha = 0.5, lw = 0.0, color = 'darkred')
+    plt.fill_between(data[0], data[7] - data[8], data[7] + data[8], alpha = 0.5, lw = 0.0, color = 'C0')
+    plt.fill_between(data[0], data[9] - data[10], data[9] + data[10], alpha = 0.5, lw = 0.0, color = 'C1')
+    plt.ylim(-1,1)
+
+    plt.legend(ncol = 2, loc = 'upper right')
+    plt.ylabel(r'v$_2$')
+    plt.xlabel(r'p$_\mathrm{T}$ [GeV]')
+    plt.xlim(0,2.0)
+
+    plt.subplot(122)
+    plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
+    plt.plot(data[0], data[11], label = r'p')
+    plt.plot(data[0], data[13], label = r'$\bar{p}$')
+    plt.plot(data[0], data[15], label = r'$\Lambda$', ls = '--', color = 'C0')
+    plt.plot(data[0], data[17], label = r'$\bar{\Lambda}$', ls = '--', color = 'C1')
+
+    plt.fill_between(data[0], data[11] - data[12], data[11] + data[12], alpha = 0.5, lw = 0.0)
+    plt.fill_between(data[0], data[13] - data[14], data[13] + data[14], alpha = 0.5, lw = 0.0)
+    plt.fill_between(data[0], data[15] - data[16], data[15] + data[16], alpha = 0.5, lw = 0.0, color = 'C0')
+    plt.fill_between(data[0], data[17] - data[18], data[17] + data[18], alpha = 0.5, lw = 0.0, color = 'C1')
+
+    plt.legend(ncol = 2, loc = 'upper right')
+    plt.ylabel(r'v$_2$')
+    plt.xlabel(r'p$_\mathrm{T}$ [GeV]')
+    plt.xlim(0,2.0)
+    plt.ylim(-1,1)
+
+    plt.tight_layout()
+    plt.savefig(output_path)
+    plt.close()
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
@@ -269,3 +316,6 @@ if __name__ == '__main__':
             plot_mT_spectra(file, plot_path_and_name, args.energy, args.system, float(args.Nevents))
         elif observable in ['ptspectra', 'pT']:
             plot_pT_spectra(file, plot_path_and_name, args.energy, args.system, float(args.Nevents))
+        elif observable in ['v2']:
+            if args.average:
+                plot_v2(file, plot_path_and_name, args.energy, args.system)
