@@ -57,7 +57,13 @@ The generated plots and output files are then located in `[...]/build/Hybrid_Res
     make PbPb_8.8_average_spectra
     make PbPb_8.8_average_plots
 
-in this specific order. The final output files are then located in `[...]/build/Hybrid_Results/PbPb_8.8GeV/Averaged_Spectra`.
+in this specific order. The final output files, that is tables and plots, are then located in `[...]/build/Hybrid_Results/PbPb_8.8GeV/Averaged_Spectra`.
+
+In addition, it is possible to extract excitation functions for the mean transverse momentum and the mid-rapidity yield if the SMASH-vHLLE-hybrid was run for different collision energies. To obtain those, execute
+
+    make exc_funcs
+
+after having analyzed and averaged the output at all collision energies with the above stated commands. The resulting excitation functions in terms of tables and plots containing entries at all previously run collision energies are then located  in `[...]/build/Hybrid_Results`.
 
 ## Configuring the collision setups
 A number of different collision setups for the hybrid model are supported out of the box. The shear viscosities applied are taken from *Karpenko et al.: Phys.Rev.C 91 (2015)* and the longitudinal and transversal smearing parameters are adjusted to improve agreement with experimental data. The supported collision systems are:

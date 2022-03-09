@@ -372,8 +372,6 @@ function(run_one_energy
 
 
   # Define subtargets to enable separated running of the hybrid submodules
-  set(target ${system}_${energy}_afterburner)
-  add_custom_target(${target} ALL DEPENDS ${final_particle_lists})
 
   set(target ${system}_${energy}_IC)
   add_custom_target(${target} ALL DEPENDS ${smash_IC_files})
@@ -383,6 +381,9 @@ function(run_one_energy
 
   set(target ${system}_${energy}_sampler)
   add_custom_target(${target} ALL DEPENDS ${sampled_particle_lists})
+
+  set(target ${system}_${energy}_afterburner)
+  add_custom_target(${target} ALL DEPENDS ${final_particle_lists})
 
   set(target ${system}_${energy}_analysis)
   add_custom_target(${target} ALL DEPENDS ${all_analysis_outputs})
