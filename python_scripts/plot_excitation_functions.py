@@ -72,7 +72,6 @@ def collect_data(files):
             data_collection['errors']['3122'].append(data[15])
             data_collection['errors']['-3122'].append(data[17])
 
-    # return collections.OrderedDict(sorted(data_collection.items(), key=lambda kv: kv[0]))
     return data_collection
 
 
@@ -96,10 +95,8 @@ def write_data(data, filename):
 def plotting(data, obs):
     sns.set_palette("mako", 3)
 
-    # plt.errorbar(data['energies'], data['values']['211'], data['errors']['211'], label = r'$\pi^+$', marker = 'o', ls = ':', lw = 0.5)
     plt.errorbar(data['energies'], data['values']['-211'], data['errors']['-211'], label = r'$\pi^-$', marker = 'o', ls = ':', lw = 0.5)
     plt.errorbar(data['energies'], data['values']['-321'], data['errors']['-321'], label = r'$K^-$', marker = 'o', ls = ':', lw = 0.5)
-    # plt.errorbar(data['energies'], data['values']['321'], data['errors']['321'], label = r'$K^+$', marker = 'o', ls = ':', lw = 0.5)
     plt.errorbar(data['energies'], data['values']['2212'], data['errors']['2212'], label = r'$p$', marker = 'o', ls = ':', lw = 0.5)
 
     plt.legend()
@@ -137,9 +134,9 @@ if __name__ == '__main__':
     data_meanpT = collect_data(args.meanpT_files)
 
     write_data(data_midyY, 'Excitation_Func_midy_Yield.txt')
-    write_data(data_v2, 'Excitation_Func_int_v2.txt')
+    # write_data(data_v2, 'Excitation_Func_int_v2.txt')
     write_data(data_meanpT, 'Excitation_Func_meanpT.txt')
 
     plotting(data_midyY, 'midyY')
-    plotting(data_v2, 'v2')
+    # plotting(data_v2, 'v2')
     plotting(data_meanpT, 'meanpT')
