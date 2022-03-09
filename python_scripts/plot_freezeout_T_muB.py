@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
@@ -15,6 +17,17 @@ def scalar_product(a, b):
     return a_dot_b
 
 
+def load_plot_style():
+    import matplotlib as mpl
+    mpl.rcParams['lines.linewidth'] = 2
+    mpl.rcParams['axes.labelsize'] = 15
+    mpl.rcParams['xtick.labelsize'] = 10
+    mpl.rcParams['ytick.labelsize'] = 10
+    mpl.rcParams['legend.fontsize'] = 8.3
+    mpl.rcParams['figure.figsize'] = 5, 3.5
+    mpl.rcParams['lines.markersize'] = 5
+
+
 def plotting():
     hyp_data = np.loadtxt(args.Freezeout_Surface, unpack = True)
 
@@ -28,34 +41,27 @@ def plotting():
     muB = hyp_data[13][first_noncorona_index:]
     muQ = hyp_data[14][first_noncorona_index:]
     muS = hyp_data[15][first_noncorona_index:]
+    e = hyp_data[16][first_noncorona_index:]
 
-    # Find volume of each hypersurface patch.
-    # Contributions are weighted by volume
-    volumes = []
-    for i in itemindex:
-        dSigma_mu = [hyp_data[4][i], hyp_data[5][i], hyp_data[6][i], hyp_data[7][i]]
-        umu = [hyp_data[8][i], hyp_data[9][i], hyp_data[10][i], hyp_data[11][i]]
-        volumes.append(scalar_product(umu, dSigma_mu))
-    V = np.sum(volumes)     # Total volume
-
-    # Determine mean weighted with volumes
+    e_sum = np.sum(e)
+    # Determine mean weighted with energy density
     T_mean, muB_mean = 0.0, 0.0
     for k in range(0, len(temp)):
-        T_mean += temp[k] * volumes[k] / V
-        muB_mean += muB[k] * volumes[k] / V
+        T_mean += temp[k] * e[k] / e_sum
+        muB_mean += muB[k] * e[k] / e_sum
 
-    # Determine standard deviation weighted with volumes
+    # Determine standard deviation weighted with energy density
     T_variance, muB_variance = 0.0, 0.0
     for k in range(0, len(temp)):
-        T_variance += (temp[k] - T_mean)**2 * volumes[k] / V
-        muB_variance += (muB[k] - muB_mean)**2 * volumes[k] / V
+        T_variance += (temp[k] - T_mean)**2 * e[k] / e_sum
+        muB_variance += (muB[k] - muB_mean)**2 * e[k] / e_sum
     T_sigma = np.sqrt(T_variance)
     muB_sigma = np.sqrt(muB_variance)
 
     # Plot freezeout diagram
-    # plotting_style.load_plot_style()
+    #load_plot_style()
     plt.figure(figsize=(5,5))
-    plt.hist2d(muB, temp, normed=True, weights=volumes, cmap='mako_r', bins = 70, zorder = 0)
+    plt.hist2d(muB, temp, normed=True, weights=e, cmap='mako_r', bins = 70, zorder = 0)
     plt.errorbar(muB_mean, T_mean, xerr = muB_sigma, yerr = T_sigma, marker = 's', color = 'orange', markersize = 5)
     plt.ylabel('T [GeV]')
     plt.xlabel(r'$\mu_\mathrm{B}$ [GeV]')

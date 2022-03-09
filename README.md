@@ -1,3 +1,26 @@
+#### <span style="color:red">Caution!</span>
+
+This branch is a history branch which is on purpose not merged. It requires a modified version of vHLLE. With this branch it is possible to produce a freezeout diagram containing the properties of the freezeout hypersurface elements in T and muB for all collision energies run with the SMASH-vHLLE-hybrid (See Fig. 3 excluding the parametrization in [arXiv:2212.08724](https://arxiv.org/abs/2112.08724)).
+
+In order to use this branch, it is necessary to modify the properties printed to the freezeout hypersurface. <br>
+By default, the freezeout hypersurface contains the entries: τ x y η dσ<sub>μ</sub> u<sup>μ</sup> T μ<sub>B</sub> μ<sub>Q</sub> μ<sub>S</sub> π<sup>μν</sup> Π <br>
+It needs to be modified such, that at 17th position, additionally the energy density (e) is printed, hence: τ x y η dσ<sub>μ</sub> u<sup>μ</sup> T μ<sub>B</sub> μ<sub>Q</sub> μ<sub>S</sub> e π<sup>μν</sup> Π <br>
+Make sure to modify vHLLE accordingly in the `src/fld.cc` file when using this branch of the SMASH-vHLLE-Hybrid.
+
+If you want to produce a freezeout diagram, first run the initial conditions and the hydrodynamical evolution of all collision energies desired, then analyze the freezeout properties (obtain freezeout diagram for single event) and average the resulting T and μ<sub>B</sub> for each collision energy. In the case of Pb+Pb collisions at sqrt(s) = 8.8 GeV all of this is achieved by executing:
+
+    make PbPb_8.8_IC
+    make PbPb_8.8_hydro
+    make PbPb_8.8_freezeout_diagram
+    make PbPb_8.8_average_TmuB
+
+Finally, once T and μ<sub>B</sub> have been averaged for all collision systems and energies, the resulting means and variances are collected with the command
+
+    make freezeout_diagram
+
+The final outcome is then stored in the file `Hybrid_Results/Freezeout_Diagram.txt` and the plot can be found in `Hybrid_Results/freezeout_diagram.pdf`.
+
+
 # SMASH-vHLLE-Hybrid
 Event-by-event hybrid model for the description of relativistic heavy-ion collisions in the low and high baryon-density regime. This model constitutes a chain of different submodules to appropriately describe each phase of the collision with its corresponding degrees of freedom. It consists of the following modules:
 - SMASH hadronic transport approach to provide the initial conditions
