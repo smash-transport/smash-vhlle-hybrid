@@ -79,6 +79,23 @@ if(WITH_ANALYSIS)
 endif(WITH_ANALYSIS)
 
 
+# Decide whether to automatically analyze the data regarding flow (v2, v3).
+# If so, the path to the archive needs to be passed.
+if(ARCHIVE_PATH)
+   option(WITH_FLOW "Automatically analyze output for v2, v3." ON)
+endif(ARCHIVE_PATH)
+
+if(WITH_FLOW)
+  if(ARCHIVE_PATH)
+    message(STATUS "Found archive: ${ARCHIVE_PATH}")
+    message(STATUS "Automatic flow analysis is available.")
+  else()
+    message(WARNING "archive. Provide path to the archive directory via
+    cmake .. -DARCHIVE_PATH=path/to/archive")
+  endif(ARCHIVE_PATH)
+endif(WITH_FLOW)
+
+
 #----------------------------------------------------------------------------#
 # Function to set up hybrid evolution depending on system and energy
 #----------------------------------------------------------------------------#
@@ -97,6 +114,7 @@ function(run_one_energy
   set(sampled_particle_lists "")
   set(final_particle_lists "")
   set(all_analysis_outputs "")
+  set(all_flow_outputs "")
   set(all_plots "")
   set(all_conservation_plots "")
 
@@ -327,6 +345,43 @@ function(run_one_energy
         )
 
 
+    #----------------------------------------------------------------------------#
+    # Analyze flow
+    #----------------------------------------------------------------------------#
+    # Define filenames for particle v2 and v3 output
+    set(flow_fnames "${results_folder}/${i}/Spectra/EP_v2.txt" ;
+                    "${results_folder}/${i}/Spectra/EP_v3.txt")
+    set(flow_outputs "")
+    foreach(j ${flow_fnames})
+        list(APPEND flow_outputs "${j}")
+    endforeach(j)
+
+    list(APPEND all_flow_outputs ${flow_outputs})
+
+    # Perform flow analysis (with STAR cuts)
+    add_custom_command(OUTPUT "${results_folder}/${i}/Spectra/EP_v2.txt"
+            COMMAND "python3" "${ARCHIVE_PATH}/flow/python_scripts/flow_calculation.py"
+                              "particle_lists.oscar" "${results_folder}/${i}/Afterburner" "${results_folder}/${i}/Spectra/"
+                              "EP_v2.txt" "2" "pT" "event_plane" "${energy}"
+                              "211,-211,321,-321,2212,-2212,3222,-3222,3112,-3112,3312,-3312,3334,-3334"
+                              "eta" "-0.5" "0.5" "false" "0.0" "4.0" "20"
+                              "false"
+            COMMENT "Analyzing v2 for ${system} @ ${energy} GeV (${i}/${num_runs})."
+            DEPENDS "${ARCHIVE_PATH}/flow/python_scripts/flow_calculation.py"
+
+        )
+
+    add_custom_command(OUTPUT "${results_folder}/${i}/Spectra/EP_v3.txt"
+            COMMAND "python3" "${ARCHIVE_PATH}/flow/python_scripts/flow_calculation.py"
+                              "particle_lists.oscar" "${results_folder}/${i}/Afterburner" "${results_folder}/${i}/Spectra/"
+                              "EP_v3.txt" "3" "pT" "event_plane" "${energy}"
+                              "211,-211,321,-321,2212,-2212,3222,-3222,3112,-3112,3312,-3312,3334,-3334"
+                              "eta" "-0.5" "0.5" "false" "0.0" "4.0" "20"
+                              "false"
+            COMMENT "Analyzing v3 for ${system} @ ${energy} GeV (${i}/${num_runs})."
+            DEPENDS "${ARCHIVE_PATH}/flow/python_scripts/flow_calculation.py"
+
+        )
 
   endforeach(i)
 
@@ -350,6 +405,21 @@ function(run_one_energy
                   "--Nevents" "${N_events_afterburner}"
                   "--output_dir" "${results_folder}/Averaged_Spectra/"
           COMMENT "Averaging spectra for ${system} @ ${energy} GeV."
+      )
+
+  #----------------------------------------------------------------------------#
+  # Average previously obtained flow
+  #----------------------------------------------------------------------------#
+  set(averaged_flow_spectra "${results_folder}/v2.txt" ;
+                            "${results_folder}/v3.txt" ;
+                     )
+  add_custom_command(OUTPUT ${averaged_flow_spectra}
+          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/average_flow.py"
+                  "--v2_files" "${results_folder}/*/Spectra/EP_v2.txt"
+                  "--v3_files" "${results_folder}/*/Spectra/EP_v3.txt"
+                  "--energy" "${energy}"
+                  "--output_dir" "${results_folder}/Averaged_Spectra/"
+          COMMENT "Averaging flow for ${system} @ ${energy} GeV."
       )
 
   #----------------------------------------------------------------------------#
@@ -388,6 +458,9 @@ function(run_one_energy
   set(target ${system}_${energy}_analysis)
   add_custom_target(${target} ALL DEPENDS ${all_analysis_outputs})
 
+  set(target ${system}_${energy}_flow)
+  add_custom_target(${target} ALL DEPENDS ${all_flow_outputs})
+
   set(target ${system}_${energy}_plots)
   add_custom_target(${target} ALL DEPENDS ${all_plots})
 
@@ -400,6 +473,9 @@ function(run_one_energy
   # Averaging
   set(target ${system}_${energy}_average_spectra)
   add_custom_target(${target} ALL DEPENDS ${averaged_spectra})
+
+  set(target ${system}_${energy}_average_flow)
+  add_custom_target(${target} ALL DEPENDS ${averaged_flow_spectra})
 
   set(target ${system}_${energy}_average_plots)
   add_custom_target(${target} ALL DEPENDS ${averaged_plots})
@@ -436,4 +512,21 @@ function(Excitation_Funcs
 endfunction()
 
 
+function(Integrated_vn
+        )
+  set(outputdir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results")
+  set(int_vn_plot "${outputdir}/int_vn.pdf")
+  add_custom_command(OUTPUT ${int_vn_plot}
+          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_int_vn.py"
+                  "--vn_files" "${outputdir}/*/Averaged_Spectra/int_vn.txt"
+                  "--output_dir" "${outputdir}/"
+          DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_int_vn.py"
+          COMMENT "Plotting integrated vn excitation functions."
+      )
+  set(target int_vn)
+  add_custom_target(${target} ALL DEPENDS ${int_vn_plot})
+endfunction()
+
+
 Excitation_Funcs()
+Integrated_vn()
