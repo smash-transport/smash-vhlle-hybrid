@@ -41,8 +41,9 @@ def average_integrated_vn(obs):
             int_vn = float(f.readline().split()[-1])
             int_vn_list.append(int_vn)
 
+    Nevents = float(len(files))
     mean = np.mean(int_vn_list)
-    error = np.std(int_vn_list)
+    error = np.std(int_vn_list) / np.sqrt(Nevents - 1.0) if Nevents > 1 else 0.0
 
     return mean, error
 

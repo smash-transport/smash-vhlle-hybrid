@@ -35,9 +35,7 @@ def collect_data(files):
             data_collection['errors']['v2'].append(float(data[2]))
             data_collection['errors']['v3'].append(float(data[4]))
 
-
-    # return collections.OrderedDict(sorted(data_collection.items(), key=lambda kv: kv[0]))
-    return data_collection
+    return collections.OrderedDict(sorted(data_collection.items(), key=lambda kv: kv[0]))
 
 
 def write_data(data, filename):
@@ -53,9 +51,8 @@ def write_data(data, filename):
 def plotting(data):
     sns.set_palette("mako", 3)
 
-    # plt.errorbar(data['energies'], data['values']['211'], data['errors']['211'], label = r'$\pi^+$', marker = 'o', ls = ':', lw = 0.5)
-    plt.errorbar(data['energies'], data['values']['v2'], data['errors']['v2'], label = r'$v_2$', marker = 'o', ls = ':', lw = 0.5)
-    plt.errorbar(data['energies'], data['values']['v3'], data['errors']['v3'], label = r'$v_3$', marker = '^', ls = ':', lw = 0.5)
+    plt.errorbar(data['energies'], data['values']['v2'], data['errors']['v2'], label = r'charged particle v$_2$', marker = 'o', ls = 'none')
+    plt.errorbar(data['energies'], data['values']['v3'], data['errors']['v3'], label = r'charged particle v$_3$', marker = '^', ls = 'none')
     plt.legend()
 
     plt.xlim(1,500)
@@ -82,5 +79,3 @@ if __name__ == '__main__':
     write_data(data, 'Excitation_Func_int_vn.txt')
 
     plotting(data)
-    # plotting(data_v2, 'v2')
-    # plotting(data_meanpT, 'meanpT')

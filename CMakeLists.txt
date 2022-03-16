@@ -358,13 +358,13 @@ function(run_one_energy
 
     list(APPEND all_flow_outputs ${flow_outputs})
 
-    # Perform flow analysis
+    # Perform flow analysis (with STAR cuts)
     add_custom_command(OUTPUT "${results_folder}/${i}/Spectra/EP_v2.txt"
             COMMAND "python3" "${ARCHIVE_PATH}/flow/python_scripts/flow_calculation.py"
                               "particle_lists.oscar" "${results_folder}/${i}/Afterburner" "${results_folder}/${i}/Spectra/"
                               "EP_v2.txt" "2" "pT" "event_plane" "${energy}"
                               "211,-211,321,-321,2212,-2212,3222,-3222,3112,-3112,3312,-3312,3334,-3334"
-                              "y" "-5.0" "5.0" "false" "0.0" "4.0" "20"
+                              "eta" "-0.5" "0.5" "false" "0.0" "4.0" "20"
                               "false"
             COMMENT "Analyzing v2 for ${system} @ ${energy} GeV (${i}/${num_runs})."
             DEPENDS "${ARCHIVE_PATH}/flow/python_scripts/flow_calculation.py"
@@ -376,7 +376,7 @@ function(run_one_energy
                               "particle_lists.oscar" "${results_folder}/${i}/Afterburner" "${results_folder}/${i}/Spectra/"
                               "EP_v3.txt" "3" "pT" "event_plane" "${energy}"
                               "211,-211,321,-321,2212,-2212,3222,-3222,3112,-3112,3312,-3312,3334,-3334"
-                              "y" "-5.0" "5.0" "false" "0.0" "4.0" "20"
+                              "eta" "-0.5" "0.5" "false" "0.0" "4.0" "20"
                               "false"
             COMMENT "Analyzing v3 for ${system} @ ${energy} GeV (${i}/${num_runs})."
             DEPENDS "${ARCHIVE_PATH}/flow/python_scripts/flow_calculation.py"
