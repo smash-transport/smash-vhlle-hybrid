@@ -319,9 +319,11 @@ function(run_one_energy
     set(output_dir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/")
     set(E_cons_plot "${output_dir}/Energy_Conservation.pdf")
     set(Mult_plot "${output_dir}/Pions.pdf")
+    set(Hydro_lifetime_list "${output_dir}/Hydro_lifetime.txt")
 
     list(APPEND all_conservation_plots ${E_cons_plot})
     list(APPEND all_multiplicity_plots ${Mult_plot})
+    list(APPEND all_lifetime_lists ${Hydro_lifetime_list})
     add_custom_command(OUTPUT ${E_cons_plot}
             COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_conservation.py"
                     "--SMASH_IC" "${smash_IC_oscar}"
@@ -344,6 +346,13 @@ function(run_one_energy
             COMMENT "Verifying multiplicities for ${system} @ ${energy} GeV (${i}/${num_runs})."
         )
 
+    add_custom_command(OUTPUT ${Hydro_lifetime_list}
+            COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/get_hydro_endtime.py"
+                    "--Hydro_Info" "${results_folder}/${i}/Hydro/Terminal_Output.txt"
+                    "--output_path" "${output_dir}"
+            DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/get_hydro_endtime.py"
+            COMMENT "Find hydro lifetime in ${system} @ ${energy} GeV (${i}/${num_runs})."
+        )
 
     #----------------------------------------------------------------------------#
     # Analyze flow
@@ -423,6 +432,18 @@ function(run_one_energy
       )
 
   #----------------------------------------------------------------------------#
+  # Average previously obtained endtimes
+  #----------------------------------------------------------------------------#
+  set(averaged_endtime_files "${results_folder}/Endtime.txt")
+  add_custom_command(OUTPUT ${averaged_endtime_files}
+         COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/average_endtimes.py"
+                 "--endtime_files" "${results_folder}/*/Hydro_Endtime.txt"
+                  "--energy" "${energy}"
+                  "--output_dir" "${results_folder}/Averaged_Spectra/"
+         COMMENT "Averaging flow for ${system} @ ${energy} GeV."
+     )
+
+  #----------------------------------------------------------------------------#
   # Plot averaged quantities
   #----------------------------------------------------------------------------#
   set(averaged_plots "${results_folder}/Averaged_Spectra/yspectra.pdf" ;
@@ -470,6 +491,9 @@ function(run_one_energy
   set(target ${system}_${energy}_check_multiplicities)
   add_custom_target(${target} ALL DEPENDS ${all_multiplicity_plots})
 
+  set(target ${system}_${energy}_hydro_endtime)
+  add_custom_target(${target} ALL DEPENDS ${all_lifetime_lists})
+
   # Averaging
   set(target ${system}_${energy}_average_spectra)
   add_custom_target(${target} ALL DEPENDS ${averaged_spectra})
@@ -479,6 +503,9 @@ function(run_one_energy
 
   set(target ${system}_${energy}_average_plots)
   add_custom_target(${target} ALL DEPENDS ${averaged_plots})
+
+  set(target ${system}_${energy}_average_endtime)
+  add_custom_target(${target} ALL DEPENDS ${averaged_endtime_files})
 
 endfunction()
 
@@ -528,5 +555,22 @@ function(Integrated_vn
 endfunction()
 
 
+function(Hydro_Lifetimes
+        )
+  set(outputdir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results")
+  set(lifetime_file "${outputdir}/hydro_lifetime.txt")
+  add_custom_command(OUTPUT ${lifetime_file}
+          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/assemble_endtimes.py"
+                  "--endtime_files" "${outputdir}/*/Averaged_Spectra/Endtime.txt"
+                  "--output_dir" "${outputdir}/"
+          DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/assemble_endtimes.py"
+          COMMENT "Plotting integrated vn excitation functions."
+      )
+  set(target hydro_lifetimes)
+  add_custom_target(${target} ALL DEPENDS ${lifetime_file})
+endfunction()
+
+
 Excitation_Funcs()
 Integrated_vn()
+Hydro_Lifetimes()
