@@ -14,12 +14,12 @@ import linecache
 
 matplotlib.rcParams['lines.linewidth'] = 2.0
 
-def plot_y_spectra(file, output_path, energy, system, Nevents):
+def plot_y_spectra(file, output_path, Nevents):
     ydata = np.loadtxt(file, unpack = True)
 
     plt.figure(figsize=(10,5))
     plt.subplot(121)
-    plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
+    if args.energy and args.system: plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
 
     if not args.average:
         # rapidity bins are uniform
@@ -56,7 +56,7 @@ def plot_y_spectra(file, output_path, energy, system, Nevents):
     plt.xlim(-4,4)
 
     plt.subplot(122)
-    plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
+    if args.energy and args.system: plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
 
     if not args.average:
         plt.plot(ydata[0], ydata[6]/(Nevents * bin_width), label = r'p', ls = '-', color = 'C0')
@@ -90,7 +90,7 @@ def plot_y_spectra(file, output_path, energy, system, Nevents):
     plt.close()
 
 
-def plot_mT_spectra(file, output_path, energy, system, Nevents):
+def plot_mT_spectra(file, output_path, Nevents):
     ydata = np.loadtxt(file, unpack = True)
 
     m_pi = 0.138
@@ -100,7 +100,7 @@ def plot_mT_spectra(file, output_path, energy, system, Nevents):
 
     plt.figure(figsize=(10,5))
     plt.subplot(121)
-    plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
+    if args.energy and args.system: plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
 
     if not args.average:
         # Get uneven bin sizes
@@ -138,7 +138,7 @@ def plot_mT_spectra(file, output_path, energy, system, Nevents):
     plt.xlim(0,2.2)
 
     plt.subplot(122)
-    plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
+    if args.energy and args.system: plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
 
     if not args.average:
         plt.plot(ydata[0], ydata[6]/(Nevents * bin_width * (ydata[0] + m_proton)), label = r'p', ls = '-', color = 'C0')
@@ -168,12 +168,12 @@ def plot_mT_spectra(file, output_path, energy, system, Nevents):
     plt.close()
 
 
-def plot_pT_spectra(file, output_path, energy, system, Nevents):
+def plot_pT_spectra(file, output_path, Nevents):
     ydata = np.loadtxt(file, unpack = True)
 
     plt.figure(figsize=(10,5))
     plt.subplot(121)
-    plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
+    if args.energy and args.system: plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
 
     if not args.average:
         # Get uneven bin sizes
@@ -213,7 +213,7 @@ def plot_pT_spectra(file, output_path, energy, system, Nevents):
     plt.ylim(1e-1, 1e3)
 
     plt.subplot(122)
-    plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
+    if args.energy and args.system: plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
 
     if not args.average:
         plt.plot(ydata[0], ydata[6]/(Nevents * bin_width * 2 * np.pi * ydata[0]), label = r'p', ls = '-', color = 'C0')
@@ -243,12 +243,12 @@ def plot_pT_spectra(file, output_path, energy, system, Nevents):
     plt.close()
 
 
-def plot_v2(file, output_path, energy, system):
+def plot_v2(file, output_path):
     data = np.loadtxt(file, unpack = True)
 
     plt.figure(figsize=(10,5))
     plt.subplot(121)
-    plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
+    if args.energy and args.system: plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
 
     plt.plot(data[0], data[1], label = r'$\pi^+$')
     plt.plot(data[0], data[3], label = r'$\pi^-$')
@@ -269,7 +269,7 @@ def plot_v2(file, output_path, energy, system):
     plt.xlim(0,2.0)
 
     plt.subplot(122)
-    plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
+    if args.energy and args.system: plt.title(str(system) + r' @ $\sqrt{s}$ = ' + str(energy) + ' GeV')
     plt.plot(data[0], data[11], label = r'p')
     plt.plot(data[0], data[13], label = r'$\bar{p}$')
     plt.plot(data[0], data[15], label = r'$\Lambda$', ls = '--', color = 'C0')
@@ -295,9 +295,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_files", nargs = '+', required = False,
                         help = "Files containing the analyzed particle spectra.")
-    parser.add_argument("--energy", required = True,
+    parser.add_argument("--energy", required = False,
                         help = "Collision energy (sqrt(s)).")
-    parser.add_argument("--system", required = True,
+    parser.add_argument("--system", required = False,
                         help = "Collision system.")
     parser.add_argument("--Nevents", required = True,
                         help = "Number of events.")
@@ -311,11 +311,11 @@ if __name__ == '__main__':
 
 
         if observable in ['yspectra', 'dNdy']:
-            plot_y_spectra(file, plot_path_and_name, args.energy, args.system, float(args.Nevents))
+            plot_y_spectra(file, plot_path_and_name, float(args.Nevents))
         elif observable in ['mtspectra', 'mT']:
-            plot_mT_spectra(file, plot_path_and_name, args.energy, args.system, float(args.Nevents))
+            plot_mT_spectra(file, plot_path_and_name, float(args.Nevents))
         elif observable in ['ptspectra', 'pT']:
-            plot_pT_spectra(file, plot_path_and_name, args.energy, args.system, float(args.Nevents))
+            plot_pT_spectra(file, plot_path_and_name, float(args.Nevents))
         elif observable in ['v2']:
             if args.average:
-                plot_v2(file, plot_path_and_name, args.energy, args.system)
+                plot_v2(file, plot_path_and_name)

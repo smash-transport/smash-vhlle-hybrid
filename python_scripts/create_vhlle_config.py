@@ -20,7 +20,7 @@ parser.add_argument("--smash_ic", required = True,
                     help="SMASH_IC output in ASCII format.")
 parser.add_argument("--output_file", required = True,
                     help="Updated vhlle config file")
-parser.add_argument("--energy", required = True,
+parser.add_argument("--energy", required = False,
                     help="Collision energy")
 args = parser.parse_args()
 
@@ -28,7 +28,10 @@ args = parser.parse_args()
 basepath = '/'.join(args.smash_ic.split('/')[:-2]) + '/'
 
 # Collision energy
-energy = args.energy if args.energy in hydro_params.keys() else 'default'
+if args.energy:
+    energy = args.energy if args.energy in hydro_params.keys() else 'default'
+else:
+    energy = 'default'
 
 # Extract proper time of hypersurface from SMASH output, to pass it to
 # vhlle configuration file
