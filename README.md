@@ -91,6 +91,29 @@ Further information about the configuration of the sampler is provided in the `R
 
 **Note:** In all configuration files, the paths to input files from the previous stages are adjusted automatically. Also cross-parameters that require consistency between the hydrodynamics evolution and the sampler, e.g. viscosities and critical energy density, are taken care of automatically.
 
+
+## Using a custom SMASH configuration file for the initial conditions
+
+In addition to the above described predefined Au+Au and Pb+Pb collisions, it is possible to employ a custom `SMASH` configuration file in the initial stage. This file is expected to be located in the  `[...]/configs/` directory and named `smash_initial_conditions_custom.yaml`. An example configuration is shipped with the `SMASH-vHLLE-hybrid`, it can be modified as desired. To run the hybrid with this custom configuration file, execute the following commands:
+
+    make custom_IC
+    make custom_hydro
+    make custom_sampler
+    make custom_afterburner
+
+The results are stored in `[...]/build/Hybrid_Results/Custom` and the subdirectories are structured identically as for the predefined Au+Au or Pb+Pb collisions as described above.
+
+To further analyze and average the outcome, if the `SMASH-vHLLE-hybrid` is coupled to the `SMASH-analysis` as described above, one may further execute
+
+    make custom_analysis
+    make custom_average_spectra
+    make custom_average_plots
+
+to obtain rapidity and transverse mass spectra that are stored in `[...]/build/Hybrid_Results/Custom/Averaged_Spectra`.
+
+**Note:**
+It might be necessary to separately adjust the viscosity and smearing parameters employed for the hydrodynamical evolution when using a custom SMASH config, as the default values are most likely not be the best fit. These can be adjusted in the `python_scripts/hydro_parameters.py` file, by modifying the values corresponding to the key `default` in the `hydro_params` dictionary.
+
 # Module exchanges and further modifications
 It might be desired to run the SMASH-vHLLE-hybrid, but relying on a different initial state, particle sampler or similar. For this, the `CMakeLists.txt` need to be updated accordingly. Exemplary instructions for a number of use cases are provided in the following.
 
