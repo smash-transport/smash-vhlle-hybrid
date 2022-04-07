@@ -28,7 +28,7 @@ def collect_data(files):
             f.readline()    # skip header
             f.readline()    # skip header
             data = f.readline().split()
-            print energy
+            print (energy)
             data_collection['energies'].append(float(data[0]))
             data_collection['values']['v2'].append(float(data[1]))
             data_collection['values']['v3'].append(float(data[3]))

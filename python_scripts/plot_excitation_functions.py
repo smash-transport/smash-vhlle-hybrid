@@ -23,6 +23,7 @@ def collect_data(files):
                        'errors' : {'211' : [], '-211' : [],'111' : [],'321' : [],'-321' : [],'2212' : [],'-2212' : [], '3122' : [], '-3122' : []}}
 
     for file in files:
+        if 'Custom' in file: continue
         energy = file.split('/')[-3].split('_')[1]
         if 'v2' in file:
             data = np.loadtxt(file, unpack = True)
@@ -130,7 +131,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     data_midyY = collect_data(args.midyY_files)
-    data_v2 = collect_data(args.v2_files)
+    # data_v2 = collect_data(args.v2_files)
     data_meanpT = collect_data(args.meanpT_files)
 
     write_data(data_midyY, 'Excitation_Func_midy_Yield.txt')

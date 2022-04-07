@@ -24,7 +24,6 @@ if __name__ == '__main__':
 
 
     endtime = Endtime_from_hydro(args.Hydro_Info)
-    print endtime
 
     with open(args.output_path + '/Hydro_Endtime.txt', 'w') as f:
         f.write('# endtime \n')
