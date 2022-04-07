@@ -231,6 +231,7 @@ function(run_one_energy
                       "--sampled_particle_list" "${sampler_dir}/particle_lists.oscar"
                       "--initial_particle_list" "${smash_IC_oscar}"
                       "--output_file" "${full_particle_list}"
+                      "--smash_config" "${results_folder}/${i}/IC/config.yaml"
     DEPENDS
             "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/add_spectators.py"
     COMMENT "Adding spectators to sampled particle list for afterburner (${i}/${num_runs})."
@@ -672,7 +673,7 @@ function(run_custom_hybrid
     # Run Cooper-Frye sampler for particlization of freezeout surface
     #----------------------------------------------------------------------------#
     # create input file with correct paths for sampler
-    set(N_events_afterburner "100")
+    set(N_events_afterburner "1000")
     add_custom_command(OUTPUT "${sampler_updated_config}"
     COMMAND "python" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_sampler_config.py"
             "--sampler_config" "${sampler_default_config}"
@@ -781,8 +782,6 @@ function(run_custom_hybrid
     add_custom_command(OUTPUT ${plots}
             COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_spectra.py"
                     "--input_files" "${results_folder}/${i}/Spectra/*.txt"
-                    "--energy" "${energy}"
-                    "--system" "${system}"
                     "--Nevents" "${N_events_afterburner}"
             COMMENT "Plotting spectra for custom hybrid run."
         )
