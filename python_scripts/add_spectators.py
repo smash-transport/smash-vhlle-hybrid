@@ -9,10 +9,30 @@ import os
     also the spectators from the initial SMASH run.
 '''
 
-# Dictionary to determine the initial number of nucleons in the system,
-# necessary to find spectators from extended OSCAR ourput
-initial_nucleons = {'AuAu' : 394,
-                    'PbPb' : 416}
+
+def get_initial_nucleons_from_config():
+    '''
+        Determine the number of initial nucleons of the collision from the
+        SMASH config employed to provide the initial conditions.
+        We need to find the indented configuration of the projectile and target
+        nuclei and read off the number of constituents.
+    '''
+
+    N_initial_nucleons = 0
+    with open(args.smash_config) as config:
+        for line in config:
+            if line.startswith('      Particles:'):
+                split_line = line.split(':')
+                if len(split_line) != 4:
+                    print ('ERROR: Cannot cope with more than two particle '
+                           'species forming the initial nucleons. Pleae modify '
+                           'the \'python_scripts/add_spectators.py\' script.')
+                    break
+                N_initial_nucleons += int(line.split(':')[2].split(',')[0])
+                N_initial_nucleons += int(line.split(':')[3].split('}')[0])
+
+    return N_initial_nucleons
+
 
 def extract_spectators():
     '''
@@ -21,8 +41,8 @@ def extract_spectators():
            that is passed to write_full_particle_list() where the entries are
            written to the output file.
     '''
-    system = args.initial_particle_list.split('/')[-4].split('_')[0]
-    N_nucleons = initial_nucleons[system]
+
+    N_nucleons = get_initial_nucleons_from_config()
 
     spectator_list = []
     with open(args.initial_particle_list, 'r') as f:
@@ -89,9 +109,11 @@ if __name__ == '__main__':
                         help="Particle list from the initial conditions SMASH run.")
     parser.add_argument("--output_file", required = True,
                         help="Resulting particle list containing sampled and spectator particles.")
+    parser.add_argument("--smash_config", required = True,
+                        help="SMASH config file employed for the initial conditions.")
     args = parser.parse_args()
 
 
+    get_initial_nucleons_from_config()
     spectators = extract_spectators()
-
     write_full_particle_list(spectators)
