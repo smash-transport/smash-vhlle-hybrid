@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 def get_average(obs):
     if obs == 'v2': files = args.v2_files
     elif obs == 'v3': files = args.v3_files
-    else: print 'Observable not known'
+    else: print ('Observable not known')
 
     full_data = []
     for file in files:
@@ -31,7 +31,7 @@ def get_average(obs):
 def average_integrated_vn(obs):
     if obs == 'v2': files = args.v2_files
     elif obs == 'v3': files = args.v3_files
-    else: print 'Observable not known'
+    else: print ('Observable not known')
 
     int_vn_list = []
     for file in files:
@@ -84,8 +84,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if (len(args.v2_files) != len(args.v3_files)):
-        print 'Loaded ' + str(len(args.v2_files)) + ' v2 files, but ' + str(len(args.v3_files)) + ' v3 files.'
-    print 'Averaging over ' + str(len(args.v2_files)) + ' events.'
+        print ('Loaded ' + str(len(args.v2_files)) + ' v2 files, but ' + str(len(args.v3_files)) + ' v3 files.')
+    print ('Averaging over ' + str(len(args.v2_files)) + ' events.')
 
     mean_v2, error_v2 = get_average('v2')
     mean_v3, error_v3 = get_average('v3')

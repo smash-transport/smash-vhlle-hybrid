@@ -125,6 +125,7 @@ def energy_from_hydro(file):
         if line.startswith('timestep'): continue
         if line.startswith('####'): continue
         if line.startswith('       tau'): continue
+        if line.startswith('mkdir returns:'): continue
         # Find values before grid resize
         if line.startswith('grid'):
             NB_before = baryon_number
@@ -181,7 +182,7 @@ def plotting_E_conservation(IC_energy, Specs_energy, hydro_energy, Sampler_energ
     plt.plot(x, [hydro_energy + Specs_energy] * Nevents, label = 'Hydro: Energy through Surface + Energy from Spectators', color = 'green', lw = 2)
     plt.plot(x, [np.mean(Sampler_energy)]*Nevents, label = 'Sampler: Mean Energy + Energy from Spectators', color = 'midnightblue', lw = 2)
     plt.plot(x, [Final_State_energy]*Nevents, label = 'SMASH: Final State Energy', color = 'orange', lw = 2, ls = '--')
-    plt.legend(title = r'$\Delta$E = ' + str(round(100*(np.mean(Final_State_energy)/IC_energy - 1),2)) + ' %', loc = 'lower center')
+    plt.legend(title = r'$\Delta$E = ' + str(round(float(100*(Final_State_energy/IC_energy - 1)),2)) + ' %', loc = 'lower center')
     plt.title(system + r' @ $\mathbf{\sqrt{s}}$ = ' + energy + ' GeV', fontweight = 'bold')
     plt.xlim(0,Nevents + 1)
     plt.xlabel('Event')
@@ -204,7 +205,7 @@ def plotting_NB_conservation(IC_NB, Specs_NB, hydro_NB, Sampler_NB, Final_State_
     plt.plot(x, [Specs_NB + hydro_NB]*Nevents, label = r'Hydro: N$_\mathsf{B - \bar{B}}$', color = 'green', lw = 2)
     plt.plot(x, [np.mean(Sampler_NB)]*Nevents, label = r'Sampler: Mean N$_\mathsf{B - \bar{B}}$', color = 'midnightblue', lw = 2)
     plt.plot(x, [Final_State_NB]*Nevents, label = r'SMASH: Final State N$_\mathsf{B - \bar{B}}$', color = 'orange', lw = 2, ls = '--')
-    plt.legend(title = r'$\Delta$N$_\mathsf{B}$ = ' + str(round(100*(np.mean(Final_State_NB)/IC_NB - 1),2)) + ' %')
+    plt.legend(title = r'$\Delta$N$_\mathsf{B}$ = ' + str(round(float(100*(Final_State_NB/IC_NB - 1)),2)) + ' %')
     plt.title(system + r' @ $\mathbf{\sqrt{s}}$ = ' + energy + ' GeV', fontweight = 'bold')
     plt.xlim(0,Nevents + 1)
     plt.xlabel('Event')
@@ -242,13 +243,12 @@ if __name__ == '__main__':
     NB_sampler_per_Event_no_specs, E_sampler_per_Event_no_specs = energy_from_oscar(Sampler_without_specs, False)
     NB_SMASH_final_state, E_SMASH_final_state = energy_from_binary(args.SMASH_final_state)
 
-
     plotting_E_conservation(E_SMASH_IC, E_SMASH_IC_specs[0], E_hydro, E_sampler_per_Event, E_sampler_per_Event_no_specs, E_SMASH_final_state)
     plotting_NB_conservation(NB_SMASH_IC, NB_SMASH_IC_specs[0], NB_hydro, NB_sampler_per_Event, NB_SMASH_final_state)
 
-    print 'Initial SMASH energy: ' + str(E_SMASH_IC[0])
-    print 'Spectator energy: ' + str(E_SMASH_IC_specs)
-    print 'Hydro energy through surface: ' + str(E_hydro)
-    print 'Sampler energy: ' + str(np.mean(E_sampler_per_Event))
-    print 'Final SMASH energy: ' + str(E_SMASH_final_state)
-    print 'Energy gain/loss: ' + str(round(100 * ((np.mean(E_SMASH_final_state) / E_SMASH_IC) -1),2) ) + ' %'
+    print ('Initial SMASH energy: ' + str(E_SMASH_IC[0]))
+    print ('Spectator energy: ' + str(E_SMASH_IC_specs[0]))
+    print ('Hydro energy through surface: ' + str(E_hydro))
+    print ('Sampler energy: ' + str(np.mean(E_sampler_per_Event)))
+    print ('Final SMASH energy: ' + str(E_SMASH_final_state))
+    print ('Energy gain/loss: ' + str(round(100 * ((np.mean(E_SMASH_final_state) / E_SMASH_IC[0]) -1),2) ) + ' %')

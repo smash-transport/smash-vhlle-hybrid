@@ -17,7 +17,7 @@ def get_average(obs):
     elif obs == 'v2': files = args.v2_files
     elif obs == 'midyY': files = args.midyY_files
     elif obs == 'meanpT': files = args.meanpT_files
-    else: print 'Observable not known'
+    else: print ('Observable not known')
 
     full_data = []
     for file in files:
@@ -46,7 +46,9 @@ def print_to_file(mean, error, obs):
     ptbins = linecache.getline(args.smash_ana_dir + '/test/energy_scan/mult_and_spectra.py', 22)
     midybins = linecache.getline(args.smash_ana_dir + '/test/energy_scan/mult_and_spectra.py', 23)
     if midybins.split()[0] != 'midrapidity_cut' or mtbins.split()[0] != 'mtbins' or ptbins.split()[0] != 'ptbins' or ybins.split()[0] != 'ybins':
-        print 'Problem in determination of bin width. The smash-analysis script \'smash-analysis/test/energy_scan/mult_and_spectra.py\' was modified after this file was created. Please check and update accordingly.'
+        print ('Problem in determination of bin width. '
+               'The smash-analysis script \'smash-analysis/test/energy_scan/mult_and_spectra.py\' '
+               'was modified after this file was created. Please check and update accordingly.')
 
     mtbin_edges = eval(mtbins.split('=')[1][:-2])
     ptbin_edges = eval(ptbins.split('=')[1][:-2])
@@ -54,7 +56,8 @@ def print_to_file(mean, error, obs):
     midy_bin_width = 2.0 * float(midybins.split()[-1].split(')')[0])
 
     # create files and write content
-    file = open(args.output_dir + obs + '.txt', 'w')
+    if obs == 'v2': file = open(args.output_dir + obs + 'spectra.txt', 'w')
+    else: file = open(args.output_dir + obs + '.txt', 'w')
     if obs in ['midyY', 'meanpT']: file.write('# ' + obs + ' spectra, already divided by events\n')
     else: file.write('# ' + obs + ' spectra, already divided by bin width and events\n')
     if obs == 'v2': file.write('# pT_bin_center 211 211_error -211 -211_error 111 111_error 321 321_error -321 -321_error 2212 2212_error -2212 -2212_error 3122 3122_error -3122 -3122_error\n')
@@ -117,8 +120,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if (len(args.pT_files) != len(args.mT_files)) or (len(args.pT_files) != len(args.y_files)):
-        print 'Loaded ' + str(len(args.pT_files)) + ' pT files, but ' + str(len(args.mT_files)) + ' mT files and ' + str(len(args.y_files)) + '  files.'
-    print 'Averaging over ' + str(len(args.pT_files)) + ' events.'
+        print ('Loaded ' + str(len(args.pT_files)) + ' pT files, but ' + str(len(args.mT_files)) + ' mT files and ' + str(len(args.y_files)) + '  files.')
+    print ('Averaging over ' + str(len(args.pT_files)) + ' events.')
 
     mean_pT, error_pT = get_average('pT')
     mean_mT, error_mT = get_average('mT')

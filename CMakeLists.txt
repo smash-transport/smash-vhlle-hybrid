@@ -7,8 +7,8 @@ cmake_minimum_required(VERSION 3.5.1)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 include(FindPythonModules)
 
-find_package(PythonInterp 2.7 REQUIRED)
-find_package(PythonLibs 2.7)
+find_package(PythonInterp 3.6 REQUIRED)
+find_package(PythonLibs 3.6)
 
 find_python_module(numpy VERSION 1.8.2 REQUIRED)
 find_python_module(matplotlib VERSION 1.3.1 REQUIRED)
@@ -169,7 +169,7 @@ function(run_one_energy
     #----------------------------------------------------------------------------#
     # create input file with correct paths for vHLLE
     add_custom_command(OUTPUT "${vhlle_updated_config}"
-    COMMAND "python" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_vhlle_config.py"
+    COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_vhlle_config.py"
             "--vhlle_config" "${vhlle_default_config}"
             "--smash_ic" "${smash_IC_file}"
             "--output_file" "${vhlle_updated_config}"
@@ -200,7 +200,7 @@ function(run_one_energy
     # create input file with correct paths for sampler
     set(N_events_afterburner "1000")
     add_custom_command(OUTPUT "${sampler_updated_config}"
-    COMMAND "python" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_sampler_config.py"
+    COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_sampler_config.py"
             "--sampler_config" "${sampler_default_config}"
             "--vhlle_config" "${vhlle_updated_config}"
             "--output_file" "${sampler_updated_config}"
@@ -227,7 +227,7 @@ function(run_one_energy
     # Add spectators to particle list and rename it to be in accordance
     # with SMASH list modus input format
     add_custom_command(OUTPUT ${full_particle_list}
-    COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/add_spectators.py"
+    COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/add_spectators.py"
                       "--sampled_particle_list" "${sampler_dir}/particle_lists.oscar"
                       "--initial_particle_list" "${smash_IC_oscar}"
                       "--output_file" "${full_particle_list}"
@@ -274,7 +274,7 @@ function(run_one_energy
 
     # Perform analysis
     add_custom_command(OUTPUT ${analysis_outputs}
-            COMMAND "python2" "${SMASH_ANALYSIS_PATH}/test/energy_scan/mult_and_spectra.py"
+            COMMAND "python3" "${SMASH_ANALYSIS_PATH}/test/energy_scan/mult_and_spectra.py"
                     "--output_files" ${analysis_outputs}
                     "--input_files" "${final_particle_list}"
             COMMENT "Analyzing spectra for ${system} @ ${energy} GeV (${i}/${num_runs})."
@@ -303,7 +303,7 @@ function(run_one_energy
 
     # Perform plotting
     add_custom_command(OUTPUT ${plots}
-            COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_spectra.py"
+            COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_spectra.py"
                     "--input_files" "${results_folder}/${i}/Spectra/*.txt"
                     "--energy" "${energy}"
                     "--system" "${system}"
@@ -326,7 +326,7 @@ function(run_one_energy
     list(APPEND all_multiplicity_plots ${Mult_plot})
     list(APPEND all_lifetime_lists ${Hydro_lifetime_list})
     add_custom_command(OUTPUT ${E_cons_plot}
-            COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_conservation.py"
+            COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_conservation.py"
                     "--SMASH_IC" "${smash_IC_oscar}"
                     "--Hydro_Info" "${results_folder}/${i}/Hydro/Terminal_Output.txt"
                     "--Sampler" "${full_particle_list}"
@@ -339,7 +339,7 @@ function(run_one_energy
         )
 
     add_custom_command(OUTPUT ${Mult_plot}
-            COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_multiplicities.py"
+            COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/check_multiplicities.py"
                     "--Freezeout_Surface" "${vhlle_freezeout_hypersurface}"
                     "--Sampler" "${sampled_particle_list}"
                     "--output_path" "${output_dir}"
@@ -348,7 +348,7 @@ function(run_one_energy
         )
 
     add_custom_command(OUTPUT ${Hydro_lifetime_list}
-            COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/get_hydro_endtime.py"
+            COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/get_hydro_endtime.py"
                     "--Hydro_Info" "${results_folder}/${i}/Hydro/Terminal_Output.txt"
                     "--output_path" "${output_dir}"
             DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/get_hydro_endtime.py"
@@ -404,7 +404,7 @@ function(run_one_energy
                        "${results_folder}/dNdy.txt"
                      )
   add_custom_command(OUTPUT ${averaged_spectra}
-          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/average_spectra.py"
+          COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/average_spectra.py"
                   "--smash_ana_dir" "${SMASH_ANALYSIS_PATH}"
                   "--pT_files" "${results_folder}/*/Spectra/ptspectra.txt"
                   "--mT_files" "${results_folder}/*/Spectra/mtspectra.txt"
@@ -424,7 +424,7 @@ function(run_one_energy
                             "${results_folder}/v3.txt" ;
                      )
   add_custom_command(OUTPUT ${averaged_flow_spectra}
-          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/average_flow.py"
+          COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/average_flow.py"
                   "--v2_files" "${results_folder}/*/Spectra/EP_v2.txt"
                   "--v3_files" "${results_folder}/*/Spectra/EP_v3.txt"
                   "--energy" "${energy}"
@@ -437,7 +437,7 @@ function(run_one_energy
   #----------------------------------------------------------------------------#
   set(averaged_endtime_files "${results_folder}/Endtime.txt")
   add_custom_command(OUTPUT ${averaged_endtime_files}
-         COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/average_endtimes.py"
+         COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/average_endtimes.py"
                  "--endtime_files" "${results_folder}/*/Hydro_Endtime.txt"
                   "--energy" "${energy}"
                   "--output_dir" "${results_folder}/Averaged_Spectra/"
@@ -453,7 +453,7 @@ function(run_one_energy
 
   # Perform plotting of averaged quantities
   add_custom_command(OUTPUT ${averaged_plots}
-          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_spectra.py"
+          COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_spectra.py"
                   "--input_files" "${results_folder}/Averaged_Spectra/*.txt"
                   "--energy" "${energy}"
                   "--system" "${system}"
@@ -527,9 +527,9 @@ function(Excitation_Funcs
   set(outputdir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results")
   set(midY_plot "${outputdir}/midy_yield_exc_func.pdf")
   add_custom_command(OUTPUT ${midY_plot}
-          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_excitation_functions.py"
+          COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_excitation_functions.py"
                   "--midyY_files" "${outputdir}/*/Averaged_Spectra/midyY.txt"
-                  "--v2_files" "${outputdir}/*/Averaged_Spectra/v2.txt"
+                  "--v2_files" "${outputdir}/*/Averaged_Spectra/v2spectra.txt"
                   "--meanpT_files" "${outputdir}/*/Averaged_Spectra/meanpT.txt"
                   "--output_dir" "${outputdir}/"
           DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_excitation_functions.py"
@@ -545,7 +545,7 @@ function(Integrated_vn
   set(outputdir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results")
   set(int_vn_plot "${outputdir}/int_vn.pdf")
   add_custom_command(OUTPUT ${int_vn_plot}
-          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_int_vn.py"
+          COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_int_vn.py"
                   "--vn_files" "${outputdir}/*/Averaged_Spectra/int_vn.txt"
                   "--output_dir" "${outputdir}/"
           DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_int_vn.py"
@@ -561,7 +561,7 @@ function(Hydro_Lifetimes
   set(outputdir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results")
   set(lifetime_file "${outputdir}/hydro_lifetime.txt")
   add_custom_command(OUTPUT ${lifetime_file}
-          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/assemble_endtimes.py"
+          COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/assemble_endtimes.py"
                   "--endtime_files" "${outputdir}/*/Averaged_Spectra/Endtime.txt"
                   "--output_dir" "${outputdir}/"
           DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/assemble_endtimes.py"
@@ -645,7 +645,7 @@ function(run_custom_hybrid
     #----------------------------------------------------------------------------#
     # create input file with correct paths for vHLLE
     add_custom_command(OUTPUT "${vhlle_updated_config}"
-    COMMAND "python" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_vhlle_config.py"
+    COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_vhlle_config.py"
             "--vhlle_config" "${vhlle_default_config}"
             "--smash_ic" "${smash_IC_file}"
             "--output_file" "${vhlle_updated_config}"
@@ -675,7 +675,7 @@ function(run_custom_hybrid
     # create input file with correct paths for sampler
     set(N_events_afterburner "1000")
     add_custom_command(OUTPUT "${sampler_updated_config}"
-    COMMAND "python" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_sampler_config.py"
+    COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_sampler_config.py"
             "--sampler_config" "${sampler_default_config}"
             "--vhlle_config" "${vhlle_updated_config}"
             "--output_file" "${sampler_updated_config}"
@@ -703,7 +703,7 @@ function(run_custom_hybrid
     # Add spectators to particle list and rename it to be in accordance
     # with SMASH list modus input format
     add_custom_command(OUTPUT ${full_particle_list}
-    COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/add_spectators.py"
+    COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/add_spectators.py"
                       "--sampled_particle_list" "${sampler_dir}/particle_lists.oscar"
                       "--initial_particle_list" "${smash_IC_oscar}"
                       "--output_file" "${full_particle_list}"
@@ -751,7 +751,7 @@ function(run_custom_hybrid
 
     # Perform analysis
     add_custom_command(OUTPUT ${analysis_outputs}
-            COMMAND "python2" "${SMASH_ANALYSIS_PATH}/test/energy_scan/mult_and_spectra.py"
+            COMMAND "python3" "${SMASH_ANALYSIS_PATH}/test/energy_scan/mult_and_spectra.py"
                     "--output_files" ${analysis_outputs}
                     "--input_files" "${final_particle_list}"
             COMMENT "Analyzing spectra for ${system} @ ${energy} GeV (${i}/${num_runs})."
@@ -780,7 +780,7 @@ function(run_custom_hybrid
 
     # Perform plotting
     add_custom_command(OUTPUT ${plots}
-            COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_spectra.py"
+            COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_spectra.py"
                     "--input_files" "${results_folder}/${i}/Spectra/*.txt"
                     "--Nevents" "${N_events_afterburner}"
             COMMENT "Plotting spectra for custom hybrid run."
@@ -797,7 +797,7 @@ function(run_custom_hybrid
                        "${results_folder}/dNdy.txt"
                      )
   add_custom_command(OUTPUT ${averaged_spectra}
-          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/average_spectra.py"
+          COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/average_spectra.py"
                   "--smash_ana_dir" "${SMASH_ANALYSIS_PATH}"
                   "--pT_files" "${results_folder}/*/Spectra/ptspectra.txt"
                   "--mT_files" "${results_folder}/*/Spectra/mtspectra.txt"
@@ -819,7 +819,7 @@ function(run_custom_hybrid
 
   # Perform plotting of averaged quantities
   add_custom_command(OUTPUT ${averaged_plots}
-          COMMAND "python2" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_spectra.py"
+          COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_spectra.py"
                   "--input_files" "${results_folder}/Averaged_Spectra/*.txt"
                   "--Nevents" "${N_events_afterburner}"
                   "--average" "True"
