@@ -1,0 +1,37 @@
+Version: 1.8
+
+Logging:
+    default: INFO
+
+General:
+    Modus:          Collider
+    Time_Step_Mode: Fixed
+    Delta_Time:     1.0
+    End_Time:       2000.0
+    Randomseed:     -1
+    Nevents:        1
+
+Output:
+    Initial_Conditions:
+      Format: ["ASCII", "Binary", "Oscar2013"]
+      Extended: True
+
+
+Modi:
+    Collider:
+        Projectile:
+            Particles: {2212: 44, 2112: 52}  # Ru
+            Custom:
+                # Path needs to be updated accordingly
+                File_Directory: "/Users/anna/Desktop/Isobar/"
+                File_Name: "ru96-smash-ico3-10k_new.dat"
+        Target:
+            Particles: {2212: 44, 2112: 52}
+            Custom:
+                # Path needs to be updated accordingly
+                File_Directory: "/Users/anna/Desktop/Isobar/"
+                File_Name: "ru96-smash-ico3-10k_new.dat"
+
+        Fermi_Motion: frozen
+        Impact:
+            Max: 2.3

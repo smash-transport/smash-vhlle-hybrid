@@ -107,6 +107,11 @@ function(run_one_energy
   list(GET energy_and_system 1 system)
   message(STATUS "Configuring hybrid run for ${system} @ sqrt(s) = ${energy} GeV.")
   set(results_folder "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}")
+
+  if("${system}" STREQUAL "RuRu" OR "${system}" STREQUAL "ZrZr")
+    message(STATUS "Relying on custom nucleon distributions for the initial conditions in ${system} collisions.")
+  endif()
+
   file(MAKE_DIRECTORY ${results_folder})
 
   set(smash_IC_files "")
@@ -520,6 +525,8 @@ run_one_energy("39.0;AuAu")
 run_one_energy("62.4;AuAu")
 run_one_energy("130.0;AuAu")
 run_one_energy("200.0;AuAu")
+run_one_energy("200.0;ZrZr")
+run_one_energy("200.0;RuRu")
 
 
 function(Excitation_Funcs
