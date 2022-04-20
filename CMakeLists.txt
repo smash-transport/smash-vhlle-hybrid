@@ -856,3 +856,290 @@ function(run_custom_hybrid
 endfunction()
 
 run_custom_hybrid()
+
+
+################################################################################
+#
+# Add functionality for a low statistics test case
+# This test case is not suitable for production runs, as quanutum number
+# conservation cannot be guaranteed owing to the lack of precision.
+#
+################################################################################
+function(test_hybrid
+        energy_and_system
+        )
+  list(GET energy_and_system 0 energy)
+  list(GET energy_and_system 1 system)
+  message(STATUS "Configuring hybrid test run, not intended for production runs.")
+  set(results_folder "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/test")
+  file(MAKE_DIRECTORY ${results_folder})
+
+  set(smash_IC_files "")
+  set(vhlle_freezeout_hypersurfaces "")
+  set(sampled_particle_lists "")
+  set(final_particle_lists "")
+  set(all_analysis_outputs "")
+  set(all_plots "")
+
+  set(num_runs "4")
+  foreach(i RANGE 1 ${num_runs})
+    file(MAKE_DIRECTORY "${results_folder}/${i}/IC")       # subdir for initial conditions
+    file(MAKE_DIRECTORY "${results_folder}/${i}/Hydro")    # subdir for hydro run
+    file(MAKE_DIRECTORY "${results_folder}/${i}/Sampler")  # subdir for particle sampling
+    file(MAKE_DIRECTORY "${results_folder}/${i}/Afterburner")  # subdir for afterburner
+    file(MAKE_DIRECTORY "${results_folder}/${i}/Spectra")  # subdir for analyzed spectra and plots
+
+    set(smash_IC_file "${results_folder}/${i}/IC/SMASH_IC.dat")
+    set(smash_IC_oscar "${results_folder}/${i}/IC/SMASH_IC.oscar")
+    set(smash_IC_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/smash_initial_conditions_custom.yaml")
+    set(vhlle_default_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/vhlle_hydro")
+    set(vhlle_output_dir "${results_folder}/${i}/Hydro/")
+    set(vhlle_updated_config "${results_folder}/${i}/Hydro/vhlle_config")
+    set(vhlle_freezeout_hypersurface "${results_folder}/${i}/Hydro/freezeout.dat")
+    set(sampler_input_hypersurface "${results_folder}/${i}/Sampler/freezeout.dat")
+    set(sampler_default_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/hadron_sampler")
+    set(sampler_updated_config "${results_folder}/${i}/Sampler/sampler_config")
+    set(sampler_dir "${results_folder}/${i}/Sampler")
+    set(sampled_particle_list "${results_folder}/${i}/Sampler/particle_lists.oscar")
+    set(full_particle_list "${results_folder}/${i}/Sampler/sampling0")
+    set(smash_afterburner_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/smash_afterburner.yaml")
+    set(final_particle_list "${results_folder}/${i}/Afterburner/particles_binary.bin")
+
+    list(APPEND smash_IC_files ${smash_IC_file})
+    list(APPEND vhlle_freezeout_hypersurfaces ${vhlle_freezeout_hypersurface})
+    list(APPEND sampled_particle_lists ${sampled_particle_list})
+    list(APPEND final_particle_lists ${final_particle_list})
+
+    #----------------------------------------------------------------------------#
+    # Run SMASH and generate initial conditions output
+    #----------------------------------------------------------------------------#
+    add_custom_command(OUTPUT "${smash_IC_file}" "${results_folder}/${i}/IC/config.yaml"
+    COMMAND "${CMAKE_BINARY_DIR}/smash"
+        "-o" "${results_folder}/${i}/IC"
+        "-i" "${smash_IC_config}"
+        "-f"
+        ">" "${results_folder}/${i}/IC/Terminal_Output.txt"
+    DEPENDS
+        "${smash_IC_config}"
+        "${CMAKE_BINARY_DIR}/smash"
+    COMMENT "Running SMASH for initial conditions of hybrid test run for ${system} @ ${energy} GeV (${i}/${num_runs})."
+    )
+
+
+    #----------------------------------------------------------------------------#
+    # Feed SMASH initial conditions into vHLLE and run hydro evolution
+    #----------------------------------------------------------------------------#
+    # create input file with correct paths for vHLLE
+    add_custom_command(OUTPUT "${vhlle_updated_config}"
+    COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_vhlle_config.py"
+            "--vhlle_config" "${vhlle_default_config}"
+            "--smash_ic" "${smash_IC_file}"
+            "--output_file" "${vhlle_updated_config}"
+            "--test"
+    DEPENDS
+            "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_vhlle_config.py"
+            "${vhlle_default_config}"
+    COMMENT "Creating input file for vHLLE for hybrid test run for ${system} @ ${energy} GeV (${i}/${num_runs})."
+    )
+
+
+    # Run hydro
+    add_custom_command(OUTPUT "${vhlle_freezeout_hypersurface}"
+      COMMAND "${CMAKE_BINARY_DIR}/hlle_visc"
+              "-params" "${vhlle_updated_config}"
+              "-ISinput" "${smash_IC_file}"
+              "-outputDir" "${vhlle_output_dir}"
+              ">" "${vhlle_output_dir}/Terminal_Output.txt"
+    DEPENDS
+            "${vhlle_updated_config}"
+            "${CMAKE_BINARY_DIR}/hlle_visc"
+    COMMENT "Running vHLLE for hybrid test run for ${system} @ ${energy} GeV (${i}/${num_runs})."
+    )
+
+    #----------------------------------------------------------------------------#
+    # Run Cooper-Frye sampler for particlization of freezeout surface
+    #----------------------------------------------------------------------------#
+    # create input file with correct paths for sampler
+    set(N_events_afterburner "50")
+    add_custom_command(OUTPUT "${sampler_updated_config}"
+    COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_sampler_config.py"
+            "--sampler_config" "${sampler_default_config}"
+            "--vhlle_config" "${vhlle_updated_config}"
+            "--output_file" "${sampler_updated_config}"
+            "--Nevents" "${N_events_afterburner}"
+    DEPENDS
+            "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_sampler_config.py"
+            "${sampler_default_config}"
+    COMMENT "Creating input file for hybrid test run for ${system} @ ${energy} GeV (${i}/${num_runs})."
+    )
+
+    # Run sampler
+    add_custom_command(OUTPUT ${sampled_particle_list}
+    COMMAND "${CMAKE_BINARY_DIR}/sampler" "events" "1" "${sampler_updated_config}"
+            ">" "${results_folder}/${i}/Sampler/Terminal_Output.txt"
+    DEPENDS
+            "${CMAKE_BINARY_DIR}/sampler"
+            "${sampler_updated_config}"
+    COMMENT "Sampling particles from freezeout hypersurface (${i}/${num_runs})."
+    )
+
+
+    #----------------------------------------------------------------------------#
+    # Run SMASH as afterburner
+    #----------------------------------------------------------------------------#
+    # Add spectators to particle list and rename it to be in accordance
+    # with SMASH list modus input format
+    add_custom_command(OUTPUT ${full_particle_list}
+    COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/add_spectators.py"
+                      "--sampled_particle_list" "${sampler_dir}/particle_lists.oscar"
+                      "--initial_particle_list" "${smash_IC_oscar}"
+                      "--output_file" "${full_particle_list}"
+                      "--smash_config" "${results_folder}/${i}/IC/config.yaml"
+    DEPENDS
+            "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/add_spectators.py"
+    COMMENT "Adding spectators to sampled particle list for afterburner (${i}/${num_runs})."
+    )
+
+    # Run afterburner evolution
+    add_custom_command(OUTPUT "${final_particle_list}" "${results_folder}/${i}/Afterburner/config.yaml"
+    COMMAND "${CMAKE_BINARY_DIR}/smash"
+        "-i" "${smash_afterburner_config}"
+        "-c" "Modi: { List: { File_Directory: ${sampler_dir}} }"
+        "-c" "General: { Nevents: ${N_events_afterburner} }"
+        "-o" "${results_folder}/${i}/Afterburner"
+        "-f"
+        ">" "/dev/null"
+    DEPENDS
+        "${smash_afterburner_config}"
+        "${CMAKE_BINARY_DIR}/smash"
+        "${full_particle_list}"
+    COMMENT "Running SMASH afterburner for hybrid test run for ${system} @ ${energy} GeV (${i}/${num_runs})."
+    )
+
+
+    #----------------------------------------------------------------------------#
+    # Analyse data
+    #----------------------------------------------------------------------------#
+    # Define filenames for particle spectra and create list of those
+    set(spectra_fnames "${results_folder}/${i}/Spectra/yspectra.txt" ;
+                       "${results_folder}/${i}/Spectra/mtspectra.txt" ;
+                       "${results_folder}/${i}/Spectra/ptspectra.txt" ;
+                       "${results_folder}/${i}/Spectra/v2spectra.txt" ;
+                       "${results_folder}/${i}/Spectra/meanmt0_midrapidity.txt" ;
+                       "${results_folder}/${i}/Spectra/meanpt_midrapidity.txt" ;
+                       "${results_folder}/${i}/Spectra/midrapidity_yield.txt" ;
+                       "${results_folder}/${i}/Spectra/total_multiplicity.txt")
+    set(analysis_outputs "")
+    foreach(j ${spectra_fnames})
+        list(APPEND analysis_outputs "${j}")
+    endforeach(j)
+
+    list(APPEND all_analysis_outputs ${analysis_outputs})
+
+    # Perform analysis
+    add_custom_command(OUTPUT ${analysis_outputs}
+            COMMAND "python3" "${SMASH_ANALYSIS_PATH}/test/energy_scan/mult_and_spectra.py"
+                    "--output_files" ${analysis_outputs}
+                    "--input_files" "${final_particle_list}"
+            COMMENT "Analyzing spectra for ${system} @ ${energy} GeV (${i}/${num_runs})."
+            DEPENDS "${SMASH_ANALYSIS_PATH}/test/energy_scan/mult_and_spectra.py"
+        )
+
+    #----------------------------------------------------------------------------#
+    # Plot spectra
+    #----------------------------------------------------------------------------#
+    # Define plot names
+    set(plot_names "${results_folder}/${i}/Spectra/yspectra.pdf" ;
+                   "${results_folder}/${i}/Spectra/mtspectra.pdf" ;
+                   "${results_folder}/${i}/Spectra/ptspectra.pdf" ;
+                   "${results_folder}/${i}/Spectra/v2spectra.pdf" ;
+                   "${results_folder}/${i}/Spectra/meanmt0_midrapidity.pdf" ;
+                   "${results_folder}/${i}/Spectra/meanpt_midrapidity.pdf" ;
+                   "${results_folder}/${i}/Spectra/midrapidity_yield.pdf" ;
+                   "${results_folder}/${i}/Spectra/total_multiplicity.pdf")
+
+    set(plots "")
+    foreach(j ${plot_names})
+       list(APPEND plots "${j}")
+    endforeach(j)
+
+    list(APPEND all_plots ${plots})
+
+    # Perform plotting
+    add_custom_command(OUTPUT ${plots}
+            COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_spectra.py"
+                    "--input_files" "${results_folder}/${i}/Spectra/*.txt"
+                    "--Nevents" "${N_events_afterburner}"
+            COMMENT "Plotting spectra for custom hybrid run."
+        )
+
+  endforeach(i)
+
+  #----------------------------------------------------------------------------#
+  # Average previously obtained spectra
+  #----------------------------------------------------------------------------#
+  file(MAKE_DIRECTORY "${results_folder}/Averaged_Spectra")
+  set(averaged_spectra "${results_folder}/pT.txt" ;
+                       "${results_folder}/mT.txt" ;
+                       "${results_folder}/dNdy.txt"
+                     )
+  add_custom_command(OUTPUT ${averaged_spectra}
+          COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/average_spectra.py"
+                  "--smash_ana_dir" "${SMASH_ANALYSIS_PATH}"
+                  "--pT_files" "${results_folder}/*/Spectra/ptspectra.txt"
+                  "--mT_files" "${results_folder}/*/Spectra/mtspectra.txt"
+                  "--y_files" "${results_folder}/*/Spectra/yspectra.txt"
+                  "--midyY_files" "${results_folder}/*/Spectra/midrapidity_yield.txt"
+                  "--meanpT_files" "${results_folder}/*/Spectra/meanpt_midrapidity.txt"
+                  "--v2_files" "${results_folder}/*/Spectra/v2spectra.txt"
+                  "--Nevents" "${N_events_afterburner}"
+                  "--output_dir" "${results_folder}/Averaged_Spectra/"
+          COMMENT "Averaging spectra for hybrid test run for ${system} @ ${energy} GeV."
+      )
+
+  #----------------------------------------------------------------------------#
+  # Plot averaged quantities
+  #----------------------------------------------------------------------------#
+  set(averaged_plots "${results_folder}/Averaged_Spectra/yspectra.pdf" ;
+                     "${results_folder}/Averaged_Spectra/mtspectra.pdf" ;
+                     "${results_folder}/Averaged_Spectra/ptspectra.pdf")
+
+  # Perform plotting of averaged quantities
+  add_custom_command(OUTPUT ${averaged_plots}
+          COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/plot_spectra.py"
+                  "--input_files" "${results_folder}/Averaged_Spectra/*.txt"
+                  "--Nevents" "${N_events_afterburner}"
+                  "--average" "True"
+          COMMENT "Plotting averaged spectra for hybrid test run for ${system} @ ${energy} GeV."
+      )
+
+
+  # Define subtargets to enable separated running of the hybrid submodules
+  set(target test_IC)
+  add_custom_target(${target} ALL DEPENDS ${smash_IC_files})
+
+  set(target test_hydro)
+  add_custom_target(${target} ALL DEPENDS ${vhlle_freezeout_hypersurfaces})
+
+  set(target test_sampler)
+  add_custom_target(${target} ALL DEPENDS ${sampled_particle_lists})
+
+  set(target test_afterburner)
+  add_custom_target(${target} ALL DEPENDS ${final_particle_lists})
+
+  set(target test_analysis)
+  add_custom_target(${target} ALL DEPENDS ${all_analysis_outputs})
+
+  set(target test_plots)
+  add_custom_target(${target} ALL DEPENDS ${all_plots})
+
+  # Averaging
+  set(target test_average_spectra)
+  add_custom_target(${target} ALL DEPENDS ${averaged_spectra})
+
+  set(target test_average_plots)
+  add_custom_target(${target} ALL DEPENDS ${averaged_plots})
+
+endfunction()
+
+test_hybrid("7.7;AuAu")
