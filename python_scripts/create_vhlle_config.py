@@ -22,6 +22,8 @@ parser.add_argument("--output_file", required = True,
                     help="Updated vhlle config file")
 parser.add_argument("--energy", required = False,
                     help="Collision energy")
+parser.add_argument("--test", required = False, action='store_true', default = False,
+                    help="Collision energy")
 args = parser.parse_args()
 
 # Path to the reults directory
@@ -57,6 +59,12 @@ with open(args.vhlle_config, 'r') as f:
                 newline = 'Rgz     ' + str(hydro_params[energy]['Rgz']) + '\n'
             elif line.split()[0] == 'tau0':
                 newline = 'tau0       ' + str(proper_time) + '\n'
+            elif args.test and line.split()[0] == 'nx':
+                newline = 'nx        81\n'
+            elif args.test and line.split()[0] == 'ny':
+                newline = 'ny        81\n'
+            elif args.test and line.split()[0] == 'nz':
+                newline = 'nz        151\n'
             else:
                 newline = line
             config_updated.write(newline)

@@ -91,6 +91,26 @@ Further information about the configuration of the sampler is provided in the `R
 
 **Note:** In all configuration files, the paths to input files from the previous stages are adjusted automatically. Also cross-parameters that require consistency between the hydrodynamics evolution and the sampler, e.g. viscosities and critical energy density, are taken care of automatically.
 
+## Running a test setup
+
+The default setup of the SMASH-vHLLE-hybrid is meant to be executed on a computing cluster. To test the functionality and to also run it on a local computer, there is the possibility to execute a test setup of the SMASH-vHLLE-hybrid, which is a Au+Au collision at sqrt(s) = 7.7 GeV. The statistics are significantly reduced however and the grid for the hydrodynamic evolution is characterized by large cells, too large for a realistic simulation scenario. <br>
+**This test setup is hence only meant to be used in order to test the functionality of the framework and the embedded scripts, but not for production runs.**
+
+To execute the different stages of the test setup, run
+
+    make test_IC
+    make test_hydro
+    make test_sampler
+    make test_afterburner
+
+If the SMASH-vHLLE-hybrid is linked to the SMASH-analysis, one can additionally test the analysis scripts by executing
+
+    make test_analysis
+    make test_average_spectra
+    make test_average_plots
+
+The results are then located in `[...]/build/Hybrid_Results/test`.
+
 
 ## Using a custom SMASH configuration file for the initial conditions
 
