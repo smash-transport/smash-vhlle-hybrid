@@ -891,7 +891,7 @@ function(test_hybrid
 
     set(smash_IC_file "${results_folder}/${i}/IC/SMASH_IC.dat")
     set(smash_IC_oscar "${results_folder}/${i}/IC/SMASH_IC.oscar")
-    set(smash_IC_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/smash_initial_conditions_custom.yaml")
+    set(smash_IC_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/smash_initial_conditions_AuAu.yaml")
     set(vhlle_default_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/vhlle_hydro")
     set(vhlle_output_dir "${results_folder}/${i}/Hydro/")
     set(vhlle_updated_config "${results_folder}/${i}/Hydro/vhlle_config")
