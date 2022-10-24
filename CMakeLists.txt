@@ -157,6 +157,7 @@ function(run_one_energy
         "-i" "${smash_IC_config}"
         "-c" "Modi: {Collider: {Sqrtsnn: ${energy}}}"
         "-f"
+        "-n"
         ">" "${results_folder}/${i}/IC/Terminal_Output.txt"
     DEPENDS
         "${smash_IC_config}"
@@ -245,6 +246,7 @@ function(run_one_energy
         "-c" "General: { Nevents: ${N_events_afterburner} }"
         "-o" "${results_folder}/${i}/Afterburner"
         "-f"
+        "-n"
         ">" "/dev/null"
     DEPENDS
         "${smash_afterburner_config}"
@@ -632,6 +634,7 @@ function(run_custom_hybrid
         "-o" "${results_folder}/${i}/IC"
         "-i" "${smash_IC_config}"
         "-f"
+        "-n"
         ">" "${results_folder}/${i}/IC/Terminal_Output.txt"
     DEPENDS
         "${smash_IC_config}"
@@ -721,6 +724,7 @@ function(run_custom_hybrid
         "-c" "General: { Nevents: ${N_events_afterburner} }"
         "-o" "${results_folder}/${i}/Afterburner"
         "-f"
+        "-n"
         ">" "/dev/null"
     DEPENDS
         "${smash_afterburner_config}"
@@ -918,6 +922,7 @@ function(test_hybrid
         "-o" "${results_folder}/${i}/IC"
         "-i" "${smash_IC_config}"
         "-f"
+        "-n"
         ">" "${results_folder}/${i}/IC/Terminal_Output.txt"
     DEPENDS
         "${smash_IC_config}"
@@ -1008,6 +1013,7 @@ function(test_hybrid
         "-c" "General: { Nevents: ${N_events_afterburner} }"
         "-o" "${results_folder}/${i}/Afterburner"
         "-f"
+        "-n"
         ">" "/dev/null"
     DEPENDS
         "${smash_afterburner_config}"
