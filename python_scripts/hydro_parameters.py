@@ -3,7 +3,7 @@
     hydrodynamic evolution depending on the collision setup
 '''
 
-# etaS: shear viscosity / entropy density, taken from Karpenko et al.: Phys.Rev.C 91 (2015)
+# etaS: shear viscosity / entropy density, taken until 200 from Karpenko et al.: Phys.Rev.C 91 (2015)
 # Rg: transversal smearing parameter
 # Rgz: longitudinal smearing parameter
 hydro_params = {'4.3' : {'etaS' : 0.2, 'Rg' : 1.4, 'Rgz' : 1.3},
@@ -16,6 +16,8 @@ hydro_params = {'4.3' : {'etaS' : 0.2, 'Rg' : 1.4, 'Rgz' : 1.3},
                 '62.4' : {'etaS' : 0.08, 'Rg' : 1.0, 'Rgz' : 0.6},
                 '130.0' : {'etaS' : 0.08, 'Rg' : 1.0, 'Rgz' : 0.8},
                 '200.0' : {'etaS' : 0.08, 'Rg' : 1.0, 'Rgz' : 1.1},
+                '2760.0' : {'etaS' : 0.09, 'Rg' : 1.0, 'Rgz' : 1.2},
+                '5020.0' : {'etaS' : 0.1, 'Rg' : 1.0, 'Rgz' : 1.3},
                 'default' : {'etaS' : 0.2, 'Rg' : 1.0, 'Rgz' : 1.2}
               }
 

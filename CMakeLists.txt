@@ -522,6 +522,8 @@ run_one_energy("39.0;AuAu")
 run_one_energy("62.4;AuAu")
 run_one_energy("130.0;AuAu")
 run_one_energy("200.0;AuAu")
+run_one_energy("2760.0;PbPb")
+run_one_energy("5020.0;PbPb")
 
 
 function(Excitation_Funcs
