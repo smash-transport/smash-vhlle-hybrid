@@ -123,7 +123,7 @@ function(run_one_energy
   set(all_plots "")
   set(all_conservation_plots "")
 
-  set(num_runs "100")
+  set(num_runs "1")
   foreach(i RANGE 1 ${num_runs})
     file(MAKE_DIRECTORY "${results_folder}/${i}/IC")       # subdir for initial conditions
     file(MAKE_DIRECTORY "${results_folder}/${i}/Hydro")    # subdir for hydro run
@@ -138,6 +138,7 @@ function(run_one_energy
     set(vhlle_default_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/vhlle_hydro")
     set(vhlle_output_dir "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Hydro/")
     set(vhlle_updated_config "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Hydro/vhlle_config")
+    set(vhlle_freezeout_hypersurface_2D "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Hydro/freezeout_2D.dat")
     set(vhlle_freezeout_hypersurface "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Hydro/freezeout.dat")
     set(sampler_input_hypersurface "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/${system}_${energy}/${i}/Sampler/freezeout.dat")
     set(sampler_default_config "${CMAKE_CURRENT_SOURCE_DIR}/configs/hadron_sampler")
@@ -168,6 +169,23 @@ function(run_one_energy
         "${CMAKE_BINARY_DIR}/smash"
     COMMENT "Running SMASH for Initial Conditions of ${system} @ ${energy} GeV (${i}/${num_runs})."
     )
+    
+    #----------------------------------------------------------------------------#
+    # Convert the freezeout hypersurface from 2D to 3D
+    #----------------------------------------------------------------------------#
+    # Convert the 2D vHLLE freezeout hypersurface to 3D, 
+    # save the 2D freezeout as freezeout_2D.dat and the 
+    # 3D version as new freezeout.dat 
+    add_custom_command(OUTPUT "${vhlle_freezeout_hypersurface_2D}"
+    COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/freezeout_2D_to_3D.py"
+            "--freezeout" "${vhlle_freezeout_hypersurface}"
+    DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/freezeout_2D_to_3D.py"
+        "${vhlle_freezeout_hypersurface}"
+    COMMENT "Converting 2D freezeout surface to  ${system} @ ${energy} GeV (${i}/${num_runs})."
+    )
+
+
 
     #----------------------------------------------------------------------------#
     # Feed SMASH initial conditions into vHLLE and run hydro evolution
