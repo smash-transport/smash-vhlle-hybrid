@@ -173,14 +173,13 @@ function(run_one_energy
     #----------------------------------------------------------------------------#
     # Convert the freezeout hypersurface from 2D to 3D
     #----------------------------------------------------------------------------#
-    # Convert the 2D vHLLE freezeout hypersurface to 3D, 
-    # save the 2D freezeout as freezeout_2D.dat and the 
-    # 3D version as new freezeout.dat 
+    # Convert the 2D vHLLE freezeout hypersurface to 3D,csave the 2D 
+    # freezeout as freezeout_2D.dat and the 3D version as new freezeout.dat 
     add_custom_command(OUTPUT "${vhlle_freezeout_hypersurface_2D}"
-    COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/freezeout_2D_to_3D.py"
+    COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/convert_freezeout_to_3D.py"
             "--freezeout" "${vhlle_freezeout_hypersurface}"
     DEPENDS
-        "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/freezeout_2D_to_3D.py"
+        "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/convert_freezeout_to_3D.py"
         "${vhlle_freezeout_hypersurface}"
     COMMENT "Converting 2D freezeout surface to  ${system} @ ${energy} GeV (${i}/${num_runs})."
     )
