@@ -177,7 +177,7 @@ function(run_one_energy
     # freezeout as freezeout_2D.dat and the 3D version as new freezeout.dat 
     add_custom_command(OUTPUT "${vhlle_freezeout_hypersurface_2D}"
     COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/convert_freezeout_to_3D.py"
-            "--freezeout" "${vhlle_freezeout_hypersurface}"
+        "--freezeout" "${vhlle_freezeout_hypersurface}"
     DEPENDS
         "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/convert_freezeout_to_3D.py"
         "${vhlle_freezeout_hypersurface}"
