@@ -169,20 +169,6 @@ function(run_one_energy
         "${CMAKE_BINARY_DIR}/smash"
     COMMENT "Running SMASH for Initial Conditions of ${system} @ ${energy} GeV (${i}/${num_runs})."
     )
-    
-    #----------------------------------------------------------------------------#
-    # Convert the freezeout hypersurface from 2D to 3D
-    #----------------------------------------------------------------------------#
-    # Convert the 2D vHLLE freezeout hypersurface to 3D,csave the 2D 
-    # freezeout as freezeout_2D.dat and the 3D version as new freezeout.dat 
-    add_custom_command(OUTPUT "${vhlle_freezeout_hypersurface_2D}"
-    COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/convert_freezeout_to_3D.py"
-        "--freezeout" "${vhlle_freezeout_hypersurface}"
-    DEPENDS
-        "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/convert_freezeout_to_3D.py"
-        "${vhlle_freezeout_hypersurface}"
-    COMMENT "Converting 2D freezeout surface to  ${system} @ ${energy} GeV (${i}/${num_runs})."
-    )
 
     #----------------------------------------------------------------------------#
     # Feed SMASH initial conditions into vHLLE and run hydro evolution
@@ -197,7 +183,6 @@ function(run_one_energy
     DEPENDS
             "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_vhlle_config.py"
             "${vhlle_default_config}"
-	    "${vhlle_freezeout_hypersurface_2D}"
     COMMENT "Creating input file for vHLLE for ${system} @ ${energy} GeV (${i}/${num_runs})."
     )
 
@@ -214,6 +199,20 @@ function(run_one_energy
             "${CMAKE_BINARY_DIR}/hlle_visc"
     COMMENT "Running vHLLE for ${system} @ ${energy} GeV (${i}/${num_runs})."
     )
+    
+    #----------------------------------------------------------------------------#
+    # Convert the freezeout hypersurface from 2D to 3D
+    #----------------------------------------------------------------------------#
+    # Convert the 2D vHLLE freezeout hypersurface to 3D,csave the 2D 
+    # freezeout as freezeout_2D.dat and the 3D version as new freezeout.dat 
+    add_custom_command(OUTPUT "${vhlle_freezeout_hypersurface_2D}"
+    COMMAND "python3" "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/convert_freezeout_to_3D.py"
+            "--freezeout" "${vhlle_freezeout_hypersurface}"
+    DEPENDS
+            "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/convert_freezeout_to_3D.py"
+            "${vhlle_freezeout_hypersurface}"
+    COMMENT "Converting 2D freezeout surface to 3D  ${system} @ ${energy} GeV (${i}/${num_runs})."
+    )
 
     #----------------------------------------------------------------------------#
     # Run Cooper-Frye sampler for particlization of freezeout surface
@@ -229,6 +228,7 @@ function(run_one_energy
     DEPENDS
             "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_sampler_config.py"
             "${sampler_default_config}"
+	    "${vhlle_freezeout_hypersurface_2D}"
     COMMENT "Creating input file for sampler for ${system} @ ${energy} GeV (${i}/${num_runs})."
     )
 
