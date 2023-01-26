@@ -7,13 +7,13 @@ e_crit    0.5
 
 nx        201
 ny        201
-nz        401
+nz        7
 xmin     -20.0
 xmax      20.0
 ymin     -20.0
 ymax      20.0
-etamin   -5.0
-etamax    5.0
+etamin   -0.5
+etamax    0.5
 
 tauGridResize 20.0
 
