@@ -3,10 +3,9 @@
 
 '''
 This file needs to be called via command line like
-python3 freezeout_2D_to_3D.py "--freezeout [Path to freezeout.dat as string]"
+python3 freezeout_2d_to_3d.py "--freezeout [Path to freezeout.dat as string]"
 
 '''
-
 
 import argparse
 from pathlib import Path
@@ -17,18 +16,17 @@ import os
 
 # pass arguments from the command line to the script
 parser = argparse.ArgumentParser()
-parser.add_argument("PATH_FREEZEOUT")
+parser.add_argument("--freezeout", required=True)
 args = parser.parse_args()
 
-PATH_TO_FREEZEOUT = Path(args.PATH_FREEZEOUT)
-#PATH_TO_FREEZEOUT = "./freezeout.dat"
-DIR_FREEZEOUT = os.path.dirname(PATH_TO_FREEZEOUT)
+PATH_TO_FREEZEOUT = Path(args.freezeout)
+DIR_FREEZEOUT = os.path.dirname(args.freezeout)
 
 if not Path(DIR_FREEZEOUT).exists():
     sys.exit("Fatal Error:  freezeout.dat not found!")
 
 else:
-    number_of_eta_slices = 11
+    number_of_eta_slices = 41
     
     # Parameters from the vhlle_config file. n_z must be odd so that 
     # a central cell exists
@@ -36,12 +34,15 @@ else:
     etamin_config = -0.5
     etamax_config = 0.5
     
-    small_value=0.000000001
+    # eta range for the 3D file
+    etamin = -5.0
+    etamax = 5.0
+    small_value = 0.0000001
     
     # Construct slice_positions_eta which holds the positions 
     # of every central cell slice in eta
     slice_positions_eta = np.zeros(number_of_eta_slices)
-    slice_width = (etamax_config - etamin_config)/(number_of_eta_slices-1)
+    slice_width = (etamax - etamin)/(number_of_eta_slices-1)
     half_eta_length = int((number_of_eta_slices-1)/2)
     
     for i in range(-half_eta_length, half_eta_length+1):
@@ -56,9 +57,6 @@ else:
     
     
     freezeout=np.loadtxt(PATH_TO_FREEZEOUT, dtype=float)
-    
-    # rename the 2d freezeout.dat so that it is not overwritten
-    os.rename(PATH_TO_FREEZEOUT, DIR_FREEZEOUT+"/freezeout_2D.dat" )
     
     # vHLLE has optional outputs. Here, it is checked how many output
     # quantities one line of the freezeout.dat has
@@ -78,7 +76,7 @@ else:
     
     
     # Create number_of_eta_slices copies of the central cell and shift each 
-    # copy in eta to span the whole range [etamin_config, etamax_config]
+    # copy in eta to span the whole range [etamin, etamax]
     freezeout_slices = np.zeros((number_of_eta_slices, central_cell_shape[0], 
                                 central_cell_shape[1]))
     
@@ -96,15 +94,7 @@ else:
     
     freezeout_slices = freezeout_slices[freezeout_slices[:,0].argsort()]
     
-    #print(freezeout_slices.shape)
-    #print(freezeout_slices[15000:15100, 0])
+    # rename the 2d freezeout.dat so that it is not overwritten
+    os.rename(PATH_TO_FREEZEOUT, DIR_FREEZEOUT+"/freezeout_2D.dat" )
     
     np.savetxt(DIR_FREEZEOUT+'/freezeout.dat', freezeout_slices)
-    
-    
-    
-
-    
-
-
-

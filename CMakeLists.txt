@@ -123,7 +123,7 @@ function(run_one_energy
   set(all_plots "")
   set(all_conservation_plots "")
 
-  set(num_runs "1")
+  set(num_runs "20")
   foreach(i RANGE 1 ${num_runs})
     file(MAKE_DIRECTORY "${results_folder}/${i}/IC")       # subdir for initial conditions
     file(MAKE_DIRECTORY "${results_folder}/${i}/Hydro")    # subdir for hydro run
@@ -184,8 +184,6 @@ function(run_one_energy
     COMMENT "Converting 2D freezeout surface to  ${system} @ ${energy} GeV (${i}/${num_runs})."
     )
 
-
-
     #----------------------------------------------------------------------------#
     # Feed SMASH initial conditions into vHLLE and run hydro evolution
     #----------------------------------------------------------------------------#
@@ -199,6 +197,7 @@ function(run_one_energy
     DEPENDS
             "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_vhlle_config.py"
             "${vhlle_default_config}"
+	    "${vhlle_freezeout_hypersurface_2D}"
     COMMENT "Creating input file for vHLLE for ${system} @ ${energy} GeV (${i}/${num_runs})."
     )
 
