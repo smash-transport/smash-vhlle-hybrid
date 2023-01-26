@@ -16,22 +16,21 @@ Output:
       Format: ["ASCII", "Binary", "Oscar2013"]
       Extended: True
 
-
 Modi:
     Collider:
         Projectile:
             Particles: {2212: 44, 2112: 52}  # Ru
             Custom:
                 # Path needs to be updated accordingly
-                File_Directory: "/Users/anna/Desktop/Isobar/"
-                File_Name: "ru96-smash-ico3-10k_new.dat"
+                File_Directory: "/lustre/hyihp/nsass/smash-vhlle-hybrid/custom_nucleus"
+                File_Name: "ru96case1-smash_triaxial-ico3-10017.dat"
         Target:
             Particles: {2212: 44, 2112: 52}
             Custom:
                 # Path needs to be updated accordingly
-                File_Directory: "/Users/anna/Desktop/Isobar/"
-                File_Name: "ru96-smash-ico3-10k_new.dat"
+                File_Directory: "/lustre/hyihp/nsass/smash-vhlle-hybrid/custom_nucleus"
+                File_Name: "ru96case1-smash_triaxial-ico3-10017.dat"
 
         Fermi_Motion: frozen
         Impact:
-            Max: 2.3
+            Value: 5.8
