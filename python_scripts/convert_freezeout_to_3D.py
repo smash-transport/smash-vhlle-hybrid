@@ -40,10 +40,10 @@ else:
     small_value = 0.0000001
     
     # Construct slice_positions_eta which holds the positions 
-    # of every central cell slice in eta
-    slice_positions_eta = np.zeros(number_of_eta_slices)
+    # of every central cell slice in eta centered around 0
     slice_width = (etamax - etamin)/(number_of_eta_slices-1)
     half_eta_length = int((number_of_eta_slices-1)/2)
+    slice_positions_eta = np.zeros(number_of_eta_slices)
     
     for i in range(-half_eta_length, half_eta_length+1):
         slice_positions_eta[i+half_eta_length] = i * slice_width
@@ -54,7 +54,6 @@ else:
     # counted in
     eta_min_central = etamin_config/(2*((n_z_config-1)/2)) - small_value
     eta_max_central = etamax_config/(2*((n_z_config-1)/2)) + small_value
-    
     
     freezeout=np.loadtxt(PATH_TO_FREEZEOUT, dtype=float)
     
@@ -84,6 +83,7 @@ else:
     
     del freezeout
     del central_cell
+    del eta_list
     
     for j in range(number_of_eta_slices):
         freezeout_slices[j, :, 3] += slice_positions_eta[j]
