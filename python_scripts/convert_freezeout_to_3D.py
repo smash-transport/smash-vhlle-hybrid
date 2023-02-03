@@ -22,6 +22,28 @@ args = parser.parse_args()
 PATH_TO_FREEZEOUT = Path(args.freezeout)
 DIR_FREEZEOUT = os.path.dirname(args.freezeout)
 
+
+# The boost follows the convention of line 267 ff of
+# https://root.cern.ch/doc/master/TLorentzVector_8cxx_source.html#l00267
+def boost(u4, vx, vy, vz):
+    t  = u4[0] 
+    ux = u4[1]
+    uy = u4[2]
+    uz = u4[3]
+    
+    v_2 = vx*vx + vy*vy + vz*vz
+    gamma = 1.0/np.sqrt(1.0 - v_2)
+    u3v = u4[1]*vx + u4[2]*vy + u4[3]*vz
+    gamma_2 = (gamma-1.0)/v_2 if v_2>0 else 0.0
+    
+    u0_new = gamma*(t+u3v)
+    ux_new = ux + gamma_2*u3v*vx + gamma*vx*t
+    uy_new = uy + gamma_2*u3v*vy + gamma*vy*t
+    uz_new = uz + gamma_2*u3v*vz + gamma*vz*t
+    
+    return u0_new, ux_new, uy_new, uz_new
+
+
 if not Path(DIR_FREEZEOUT).exists():
     sys.exit("Fatal Error:  freezeout.dat not found!")
 
@@ -68,7 +90,6 @@ else:
     # keep only the central cell elements which are within the rapidity range
     # defined by eta_min and eta_max
     eta_list=freezeout[:,3]
-    
     central_cell = freezeout[np.where((eta_list >= eta_min_central) & 
                                       (eta_list <= eta_max_central))]
     central_cell_shape = central_cell.shape
@@ -87,6 +108,28 @@ else:
     
     for j in range(number_of_eta_slices):
         freezeout_slices[j, :, 3] += slice_positions_eta[j]
+      
+        cells_in_slice = freezeout_slices[j,:,0].size
+        
+        # Apply a boost to the four velocity of every cell by the shifted eta
+        for k in range(cells_in_slice):
+            eta = freezeout_slices[j, k, 3]
+            eta_before = eta - slice_positions_eta[j]
+            u0 = freezeout_slices[j, k, 8]
+            u1 = freezeout_slices[j, k, 9]
+            u2 = freezeout_slices[j, k, 10]
+            u3 = freezeout_slices[j, k, 11]
+            u  = freezeout_slices[j, k, 8:12]
+    
+            # Following SMASH-hadron-sampler: gen.cpp, lines 314-320
+            vx = u1/u0*np.cosh(eta_before)/np.cosh(eta)
+            vy = u2/u0*np.cosh(eta_before)/np.cosh(eta)
+            vz = np.tanh(eta)
+            
+            u0_new, u1_new, u2_new, u3_new = boost(u, vx, vy, vz)
+            
+            freezeout_slices[j, k, 8:12] = np.array([u0_new, u1_new, u2_new, u3_new])
+        
         
     # Put the slices in one big array and sort them after tau
     freezeout_slices = freezeout_slices.reshape(
