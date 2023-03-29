@@ -23,27 +23,6 @@ PATH_TO_FREEZEOUT = Path(args.freezeout)
 DIR_FREEZEOUT = os.path.dirname(args.freezeout)
 
 
-# The boost follows the convention of line 267 ff of
-# https://root.cern.ch/doc/master/TLorentzVector_8cxx_source.html#l00267
-##def boost(u4, vx, vy, vz):
-##    t  = u4[0] 
-##    ux = u4[1]
-##    uy = u4[2]
-##    uz = u4[3]
-##    
-##    v_2 = vx*vx + vy*vy + vz*vz
-##    gamma = 1.0/np.sqrt(1.0 - v_2)
-##    u3v = u4[1]*vx + u4[2]*vy + u4[3]*vz
-##    gamma_2 = (gamma-1.0)/v_2 if v_2>0 else 0.0
-##    
-##    u0_new = gamma*(t+u3v)
-##    ux_new = ux + gamma_2*u3v*vx + gamma*vx*t
-##    uy_new = uy + gamma_2*u3v*vy + gamma*vy*t
-##    uz_new = uz + gamma_2*u3v*vz + gamma*vz*t
-##    
-##    return u0_new, ux_new, uy_new, uz_new
-
-
 if not Path(DIR_FREEZEOUT).exists():
     sys.exit("Fatal Error:  freezeout.dat not found!")
 
@@ -53,8 +32,8 @@ else:
     # Parameters from the vhlle_config file. n_z must be odd so that 
     # a central cell exists
     n_z_config = 7
-    etamin_config = -0.5
-    etamax_config = 0.5
+    etamin_config = -0.075  # TODO must be read from the vhlle_config
+    etamax_config = 0.075
     
     # eta range for the 3D file
 ##    etamin = -5.0
