@@ -77,6 +77,8 @@ A number of different collision setups for the hybrid model are supported out of
 * AuAu @ sqrt(s) = 62.4 GeV
 * AuAu @ sqrt(s) = 130.0 GeV
 * AuAu @ sqrt(s) = 200.0 GeV
+* PbPb @ sqrt(s) = 2.76 TeV
+* PbPb @ sqrt(s) = 5.02 TeV
 
 They can be executed in analogy to the PbPb @ sqrt(s) = 8.8 GeV example presented above.
 
