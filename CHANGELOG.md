@@ -17,7 +17,7 @@ Also possible, but for this project less relevant, is `Deprecated` for soon-to-b
 
 ## Unreleased
 
-## SMASH-vHLLE-Hybrid-3.0rc
+## SMASH-vHLLE-Hybrid-3.0
 Date:
 
 ### Added
