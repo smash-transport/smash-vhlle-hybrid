@@ -6,11 +6,11 @@ This changelog is in place since version SMASH-vHLLE-Hybrid-3.0.
 
 The major categories to group changes in this log are:
 
-* `Input / Output` for all, in particular breaking, changes, fixes and additions to the in- and output files.
-* `Added` for new features.
-* `Changed` for changes in existing functionality.
-* `Fixed` for any bug fixes.
-* `Removed` for now removed features.
+* :left_right_arrow: for all, in particular breaking, changes, fixes and additions to the in- and output files.
+* :heavy_plus_sign: for new features.
+* :recycle: for changes in existing functionality.
+* :sos: for any bug fixes.
+* :heavy_minus_sign: for now removed features.
 
 Also possible, but for this project less relevant, is `Deprecated` for soon-to-be removed features.
 
@@ -20,12 +20,14 @@ Also possible, but for this project less relevant, is `Deprecated` for soon-to-b
 ## SMASH-vHLLE-Hybrid-3.0
 Date:
 
-### Added
-* Targets for LHC energies 5.02 TeV and 2.76 TeV
-* Test targets with low statistics
+* :heavy_plus_sign: Targets for LHC energies 5.02 TeV and 2.76 TeV
+* :heavy_plus_sign: Test targets with low statistics
+* :recycle: SMASH does not save tabulations anymore
+* :recycle: vHLLE does not create unnecessary files
+* :recycle: Use `monash` tune for Pythia in SMASH IC and Afterburner from 200 GeV on
+* :recycle:⚠️ The `master` branch has been renamed to `main`
 
-### Fixed
-* SMASH does not save tabulations anymore
+[Link to diff from previous version](https://github.com/smash-transport/smash/compare/SMASH-vHLLE-hybrid-1.0...SMASH-vHLLE-Hybrid-3.0)
 
-### Changed
-* ⚠️ The `master` branch has been renamed to `main`
+## SMASH-vHLLE-hybrid-1.0
+Date: 2020-11-18
