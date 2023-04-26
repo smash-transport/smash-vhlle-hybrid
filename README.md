@@ -84,7 +84,7 @@ They can be executed in analogy to the PbPb @ sqrt(s) = 8.8 GeV example presente
 
 To run additional setups it is necessary to add the corresponding targets to the bottom of the `CMakeLists.txt` file. <br>
 The configuration files are located in `[...]/configs/`. Four different configuration files are necessary to run the full hybrid model. These are:
-1. `smash_initial_conditions_AuAu.yaml` or `smash_initial_conditions_AuAu.yaml` for the configuration of the initial setup of the collision. There are two initial conditions files corresponding to collision systems of Au+Au and Pb+Pb, respectively. If additional collision systems are desired, it is necessary to add an appropriate configuration file to the `[...]/configs/` directory. For details and further information about the configuration of SMASH, consult the [SMASH User Guide](http://theory.gsi.de/~smash/userguide/current/).
+1. `smash_initial_conditions_AuAu.yaml` or `smash_initial_conditions_PbPb.yaml` for the configuration of the initial setup of the collision. There are two initial conditions files corresponding to collision systems of Au+Au and Pb+Pb, respectively. If additional collision systems are desired, it is necessary to add an appropriate configuration file to the `[...]/configs/` directory. For details and further information about the configuration of SMASH, consult the [SMASH User Guide](http://theory.gsi.de/~smash/userguide/current/).
 2. `vhlle_hydro` for the configuration of the hydrodynamic evolution. <br>
 Further information about the configuration of vHLLE is provided in the `README.txt` of vHLLE.
 3. `hadron_sampler` for the configuration of the sampler. <br>
@@ -116,7 +116,7 @@ The results are then located in `[...]/build/Hybrid_Results/test`.
 
 ## Using a custom SMASH configuration file for the initial conditions
 
-In addition to the above described predefined Au+Au and Pb+Pb collisions, it is possible to employ a custom `SMASH` configuration file in the initial stage. This file is expected to be located in the  `[...]/configs/` directory and named `smash_initial_conditions_custom.yaml`. An example configuration is shipped with the `SMASH-vHLLE-hybrid`, it can be modified as desired. To run the hybrid with this custom configuration file, execute the following commands:
+In addition to the above described predefined Au+Au and Pb+Pb collisions, it is possible to employ a custom `SMASH` configuration file in the initial stage. This file is expected to be located in the  `[...]/configs/` directory and named `smash_initial_conditions_custom.yaml`. An example configuration is shipped with the `SMASH-vHLLE-hybrid`, it can be modified as desired. Among the essential parameters the collision system and impact parameter range can be adjusted in the configuration file `smash_initial_conditions_custom.yaml`, while the collision energy needs to be specified in the file `CMakeLists.txt` as an argument of the function `run_custom_hybrid(energy)`.  To run the hybrid with this custom configuration file, execute the following commands:
 
     make custom_IC
     make custom_hydro
@@ -134,7 +134,7 @@ To further analyze and average the outcome, if the `SMASH-vHLLE-hybrid` is coupl
 to obtain rapidity and transverse mass spectra that are stored in `[...]/build/Hybrid_Results/Custom/Averaged_Spectra`.
 
 **Note:**
-It might be necessary to separately adjust the viscosity and smearing parameters employed for the hydrodynamical evolution when using a custom SMASH config, as the default values are most likely not be the best fit. These can be adjusted in the `python_scripts/hydro_parameters.py` file, by modifying the values corresponding to the key `default` in the `hydro_params` dictionary.
+When using the custom configuration, it is possible to specify the viscosity and smearing parameters employed in the hydrodynamical evolution in `python_scripts/hydro_parameters.py` file, by adding or editing an entry in the `hydro_params` dictionary, where the collision energy is the key. By default for a defined collision energy the values in the dictionary are used, while for all other energies parameter values of the nearest lower energy are taken.
 
 # Module exchanges and further modifications
 It might be desired to run the SMASH-vHLLE-hybrid, but relying on a different initial state, particle sampler or similar. For this, the `CMakeLists.txt` need to be updated accordingly. Exemplary instructions for a number of use cases are provided in the following.
