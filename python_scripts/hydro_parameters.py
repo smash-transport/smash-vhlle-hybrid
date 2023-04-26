@@ -18,7 +18,6 @@ hydro_params = {'4.3' : {'etaS' : 0.2, 'Rg' : 1.4, 'Rgz' : 1.3},
                 '200.0' : {'etaS' : 0.08, 'Rg' : 1.0, 'Rgz' : 1.1},
                 '2760.0' : {'etaS' : 0.08, 'Rg' : 1.2, 'Rgz' : 1.3},
                 '5020.0' : {'etaS' : 0.1, 'Rg' : 1.0, 'Rgz' : 1.3},
-                'default' : {'etaS' : 0.2, 'Rg' : 1.0, 'Rgz' : 1.2}
               }
 
 # For reference, parameters as used in Karpenko et al.: Phys.Rev.C 91 (2015)

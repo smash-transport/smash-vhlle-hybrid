@@ -30,10 +30,11 @@ args = parser.parse_args()
 basepath = '/'.join(args.smash_ic.split('/')[:-2]) + '/'
 
 # Collision energy
-if args.energy:
-    energy = args.energy if args.energy in hydro_params.keys() else 'default'
+if args.energy in hydro_params.keys():
+    energy = args.energy
 else:
-    energy = 'default'
+    for key in hydro_params:
+        if float(args.energy) >= float(key): energy = key
 
 # Extract proper time of hypersurface from SMASH output, to pass it to
 # vhlle configuration file

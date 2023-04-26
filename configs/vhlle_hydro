@@ -24,3 +24,5 @@ Rgz     1.0      # to be updated
 tau0       2.7842
 tauMax     25.0
 dtau       0.05
+
+freezeoutOnly 1
