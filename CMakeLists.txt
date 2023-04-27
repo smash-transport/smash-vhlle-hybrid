@@ -239,11 +239,17 @@ function(run_one_energy
     )
 
     # Run afterburner evolution
+    set(setMonash FALSE)
+    if (energy GREATER_EQUAL 200)
+      set(setMonash TRUE)
+    endif()
+
     add_custom_command(OUTPUT "${final_particle_list}" "${results_folder}/${i}/Afterburner/config.yaml"
     COMMAND "${CMAKE_BINARY_DIR}/smash"
         "-i" "${smash_afterburner_config}"
         "-c" "Modi: { List: { File_Directory: ${sampler_dir}} }"
         "-c" "General: { Nevents: ${N_events_afterburner} }"
+        "-c" "Collision_Term: { String_Parameters: {Use_Monash_Tune: ${setMonash} } }"
         "-o" "${results_folder}/${i}/Afterburner"
         "-f"
         "-n"
@@ -587,8 +593,9 @@ Hydro_Lifetimes()
 #
 ################################################################################
 function(run_custom_hybrid
+         energy
         )
-  message(STATUS "Configuring hybrid run for custom IC config.")
+  message(STATUS "Configuring hybrid run for custom IC config @ sqrt(s) = ${energy} GeV.")
   set(results_folder "${CMAKE_CURRENT_BINARY_DIR}/Hybrid_Results/Custom")
   file(MAKE_DIRECTORY ${results_folder})
 
@@ -635,6 +642,7 @@ function(run_custom_hybrid
     COMMAND "${CMAKE_BINARY_DIR}/smash"
         "-o" "${results_folder}/${i}/IC"
         "-i" "${smash_IC_config}"
+        "-c" "Modi: {Collider: {Sqrtsnn: ${energy}}}"
         "-f"
         "-n"
         ">" "${results_folder}/${i}/IC/Terminal_Output.txt"
@@ -654,6 +662,7 @@ function(run_custom_hybrid
             "--vhlle_config" "${vhlle_default_config}"
             "--smash_ic" "${smash_IC_file}"
             "--output_file" "${vhlle_updated_config}"
+            "--energy" "${energy}"
     DEPENDS
             "${CMAKE_CURRENT_SOURCE_DIR}/python_scripts/create_vhlle_config.py"
             "${vhlle_default_config}"
@@ -719,11 +728,17 @@ function(run_custom_hybrid
     )
 
     # Run afterburner evolution
+    set(setMonash FALSE)
+    if (energy GREATER_EQUAL 200)
+      set(setMonash TRUE)
+    endif()
+
     add_custom_command(OUTPUT "${final_particle_list}" "${results_folder}/${i}/Afterburner/config.yaml"
     COMMAND "${CMAKE_BINARY_DIR}/smash"
         "-i" "${smash_afterburner_config}"
         "-c" "Modi: { List: { File_Directory: ${sampler_dir}} }"
         "-c" "General: { Nevents: ${N_events_afterburner} }"
+        "-c" "Collision_Term: { String_Parameters: {Use_Monash_Tune: ${setMonash} } }"
         "-o" "${results_folder}/${i}/Afterburner"
         "-f"
         "-n"
@@ -861,7 +876,7 @@ function(run_custom_hybrid
 
 endfunction()
 
-run_custom_hybrid()
+run_custom_hybrid("15.0")
 
 
 ################################################################################
