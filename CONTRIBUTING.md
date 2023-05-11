@@ -53,6 +53,7 @@ Here a list of some aspects worth mentioning:
 * local variables are typed with all small letters and words separated by underscores, e.g. `local_variable_name`;
 * global variables are prefixed by `HYBRID_` and this is meant for better readability, e.g. `HYBRID_global_variable`;
 * function names are made of underscore-separated words with initials capitalized, e.g. `Function_Name_With_Words`;
+* quotes are correctly used, i.e. everything that _might_ break if unquoted is quoted;
+* single quotes are used if there is no need of using double or different quotes;
 * all functions declared in each separate file are marked in the end of the file as `readonly`;
 * files are sourced all together by sourcing a single dedicated file.
-
