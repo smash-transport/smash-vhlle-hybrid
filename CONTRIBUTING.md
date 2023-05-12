@@ -48,6 +48,7 @@ Please, refer to their README file for more information.
 The general advice is pretty trivial: **Be consistent with what you find**.
 Here a list of some aspects worth mentioning:
 * indentation is done _exclusively with spaces_ and no <kbd>Tab</kbd> should be used;
+* lines of code are split around 100 characters and should never be longer than 120;
 * braces for functions are put on separate lines;
 * loops and conditional clauses are started on a single line, i.e. the `do` and `then` keywords are **NOT** put on a separate line;
 * local variables are typed with all small letters and words separated by underscores, e.g. `local_variable_name`;
