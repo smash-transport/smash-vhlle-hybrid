@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+
+#===================================================
+#
+#    Copyright (c) 2023
+#      SMASH Hybrid Team
+#
+#    GNU General Public License (GPLv3 or later)
+#
+#===================================================
+
+#
+# This files contains a set of system/functional tests for the main code.
+#
+# Basically the hybrid handler is run in some given configuration
+# and with some command line options. The external software is mocked
+# in a reasonable way (each workflow block will behave as the real
+# software w.r.t. input and output) and the expected outcome is validated.
+#
+
+function Main()
+{
+    Setup_Initial_And_Final_Output_Space
+    Define_Tests_Global_Variables
+    Source_Needed_Files
+    Print_Helper_And_Exit_If_Requested "$@"
+    Check_System_Requirements
+    Define_Available_Tests
+    Parse_Command_Line_Options "$@"
+    Prepare_Test_Environment
+    Run_Tests
+    Print_Tests_Report
+    Delete_Tests_Files_If_No_Test_Failed_And_User_Wishes_So
+}
+
+function Setup_Initial_And_Final_Output_Space()
+{
+    printf '\n'
+    trap 'printf "\n"' EXIT
+}
+
+function Define_Tests_Global_Variables ()
+{
+    readonly HYBRIDT_repository_top_level_path=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../" &> /dev/null && pwd)
+    readonly HYBRIDT_command=${HYBRIDT_repository_top_level_path}/Hybrid-handler
+    readonly HYBRIDT_tests_folder=${HYBRIDT_repository_top_level_path}/tests
+    readonly HYBRIDT_folder_to_run_tests=${HYBRIDT_tests_folder}/run_tests
+    readonly HYBRIDT_log_file=${HYBRIDT_folder_to_run_tests}/$(basename ${BASH_SOURCE[0]}).log
+    readonly listOfAuxiliaryFilesAndFolders=( "${HYBRIDT_folder_to_run_tests}" "${HYBRIDT_log_file}" )
+    HYBRIDT_clean_test_folder='TRUE'
+    HYBRIDT_report_level=3 # Report level: 0 = binary, 1 = summary, 2 = short, 3 = detailed
+    HYBRIDT_tests_run=0
+    HYBRIDT_tests_passed=0
+    HYBRIDT_tests_failed=0
+    HYBRIDT_which_tests_failed=()
+    HYBRIDT_available_tests=()
+}
+
+function Source_Needed_Files()
+{
+    source ${HYBRIDT_repository_top_level_path}/bash/error_codes.bash || exit 1
+    local -r files_to_be_sourced=(
+        "${HYBRIDT_repository_top_level_path}/bash/logger.bash"
+        "${HYBRIDT_repository_top_level_path}/bash/system_requirements.bash"
+        "${HYBRIDT_repository_top_level_path}/bash/utility_functions.bash"
+        "${HYBRIDT_tests_folder}/command_line_parser_for_tests.bash"
+    )
+    local file
+    for file in "${files_to_be_sourced[@]}"; do
+        source "${file}" || exit ${HYBRID_fatal_builtin}
+    done
+}
+
+function Print_Helper_And_Exit_If_Requested()
+{
+    if Element_In_Array_Matches '^-(h|-help)$' "$@"; then
+        Parse_Command_Line_Options '--help'
+    fi
+}
+
+function Define_Available_Tests()
+{
+    HYBRIDT_available_tests=(
+        'help-'{1..3}
+        'version-'{1,2}
+    )
+}
+
+function Prepare_Test_Environment()
+{
+    local postfix
+    postfix=$(date +'%Y-%m-%d_%H%M%S')
+    if [[ -d "${HYBRIDT_folder_to_run_tests}" ]]; then
+        Print_Warning "Found \"${HYBRIDT_folder_to_run_tests}\", renaming it!"
+        mv "${HYBRIDT_folder_to_run_tests}"\
+           "${HYBRIDT_folder_to_run_tests}_${postfix}" || exit ${HYBRID_fatal_builtin}
+    fi
+}
+
+function Run_Tests()
+{
+    if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
+        Print_Info "\nRunning ${#HYBRIDT_available_tests[@]} test(s):\n"
+    fi
+    local test_name
+    for test_name in "${HYBRIDT_available_tests[@]}"; do
+        Print_Error "Test '${test_name}' skipped!"
+        continue
+        Make_Test_Preliminary_Operations "${test_name}"
+        Run_Test "${test_name}"
+        Clean_Tests_Environment_For_Following_Test "${test_name}"
+    done
+}
+
+function Print_Tests_Report()
+{
+    Print_Error "${FUNCNAME} not implemented yet. Skipping it."
+}
+
+function Delete_Tests_Files_If_No_Test_Failed_And_User_Wishes_So()
+{
+    Print_Error "${FUNCNAME} not implemented yet. Skipping it."
+}
+
+Main "$@"
