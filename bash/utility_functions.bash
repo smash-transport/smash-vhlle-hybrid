@@ -7,6 +7,24 @@
 #
 #===================================================
 
+function Element_In_Array_Equals_To()
+{
+    local element
+    for element in "${@:2}"; do
+        [[ "${element}" == "$1" ]] && return 0
+    done
+    return 1
+}
+
+function Element_In_Array_Matches()
+{
+    local element
+    for element in "${@:2}"; do
+        [[ "${element}" =~ $1 ]] && return 0
+    done
+    return 1
+}
+
 function Make_Functions_Defined_In_This_File_Readonly()
 {
     # Here we assume all functions are defined with the same stile,
