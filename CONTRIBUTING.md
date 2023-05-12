@@ -62,6 +62,7 @@ Here a list of some aspects worth mentioning:
 * analogously, global variables in tests are prefixed by `HYBRIDT_`;
 * variables are always expanded using braces, i.e. you should use `${variable}` instead of `$variable`;
 * function names are made of underscore-separated words with initials capitalized, e.g. `Function_Name_With_Words`;
+* functions that are and should be used only in the file where declared are prefixed by `__static__`;
 * quotes are correctly used, i.e. everything that _might_ break if unquoted is quoted;
 * single quotes are used if there is no need of using double or different quotes;
 * all functions declared in each separate file are marked in the end of the file as `readonly`;
