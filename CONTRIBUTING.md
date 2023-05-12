@@ -16,7 +16,7 @@ Some guidelines for authors are provided in the following, in order to reach a c
 
 * If you are contributing for the first time, be sure that your git username and email are [set up correctly](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup).
   To check them you can run `git config --list` and see the values of the `user.name` and `user.email` fields.
-  Add yourself to the AUTHORS file.
+  Add yourself to the [AUTHORS](AUTHORS.md) file.
 * If you create a new file, add copyright and license remarks to a comment at the top of the file (after a possible shebang).
   This should read like
   ```bash
@@ -47,9 +47,15 @@ Please, refer to their README file for more information.
 
 The general advice is pretty trivial: **Be consistent with what you find**.
 Here a list of some aspects worth mentioning:
-* indentation is done _exclusively with spaces_ and no <kbd>Tab</kbd> should be used;
+* indentation is done _exclusively with spaces_ and **no** <kbd>Tab</kbd> should be used;
 * lines of code are split around 100 characters and should never be longer than 120;
-* braces for functions are put on separate lines;
+* bash functions use both the `function` keyword and parenthesis and the enclosing braces are put on separate lines,
+  ```bash
+  function Example_Function()
+  {
+    # Body of the function
+  }
+  ```
 * loops and conditional clauses are started on a single line, i.e. the `do` and `then` keywords are **NOT** put on a separate line;
 * local variables are typed with all small letters and words separated by underscores, e.g. `local_variable_name`;
 * global variables are prefixed by `HYBRID_` and this is meant for better readability, e.g. `HYBRID_global_variable`;
