@@ -58,7 +58,9 @@ Here a list of some aspects worth mentioning:
   ```
 * loops and conditional clauses are started on a single line, i.e. the `do` and `then` keywords are **NOT** put on a separate line;
 * local variables are typed with all small letters and words separated by underscores, e.g. `local_variable_name`;
-* global variables are prefixed by `HYBRID_` and this is meant for better readability, e.g. `HYBRID_global_variable`;
+* global variables in the codebase are prefixed by `HYBRID_` and this is meant for better readability, e.g. `HYBRID_global_variable`;
+* analogously, global variables in tests are prefixed by `HYBRIDT_`;
+* variables are always expanded using braces, i.e. you should use `${variable}` instead of `$variable`;
 * function names are made of underscore-separated words with initials capitalized, e.g. `Function_Name_With_Words`;
 * quotes are correctly used, i.e. everything that _might_ break if unquoted is quoted;
 * single quotes are used if there is no need of using double or different quotes;
