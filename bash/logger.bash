@@ -77,7 +77,7 @@ function Print_Error()
 
 function Print_Fatal_And_Exit()
 {
-    __static__Logger 'FATAL' "$@"
+    exit_code=${HYBRID_internal:-1} __static__Logger 'FATAL' "$@"
 }
 
 function Print_Internal_And_Exit()
@@ -163,7 +163,7 @@ function __static__Logger()
     printf "${restore_default}"
     exec 1>&4- # restore fd 1 and close fd 4 and not close fd 3 (it must stay open, see top of the file!)
     if [[ ${label} =~ ^(FATAL|INTERNAL)$ ]]; then
-        exit "${user_fatal_exit_code:-1}"
+        exit "${exit_code:-1}"
     fi
 }
 
