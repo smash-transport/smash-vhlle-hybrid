@@ -46,7 +46,7 @@ function Define_Tests_Global_Variables ()
     readonly HYBRIDT_tests_folder=${HYBRIDT_repository_top_level_path}/tests
     readonly HYBRIDT_folder_to_run_tests=${HYBRIDT_tests_folder}/run_tests
     readonly HYBRIDT_log_file=${HYBRIDT_folder_to_run_tests}/$(basename ${BASH_SOURCE[0]}).log
-    readonly listOfAuxiliaryFilesAndFolders=( "${HYBRIDT_folder_to_run_tests}" "${HYBRIDT_log_file}" )
+    readonly HYBRIDT_auxiliary_files_and_folders=( "${HYBRIDT_folder_to_run_tests}" "${HYBRIDT_log_file}" )
     HYBRIDT_clean_test_folder='TRUE'
     HYBRIDT_report_level=3 # Report level: 0 = binary, 1 = summary, 2 = short, 3 = detailed
     HYBRIDT_tests_run=0
@@ -95,6 +95,7 @@ function Prepare_Test_Environment()
         mv "${HYBRIDT_folder_to_run_tests}"\
            "${HYBRIDT_folder_to_run_tests}_${postfix}" || exit ${HYBRID_fatal_builtin}
     fi
+    mkdir "${HYBRIDT_folder_to_run_tests}" || exit ${HYBRID_fatal_builtin}
 }
 
 function Run_Tests()
@@ -104,22 +105,112 @@ function Run_Tests()
     fi
     local test_name
     for test_name in "${HYBRIDT_tests_to_be_run[@]}"; do
-        Print_Error "Test '${test_name}' skipped!"
-        continue
-        Make_Test_Preliminary_Operations "${test_name}"
-        Run_Test "${test_name}"
-        Clean_Tests_Environment_For_Following_Test "${test_name}"
+        #Make_Test_Preliminary_Operations "${test_name}"
+        Announce_Running_Test "${test_name}"
+        #Run_Test "${test_name}"
+        false
+        Inspect_Test_Outcome $? "${test_name}"
+        #Clean_Tests_Environment_For_Following_Test "${test_name}"
     done
+}
+
+function Announce_Running_Test()
+{
+    local test_name padded_name
+    test_name=$1; shift
+    (( HYBRIDT_tests_run++ ))
+    if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
+        printf -v padded_name "%-60s" "__${test_name}$(printf '\e[94m')_"
+        padded_name="${padded_name// /.}"
+        printf '           %+2s/%-2s\e[96m%s'\
+               ${HYBRIDT_tests_run} ${#HYBRIDT_tests_to_be_run[@]} "${padded_name//_/ }"
+    fi
+}
+
+function Inspect_Test_Outcome()
+{
+    local test_exit_code test_name
+    test_exit_code=$1
+    test_name=$2
+    if [[ ${test_exit_code} -eq 0 ]]; then
+        (( HYBRIDT_tests_passed++ ))
+        if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
+            printf "  \e[92mpassed\e[0m\n"
+        fi
+    else
+        (( HYBRIDT_tests_failed++ ))
+        HYBRIDT_which_tests_failed+=( "${test_name}" )
+        if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
+            printf "  \e[91mfailed\e[0m\n"
+        fi
+    fi
 }
 
 function Print_Tests_Report()
 {
-    Print_Error "${FUNCNAME} not implemented yet. Skipping it."
+    if [[ ${HYBRIDT_report_level} -ge 1 ]]; then
+        local indentation left_margin test_name_string_length\
+              index separator_length passed_string failed_string
+        indentation='           '
+        left_margin='   '
+        test_name_string_length=$(printf '%s\n' "${testsToBeRun[@]}" | wc -L)
+        if [[ ${test_name_string_length} -lt 25 ]]; then # Minimum length
+            test_name_string_length=25
+        fi
+        if (( test_name_string_length % 2 == 1 )); then # Aesthetics
+            (( test_name_string_length+=1 ))
+        fi
+        separator_length=$(( test_name_string_length + 3 + 2 * ${#left_margin} ))
+        passed_string="$(printf "Run %d test(s): %2d passed" ${HYBRIDT_tests_run} ${HYBRIDT_tests_passed})"
+        failed_string="$(printf "    ${HYBRIDT_tests_run//?/ }          %2d failed" ${HYBRIDT_tests_failed})"
+        Print_Line_of_Equals "${separator_length}" "${indentation}" '\n\e[96m' '\e[0m\n'
+        Print_Centered_Line "${passed_string}" ${separator_length} "${indentation}"
+        Print_Centered_Line "${failed_string}" ${separator_length} "${indentation}"
+        Print_Line_of_Equals "${separator_length}" "${indentation}" '\e[96m' '\e[0m\n'
+    fi
+    if [[ ${HYBRIDT_report_level} -ge 2 ]]; then
+        local name percentage
+        percentage=$(awk '{printf "%.0f%%", 100*$1/$2}' <<< "${HYBRIDT_tests_passed} ${HYBRIDT_tests_run}")
+        Print_Centered_Line "${percentage} of tests passed!" ${separator_length} "${indentation}"
+        Print_Line_of_Equals "${separator_length}" "${indentation}" '\e[96m' '\e[0m\n'
+        if [[ ${testsFailed} -ne 0 ]]; then
+            printf "${indentation}${left_margin}The following tests failed:\n"
+            for name in "${HYBRIDT_which_tests_failed[@]}"; do
+                printf "${indentation}${left_margin} ${name}\n  "
+            done
+            Print_Line_of_Equals "${separator_length}" "${indentation}" '\e[96m' '\e[0m\n'
+        fi
+    fi
+    if [[ ${HYBRIDT_tests_failed} -ne 0 ]]; then
+        Print_Error "\n${HYBRIDT_tests_failed} failures were detected! Not deleting log file!"
+    else
+        Print_Info "\nAll tests passed!"
+    fi
 }
 
 function Delete_Tests_Files_If_No_Test_Failed_And_User_Wishes_So()
 {
-    Print_Error "${FUNCNAME} not implemented yet. Skipping it."
+    if [[ ${HYBRIDT_clean_test_folder} = 'TRUE' && ${HYBRIDT_tests_failed} -eq 0 ]]; then
+        local global_path label
+        for global_path in "${HYBRIDT_auxiliary_files_and_folders[@]}"; do
+            if [[ -d "${global_path}" ]]; then
+                label='directory'
+            elif [[ -L "${global_path}" ]]; then
+                label='symlink'
+            elif [[ -f "${global_path}" ]]; then
+                label='file'
+            elif [[ ! -e  "${global_path}" ]]; then
+                continue
+            else
+                Print_Internal_And_Exit "Error in \"${FUNCNAME}\"."\
+                "\"${global_path}\" seems to neither be a file nor directory, leaving it!"
+            fi
+            Print_Info "Removing ${label} \"${global_path}\""
+            if [[ -e "${global_path}" ]]; then # Redundant but safer
+                rm -r "${global_path}"
+            fi
+        done
+    fi
 }
 
 Main "$@"
