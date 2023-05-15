@@ -49,8 +49,8 @@ function Call_through_interface()
         # However, when exit on error behavior is active, the script would terminate here if
         # the function returns non-zero exit code and, instead we want this propagate up!
     else
-        exit_code=${HYBRID_fatal_missing_feature} Print_Fatal_And_Exit\
-            "Function \"${name_of_the_function}\" not found!\n"\
+        exit_code=${HYBRID_fatal_missing_feature} Print_Internal_And_Exit\
+            "\nFunction \"${name_of_the_function}\" not found!"\
             "Please provide an implementation following the in-code documentation."
     fi
 }
@@ -98,14 +98,6 @@ function Print_Helper_And_Exit_If_Requested()
     if Element_In_Array_Matches '^-(h|-help)$' "$@"; then
         Parse_Command_Line_Options '--help'
     fi
-}
-
-function Define_Available_Tests()
-{
-    HYBRIDT_tests_to_be_run=(
-        'help-'{1..3}
-        'version-'{1,2}
-    )
 }
 
 function Prepare_Test_Environment()
