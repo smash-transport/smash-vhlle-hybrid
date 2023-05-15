@@ -7,6 +7,24 @@
 #
 #===================================================
 
+function Parse_Tests_Suite_Parameter_And_Source_Specific_Code()
+{
+    local suite_name code_filename
+    suite_name="$1"
+    if [[ ! ${suite_name} =~ ^(functional|unit)$ ]]; then
+        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
+            "Invalid tests type \"${suite_name}\". Valid values: \"functional\", \"unit\"."\
+            "Use the '--help' option to get more information."
+    fi
+    code_filename="${suite_name}_tests_specific_code.bash"
+    if [[ ! -f "${code_filename}" ]]; then
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+            "File \"${code_filename}\" not found."
+    else
+        source "${code_filename}" || exit ${HYBRID_fatal_builtin}
+    fi
+}
+
 function Parse_Command_Line_Options()
 {
     # This function needs the array of tests not sparse => enforce it
@@ -52,11 +70,16 @@ function Parse_Command_Line_Options()
 
 function __static__Print_Helper()
 {
-    local helper_color normal_color default
-    helper_color='\e[92m'
-    normal_color='\e[96m'
+    local text_color options_color default
+    text_color='\e[38;5;26m'
+    emph_color='\e[93m'
+    options_color='\e[96m'
     default_color='\e[0m'
-    printf "${helper_color} Execute tests with the following optional arguments:${default_color}\n\n"
+    printf " USAGE: ${options_color}tests_runner <tests_type> [-h|--help] [<options>...]${default_color}\n\n"
+    printf " ${emph_color}Name of available types of tests:${default_color}\n\n"
+    __static__Add_Option_To_Helper "functional" "Tests of the handler as whole script."
+    __static__Add_Option_To_Helper "unit" "Unit tests of the codebase."
+    printf " ${emph_color}Execute tests with the following optional arguments:${default_color}\n\n"
     __static__Add_Option_To_Helper "-r | --report-level"\
                                    "Verbosity of test report (default value ${HYBRIDT_report_level})."\
                                    "To be chosen among"\
@@ -82,7 +105,7 @@ function __static__Add_Option_To_Helper()
     name="$1"
     description="$2"
     shift 2
-    printf "${normal_color}%s${default_color}   ->  ${helper_color}%s\n"\
+    printf "${options_color}%s${default_color}   ->  ${text_color}%s\n"\
            "$(printf "%s%-${length_option}s" "${indentation}" "${name}")"\
            "${description}"
     while [[ $# -gt 0 ]]; do

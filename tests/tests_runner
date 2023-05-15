@@ -10,12 +10,17 @@
 #===================================================
 
 #
-# This files contains a set of system/functional tests for the main code.
+# This files is meant to be a neutral tests driver to be used to run a given
+# suite of tests. From the abstract perspective, the machinery (framework)
+# can be implemented in an unaware way and this is done here. The few functions
+# that should be specialized and serve as customization point are those to
+# run the test, plus optional preliminary and subsequent operations to the test.
 #
-# Basically the hybrid handler is run in some given configuration
-# and with some command line options. The external software is mocked
-# in a reasonable way (each workflow block will behave as the real
-# software w.r.t. input and output) and the expected outcome is validated.
+# The functions that shall be provided by "external" code can be easily located
+# in this file, as they are called by the 'Call_through_interface' function.
+# The driver has a first command line positional option that selects which suite
+# is considered. The parser is then sourcing the specific code and then the code
+# here is ready to be executed.
 #
 
 function Main()
@@ -24,13 +29,30 @@ function Main()
     Define_Tests_Global_Variables
     Source_Needed_Files
     Print_Helper_And_Exit_If_Requested "$@"
+    Parse_Tests_Suite_Parameter_And_Source_Specific_Code "$1"
     Check_System_Requirements
-    Define_Available_Tests
-    Parse_Command_Line_Options "$@"
+    Call_through_interface 'Define_Available_Tests'
+    Parse_Command_Line_Options "${@:2}"
     Prepare_Test_Environment
     Run_Tests
     Print_Tests_Report
     Delete_Tests_Files_If_No_Test_Failed_And_User_Wishes_So
+}
+
+function Call_through_interface()
+{
+    local name_of_the_function
+    name_of_the_function=$1; shift
+    if [[ "$(type -t ${name_of_the_function})" = 'function' ]]; then
+        ${name_of_the_function} "$@" || return $?
+        # Return value propagates automatically since a function returns the last exit code.
+        # However, when exit on error behavior is active, the script would terminate here if
+        # the function returns non-zero exit code and, instead we want this propagate up!
+    else
+        exit_code=${HYBRID_fatal_missing_feature} Print_Fatal_And_Exit\
+            "Function \"${name_of_the_function}\" not found!\n"\
+            "Please provide an implementation following the in-code documentation."
+    fi
 }
 
 function Setup_Initial_And_Final_Output_Space()
@@ -105,12 +127,11 @@ function Run_Tests()
     fi
     local test_name
     for test_name in "${HYBRIDT_tests_to_be_run[@]}"; do
-        #Make_Test_Preliminary_Operations "${test_name}"
+        Call_through_interface 'Make_Test_Preliminary_Operations' "${test_name}"
         Announce_Running_Test "${test_name}"
-        #Run_Test "${test_name}"
-        false
+        Call_through_interface 'Run_Test' "${test_name}"
         Inspect_Test_Outcome $? "${test_name}"
-        #Clean_Tests_Environment_For_Following_Test "${test_name}"
+        Call_through_interface 'Clean_Tests_Environment_For_Following_Test' "${test_name}"
     done
 }
 
