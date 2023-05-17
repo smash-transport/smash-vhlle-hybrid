@@ -1,0 +1,232 @@
+#!/usr/bin/env bash
+
+#===================================================
+#
+#    Copyright (c) 2023
+#      SMASH Hybrid Team
+#
+#    GNU General Public License (GPLv3 or later)
+#
+#===================================================
+
+#
+# This files is meant to be a neutral tests driver to be used to run a given
+# suite of tests. From the abstract perspective, the machinery (framework)
+# can be implemented in an unaware way and this is done here. The few functions
+# that should be specialized and serve as customization point are those to
+# run the test, plus optional preliminary and subsequent operations to the test.
+#
+# The functions that shall be provided by "external" code can be easily located
+# in this file, as they are called by the 'Call_through_interface' function.
+# The driver has a first command line positional option that selects which suite
+# is considered. The parser is then sourcing the specific code and then the code
+# here is ready to be executed.
+#
+
+function Main()
+{
+    Setup_Initial_And_Final_Output_Space
+    Define_Tests_Global_Variables
+    Source_Needed_Files
+    Print_Helper_And_Exit_If_Requested "$@"
+    Parse_Tests_Suite_Parameter_And_Source_Specific_Code "$1"
+    Check_System_Requirements
+    Call_through_interface 'Define_Available_Tests'
+    Parse_Command_Line_Options "${@:2}"
+    Prepare_Test_Environment
+    Run_Tests
+    Print_Tests_Report
+    Delete_Tests_Files_If_No_Test_Failed_And_User_Wishes_So
+}
+
+function Call_through_interface()
+{
+    local name_of_the_function
+    name_of_the_function=$1; shift
+    if [[ "$(type -t ${name_of_the_function})" = 'function' ]]; then
+        ${name_of_the_function} "$@" || return $?
+        # Return value propagates automatically since a function returns the last exit code.
+        # However, when exit on error behavior is active, the script would terminate here if
+        # the function returns non-zero exit code and, instead we want this propagate up!
+    else
+        exit_code=${HYBRID_fatal_missing_feature} Print_Internal_And_Exit\
+            "\nFunction \"${name_of_the_function}\" not found!"\
+            "Please provide an implementation following the in-code documentation."
+    fi
+}
+
+function Setup_Initial_And_Final_Output_Space()
+{
+    printf '\n'
+    trap 'printf "\n"' EXIT
+}
+
+function Define_Tests_Global_Variables ()
+{
+    readonly HYBRIDT_repository_top_level_path=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../" &> /dev/null && pwd)
+    readonly HYBRIDT_command=${HYBRIDT_repository_top_level_path}/Hybrid-handler
+    readonly HYBRIDT_tests_folder=${HYBRIDT_repository_top_level_path}/tests
+    readonly HYBRIDT_folder_to_run_tests=${HYBRIDT_tests_folder}/run_tests
+    readonly HYBRIDT_log_file=${HYBRIDT_folder_to_run_tests}/$(basename ${BASH_SOURCE[0]}).log
+    readonly HYBRIDT_auxiliary_files_and_folders=( "${HYBRIDT_folder_to_run_tests}" "${HYBRIDT_log_file}" )
+    HYBRIDT_clean_test_folder='TRUE'
+    HYBRIDT_report_level=3 # Report level: 0 = binary, 1 = summary, 2 = short, 3 = detailed
+    HYBRIDT_tests_run=0
+    HYBRIDT_tests_passed=0
+    HYBRIDT_tests_failed=0
+    HYBRIDT_which_tests_failed=()
+    HYBRIDT_tests_to_be_run=()
+}
+
+function Source_Needed_Files()
+{
+    source ${HYBRIDT_repository_top_level_path}/bash/error_codes.bash || exit 1
+    local -r files_to_be_sourced=(
+        "${HYBRIDT_repository_top_level_path}/bash/logger.bash"
+        "${HYBRIDT_repository_top_level_path}/bash/system_requirements.bash"
+        "${HYBRIDT_repository_top_level_path}/bash/utility_functions.bash"
+        "${HYBRIDT_tests_folder}/command_line_parser_for_tests.bash"
+    )
+    local file
+    for file in "${files_to_be_sourced[@]}"; do
+        source "${file}" || exit ${HYBRID_fatal_builtin}
+    done
+}
+
+function Print_Helper_And_Exit_If_Requested()
+{
+    if Element_In_Array_Matches '^-(h|-help)$' "$@"; then
+        Parse_Command_Line_Options '--help'
+    fi
+}
+
+function Prepare_Test_Environment()
+{
+    local postfix
+    postfix=$(date +'%Y-%m-%d_%H%M%S')
+    if [[ -d "${HYBRIDT_folder_to_run_tests}" ]]; then
+        Print_Warning "Found \"${HYBRIDT_folder_to_run_tests}\", renaming it!"
+        mv "${HYBRIDT_folder_to_run_tests}"\
+           "${HYBRIDT_folder_to_run_tests}_${postfix}" || exit ${HYBRID_fatal_builtin}
+    fi
+    mkdir "${HYBRIDT_folder_to_run_tests}" || exit ${HYBRID_fatal_builtin}
+}
+
+function Run_Tests()
+{
+    if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
+        Print_Info "\nRunning ${#HYBRIDT_tests_to_be_run[@]} test(s):\n"
+    fi
+    local test_name
+    for test_name in "${HYBRIDT_tests_to_be_run[@]}"; do
+        Call_through_interface 'Make_Test_Preliminary_Operations' "${test_name}"
+        Announce_Running_Test "${test_name}"
+        Call_through_interface 'Run_Test' "${test_name}"
+        Inspect_Test_Outcome $? "${test_name}"
+        Call_through_interface 'Clean_Tests_Environment_For_Following_Test' "${test_name}"
+    done
+}
+
+function Announce_Running_Test()
+{
+    local test_name padded_name
+    test_name=$1; shift
+    (( HYBRIDT_tests_run++ ))
+    if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
+        printf -v padded_name "%-60s" "__${test_name}$(printf '\e[94m')_"
+        padded_name="${padded_name// /.}"
+        printf '           %+2s/%-2s\e[96m%s'\
+               ${HYBRIDT_tests_run} ${#HYBRIDT_tests_to_be_run[@]} "${padded_name//_/ }"
+    fi
+}
+
+function Inspect_Test_Outcome()
+{
+    local test_exit_code test_name
+    test_exit_code=$1
+    test_name=$2
+    if [[ ${test_exit_code} -eq 0 ]]; then
+        (( HYBRIDT_tests_passed++ ))
+        if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
+            printf "  \e[92mpassed\e[0m\n"
+        fi
+    else
+        (( HYBRIDT_tests_failed++ ))
+        HYBRIDT_which_tests_failed+=( "${test_name}" )
+        if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
+            printf "  \e[91mfailed\e[0m\n"
+        fi
+    fi
+}
+
+function Print_Tests_Report()
+{
+    if [[ ${HYBRIDT_report_level} -ge 1 ]]; then
+        local indentation left_margin test_name_string_length\
+              index separator_length passed_string failed_string
+        indentation='           '
+        left_margin='   '
+        test_name_string_length=$(printf '%s\n' "${testsToBeRun[@]}" | wc -L)
+        if [[ ${test_name_string_length} -lt 25 ]]; then # Minimum length
+            test_name_string_length=25
+        fi
+        if (( test_name_string_length % 2 == 1 )); then # Aesthetics
+            (( test_name_string_length+=1 ))
+        fi
+        separator_length=$(( test_name_string_length + 3 + 2 * ${#left_margin} ))
+        passed_string="$(printf "Run %d test(s): %2d passed" ${HYBRIDT_tests_run} ${HYBRIDT_tests_passed})"
+        failed_string="$(printf "    ${HYBRIDT_tests_run//?/ }          %2d failed" ${HYBRIDT_tests_failed})"
+        Print_Line_of_Equals "${separator_length}" "${indentation}" '\n\e[96m' '\e[0m\n'
+        Print_Centered_Line "${passed_string}" ${separator_length} "${indentation}"
+        Print_Centered_Line "${failed_string}" ${separator_length} "${indentation}"
+        Print_Line_of_Equals "${separator_length}" "${indentation}" '\e[96m' '\e[0m\n'
+    fi
+    if [[ ${HYBRIDT_report_level} -ge 2 ]]; then
+        local name percentage
+        percentage=$(awk\
+                     '{
+                        if($2!=0) {printf "%.0f%%", 100*$1/$2} else {printf "-- %"}
+                      }' <<< "${HYBRIDT_tests_passed} ${HYBRIDT_tests_run}")
+        Print_Centered_Line "${percentage} of tests passed!" ${separator_length} "${indentation}"
+        Print_Line_of_Equals "${separator_length}" "${indentation}" '\e[96m' '\e[0m\n'
+        if [[ ${testsFailed} -ne 0 ]]; then
+            printf "${indentation}${left_margin}The following tests failed:\n"
+            for name in "${HYBRIDT_which_tests_failed[@]}"; do
+                printf "${indentation}${left_margin} ${name}\n  "
+            done
+            Print_Line_of_Equals "${separator_length}" "${indentation}" '\e[96m' '\e[0m\n'
+        fi
+    fi
+    if [[ ${HYBRIDT_tests_failed} -ne 0 ]]; then
+        Print_Error "\n${HYBRIDT_tests_failed} failures were detected! Not deleting log file!"
+    else
+        Print_Info "\nAll tests passed!"
+    fi
+}
+
+function Delete_Tests_Files_If_No_Test_Failed_And_User_Wishes_So()
+{
+    if [[ ${HYBRIDT_clean_test_folder} = 'TRUE' && ${HYBRIDT_tests_failed} -eq 0 ]]; then
+        local global_path label
+        for global_path in "${HYBRIDT_auxiliary_files_and_folders[@]}"; do
+            if [[ -d "${global_path}" ]]; then
+                label='directory'
+            elif [[ -L "${global_path}" ]]; then
+                label='symlink'
+            elif [[ -f "${global_path}" ]]; then
+                label='file'
+            elif [[ ! -e  "${global_path}" ]]; then
+                continue
+            else
+                Print_Internal_And_Exit "Error in \"${FUNCNAME}\"."\
+                "\"${global_path}\" seems to neither be a file nor directory, leaving it!"
+            fi
+            Print_Info "Removing ${label} \"${global_path}\""
+            if [[ -e "${global_path}" ]]; then # Redundant but safer
+                rm -r "${global_path}"
+            fi
+        done
+    fi
+}
+
+Main "$@"

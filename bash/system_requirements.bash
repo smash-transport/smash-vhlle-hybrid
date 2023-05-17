@@ -7,3 +7,7 @@
 #
 #===================================================
 
+function Check_System_Requirements()
+{
+    Print_Error "${FUNCNAME} not implemented yet. Skipping it."
+}
