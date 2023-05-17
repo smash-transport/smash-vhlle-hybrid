@@ -179,7 +179,10 @@ if __name__ == '__main__':
     parser.add_argument("-o", required=False,
                         help="Path to the output folder")
     parser.add_argument("-c", required=False,action='append',nargs='+',
-                        help="Make changes to config.yaml (this is mocked here)")
+                        help="Use:"
+                             "  -c 'Modi: { List: { File_Directory: <dir-path>} }'"
+                             "  -c 'General: { Nevents: <N-events> }'")
+
     parser.add_argument("--fail_with", required=False,
                         default=None,
                         choices=["invalid_config", "smash_crashes"],
