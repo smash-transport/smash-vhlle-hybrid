@@ -37,6 +37,7 @@ function Main()
     Run_Tests
     Print_Tests_Report
     Delete_Tests_Files_If_No_Test_Failed_And_User_Wishes_So
+    Exit_With_Tests_Outcome_Dependent_Exit_Code
 }
 
 function Call_through_interface()
@@ -226,6 +227,18 @@ function Delete_Tests_Files_If_No_Test_Failed_And_User_Wishes_So()
                 rm -r "${global_path}"
             fi
         done
+    fi
+}
+
+function Exit_With_Tests_Outcome_Dependent_Exit_Code()
+{
+    # Make exit code be the number of failed tests, but
+    # consider that we cannot go beyond 255 (exit code maximum)
+    if [[ ${HYBRIDT_tests_failed} -gt 255 ]]; then
+        Print_Warning "More than 255 tests failed. The exit code cannot match the number of failed tests."
+        exit 255
+    else
+        exit ${HYBRIDT_tests_failed}
     fi
 }
 
