@@ -10,10 +10,10 @@ def check_config(valid_config):
         args.i = "./config.yaml"
     if not os.path.exists(args.i):
         print(fatal_error+"The configuration file was expected at './config.yaml', but the file does not exist.")
-        sys.exit()
+        sys.exit(1)
     if not valid_config:
         print(fatal_error+"Validation of SMASH input failed.")
-        sys.exit()
+        sys.exit(1)
     return
 
 def print_terminal_start():
@@ -45,11 +45,11 @@ def create_folders_structure():
         args.o += "/"
     return
 
-def check_if_empty_output():
+def validate_output_folder():
     f_config = args.o + "config.yaml"
     if os.path.exists(f_config):
         print(fatal_error + "Output directory would get overwritten. Select a different output directory, clean up, or tell SMASH to ignore existing files.")
-        sys.exit()
+        sys.exit(1)
     else:
         # create config file
         f = open(f_config, "w")
@@ -61,12 +61,12 @@ def run_smash(finalize):
     f = open(args.o+file_name_is_running, "w")
     f.close()
     # open unfinished particle files
-    particles_out_oscar = open(file_particles_out_oscar+name_unfinished, "w")
-    particles_out_dat = open(file_particles_out_dat+name_unfinished, "w")
+    particles_out_oscar = open(SMASH_output_file_with_participants_and_spectators+name_unfinished, "w")
+    particles_out_dat = open(SMASH_special_output_file_for_vHLLE_with_participants_only+name_unfinished, "w")
     # run the black box
-    for ts in range(11):
+    for ts in range(1,11):
         print("running t = {} fm".format(ts))
-        time.sleep(0.5)
+        time.sleep(0.1)
     particles_out_oscar.close()
     particles_out_dat.close()
 
@@ -74,21 +74,22 @@ def run_smash(finalize):
         finish()
     else:
         print(fatal_error+"crash")
+        sys.exit(1)
     return
 
 def finish():
     # rename output by removing the .unfinished file ending
-    if os.path.exists(file_particles_out_oscar+name_unfinished):
-        os.rename(file_particles_out_oscar+name_unfinished, file_particles_out_oscar)
+    if os.path.exists(SMASH_output_file_with_participants_and_spectators+name_unfinished):
+        os.rename(SMASH_output_file_with_participants_and_spectators+name_unfinished, SMASH_output_file_with_participants_and_spectators)
     else:
         print("somehow the output (.oscar) file was not properly written")
-        sys.exit()
+        sys.exit(1)
 
-    if os.path.exists(file_particles_out_dat+name_unfinished):
-        os.rename(file_particles_out_dat+name_unfinished, file_particles_out_dat)
+    if os.path.exists(SMASH_special_output_file_for_vHLLE_with_participants_only+name_unfinished):
+        os.rename(SMASH_special_output_file_for_vHLLE_with_participants_only+name_unfinished, SMASH_special_output_file_for_vHLLE_with_participants_only)
     else:
         print("somehow the output file (.dat) was not properly written")
-        sys.exit()
+        sys.exit(1)
     
     # remove smash.lock file
     os.remove(args.o+file_name_is_running)
@@ -109,8 +110,8 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    config_is_valid = False if args.fail_with == "invalid_config" else True
-    smash_finishes = False if args.fail_with == "smash_crashes" else True
+    config_is_valid = args.fail_with != "invalid_config"
+    smash_finishes = args.fail_with != "smash_crashes"
 
     fatal_error = "FATAL         Main        : SMASH failed with the following error:\n\t\t\t    "
     file_name_is_running = "smash.lock"
@@ -122,12 +123,10 @@ if __name__ == '__main__':
     # initialize the system
     check_config(config_is_valid)
     create_folders_structure()
-    check_if_empty_output()
+    validate_output_folder()
 
-    # SMASH output participants + spectators
-    file_particles_out_oscar = args.o+name_particles_file+name_oscar
-    # special SMASH output for vHLLE. only participants
-    file_particles_out_dat = args.o+name_particles_file+name_dat
+    SMASH_output_file_with_participants_and_spectators = args.o+name_particles_file+name_oscar
+    SMASH_special_output_file_for_vHLLE_with_participants_only = args.o+name_particles_file+name_dat
 
     # smash is now ready to run
     print_terminal_start()
