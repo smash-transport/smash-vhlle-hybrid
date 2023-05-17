@@ -163,6 +163,10 @@ def parse_command_line_config_options(args):
               "  -c 'Modi: { List: { File_Directory: <dir-path>} }'\n"
               "  -c 'General: { Nevents: <N-events> }'")
         sys.exit(1)
+
+    if not os.path.isdir(sampler_dir):
+        print("Directory '{0}' not found".format(sampler_dir))
+        sys.exit(1)
             
     return sampler_dir
     
