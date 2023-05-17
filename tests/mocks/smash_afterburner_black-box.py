@@ -106,7 +106,7 @@ def run_smash(finalize,file_particles_in,sampler_dir):
     particles_out_oscar = open(file_particles_out_oscar+name_unfinished, "w")
     particles_out_bin = open(file_particles_out_bin+name_unfinished, "w")
     # run the black box
-    for ts in range(1):
+    for ts in range(2):
         print("running t = {} fm".format(ts))
         time.sleep(0.5)
     particles_out_oscar.close()
@@ -143,7 +143,7 @@ def parse_command_line_config_options(args):
     dir_config=False
     n_events_config=False
     if(args.c == None):
-        print("No command line options given")
+        print("No -c command line option was given")
         sys.exit(1)
     else:
         for option in args.c:
@@ -159,7 +159,9 @@ def parse_command_line_config_options(args):
                     sys.exit(1)
                     
     if not (dir_config and n_events_config):
-        print("Necessary command line options not found")
+        print("Necessary command line options not found\n"
+              "  -c 'Modi: { List: { File_Directory: <dir-path>} }'\n"
+              "  -c 'General: { Nevents: <N-events> }'")
         sys.exit(1)
             
     return sampler_dir
