@@ -137,8 +137,7 @@ def finish():
     os.remove(args.o+file_name_is_running)
     return
 
-def parse_command_line_config_options(args):
-
+def parse_command_line_config_options():
     sampler_dir=""
     dir_config=False
     n_events_config=False
@@ -188,26 +187,23 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-     # initialize the system
-    check_config(args.fail_with != "invalid_config")
-    create_folders_structure()
-    ensure_no_output_is_overwritten()
-
-    sampler_dir=parse_command_line_config_options(args)
     smash_finishes = args.fail_with != "smash_crashes"
-
-
     fatal_error = "FATAL         Main        : SMASH failed with the following error:\n\t\t\t    "
     file_name_is_running = "smash.lock"
     name_unfinished = ".unfinished"
     name_oscar = ".oscar"
     name_bin = ".bin"
     name_particles_file = "particle_lists"
+    sampler_dir=parse_command_line_config_options()
     file_particles_in=sampler_dir+"sampling"
+
+    # initialize the system
+    check_config(args.fail_with != "invalid_config")
+    create_folders_structure()
+    ensure_no_output_is_overwritten()
+
     file_particles_out_oscar = args.o+name_particles_file+name_oscar
     file_particles_out_bin = args.o+name_particles_file+name_bin
-
-
 
     # smash is now ready to run
     print_terminal_start()
