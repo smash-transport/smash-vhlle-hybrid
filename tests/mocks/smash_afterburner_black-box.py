@@ -20,29 +20,29 @@ def check_config(valid_config):
 def print_terminal_start():
     # generated with https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20
     Terminal_Out="""###########################################################################################################\n
-_________   _____      _____    _________ ___ ___\n                                                                                                                                                        
-    /   _____/  /     \    /  _  \  /   _____//   |   \ \n                                                                                                                                                      
-    \_____  \  /  \ /  \  /  /_\  \ \_____  \/    ~    \\n                                                                                                                                                      
-    /        \/    Y    \/    |    \/        \    Y    /\n                                                                                                                                                      
-    /_______  /\____|__  /\____|__  /_______  /\___|_  /\n                                                                                                                                                       
-            \/         \/         \/        \/       \/\n                                                                                                                                                        
-    \n                                 ___ ___         ___.         .__    .___        _____________________    _____                                                                                            
-    ____   ______  _  __          /   |   \ ___.__.\_ |_________|__| __| _/        \_   _____/\______   \  /  _  \\n                                                                                           
-    /    \_/ __ \ \/ \/ /  ______ /    ~    <   |  | | __ \_  __ \  |/ __ |  ______  |    __)_  |       _/ /  /_\  \\n                                                                                          
-    |   |  \  ___/\     /  /_____/ \    Y    /\___  | | \_\ \  | \/  / /_/ | /_____/  |        \ |    |   \/    |    \\n                                                                                         
-    |___|  /\___  >\/\_/            \___|_  / / ____| |___  /__|  |__\____ |         /_______  / |____|_  /\____|__  /\n                                                                                         
-        \/     \/                        \/  \/          \/              \/                 \/         \/         \/\n                                                                                          
+_________   _____      _____    _________ ___ ___\n
+    /   _____/  /     \    /  _  \  /   _____//   |   \ \n
+    \_____  \  /  \ /  \  /  /_\  \ \_____  \/    ~    \\n
+    /        \/    Y    \/    |    \/        \    Y    /\n
+    /_______  /\____|__  /\____|__  /_______  /\___|_  /\n
+            \/         \/         \/        \/       \/\n
+    \n                                 ___ ___         ___.         .__    .___        _____________________    _____
+    ____   ______  _  __          /   |   \ ___.__.\_ |_________|__| __| _/        \_   _____/\______   \  /  _  \\n
+    /    \_/ __ \ \/ \/ /  ______ /    ~    <   |  | | __ \_  __ \  |/ __ |  ______  |    __)_  |       _/ /  /_\  \\n
+    |   |  \  ___/\     /  /_____/ \    Y    /\___  | | \_\ \  | \/  / /_/ | /_____/  |        \ |    |   \/    |    \\n
+    |___|  /\___  >\/\_/            \___|_  / / ____| |___  /__|  |__\____ |         /_______  / |____|_  /\____|__  /\n
+        \/     \/                        \/  \/          \/              \/                 \/         \/         \/\n
     \n   _____  _____________________________________________________ ____ _____________  _______  _____________________  __________.____       _____  _________  ____  __.        __________\n ________  ____  ___\n
     /  _  \ \_   _____/\__    ___/\_   _____/\______   \______   \    |   \______   \ \      \ \_   _____/\______   \ \______   \    |     /  _  \ \_   ___ \|    |/ _|        \______   \\n\_____  \ \   \/  /
-    /  /_\  \ |    __)    |    |    |    __)_  |       _/|    |  _/    |   /|       _/ /   |   \ |    __)_  |       _/  |    |  _/    |    /  /_\  \/    \  \/|      <    ______ |    |  _/ /\n   |   \ \     / 
-    /    |    \|     \     |    |    |        \ |    |   \|    |   \    |  / |    |   \/    |    \|        \ |    |   \  |    |   \    |___/    |    \     \___|    |  \  /_____/ |    |   \/\n    |    \/     \ 
+    /  /_\  \ |    __)    |    |    |    __)_  |       _/|    |  _/    |   /|       _/ /   |   \ |    __)_  |       _/  |    |  _/    |    /  /_\  \/    \  \/|      <    ______ |    |  _/ /\n   |   \ \     /
+    /    |    \|     \     |    |    |        \ |    |   \|    |   \    |  / |    |   \/    |    \|        \ |    |   \  |    |   \    |___/    |    \     \___|    |  \  /_____/ |    |   \/\n    |    \/     \
     \____|__  /\___  /     |____|   /_______  / |____|_  /|______  /______/  |____|_  /\____|__  /_______  / |____|_  /  |______  /_______ \____|__  /\______  /____|__ \         |______  /\n\_______  /___/\  \
             \/     \/                       \/         \/        \/                 \/         \/        \/         \/          \/        \/       \/        \/        \/                \/\n         \/      \_/\n###########################################################################################################\n"""
-                                                                                                                                                                                                           
-                                                                                                                                                                                                           
-                                                                                                                                                                                                           
-                                                                                                                                                                                                           
-                                                                                                                                                                                                                                                            
+
+
+
+
+
     print(Terminal_Out)
     print("running SMASH Afterburner")
     return
@@ -88,11 +88,11 @@ def run_smash(finalize,file_particles_in,sampler_dir):
     # Get a list of files in the current directory
     files = os.listdir(sampler_dir)
     # Filter files that match the base name and have only integer extensions
-    matching_files = [file_in for file_in in files if regex.match(os.getcwd()+"/"+file_in)]
+    matching_files = [file_in for file_in in files if regex.match(sampler_dir+file_in)]
     if(len(matching_files)>0):
         try:
             for match in matching_files:
-                f_in=open(match,"r")
+                f_in=open(sampler_dir+match,"r")
                 f_in.close()
                 print("File read")
         except:
@@ -138,7 +138,7 @@ def finish():
     return
 
 def parse_command_line_config_options(args):
-    
+
     sampler_dir=""
     dir_config=False
     n_events_config=False
@@ -157,7 +157,7 @@ def parse_command_line_config_options(args):
                 except:
                     print("Nevents could not be parsed")
                     sys.exit(1)
-                    
+
     if not (dir_config and n_events_config):
         print("Necessary command line options not found\n"
               "  -c 'Modi: { List: { File_Directory: <dir-path>} }'\n"
@@ -167,11 +167,11 @@ def parse_command_line_config_options(args):
     if not os.path.isdir(sampler_dir):
         print("Directory '{0}' not found".format(sampler_dir))
         sys.exit(1)
-            
+
     if sampler_dir != "/":
         sampler_dir += "/"
     return sampler_dir
-    
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -187,15 +187,15 @@ if __name__ == '__main__':
                         help="Choose a place where SMASH should fail")
 
     args = parser.parse_args()
-    
+
      # initialize the system
     check_config(args.fail_with != "invalid_config")
     create_folders_structure()
     ensure_no_output_is_overwritten()
-    
+
     sampler_dir=parse_command_line_config_options(args)
     smash_finishes = args.fail_with != "smash_crashes"
-    
+
 
     fatal_error = "FATAL         Main        : SMASH failed with the following error:\n\t\t\t    "
     file_name_is_running = "smash.lock"
@@ -207,7 +207,7 @@ if __name__ == '__main__':
     file_particles_out_oscar = args.o+name_particles_file+name_oscar
     file_particles_out_bin = args.o+name_particles_file+name_bin
 
-   
+
 
     # smash is now ready to run
     print_terminal_start()
