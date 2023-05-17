@@ -168,6 +168,8 @@ def parse_command_line_config_options(args):
         print("Directory '{0}' not found".format(sampler_dir))
         sys.exit(1)
             
+    if sampler_dir != "/":
+        sampler_dir += "/"
     return sampler_dir
     
 
