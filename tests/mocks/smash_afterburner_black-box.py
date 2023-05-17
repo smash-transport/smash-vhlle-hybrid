@@ -11,10 +11,10 @@ def check_config(valid_config):
         args.i = "./config.yaml"
     if not os.path.exists(args.i):
         print(fatal_error+"The configuration file was expected at './config.yaml', but the file does not exist.")
-        sys.exit()
+        sys.exit(1)
     if not valid_config:
         print(fatal_error+"Validation of SMASH input failed.")
-        sys.exit()
+        sys.exit(1)
     return
 
 def print_terminal_start():
@@ -69,42 +69,44 @@ def create_folders_structure():
         args.o += "/"
     return
 
-def check_if_empty_output():
+def ensure_no_output_is_overwritten():
     f_config = args.o + "config.yaml"
     if os.path.exists(f_config):
         print(fatal_error + "Output directory would get overwritten. Select a different output directory, clean up, or tell SMASH to ignore existing files.")
-        sys.exit()
+        sys.exit(1)
     else:
         # create config file
         f = open(f_config, "w")
         f.close()
     return
 
-def run_smash(finalize,file_particles_in):
+def run_smash(finalize,file_particles_in,sampler_dir):
     # create smash.lock file
     f = open(args.o+file_name_is_running, "w")
     extension_pattern = r"\d+"  # Matches one or more digits at the end of the filename
     regex=re.compile(file_particles_in+extension_pattern)
     # Get a list of files in the current directory
-    files = os.listdir()
+    files = os.listdir(sampler_dir)
     # Filter files that match the base name and have only integer extensions
     matching_files = [file_in for file_in in files if regex.match(os.getcwd()+"/"+file_in)]
     if(len(matching_files)>0):
         try:
-            f_in=open(matching_files[0],"r")
-            f_in.close()
+            for match in matching_files:
+                f_in=open(match,"r")
+                f_in.close()
+                print("File read")
         except:
             print(fatal_error+"Sampled particle list could not be opened")
-            exit()
+            sys.exit(1)
     else:
         print(fatal_error+"Sampled particle list could not be found")
-        exit()
+        sys.exit(1)
     f.close()
     # open unfinished particle files
     particles_out_oscar = open(file_particles_out_oscar+name_unfinished, "w")
     particles_out_bin = open(file_particles_out_bin+name_unfinished, "w")
     # run the black box
-    for ts in range(11):
+    for ts in range(1):
         print("running t = {} fm".format(ts))
         time.sleep(0.5)
     particles_out_oscar.close()
@@ -114,6 +116,7 @@ def run_smash(finalize,file_particles_in):
         finish()
     else:
         print(fatal_error+"crash")
+        sys.exit(1)
     return
 
 def finish():
@@ -122,17 +125,45 @@ def finish():
         os.rename(file_particles_out_oscar+name_unfinished, file_particles_out_oscar)
     else:
         print("somehow the output (.oscar) file was not properly written")
-        sys.exit()
+        sys.exit(1)
 
     if os.path.exists(file_particles_out_bin+name_unfinished):
         os.rename(file_particles_out_bin+name_unfinished, file_particles_out_bin)
     else:
         print("somehow the output file (.bin) was not properly written")
-        sys.exit()
+        sys.exit(1)
 
     # remove smash.lock file
     os.remove(args.o+file_name_is_running)
     return
+
+def parse_command_line_config_options(args):
+    
+    sampler_dir=""
+    dir_config=False
+    n_events_config=False
+    if(args.c == None):
+        print("No command line options given")
+        sys.exit(1)
+    else:
+        for option in args.c:
+            if "Modi:" in option[0].split():
+                sampler_dir=option[0].split()[5].split("}")[0]
+                dir_config=True
+            elif "Nevents:" in option[0].split():
+                try:
+                    n_events=int(option[0].split()[3].strip())
+                    n_events_config=True
+                except:
+                    print("Nevents could not be parsed")
+                    sys.exit(1)
+                    
+    if not (dir_config and n_events_config):
+        print("Necessary command line options not found")
+        sys.exit(1)
+            
+    return sampler_dir
+    
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -148,9 +179,15 @@ if __name__ == '__main__':
                         help="Choose a place where SMASH should fail")
 
     args = parser.parse_args()
-
-   
-    smash_finishes = False if args.fail_with == "smash_crashes" else True
+    
+     # initialize the system
+    check_config(args.fail_with != "invalid_config")
+    create_folders_structure()
+    ensure_no_output_is_overwritten()
+    
+    sampler_dir=parse_command_line_config_options(args)
+    smash_finishes = args.fail_with != "smash_crashes"
+    
 
     fatal_error = "FATAL         Main        : SMASH failed with the following error:\n\t\t\t    "
     file_name_is_running = "smash.lock"
@@ -158,40 +195,12 @@ if __name__ == '__main__':
     name_oscar = ".oscar"
     name_bin = ".bin"
     name_particles_file = "particle_lists"
-    
-    dir_config=False
-    n_events_config=False
-    if(args.c == None):
-        config_is_valid = False
-    else:
-        for option in args.c:
-            #print(option)
-            if "Modi:" in option[0].split():
-                sampler_dir=option[0].split()[5].split("}")[0]
-                print(sampler_dir)
-                dir_config=True
-            elif "Nevents:" in option[0].split():
-                try:
-                    n_events=int(option[0].split()[3].strip())
-                    n_events_config=True
-                except:
-                    print("Nevents could not be parsed")
-            
-
-        config_is_valid = False if args.fail_with == "invalid_config" or not dir_config or not n_events_config else True
-
-    # initialize the system
-    check_config(config_is_valid)
-    create_folders_structure()
-    check_if_empty_output()
-    
-    #SMASH input sampled particles + spectators
     file_particles_in=sampler_dir+"sampling"
-    # SMASH output participants + spectators
     file_particles_out_oscar = args.o+name_particles_file+name_oscar
-    # special SMASH output for vHLLE. only participants
     file_particles_out_bin = args.o+name_particles_file+name_bin
+
+   
 
     # smash is now ready to run
     print_terminal_start()
-    run_smash(smash_finishes,file_particles_in)
+    run_smash(smash_finishes,file_particles_in,sampler_dir)
