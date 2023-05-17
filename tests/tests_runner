@@ -183,7 +183,10 @@ function Print_Tests_Report()
     fi
     if [[ ${HYBRIDT_report_level} -ge 2 ]]; then
         local name percentage
-        percentage=$(awk '{printf "%.0f%%", 100*$1/$2}' <<< "${HYBRIDT_tests_passed} ${HYBRIDT_tests_run}")
+        percentage=$(awk\
+                     '{
+                        if($2!=0) {printf "%.0f%%", 100*$1/$2} else {printf "-- %"}
+                      }' <<< "${HYBRIDT_tests_passed} ${HYBRIDT_tests_run}")
         Print_Centered_Line "${percentage} of tests passed!" ${separator_length} "${indentation}"
         Print_Line_of_Equals "${separator_length}" "${indentation}" '\e[96m' '\e[0m\n'
         if [[ ${testsFailed} -ne 0 ]]; then

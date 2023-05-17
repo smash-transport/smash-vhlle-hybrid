@@ -89,6 +89,7 @@ function __static__Print_Helper()
                                    "list of numbers and/or of intervals (e.g. 1,3-5) or"\
                                    "a string (e.g. 'help*') has to be specified. The string"\
                                    "is matched against test names using bash regular globbing."\
+                                   "Remember to quote the argument to avoid shell expansion."\
                                    "If no value is specified the available tests list is printed."\
                                    "Without this option all existing tests are run."
     __static__Add_Option_To_Helper "-k | --keep-tests-folder"\
