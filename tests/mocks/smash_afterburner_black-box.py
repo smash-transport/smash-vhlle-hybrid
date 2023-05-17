@@ -80,11 +80,11 @@ def ensure_no_output_is_overwritten():
         f.close()
     return
 
-def run_smash(finalize,file_particles_in,sampler_dir):
+def run_smash(finalize,SMASH_input_file_with_participants_and_spectators,sampler_dir):
     # create smash.lock file
     f = open(args.o+file_name_is_running, "w")
     extension_pattern = r"\d+"  # Matches one or more digits at the end of the filename
-    regex=re.compile(file_particles_in+extension_pattern)
+    regex=re.compile(SMASH_input_file_with_participants_and_spectators+extension_pattern)
     # Get a list of files in the current directory
     files = os.listdir(sampler_dir)
     # Filter files that match the base name and have only integer extensions
@@ -103,8 +103,8 @@ def run_smash(finalize,file_particles_in,sampler_dir):
         sys.exit(1)
     f.close()
     # open unfinished particle files
-    particles_out_oscar = open(file_particles_out_oscar+name_unfinished, "w")
-    particles_out_bin = open(file_particles_out_bin+name_unfinished, "w")
+    particles_out_oscar = open(SMASH_output_file_with_participants_and_spectators+name_unfinished, "w")
+    particles_out_bin = open(SMASH_special_output_file_for_vHLLE_with_participants_only+name_unfinished, "w")
     # run the black box
     for ts in range(2):
         print("running t = {} fm".format(ts))
@@ -121,14 +121,14 @@ def run_smash(finalize,file_particles_in,sampler_dir):
 
 def finish():
     # rename output by removing the .unfinished file ending
-    if os.path.exists(file_particles_out_oscar+name_unfinished):
-        os.rename(file_particles_out_oscar+name_unfinished, file_particles_out_oscar)
+    if os.path.exists(SMASH_output_file_with_participants_and_spectators+name_unfinished):
+        os.rename(SMASH_output_file_with_participants_and_spectators+name_unfinished, SMASH_output_file_with_participants_and_spectators)
     else:
         print("somehow the output (.oscar) file was not properly written")
         sys.exit(1)
 
-    if os.path.exists(file_particles_out_bin+name_unfinished):
-        os.rename(file_particles_out_bin+name_unfinished, file_particles_out_bin)
+    if os.path.exists(SMASH_special_output_file_for_vHLLE_with_participants_only+name_unfinished):
+        os.rename(SMASH_special_output_file_for_vHLLE_with_participants_only+name_unfinished, SMASH_special_output_file_for_vHLLE_with_participants_only)
     else:
         print("somehow the output file (.bin) was not properly written")
         sys.exit(1)
@@ -195,16 +195,16 @@ if __name__ == '__main__':
     name_bin = ".bin"
     name_particles_file = "particle_lists"
     sampler_dir=parse_command_line_config_options()
-    file_particles_in=sampler_dir+"sampling"
 
     # initialize the system
     check_config(args.fail_with != "invalid_config")
     create_folders_structure()
     ensure_no_output_is_overwritten()
 
-    file_particles_out_oscar = args.o+name_particles_file+name_oscar
-    file_particles_out_bin = args.o+name_particles_file+name_bin
+    SMASH_input_file_with_participants_and_spectators = sampler_dir+"sampling"
+    SMASH_output_file_with_participants_and_spectators = args.o+name_particles_file+name_oscar
+    SMASH_special_output_file_for_vHLLE_with_participants_only = args.o+name_particles_file+name_bin
 
     # smash is now ready to run
     print_terminal_start()
-    run_smash(smash_finishes,file_particles_in,sampler_dir)
+    run_smash(smash_finishes,SMASH_input_file_with_participants_and_spectators,sampler_dir)
