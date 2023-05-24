@@ -66,6 +66,11 @@ function Print_Centered_Line()
            "${padding_utility}"
 }
 
+function Print_Not_Implemented_Function_Error()
+{
+    Print_Error "Function \"${FUNCNAME[1]}\" not implemented yet, skipping it."
+    return 1
+}
 
 function Make_Functions_Defined_In_This_File_Readonly()
 {

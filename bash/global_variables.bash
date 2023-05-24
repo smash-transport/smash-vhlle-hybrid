@@ -7,7 +7,13 @@
 #
 #===================================================
 
-function Check_System_Requirements()
+function Define_Further_Global_Variables()
 {
-    Print_Not_Implemented_Function_Error
+    readonly HYBRID_valid_blocks_labels=(
+        'IC'
+        'Hydro'
+        'Sampler'
+        'Afterburner'
+    )
+    HYBRID_execution_mode='help'
 }
