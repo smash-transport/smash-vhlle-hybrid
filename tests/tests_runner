@@ -120,11 +120,17 @@ function Run_Tests()
     fi
     local test_name
     for test_name in "${HYBRIDT_tests_to_be_run[@]}"; do
-        Call_through_interface 'Make_Test_Preliminary_Operations' "${test_name}"
-        Announce_Running_Test "${test_name}"
-        Call_through_interface 'Run_Test' "${test_name}"
+        (( HYBRIDT_tests_run++ ))
+        # Run in sub-shell to have the same starting environment
+        (
+            Call_through_interface 'Make_Test_Preliminary_Operations' "${test_name}"
+            Announce_Running_Test "${test_name}"
+            Call_through_interface 'Run_Test' "${test_name}"
+            local test_outcome=$?
+            Call_through_interface 'Clean_Tests_Environment_For_Following_Test' "${test_name}"
+            exit ${test_outcome}
+        )
         Inspect_Test_Outcome $? "${test_name}"
-        Call_through_interface 'Clean_Tests_Environment_For_Following_Test' "${test_name}"
     done
 }
 
@@ -132,7 +138,6 @@ function Announce_Running_Test()
 {
     local test_name padded_name
     test_name=$1; shift
-    (( HYBRIDT_tests_run++ ))
     if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
         printf -v padded_name "%-60s" "__${test_name}$(printf '\e[94m')_"
         padded_name="${padded_name// /.}"
