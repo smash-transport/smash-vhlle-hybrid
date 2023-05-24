@@ -25,7 +25,7 @@ function Parse_Tests_Suite_Parameter_And_Source_Specific_Code()
     fi
 }
 
-function Parse_Command_Line_Options()
+function Parse_Tests_Command_Line_Options()
 {
     # This function needs the array of tests not sparse => enforce it
     HYBRIDT_tests_to_be_run=( "${HYBRIDT_tests_to_be_run[@]}" )

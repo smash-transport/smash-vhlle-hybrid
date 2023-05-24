@@ -32,7 +32,7 @@ function Main()
     Parse_Tests_Suite_Parameter_And_Source_Specific_Code "$1"
     Check_System_Requirements
     Call_through_interface 'Define_Available_Tests'
-    Parse_Command_Line_Options "${@:2}"
+    Parse_Tests_Command_Line_Options "${@:2}"
     Prepare_Test_Environment
     Run_Tests
     Print_Tests_Report
