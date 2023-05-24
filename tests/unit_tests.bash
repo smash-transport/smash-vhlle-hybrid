@@ -41,8 +41,11 @@ function Unit_Test__parse-command-line-options()
 
 function Define_Available_Tests()
 {
+    # Available tests are based on functions in this file whose names begins with "Unit_Test__"
     HYBRIDT_tests_to_be_run=(
-        'define-global-variables'
+        # Here word splitting can split names, no space allowed in function name!
+        $(grep -E '^function[[:space:]]+Unit_Test__[-[:alnum:]_:]+\(\)[[:space:]]*$' "${BASH_SOURCE[0]}" |\
+           sed -E 's/^function[[:space:]]+Unit_Test__([^(]+)\(\)[[:space:]]*$/\1/')
     )
 }
 
