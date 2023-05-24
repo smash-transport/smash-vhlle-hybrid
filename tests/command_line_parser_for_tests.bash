@@ -16,7 +16,7 @@ function Parse_Tests_Suite_Parameter_And_Source_Specific_Code()
             "Invalid tests type \"${suite_name}\". Valid values: \"functional\", \"unit\"."\
             "Use the '--help' option to get more information."
     fi
-    code_filename="${suite_name}_tests_specific_code.bash"
+    code_filename="${suite_name}_tests.bash"
     if [[ ! -f "${code_filename}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
             "File \"${code_filename}\" not found."
