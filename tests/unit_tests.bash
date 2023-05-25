@@ -7,11 +7,6 @@
 #
 #===================================================
 
-function Unit_Test__define-global-variables()
-{
-    Define_Further_Global_Variables
-}
-
 function Unit_Test__parse-execution-mode()
 {
     Parse_Execution_Mode
@@ -24,12 +19,7 @@ function Unit_Test__system-requirements()
 
 function Unit_Test__version()
 {
-    Print_Software_Version
-}
-
-function Unit_Test__handler-help()
-{
-    Give_Required_Help
+    false
 }
 
 function Unit_Test__parse-command-line-options()
