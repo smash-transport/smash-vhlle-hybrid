@@ -42,18 +42,7 @@ function Main()
 
 function Call_through_interface()
 {
-    local name_of_the_function
-    name_of_the_function=$1; shift
-    if [[ "$(type -t ${name_of_the_function})" = 'function' ]]; then
-        ${name_of_the_function} "$@" || return $?
-        # Return value propagates automatically since a function returns the last exit code.
-        # However, when exit on error behavior is active, the script would terminate here if
-        # the function returns non-zero exit code and, instead we want this propagate up!
-    else
-        exit_code=${HYBRID_fatal_missing_feature} Print_Internal_And_Exit\
-            "\nFunction \"${name_of_the_function}\" not found!"\
-            "Please provide an implementation following the in-code documentation."
-    fi
+    Call_Function_If_Existing $1 "${@:2}"
 }
 
 function Setup_Initial_And_Final_Output_Space()

@@ -16,6 +16,7 @@ function __static__Source_Codebase_Files()
         'command_line_parsers/helper.bash'
         'command_line_parsers/main_parser.bash'
         'command_line_parsers/sub_parser.bash'
+        'dispatch_functions.bash'
         'global_variables.bash'
         'logger.bash'
         'system_requirements.bash'

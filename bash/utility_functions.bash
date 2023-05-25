@@ -72,6 +72,22 @@ function Print_Not_Implemented_Function_Error()
     return 1
 }
 
+function Call_Function_If_Existing()
+{
+    local name_of_the_function=$1
+    shift
+    if [[ "$(type -t ${name_of_the_function})" = 'function' ]]; then
+        # Return value propagates automatically since a function returns the last exit code.
+        # However, when exit on error behavior is active, the script would terminate here if
+        # the function returns non-zero exit code and, instead we want this propagate up!
+        ${name_of_the_function} "$@" || return $?
+    else
+        exit_code=${HYBRID_fatal_missing_feature} Print_Internal_And_Exit\
+            "\nFunction \"${name_of_the_function}\" not found!"\
+            "Please provide an implementation following the in-code documentation."
+    fi
+}
+
 function Make_Functions_Defined_In_This_File_Readonly()
 {
     # Here we assume all functions are defined with the same stile,
