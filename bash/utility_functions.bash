@@ -69,7 +69,6 @@ function Print_Centered_Line()
 function Print_Not_Implemented_Function_Error()
 {
     Print_Error "Function \"${FUNCNAME[1]}\" not implemented yet, skipping it."
-    return 1
 }
 
 function Call_Function_If_Existing()

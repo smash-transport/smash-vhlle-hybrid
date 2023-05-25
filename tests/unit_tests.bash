@@ -7,24 +7,34 @@
 #
 #===================================================
 
-function Unit_Test__parse-execution-mode()
+function Unit_Test__configuration-validate-1()
 {
-    Parse_Execution_Mode
+    false
 }
 
-function Unit_Test__system-requirements()
-{
-    Check_System_Requirements
-}
-
-function Unit_Test__version()
+function Unit_Test__configuration-validate-2()
 {
     false
 }
 
 function Unit_Test__parse-command-line-options()
 {
-    Parse_Command_Line_Options
+    false
+}
+
+function Unit_Test__parse-execution-mode()
+{
+    false
+}
+
+function Unit_Test__system-requirements()
+{
+    false
+}
+
+function Unit_Test__version()
+{
+    false
 }
 
 #=======================================================================================================================
