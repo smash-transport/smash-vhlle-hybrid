@@ -9,11 +9,28 @@
 
 function Define_Further_Global_Variables()
 {
-    readonly HYBRID_valid_blocks_labels=(
+    readonly HYBRID_valid_configuration_sections=(
+        'Hybrid-handler'
         'IC'
         'Hydro'
         'Sampler'
         'Afterburner'
     )
+    readonly HYBRID_default_configurations_folder="${HYBRID_repository_global_path}/configs"
+    # Variables to be set from command line
     HYBRID_execution_mode='help'
+    HYBRID_configuration_file='./config.yaml'
+    HYBRID_output_directory='.'
+    # Variables to be set from configuration/setup
+    HYBRID_ic_software_executable=''
+    HYBRID_hydro_software_executable=''
+    HYBRID_sampler_software_executable=''
+    HYBRID_Afterburner_software_executable=''
+    HYBRID_given_software_sections=()
+    declare -gA HYBRID_software_input=(
+        ['IC']=''
+        ['Hydro']=''
+        ['Sampler']=''
+        ['Afterburner']=''
+    )
 }

@@ -75,7 +75,20 @@ function Act_And_Exit_If_User_Ran_Auxiliary_Modes()
 
 function Make_Needed_Operations_Depending_On_Execution_Mode()
 {
-    Print_Not_Implemented_Function_Error
+    case "${HYBRID_execution_mode}" in
+        do )
+            local software_section
+            Validate_And_Parse_Configuration_File
+            for software_section in "${HYBRID_given_software_sections[@]}"; do
+                Prepare_Software_Input_File "${software_section}"
+                Ensure_All_Needed_Input_Exists "${software_section}"
+                Run_Software "${software_section}"
+            done
+            ;;
+        * )
+            Print_Internal_And_Exit "Unexpected execution mode at top-level."
+            ;;
+    esac
 }
 
 Main "$@"
