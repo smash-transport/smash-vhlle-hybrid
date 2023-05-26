@@ -19,12 +19,9 @@
 #                                                                            #
 #----------------------------------------------------------------------------#
 
-# Set stricter bash mode (see CONTRIBUTING for more information)
-set -o pipefail -o nounset -o errexit
-shopt -s extglob inherit_errexit
-
 function Main()
 {
+    Enable_Desired_Shell_Behavior
     Setup_Initial_And_Final_Output_Space
     Define_Repository_Global_Path
     Store_Command_Line_Options_Into_Global_Variable "$@"
@@ -35,6 +32,13 @@ function Main()
     Check_System_Requirements
     Parse_Command_Line_Options
     Make_Needed_Operations_Depending_On_Execution_Mode
+}
+
+function Enable_Desired_Shell_Behavior()
+{
+    # Set stricter bash mode (see CONTRIBUTING for more information)
+    set -o pipefail -o nounset -o errexit
+    shopt -s extglob inherit_errexit
 }
 
 function Setup_Initial_And_Final_Output_Space()
