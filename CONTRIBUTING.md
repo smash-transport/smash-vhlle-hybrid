@@ -47,12 +47,11 @@ Please, refer to their README file for more information.
 
 After long consideration, it has been decided to use some stricter bash mode.
 In particular, the harmless `pipefail`, `nounset` and `extglob` options are enabled, together with the more controversial `errexit` one (and its sibling `inherit_errexit`).
-This implies for the developer to be aware of what is going on, but we believe it is worth so.
 We are aware that the `errexit` option leads to many corner cases and that there are controversial opinions around.
-Our personal approach is to go ahead and use `set -e`, but beware of possible gotchas.
-It has useful semantics and, more importantly, can protect from dangerous situations (`cd NotExistingFolder; rm -r *`).
+The advantage is its useful semantics and, more importantly, it can protect from dangerous situations (`cd NotExistingFolder; rm -r *`).
+But beware of possible gotchas.
 Of course, a proper error handling would be even better.
-However, considering that even more inexperienced developers might contribute to the project and miss some error handling (and, by the way, oversight are always possible), we still decided to let the shell abort on error, accepting to deal with all possible downsides this feature has.
+Considering that even more inexperienced developers might contribute to the project and miss some error handling (and, by the way, oversight is always possible), we still decided to let the shell abort on error, accepting to deal with all possible downsides this feature has.
 
 Finally, a short remark about `extglob` option. To motivate why we decided to enable it globally, it is best to quote [Greg's wiki](http://mywiki.wooledge.org/glob):
 > **`extglob` changes the way certain characters are parsed. It is necessary to have a newline (not just a semicolon) between `shopt -s extglob` and any subsequent commands to use it.**
