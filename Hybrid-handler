@@ -45,7 +45,7 @@ function Setup_Initial_And_Final_Output_Space()
 
 function Define_Repository_Global_Path()
 {
-    readonly HYBRID_repository_global_path=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+    readonly HYBRID_repository_global_path=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
 }
 
 function Store_Command_Line_Options_Into_Global_Variable()
