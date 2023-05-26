@@ -71,6 +71,26 @@ function Print_Not_Implemented_Function_Error()
     Print_Error "Function \"${FUNCNAME[1]}\" not implemented yet, skipping it."
 }
 
+function Remove_Comments_In_Existing_File()
+{
+    # NOTE: This function consider as comments anything coming after ANY occurrence of
+    #       the specified comment character and you should not use it if there might
+    #       be occurrences of that character that do not start a comment!
+    #        1) Entire lines starting with a comment (possibly with leading spaces) are removed
+    #        2) Inline comments with any space before them are removed
+    local filename comment_character
+    filename=$1
+    comment_character=${2:-#}
+    if [[ ! -f ${filename} ]]; then
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+            "File \"${filename}\" not found."
+    elif [[ ${#comment_character} -ne 1 ]]; then
+        Print_Internal_And_Exit "Comment character \"${comment_character}\" invalid!"
+    else
+        sed -i '/^[[:blank:]]*'"${comment_character}"'/d;s/[[:blank:]]*'"${comment_character}"'.*//' "${filename}"
+    fi
+}
+
 function Call_Function_If_Existing_Or_Exit()
 {
     local name_of_the_function=$1
