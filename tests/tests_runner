@@ -86,7 +86,7 @@ function Source_Needed_Files()
 function Print_Helper_And_Exit_If_Requested()
 {
     if Element_In_Array_Matches '^-(h|-help)$' "$@"; then
-        Parse_Command_Line_Options '--help'
+        Parse_Tests_Command_Line_Options '--help'
     fi
 }
 
