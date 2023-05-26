@@ -35,8 +35,7 @@ function __static__Replace_Keys_Into_YAML_File()
     if ! yq -P --inplace "${base_input_file}" 2> /dev/null; then
         exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
             "File \"${base_input_file}\" does not seem to contain valid YAML syntax."
-    fi
-    if ! keys_to_be_replaced=$(yq -P <(printf "${keys_to_be_replaced}\n") 2> /dev/null); then
+    elif ! keys_to_be_replaced=$(yq -P <(printf "${keys_to_be_replaced}\n") 2> /dev/null); then
         exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
             'Keys to be replaced do not seem to contain valid YAML syntax.'
     fi
@@ -57,5 +56,18 @@ function __static__Replace_Keys_Into_YAML_File()
 
 function __static__Replace_Keys_Into_Txt_File()
 {
-    Print_Not_Implemented_Function_Error
+    # Impose that both file and new keys have two entries per line
+    if ! awk 'NF != 2 { exit 1 }' "${base_input_file}"; then
+        exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
+            "File \"${base_input_file}\" does not seem to contain two columns per line only!"
+    elif ! awk 'NF != 2 { exit 1 }' <(printf "${keys_to_be_replaced}\n"); then
+        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
+            'Keys to be replaced do not seem to contain valid key-value syntax.'
+    fi
+    # NOTE: Since the YAML implementation is very general, here we can take advantage of it
+    #       on constraint of inserting and then removing a ':' after the "key".
+    awk -i inplace 'BEGIN{OFS=": "}{print $1, $2}' "${base_input_file}"
+    keys_to_be_replaced=$(awk 'BEGIN{OFS=": "}{print $1, $2}' <<< "${keys_to_be_replaced}")
+    __static__Replace_Keys_Into_YAML_File
+    awk -i inplace 'BEGIN{FS=": "}{printf "%-20s%s\n", $1, $2}' "${base_input_file}"
 }

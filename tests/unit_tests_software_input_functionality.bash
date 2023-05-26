@@ -76,7 +76,49 @@ Foo: BarBar'
     fi
 }
 
+function Make_Test_Preliminary_Operations__replace-in-software-input-TXT()
+{
+    Make_Test_Preliminary_Operations__replace-in-software-input-YAML
+}
+
 function Unit_Test__replace-in-software-input-TXT()
 {
-    false
+    local base_input_file keys_to_be_replaced expected_result
+    base_input_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    # Test case 1:
+    printf 'Key Value Extra-field\n' > "${base_input_file}"
+    ( __static__Replace_Keys_Into_Txt_File &> /dev/null )
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'TXT replacement in invalid file succeeded'
+        return 1
+    fi
+    # Test case 2:
+    printf 'Key: Value\n' > "${base_input_file}"
+    keys_to_be_replaced='Invalid txt syntax'
+    ( __static__Replace_Keys_Into_Txt_File &> /dev/null )
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Invalid TXT replacement in valid file succeeded'
+        return 1
+    fi
+    # Test case 3:
+    printf 'Key Value\n' > "${base_input_file}"
+    keys_to_be_replaced='New_key value'
+    ( __static__Replace_Keys_Into_Txt_File &> /dev/null )
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Valid YAML replacement but with new key in valid file succeeded'
+        return 1
+    fi
+    # Test case 4:
+    printf 'a 0.123\nb 0.456\nc 0.789\n' > "${base_input_file}"
+    keys_to_be_replaced=$'a 42\nc 77'
+    printf -v expected_result "%-20s%s\n" 'a' '42' 'b' '0.456' 'c' '77'
+    expected_result=${expected_result%?} # Get rid of trailing endline
+    __static__Replace_Keys_Into_Txt_File
+    if [[ "$(cat "${base_input_file}")" != "${expected_result}" ]]; then
+        Print_Error "YAML replacement failed!"\
+                    "---- OBTAINED: ----\n$(cat "${base_input_file}")"\
+                    "---- EXPECTED: ----\n${expected_result}"\
+                    '-------------------'
+        return 1
+    fi
 }
