@@ -7,3 +7,7 @@
 #
 #===================================================
 
+function Print_Software_Version()
+{
+    Print_Not_Implemented_Function_Error
+}

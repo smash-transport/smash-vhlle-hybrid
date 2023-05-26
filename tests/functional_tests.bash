@@ -10,7 +10,8 @@
 function Define_Available_Tests()
 {
     HYBRIDT_tests_to_be_run=(
-        # No tests existing yet
+        'help-'{1..3}
+        'version-'{1,2}
     )
 }
 
@@ -21,6 +22,7 @@ function Make_Test_Preliminary_Operations()
 
 function Run_Test()
 {
+    local test_name=$1
     false # Fail by definition for the moment
 }
 

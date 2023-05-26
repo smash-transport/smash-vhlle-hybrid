@@ -7,3 +7,12 @@
 #
 #===================================================
 
+function Parse_Execution_Mode()
+{
+    Print_Not_Implemented_Function_Error
+}
+
+function Parse_Command_Line_Options()
+{
+    Print_Not_Implemented_Function_Error
+}

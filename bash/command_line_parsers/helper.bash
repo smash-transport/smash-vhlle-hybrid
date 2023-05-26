@@ -7,3 +7,7 @@
 #
 #===================================================
 
+function Give_Required_Help()
+{
+    Print_Not_Implemented_Function_Error
+}

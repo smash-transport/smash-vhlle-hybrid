@@ -19,18 +19,80 @@
 #                                                                            #
 #----------------------------------------------------------------------------#
 
-# Set stricter bash mode (see CONTRIBUTING for more information)
-set -o pipefail -o nounset -o errexit
-shopt -s extglob inherit_errexit
+function Main()
+{
+    Enable_Desired_Shell_Behavior
+    Setup_Initial_And_Final_Output_Space
+    Define_Repository_Global_Path
+    Store_Command_Line_Options_Into_Global_Variable "$@"
+    Source_Codebase_Files
+    Define_Further_Global_Variables
+    Parse_Execution_Mode
+    Act_And_Exit_If_User_Ran_Auxiliary_Modes
+    Check_System_Requirements
+    Parse_Command_Line_Options
+    Make_Needed_Operations_Depending_On_Execution_Mode
+}
 
-source bash/logger.bash
+function Enable_Desired_Shell_Behavior()
+{
+    # Set stricter bash mode (see CONTRIBUTING for more information)
+    set -o pipefail -o nounset -o errexit
+    shopt -s extglob inherit_errexit
+}
 
+function Setup_Initial_And_Final_Output_Space()
+{
+    printf '\n'
+    trap 'printf "\n"' EXIT
+}
 
-Print_Trace            "Trace message"
-Print_Debug            "Debug message"
-Print_Info             "Information message"
-Print_Attention        "Attention message"
-Print_Warning          "Warning message"
-Print_Error            "Error"
-( Print_Fatal_And_Exit   "Fatal error, exit!" )
-Print_Internal_And_Exit  "Internal, for developer error"
+function Define_Repository_Global_Path()
+{
+    readonly HYBRID_repository_global_path=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
+}
+
+function Store_Command_Line_Options_Into_Global_Variable()
+{
+    HYBRID_specified_command_line_options=( "$@" )
+}
+
+function Source_Codebase_Files()
+{
+    source "${HYBRID_repository_global_path}/bash/source_codebase_files.bash" || exit 1
+}
+
+function Act_And_Exit_If_User_Ran_Auxiliary_Modes()
+{
+    case "${HYBRID_execution_mode}" in
+        help )
+            Give_Required_Help
+            ;;&
+        version )
+            Print_Software_Version
+            ;;&
+        help | version )
+            exit ${HYBRID_success_exit_code}
+            ;;
+    esac
+}
+
+function Make_Needed_Operations_Depending_On_Execution_Mode()
+{
+    case "${HYBRID_execution_mode}" in
+        do )
+            local software_section
+            Validate_And_Parse_Configuration_File
+            for software_section in "${HYBRID_given_software_sections[@]}"; do
+                Prepare_Software_Input_File "${software_section}"
+                Ensure_All_Needed_Input_Exists "${software_section}"
+                Run_Software "${software_section}"
+            done
+            ;;
+        * )
+            Print_Internal_And_Exit "Unexpected execution mode at top-level."
+            ;;
+    esac
+}
+
+Main "$@"

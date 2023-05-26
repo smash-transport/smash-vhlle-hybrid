@@ -32,7 +32,7 @@ function Main()
     Parse_Tests_Suite_Parameter_And_Source_Specific_Code "$1"
     Check_System_Requirements
     Call_through_interface 'Define_Available_Tests'
-    Parse_Command_Line_Options "${@:2}"
+    Parse_Tests_Command_Line_Options "${@:2}"
     Prepare_Test_Environment
     Run_Tests
     Print_Tests_Report
@@ -42,18 +42,7 @@ function Main()
 
 function Call_through_interface()
 {
-    local name_of_the_function
-    name_of_the_function=$1; shift
-    if [[ "$(type -t ${name_of_the_function})" = 'function' ]]; then
-        ${name_of_the_function} "$@" || return $?
-        # Return value propagates automatically since a function returns the last exit code.
-        # However, when exit on error behavior is active, the script would terminate here if
-        # the function returns non-zero exit code and, instead we want this propagate up!
-    else
-        exit_code=${HYBRID_fatal_missing_feature} Print_Internal_And_Exit\
-            "\nFunction \"${name_of_the_function}\" not found!"\
-            "Please provide an implementation following the in-code documentation."
-    fi
+    Call_Function_If_Existing $1 "${@:2}"
 }
 
 function Setup_Initial_And_Final_Output_Space()
@@ -120,11 +109,17 @@ function Run_Tests()
     fi
     local test_name
     for test_name in "${HYBRIDT_tests_to_be_run[@]}"; do
-        Call_through_interface 'Make_Test_Preliminary_Operations' "${test_name}"
-        Announce_Running_Test "${test_name}"
-        Call_through_interface 'Run_Test' "${test_name}"
+        (( HYBRIDT_tests_run++ ))
+        # Run in sub-shell to have the same starting environment
+        (
+            Call_through_interface 'Make_Test_Preliminary_Operations' "${test_name}"
+            Announce_Running_Test "${test_name}"
+            Call_through_interface 'Run_Test' "${test_name}"
+            local test_outcome=$?
+            Call_through_interface 'Clean_Tests_Environment_For_Following_Test' "${test_name}"
+            exit ${test_outcome}
+        )
         Inspect_Test_Outcome $? "${test_name}"
-        Call_through_interface 'Clean_Tests_Environment_For_Following_Test' "${test_name}"
     done
 }
 
@@ -132,7 +127,6 @@ function Announce_Running_Test()
 {
     local test_name padded_name
     test_name=$1; shift
-    (( HYBRIDT_tests_run++ ))
     if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
         printf -v padded_name "%-60s" "__${test_name}$(printf '\e[94m')_"
         padded_name="${padded_name// /.}"
