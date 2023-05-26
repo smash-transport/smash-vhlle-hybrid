@@ -71,7 +71,7 @@ function Print_Not_Implemented_Function_Error()
     Print_Error "Function \"${FUNCNAME[1]}\" not implemented yet, skipping it."
 }
 
-function Call_Function_If_Existing()
+function Call_Function_If_Existing_Or_Exit()
 {
     local name_of_the_function=$1
     shift
@@ -84,6 +84,16 @@ function Call_Function_If_Existing()
         exit_code=${HYBRID_fatal_missing_feature} Print_Internal_And_Exit\
             "\nFunction \"${name_of_the_function}\" not found!"\
             "Please provide an implementation following the in-code documentation."
+    fi
+}
+
+function Call_Function_If_Existing_Or_No_Op()
+{
+    local name_of_the_function=$1
+    shift
+    if [[ "$(type -t ${name_of_the_function})" = 'function' ]]; then
+        # See 'Call_Function_If_Existing_Or_Exit' for more information about 'return $?'
+        ${name_of_the_function} "$@" || return $?
     fi
 }
 

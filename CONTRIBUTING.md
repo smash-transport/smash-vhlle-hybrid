@@ -83,4 +83,7 @@ Here a list of some aspects worth mentioning:
 * quotes are correctly used, i.e. everything that _might_ break if unquoted is quoted;
 * single quotes are used if there is no need of using double or different quotes;
 * all functions declared in each separate file are marked in the end of the file as `readonly`;
-* files are sourced all together by sourcing a single dedicated file.
+* files are sourced all together by sourcing a single dedicated file;
+* unit tests must be put in files whose names begin with `unit_tests_` and have the `.bash` extension (this convention allows the runner to source them all automatically);
+* unit tests are automatically recognized by the tests runner as functions having the `Unit_Test__` prefix (and the remaining part of the function will be the unit test name);
+* operations to be done before or after a unit test can be put in the `Make_Test_Preliminary_Operations__[test-name]` and `Clean_Tests_Environment_For_Following_Test__[test-name]` functions, respectively (here `[test-name]` must match the string used in the unit test function name).

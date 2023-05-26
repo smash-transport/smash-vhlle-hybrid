@@ -9,15 +9,15 @@
 
 function Prepare_Software_Input_File()
 {
-    Call_Function_If_Existing ${FUNCNAME}_$1 "${@:2}"
+    Call_Function_If_Existing_Or_Exit ${FUNCNAME}_$1 "${@:2}"
 }
 
 function Ensure_All_Needed_Input_Exists()
 {
-    Call_Function_If_Existing ${FUNCNAME}_$1 "${@:2}"
+    Call_Function_If_Existing_Or_Exit ${FUNCNAME}_$1 "${@:2}"
 }
 
 function Run_Software()
 {
-    Call_Function_If_Existing ${FUNCNAME}_$1 "${@:2}"
+    Call_Function_If_Existing_Or_Exit ${FUNCNAME}_$1 "${@:2}"
 }
