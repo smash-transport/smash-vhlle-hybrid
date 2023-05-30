@@ -73,7 +73,7 @@ function Print_Not_Implemented_Function_Error()
 
 function Remove_Comments_In_Existing_File()
 {
-    # NOTE: This function consider as comments anything coming after ANY occurrence of
+    # NOTE: This function considers as comments anything coming after ANY occurrence of
     #       the specified comment character and you should not use it if there might
     #       be occurrences of that character that do not start a comment!
     #        1) Entire lines starting with a comment (possibly with leading spaces) are removed
