@@ -42,7 +42,7 @@ function Main()
 
 function Call_through_interface()
 {
-    Call_Function_If_Existing $1 "${@:2}"
+    Call_Function_If_Existing_Or_Exit $1 "${@:2}"
 }
 
 function Setup_Initial_And_Final_Output_Space()
