@@ -51,8 +51,17 @@ function Define_Further_Global_Variables()
         [Software_keys]='HYBRID_software_new_input_keys[Afterburner]'
     )
     # Variables to be set (and possibly made readonly) from command line
+    readonly HYBRID_default_configurations_folder="${HYBRID_repository_global_path}/configs"
+    declare -gAr HYBRID_default_software_input_files=(
+        ['IC']="${HYBRID_default_configurations_folder}/smash_initial_conditions_custom.yaml"
+        ['Hydro']="${HYBRID_default_configurations_folder}/vhlle_config"
+        ['Sampler']=''
+        ['Afterburner']=''
+    )
+    # Variables to be set from command line
     HYBRID_execution_mode='help'
     HYBRID_configuration_file='./config.yaml'
+<<<<<<< HEAD
     HYBRID_output_directory="$(realpath .)"
     # Variables to be set (and possibly made readonly) from configuration/setup
     HYBRID_given_software_sections=()
@@ -62,9 +71,13 @@ function Define_Further_Global_Variables()
         [Sampler]=''
         [Afterburner]=''
     )
+=======
+    HYBRID_output_directory='.'
+   
+>>>>>>> Initialise Hydro functionality and tests
     declare -gA HYBRID_software_base_config_file=(
         [IC]="${HYBRID_default_configurations_folder}/smash_initial_conditions_AuAu.yaml"
-        [Hydro]="${HYBRID_default_configurations_folder}/vhlle_hydro"
+        [Hydro]="${HYBRID_default_configurations_folder}/vhlle_config"
         [Sampler]="${HYBRID_default_configurations_folder}/hadron_sampler"
         [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"
     )
