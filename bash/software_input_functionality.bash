@@ -14,7 +14,7 @@ function Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File()
     style=$1
     base_input_file=$2
     keys_to_be_replaced=$3
-    Remove_Comments_In_Existing_File "${base_input_file}"
+    Remove_Comments_In_File "${base_input_file}" # this checks for existence, too
     case "${style}" in
         YAML )
             __static__Replace_Keys_Into_YAML_File

@@ -71,7 +71,7 @@ function Print_Not_Implemented_Function_Error()
     Print_Error "Function \"${FUNCNAME[1]}\" not implemented yet, skipping it."
 }
 
-function Remove_Comments_In_Existing_File()
+function Remove_Comments_In_File()
 {
     # NOTE: This function considers as comments anything coming after ANY occurrence of
     #       the specified comment character and you should not use it if there might

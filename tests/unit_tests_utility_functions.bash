@@ -22,7 +22,7 @@ function Unit_Test__remove-comments-in-existing-file()
     # Test case 1
     local -r file_containing_one_commented_line_only=${FUNCNAME}_1.txt
     printf '   # Comment\n' > "${file_containing_one_commented_line_only}"
-    Remove_Comments_In_Existing_File "${file_containing_one_commented_line_only}"
+    Remove_Comments_In_File "${file_containing_one_commented_line_only}"
     if [[ -s "${file_containing_one_commented_line_only}" ]]; then
         Print_Error "File \"${file_containing_one_commented_line_only}\" not empty!"
         return 1
@@ -32,7 +32,7 @@ function Unit_Test__remove-comments-in-existing-file()
     local -r file_containing_no_comments=${FUNCNAME}_2.txt
     printf $'No comment\nin any\nline\n' > "${file_containing_no_comments}"
     number_of_lines=$(wc -l < "${file_containing_no_comments}")
-    Remove_Comments_In_Existing_File "${file_containing_no_comments}"
+    Remove_Comments_In_File "${file_containing_no_comments}"
     if [[ $(wc -l < "${file_containing_no_comments}") -ne ${number_of_lines} ]]; then
         Print_Error "Removing comments in \"${file_containing_no_comments}\" file failed!"
         return 1
@@ -42,7 +42,7 @@ function Unit_Test__remove-comments-in-existing-file()
     local -r file_containing_three_commented_lines=${FUNCNAME}_3.txt
     printf $'Some\n #comment\ntext\n#comment\namong\n#comment\ncomments\n' > "${file_containing_three_commented_lines}"
     number_of_lines=$(wc -l < "${file_containing_three_commented_lines}")
-    Remove_Comments_In_Existing_File "${file_containing_three_commented_lines}"
+    Remove_Comments_In_File "${file_containing_three_commented_lines}"
     if (( $(wc -l < "${file_containing_three_commented_lines}") != number_of_lines - 3 )); then
         Print_Error "Removing comments in \"${file_containing_three_commented_lines}\" file failed!"
         return 1
@@ -51,7 +51,7 @@ function Unit_Test__remove-comments-in-existing-file()
     # Test case 4
     local -r file_containing_one_line_with_an_inline_comment=${FUNCNAME}_4.txt
     printf 'Hello   %% Comment\n' > "${file_containing_one_line_with_an_inline_comment}"
-    Remove_Comments_In_Existing_File "${file_containing_one_line_with_an_inline_comment}" '%'
+    Remove_Comments_In_File "${file_containing_one_line_with_an_inline_comment}" '%'
     if [[ $(cat "${file_containing_one_line_with_an_inline_comment}") != 'Hello' ]]; then
         Print_Error "Removing comments in \"${file_containing_one_line_with_an_inline_comment}\" file failed!"
         return 1

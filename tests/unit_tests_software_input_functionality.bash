@@ -23,7 +23,7 @@ function Unit_Test__replace-in-software-input-YAML()
     printf 'Scalar\nKey: Value\n' > "${base_input_file}"
     ( __static__Replace_Keys_Into_YAML_File &> /dev/null )
     if [[ $? -eq 0 ]]; then
-        Print_Error 'YAML replacement in invalid file succeeded'
+        Print_Error 'YAML replacement in invalid file succeeded.'
         return 1
     fi
     # Test case 2:
@@ -31,7 +31,7 @@ function Unit_Test__replace-in-software-input-YAML()
     keys_to_be_replaced=$'Invalid\nyaml: syntax'
     ( __static__Replace_Keys_Into_YAML_File &> /dev/null )
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Invalid YAML replacement in valid file succeeded'
+        Print_Error 'Invalid YAML replacement in valid file succeeded.'
         return 1
     fi
     # Test case 3:
@@ -39,7 +39,7 @@ function Unit_Test__replace-in-software-input-YAML()
     keys_to_be_replaced='New_key: value'
     ( __static__Replace_Keys_Into_YAML_File &> /dev/null )
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Valid YAML replacement but with new key in valid file succeeded'
+        Print_Error 'Valid YAML replacement but with new key in valid file succeeded.'
         return 1
     fi
     # Test case 4:
