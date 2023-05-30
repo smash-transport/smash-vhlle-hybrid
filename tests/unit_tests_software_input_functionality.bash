@@ -15,6 +15,8 @@ function Make_Test_Preliminary_Operations__replace-in-software-input-YAML()
 
 function Unit_Test__replace-in-software-input-YAML()
 {
+    # NOTE: The following variables must be named exactly so as the are used
+    #       by __static__Replace_Keys_Into_YAML_File function
     local base_input_file keys_to_be_replaced expected_result
     base_input_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
     # Test case 1:
@@ -74,6 +76,7 @@ Foo: BarBar'
                     '-------------------'
         return 1
     fi
+    rm "${base_input_file}"
 }
 
 function Make_Test_Preliminary_Operations__replace-in-software-input-TXT()
@@ -83,6 +86,8 @@ function Make_Test_Preliminary_Operations__replace-in-software-input-TXT()
 
 function Unit_Test__replace-in-software-input-TXT()
 {
+    # NOTE: The following variables must be named exactly so as the are used
+    #       by __static__Replace_Keys_Into_Txt_File function
     local base_input_file keys_to_be_replaced expected_result
     base_input_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
     # Test case 1:
@@ -121,4 +126,5 @@ function Unit_Test__replace-in-software-input-TXT()
                     '-------------------'
         return 1
     fi
+    rm "${base_input_file}"
 }
