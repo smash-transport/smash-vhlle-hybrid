@@ -1,0 +1,65 @@
+name: actions_on_github_servers
+
+on:
+  # trigger the workflow upon request
+  workflow_dispatch:
+  # trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  check_pull:
+    # we use jobs in a matrix
+    # the OS to be used for the test is taken from the current matrix element
+    runs-on: ${{ matrix.os }}
+    strategy:
+      # we want to avoid to stop all the tests the first time that one of them gets an error
+      fail-fast: false
+      matrix:
+        include:
+        #here we set up the various matrix elements
+        #the entries in each matrix element are just variables, not keywords, with (hopefully) self-explaining names
+        # 1st matrix element, current LTS Ubuntu distribution, default bash version
+        - os: ubuntu-22.04
+          bash_version: "default"
+        # 2st matrix element, current LTS Ubuntu distribution, bash 4.4 
+        - os: ubuntu-22.04
+          bash_version: "4.4"
+    steps:
+    # this is an action provided by GitHub to checkout the repository
+    - uses: actions/checkout@v3
+    # we set the name of the step, collecting all the tests here except those about formatting
+    - name: code_check
+    # we set some environment variables which depend on the specific matrix element
+      env:
+        OS_NAME: ${{ matrix.os }}
+        BASH_TESTED_VERSION: ${{matrix.bash_version}}
+      # we run the step. We recall that in YAML the pipe symbol "|" means that the following lines, including newlines, are interpreted literally
+      run: |
+        # we save in a variable the path of the starting directory
+        export main_dir=$PWD
+        # if we are not using the default bash version, we download and compile the desired one
+        if [ $BASH_TESTED_VERSION != "default" ]; then
+            wget https://ftp.gnu.org/gnu/bash/bash-$BASH_TESTED_VERSION.tar.gz
+            tar xf bash-$BASH_TESTED_VERSION.tar.gz
+            cd bash-$BASH_TESTED_VERSION
+            ./configure
+            make -j$(nproc)
+            BASH_EXE=$(pwd)/bash
+        else
+            BASH_EXE=$(which bash)
+        fi
+        # we print the bash version to check that we used the desired one
+        echo -e "\n\n"; $BASH_EXE --version; echo -e "\n\n"
+        # now we enter into the tests directory and execute the tests,
+        # with maximum detail (-r 3) and keeping all the files (-k)
+        cd $main_dir/tests
+        $BASH_EXE tests_runner unit -k -r 3
+        $BASH_EXE tests_runner functional -k -r 3
