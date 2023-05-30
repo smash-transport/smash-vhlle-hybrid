@@ -109,6 +109,8 @@ def create_folder(outputDirSpecified):
         if not os.path.exists(args.outputDir):
             os.makedirs(args.outputDir)
             print("mkdir returns: 0")
+    else:
+        print("mkdir: missing operand")
     return
 
 def check_command_line():
@@ -137,6 +139,24 @@ def check_eos():
     else: 
         print("I/O error with eos/chiraleos.dat")
     return
+
+def check_config(outputDirSpecified):
+    if args.params == "":
+        print("""EoHadron: table eos/eosHadronLog.dat read, [emin,emax,nmin,nmax] = 0.00336897  74.2066  -44.5239  44.5239  -44.5239  44.5239" 
+fluid allocation done 
+icModel = 0 not implemented 
+IC done 
+Init time = 6 [sec]""")
+        create_folder(outputDirSpecified)
+        variableList = ["tau", "E", "Efull", "Nb", "Sfull", "EtotSurf", "elements", "susp.", "%cut"]
+        valueList = ["0", "-0", "-0", "0", "-0", "0", "0", "0", "-nan"]
+        print("{: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10}".format(*variableList))
+        print("{: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10}".format(*valueList))
+        sys.exit()
+    return
+       
+
+
 
 def read_initial_state():
     messageExample = """particle E = 1442.11  Nbar = 367  Ncharge = 148 Ns = 0 
@@ -197,6 +217,7 @@ if __name__ == '__main__':
     print_terminal_start()
     check_command_line()
     print_parameters()
+    check_config(outputDirGiven)
     check_eos()
     read_initial_state()
     create_folder(outputDirGiven)
