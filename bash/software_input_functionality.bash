@@ -34,7 +34,9 @@ function __static__Replace_Keys_Into_YAML_File()
     # Use yq -P to bring all YAML to same format (crucial for later check on number of lines)
     if ! yq -P --inplace "${base_input_file}" 2> /dev/null; then
         exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
-            "File \"${base_input_file}\" does not seem to contain valid YAML syntax."
+            "File \"${base_input_file}\" does not seem to contain valid YAML syntax. Run"\
+            "   yq -P --inplace \"${base_input_file}\""\
+            "to have more information about the problem."
     elif ! keys_to_be_replaced=$(yq -P <(printf "${keys_to_be_replaced}\n") 2> /dev/null); then
         exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
             'Keys to be replaced do not seem to contain valid YAML syntax.'
