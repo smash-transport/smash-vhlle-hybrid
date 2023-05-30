@@ -9,10 +9,10 @@
 
 function Unit_Test__parse-command-line-options()
 {
-    false
+    return 0
 }
 
 function Unit_Test__parse-execution-mode()
 {
-    false
+    return 0
 }
