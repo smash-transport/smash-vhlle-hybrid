@@ -14,7 +14,8 @@ function __static__Declare_System_Requirements()
         ['bash']='4.4.0'
         ['awk']='4.1.0'
         ['sed']='4.2.1'
-	['tput']='5.9' # the last number is a date
+	['tput']='5.9.0' # the last number is a date
+	['yq']='4.0'
     )
 }
 
@@ -26,18 +27,16 @@ function Check_System_Requirements()
     __static__Declare_System_Requirements
     for program in "${!HYBRID_systemRequirements[@]}"; do
         if ! __static__Try_Find_Requirement "${program}"; then
-	    echo "${program}" 'not found! Minimum version' "${HYBRID_systemRequirements[${program}]}" 'is required.'
+	    Print_Error "${program}" 'not found! Minimum version' "${HYBRID_systemRequirements[${program}]}" 'is required.'
 	    requirements_present=1
 	    continue
 	fi
 	if ! __static__Try_Find_Version "${program}"; then
-	    echo 'Unable to find version of ' "${program}" ', skipping version check! Please ensure that '\
-	         'current version is at least ' "${HYBRID_systemRequirements[${program}]}"  
+	    Print_Warning "Unable to find version of ${program}, skipping version check! Please ensure that current version is at least ${HYBRID_systemRequirements[${program}]}." 
 	    continue
 	fi
 	if ! __static__Check_Version_Suffices "${program}"; then
-	    echo "${program}" 'version' "${system_found_versions[${program}]}" 'found, but version'\
-	         "${HYBRID_systemRequirements[${program}]}" 'is required.'
+	    Print_Error "${program} version ${system_found_versions[${program}]} found, but version ${HYBRID_systemRequirements[${program}]} is required."
 	    requirements_present=1
         fi
     done
@@ -62,7 +61,8 @@ function __static__Try_Find_Version()
     local found_version
     case "$1" in
         bash )
-            found_version="$(sed 's/ /./g' <<< "${BASH_VERSINFO[@]:0:3}")"
+            found_version="${BASH_VERSINFO[@]:0:3}"
+            found_version="${found_version// /.}"
 	    ;;
 	awk )
 	    found_version=$(awk --version | head -n1 | grep -o "[0-9.]\+" | head -n1)
@@ -72,6 +72,9 @@ function __static__Try_Find_Version()
 	    ;;
 	tput )
 	    found_version=$(tput -V | grep -o "[0-9.]\+" | cut -d'.' -f1,2)
+	    ;;
+	yq )
+	    found_version=$(yq --version | grep -o "v[0-9.]\+" | cut -d'v' -f2)
 	    ;;
     *)
 	return 1
