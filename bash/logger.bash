@@ -77,12 +77,12 @@ function Print_Error()
 
 function Print_Fatal_And_Exit()
 {
-    exit_code=${HYBRID_internal:-1} __static__Logger 'FATAL' "$@"
+    __static__Logger 'FATAL' "$@"
 }
 
 function Print_Internal_And_Exit()
 {
-    __static__Logger 'INTERNAL' "$@"
+    exit_code=${HYBRID_internal:-1} __static__Logger 'INTERNAL' "$@"
 }
 
 function __static__Logger()
