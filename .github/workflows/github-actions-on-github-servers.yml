@@ -15,7 +15,7 @@ on:
       - develop
 
 jobs:
-  check_pull:
+  run_tests:
     # we use jobs in a matrix
     # the OS to be used for the test is taken from the current matrix element
     runs-on: ${{ matrix.os }}
@@ -29,7 +29,7 @@ jobs:
         # 1st matrix element, current LTS Ubuntu distribution, default bash version
         - os: ubuntu-22.04
           bash_version: "default"
-        # 2st matrix element, current LTS Ubuntu distribution, bash 4.4 
+        # 2st matrix element, current LTS Ubuntu distribution, bash 4.4
         - os: ubuntu-22.04
           bash_version: "bash-4.4"
     steps:
