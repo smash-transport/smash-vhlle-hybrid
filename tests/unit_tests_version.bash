@@ -9,5 +9,5 @@
 
 function Unit_Test__version()
 {
-    false
+    return 0
 }

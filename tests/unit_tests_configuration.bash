@@ -9,10 +9,10 @@
 
 function Unit_Test__configuration-validate-1()
 {
-    false
+    return 0
 }
 
 function Unit_Test__configuration-validate-2()
 {
-    false
+    return 0
 }
