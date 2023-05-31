@@ -10,7 +10,7 @@
 
 function __static__Declare_System_Requirements()
 {
-    declare -grA HYBRID_systemRequirements=(
+    declare -gA HYBRID_systemRequirements=(
         ['bash']='4.4.0'
         ['awk']='4.1.0'
         ['sed']='4.2.1'
@@ -46,7 +46,6 @@ function Check_System_Requirements()
     else
 	return ${requirements_present}
     fi
-
 }
 
 function __static__Try_Find_Requirement()
