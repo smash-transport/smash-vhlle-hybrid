@@ -92,6 +92,9 @@ function __static__Check_Version_Suffices()
     local required found versioning
     required=($(echo "${HYBRID_systemRequirements[$1]}" | tr '.' ' '))
     found=($(echo "${system_found_versions[$1]}" | tr '.' ' '))
+    if [[ "${required[${versioning}]}" -eq "${found[${versioning}]}" ]]; then
+	return 0
+    fi
     for versioning in ${!required[@]}; do
         if [[ "${required[${versioning}]}" -lt "${found[${versioning}]}" ]]; then
 	    return 0
