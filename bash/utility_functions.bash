@@ -25,6 +25,24 @@ function Element_In_Array_Matches()
     return 1
 }
 
+# NOTE: This function needs to be called with the YAML string as first argument
+#       and the section keys as remaining arguments. If YAML is invalid, return false.
+function Has_YAML_String_Given_Key()
+{
+    local yaml_string section key
+    if [[ $# -lt 2 ]]; then
+        Print_Internal_And_Exit "Function '${FUNCNAME}' called with less than 2 arguments."
+    fi
+    yaml_string=$1; shift
+    section="$(printf '.%s' "${@:1:$#-1}")" # All arguments but last
+    key=${@: -1}                            # Last argument
+    if [[ $(yq "${section}"' | has("'"${key}"'")' <<< "${yaml_string}") = 'true' ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 function Print_Line_of_Equals()
 {
     local length indentation prefix postfix
