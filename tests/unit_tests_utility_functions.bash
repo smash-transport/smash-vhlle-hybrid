@@ -16,6 +16,11 @@ function Unit_Test__utility-has-YAML-string-given-key()
         Print_Error "Wrong call to function succeeded."
         return 1
     fi
+    ( Has_YAML_String_Given_Key $'Scalar\nKey: Value\n' 'Key' &> /dev/null )
+    if [[ $? -eq 0 ]] ; then
+        Print_Error "Function called on invalid YAML succeeded."
+        return 1
+    fi
     ( Has_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a' 'b' 'c' &> /dev/null )
     if [[ $? -ne 0 ]] ; then
         Print_Error "Existing key '{a: {b: {c:}}}' not found."
@@ -45,6 +50,11 @@ function Unit_Test__utility-read-from-YAML-string-given-key()
         Print_Error "Wrong call to function succeeded."
         return 1
     fi
+    ( Read_From_YAML_String_Given_Key $'Scalar\nKey: Value\n' 'Key' &> /dev/null )
+    if [[ $? -eq 0 ]] ; then
+        Print_Error "Function called on invalid YAML succeeded."
+        return 1
+    fi
     ( Read_From_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'nope' &> /dev/null )
     if [[ $? -eq 0 ]] ; then
         Print_Error "Not existing key successfully read."
@@ -59,6 +69,41 @@ function Unit_Test__utility-read-from-YAML-string-given-key()
     result=$(Read_From_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a' 'b')
     if [[ "${result}" != 'c: 42' ]] ; then
         Print_Error "Reading map key failed."
+        return 1
+    fi
+}
+
+function Unit_Test__utility-print-YAML-string-without-given-key()
+{
+    ( Print_YAML_String_Without_Given_Key &> /dev/null )
+    if [[ $? -eq 0 ]] ; then
+        Print_Error "Wrong call to function succeeded."
+        return 1
+    fi
+    ( Print_YAML_String_Without_Given_Key $'Scalar\nKey: Value\n' 'Key' &> /dev/null )
+    if [[ $? -eq 0 ]] ; then
+        Print_Error "Function called on invalid YAML succeeded."
+        return 1
+    fi
+    ( Print_YAML_String_Without_Given_Key $'a:\n  b: 42\n' 'nope' &> /dev/null )
+    if [[ $? -eq 0 ]] ; then
+        Print_Error "Not existing key successfully deleted."
+        return 1
+    fi
+    local result
+    result=$(Print_YAML_String_Without_Given_Key $'a: 42\nb: 17\n' 'b')
+    if [[ "${result}" != 'a: 42' ]] ; then
+        Print_Error "Deleting scalar key failed."
+        return 1
+    fi
+    result=$(Print_YAML_String_Without_Given_Key $'a:\n  b:\n    c: 17\n' 'a' 'b')
+    if [[ "${result}" != 'a: {}' ]] ; then
+        Print_Error "Deleting map key failed."
+        return 1
+    fi
+    result=$(Print_YAML_String_Without_Given_Key $'a: 42\n' 'a')
+    if [[ "${result}" != '{}' ]] ; then
+        Print_Error "Deleting only existing key failed."
         return 1
     fi
 }
