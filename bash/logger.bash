@@ -106,9 +106,11 @@ function __static__Logger()
             color='\e[91m'
             exec 1>&2 ;; # here stdout to stderr!
         INTERNAL )
-            color='\e[38;5;202m' ;;& # ;;& means go on in case matching following -> do *)
+            color='\e[38;5;202m'
+            exec 1>&2 ;; # here stdout to stderr!
         INFO )
-            color='\e[92m' ;;&
+            color='\e[92m' # ;;& means go on in case matching following -> do *)
+            ;;&
         ATTENTION )
             color='\e[38;5;200m' ;;&
         WARNING )
