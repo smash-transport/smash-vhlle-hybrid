@@ -11,7 +11,6 @@
 
 function Unit_Test__utility-has-YAML-string-given-key()
 {
-    # Test case: Wrong call
     ( Has_YAML_String_Given_Key &> /dev/null )
     if [[ $? -eq 0 ]] ; then
         Print_Error "Wrong call to function succeeded."
@@ -35,6 +34,31 @@ function Unit_Test__utility-has-YAML-string-given-key()
     ( Has_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a' 'b' 'nope' &> /dev/null )
     if [[ $? -eq 0 ]] ; then
         Print_Error "Not existing key found."
+        return 1
+    fi
+}
+
+function Unit_Test__utility-read-from-YAML-string-given-key()
+{
+    ( Read_From_YAML_String_Given_Key &> /dev/null )
+    if [[ $? -eq 0 ]] ; then
+        Print_Error "Wrong call to function succeeded."
+        return 1
+    fi
+    ( Read_From_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'nope' &> /dev/null )
+    if [[ $? -eq 0 ]] ; then
+        Print_Error "Not existing key successfully read."
+        return 1
+    fi
+    local result
+    result=$(Read_From_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a' 'b' 'c')
+    if [[ ${result} -ne 42 ]] ; then
+        Print_Error "Reading scalar key failed."
+        return 1
+    fi
+    result=$(Read_From_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a' 'b')
+    if [[ "${result}" != 'c: 42' ]] ; then
+        Print_Error "Reading map key failed."
         return 1
     fi
 }

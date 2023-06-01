@@ -26,7 +26,7 @@ function Element_In_Array_Matches()
 }
 
 # NOTE: This function needs to be called with the YAML string as first argument
-#       and the section keys as remaining arguments. If YAML is invalid, return false.
+#       and the section key(s) as remaining argument(s). If YAML is invalid, return false.
 function Has_YAML_String_Given_Key()
 {
     local yaml_string section key
@@ -41,6 +41,21 @@ function Has_YAML_String_Given_Key()
     else
         return 1
     fi
+}
+
+# NOTE: This function needs to be called with the YAML string as first argument
+#       and the section key(s) as remaining argument(s). If YAML is invalid, return false.
+function Read_From_YAML_String_Given_Key()
+{
+    local yaml_string section
+    if [[ $# -lt 2 ]]; then
+        Print_Internal_And_Exit "Function '${FUNCNAME}' called with less than 2 arguments."
+    elif ! Has_YAML_String_Given_Key "$@"; then
+        Print_Internal_And_Exit "Function '${FUNCNAME}' called with YAML string not containing given key."
+    fi
+    yaml_string=$1; shift
+    section="$(printf '.%s' "$@")"
+    yq "${section}" <<< "${yaml_string}"
 }
 
 function Print_Line_of_Equals()
