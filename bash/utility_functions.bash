@@ -171,24 +171,46 @@ function Call_Function_If_Existing_Or_No_Op()
     fi
 }
 
+# NOTE: In Bash there are several ways to declare variables and somehow these
+#       are (apparently) not consistent w.r.t. resulting set when tested via
+#       [[ -v ... ]] and therefore here we decided to use the 'declare' command.
+#       For example, 'local foo' is not setting a variable (the -v test fails, which
+#       makes sense). However, also 'foo=()' is not setting the array variable
+#       which is not what we want here. In this function "set" means declared in
+#       some way and 'foo=()' should not result in an error.
 function Ensure_That_Given_Variables_Are_Set() {
     local variable_name
     for variable_name in "$@"; do
-        if [[ ! -v "${variable_name}" ]]; then
+        if ! declare -p "${variable_name}" &>/dev/null; then
             Print_Internal_And_Exit\
                 "Variable \"${variable_name}\" not set in function \"${FUNCNAME[1]}\"."
         fi
     done
 }
 
+# NOTE: See Ensure_That_Given_Variables_Are_Set comment. Moreover, since we indirectly
+#       access the variable through its name, we need to check separately the case
+#       in which the variable is an array. In bash, the "array length" of a non-array
+#       variable is 1 (as accessing an array without index returns the first entry).
+#       Hence, for 'foo=""', ${#foo[@]} would return 1 and a non zero length is not
+#       synonym of a non-empty variable.
 function Ensure_That_Given_Variables_Are_Set_And_Not_Empty() {
-    Ensure_That_Given_Variables_Are_Set "$@"
     local variable_name
     for variable_name in "$@"; do
-        if [[ "${!variable_name}" = '' ]]; then
-            Print_Internal_And_Exit\
-                "Variable \"${variable_name}\" set but empty in function \"${FUNCNAME[1]}\"."
+        # The following can be done using the "${ref@A}" bash-5 expansion which
+        # would return the variable declared attributes (e.g. 'a' for arrays).
+        if [[ $(declare -p "${variable_name}") =~ ^declare\ -[aA] ]]; then
+            declare -n ref=${variable_name}
+            if [[ ${#ref[@]} -ne 0 ]]; then
+                continue
+            fi
+        else
+            if [[ "${!variable_name}" != '' ]]; then
+                continue
+            fi
         fi
+        Print_Internal_And_Exit\
+            "Variable \"${variable_name}\" unset or empty in function \"${FUNCNAME[1]}\"."
     done
 }
 

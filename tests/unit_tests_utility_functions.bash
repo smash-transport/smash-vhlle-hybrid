@@ -160,10 +160,15 @@ function Unit_Test__utility-remove-comments-in-existing-file()
 
 function Unit_Test__utility-check-shell-variables-set()
 {
-    local foo # Note that 'local' does not set a variable
     ( Ensure_That_Given_Variables_Are_Set foo &> /dev/null )
     if [[ $? -eq 0 ]]; then
         Print_Error 'Checking unset variable succeeded.'
+        return 1
+    fi
+    local foo
+    ( Ensure_That_Given_Variables_Are_Set foo &> /dev/null )
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Checking set but unassigned variable failed.'
         return 1
     fi
     foo=''
@@ -175,14 +180,32 @@ function Unit_Test__utility-check-shell-variables-set()
     foo='bar'
     ( Ensure_That_Given_Variables_Are_Set foo )
     if [[ $? -ne 0 ]]; then
-        Print_Error 'Checking set and not empty variable failed.'
+        Print_Error 'Checking set and not empty string-variable failed.'
+        return 1
+    fi
+    foo=()
+    ( Ensure_That_Given_Variables_Are_Set foo )
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Checking empty array variable failed.'
+        return 1
+    fi
+    foo=( '' )
+    ( Ensure_That_Given_Variables_Are_Set foo )
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Checking array variable set to one empty entry failed.'
         return 1
     fi
 }
 
 function Unit_Test__utility-check-shell-variables-set-not-empty()
 {
-    local foo=''
+    local foo
+    ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty foo &> /dev/null )
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Checking set but unassigned variable succeeded.'
+        return 1
+    fi
+    foo=''
     ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty foo &> /dev/null )
     if [[ $? -eq 0 ]]; then
         Print_Error 'Checking set but empty variable succeeded.'
@@ -192,6 +215,30 @@ function Unit_Test__utility-check-shell-variables-set-not-empty()
     ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty foo )
     if [[ $? -ne 0 ]]; then
         Print_Error 'Checking set and not empty variable failed.'
+        return 1
+    fi
+    foo=()
+    ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty foo &> /dev/null)
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Checking empty array variable succeeded.'
+        return 1
+    fi
+    foo=( '' )
+    ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty foo )
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Checking array variable set to one empty entry failed.'
+        return 1
+    fi
+    declare -A bar
+    ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty bar &> /dev/null )
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Checking set but unassigned associative array succeeded.'
+        return 1
+    fi
+    bar['key']=''
+    ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty bar &> /dev/null )
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Checking set associative array failed.'
         return 1
     fi
 }
