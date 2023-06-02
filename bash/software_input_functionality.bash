@@ -28,9 +28,9 @@ function Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File()
     esac
 }
 
-# NOTE: The following functions use the local variables of the calling function
 function __static__Replace_Keys_Into_YAML_File()
 {
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty base_input_file keys_to_be_replaced
     # Use yq -P to bring all YAML to same format (crucial for later check on number of lines)
     if ! yq -P --inplace "${base_input_file}" 2> /dev/null; then
         exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
@@ -58,6 +58,7 @@ function __static__Replace_Keys_Into_YAML_File()
 
 function __static__Replace_Keys_Into_Txt_File()
 {
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty base_input_file keys_to_be_replaced
     # Impose that both file and new keys have two entries per line
     if ! awk 'NF != 2 { exit 1 }' "${base_input_file}"; then
         exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
