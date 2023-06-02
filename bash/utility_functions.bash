@@ -171,10 +171,25 @@ function Call_Function_If_Existing_Or_No_Op()
     fi
 }
 
+function Ensure_That_Given_Variables_Are_Set_And_Not_Empty() {
+    local variable_name label
+    for variable_name in "$@"; do
+        if [[ ! -v "${variable_name}" ]]; then
+            label='not set'
+        elif [[ "${!variable_name}" = '' ]]; then
+            label='set but empty'
+        fi
+        if [[ "${label}" != '' ]]; then
+            Print_Internal_And_Exit\
+                "Variable \"${variable_name}\" ${label} in function \"${FUNCNAME[1]}\"."
+        fi
+    done
+}
+
 function Make_Functions_Defined_In_This_File_Readonly()
 {
     # Here we assume all functions are defined with the same stile,
-    # including empty parenteses and the braces on new lines! I.e.
+    # including empty parentheses and the braces on new lines! I.e.
     #
     #    function nameOfTheFunction()
     #

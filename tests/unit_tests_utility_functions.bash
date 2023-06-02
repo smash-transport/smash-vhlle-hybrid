@@ -157,3 +157,25 @@ function Unit_Test__utility-remove-comments-in-existing-file()
     fi
     rm "${file_containing_one_line_with_an_inline_comment}"
 }
+
+function Unit_Test__utility-check-shell-variables()
+{
+    local foo # Note that 'local' does not set a variable
+    ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty foo &> /dev/null )
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Checking unset variable succeeded.'
+        return 1
+    fi
+    foo=''
+    ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty foo &> /dev/null )
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Checking set but empty variable succeeded.'
+        return 1
+    fi
+    foo='bar'
+    ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty foo )
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Checking set and not empty variable failed.'
+        return 1
+    fi
+}
