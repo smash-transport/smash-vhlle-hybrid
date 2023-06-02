@@ -117,12 +117,12 @@ def check_command_line():
     # check if there are command# check if there is a config file
     if len(sys.argv) < 2:
         print("no CL params - exiting.")
-        sys.exit()
+        sys.exit(1)
     # check if config file exists
     if not args.params == "":
         if not os.path.isfile(args.params): 
             print("cannot open parameters file ", args.params)
-            sys.exit()
+            sys.exit(1)
     return
 
 def check_eos():
@@ -138,9 +138,10 @@ def check_eos():
         print("EoSSMASH: table eos/hadgas_eos_SMASH.dat read, [emin,emax,nbmin,nbmax,qmin,qmax] = 0  1  0  0.5 -0.1  0.4")
     else: 
         print("I/O error with eos/chiraleos.dat")
+        sys.exit(1)
     return
 
-def check_config(outputDirSpecified):
+def exit_without_config(outputDirSpecified):
     if args.params == "":
         print("""EoHadron: table eos/eosHadronLog.dat read, [emin,emax,nmin,nmax] = 0.00336897  74.2066  -44.5239  44.5239  -44.5239  44.5239" 
 fluid allocation done 
@@ -152,12 +153,9 @@ Init time = 6 [sec]""")
         valueList = ["0", "-0", "-0", "0", "-0", "0", "0", "0", "-nan"]
         print("{: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10}".format(*variableList))
         print("{: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10}".format(*valueList))
-        sys.exit()
+        sys.exit(1)
     return
        
-
-
-
 def read_initial_state():
     messageExample = """particle E = 1442.11  Nbar = 367  Ncharge = 148 Ns = 0 
 IC SMASH, center: 0  0  4.36586  1.18914 
@@ -171,7 +169,8 @@ Init time = 9 [sec]"""
     if os.path.exists(args.ISinput):
         print(messageExample)
     else:
-        print("I/O error with")
+        print("I/O error with",args.ISinput)
+        sys.exit(1)
 
 def print_timestep(timestep):
     randomList = []
@@ -217,9 +216,8 @@ if __name__ == '__main__':
     print_terminal_start()
     check_command_line()
     print_parameters()
-    check_config(outputDirGiven)
+    exit_without_config(outputDirGiven)
     check_eos()
     read_initial_state()
     create_folder(outputDirGiven)
     run_hydro(outputDirGiven)
-    
