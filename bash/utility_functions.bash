@@ -171,17 +171,23 @@ function Call_Function_If_Existing_Or_No_Op()
     fi
 }
 
-function Ensure_That_Given_Variables_Are_Set_And_Not_Empty() {
-    local variable_name label
+function Ensure_That_Given_Variables_Are_Set() {
+    local variable_name
     for variable_name in "$@"; do
         if [[ ! -v "${variable_name}" ]]; then
-            label='not set'
-        elif [[ "${!variable_name}" = '' ]]; then
-            label='set but empty'
-        fi
-        if [[ "${label}" != '' ]]; then
             Print_Internal_And_Exit\
-                "Variable \"${variable_name}\" ${label} in function \"${FUNCNAME[1]}\"."
+                "Variable \"${variable_name}\" not set in function \"${FUNCNAME[1]}\"."
+        fi
+    done
+}
+
+function Ensure_That_Given_Variables_Are_Set_And_Not_Empty() {
+    Ensure_That_Given_Variables_Are_Set "$@"
+    local variable_name
+    for variable_name in "$@"; do
+        if [[ "${!variable_name}" = '' ]]; then
+            Print_Internal_And_Exit\
+                "Variable \"${variable_name}\" set but empty in function \"${FUNCNAME[1]}\"."
         fi
     done
 }
