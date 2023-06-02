@@ -9,12 +9,14 @@
 
 function Define_Further_Global_Variables()
 {
-    readonly HYBRID_valid_configuration_sections=(
-        'Hybrid-handler'
+    readonly HYBRID_valid_software_configuration_sections=(
         'IC'
         'Hydro'
         'Sampler'
         'Afterburner'
+    )
+    readonly HYBRID_valid_auxiliary_configuration_sections=(
+        'Hybrid-handler'
     )
     readonly HYBRID_default_configurations_folder="${HYBRID_repository_global_path}/configs"
     # Variables to be set from command line
