@@ -36,6 +36,7 @@ function __static__Abort_If_Sections_Are_Violating_Any_Requirement()
     local input_section_labels label index valid_software_label software_sections_indices
     # Here word splitting separates keys into array entries, hence we assume keys do not contain spaces!
     input_section_labels=( $(yq 'keys | .[]' "${HYBRID_configuration_file}") )
+    software_sections_indices=()
     for label in "${input_section_labels[@]}"; do
         if Element_In_Array_Equals_To "${label}" "${HYBRID_valid_auxiliary_configuration_sections[@]}"; then
             continue

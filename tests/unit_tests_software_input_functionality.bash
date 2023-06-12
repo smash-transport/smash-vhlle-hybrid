@@ -39,7 +39,7 @@ function Unit_Test__replace-in-software-input-YAML()
     keys_to_be_replaced='New_key: value'
     ( __static__Replace_Keys_Into_YAML_File &> /dev/null )
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Valid YAML replacement but with new key in valid file succeeded.'
+        Print_Error 'Valid YAML replacement but with non existent key in valid file succeeded.'
         return 1
     fi
     # Test case 4:
@@ -110,7 +110,7 @@ function Unit_Test__replace-in-software-input-TXT()
     keys_to_be_replaced='New_key value'
     ( __static__Replace_Keys_Into_Txt_File &> /dev/null )
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Valid YAML replacement but with new key in valid file succeeded'
+        Print_Error 'Valid TXT replacement but with non existent key in valid file succeeded'
         return 1
     fi
     # Test case 4:
