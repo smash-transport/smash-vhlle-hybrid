@@ -21,9 +21,6 @@ function Validate_And_Parse_Configuration_File()
     __static__Parse_Section 'Hydro'
     __static__Parse_Section 'Sampler'
     __static__Parse_Section 'Afterburner'
-    # Needed steps:
-    #  6. Validate software to be later run for the given software sections (?)
-    #
 }
 
 function __static__Abort_If_Configuration_File_Is_Not_A_Valid_YAML_File()
