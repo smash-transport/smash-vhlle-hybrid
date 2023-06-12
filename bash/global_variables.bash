@@ -9,6 +9,7 @@
 
 function Define_Further_Global_Variables()
 {
+    # Constant information
     readonly HYBRID_valid_software_configuration_sections=(
         'IC'
         'Hydro'
@@ -18,6 +19,15 @@ function Define_Further_Global_Variables()
     readonly HYBRID_valid_auxiliary_configuration_sections=(
         'Hybrid-handler'
     )
+    readonly HYBRID_valid_common_software_keys=(
+        'Executable'
+        'Input_file'
+        'Input_keys'
+    )
+    readonly HYBRID_ic_valid_keys=()
+    readonly HYBRID_hydro_valid_keys=()
+    readonly HYBRID_sampler_valid_keys=()
+    readonly HYBRID_afterburner_valid_keys=()
     readonly HYBRID_default_configurations_folder="${HYBRID_repository_global_path}/configs"
     # Variables to be set from command line
     HYBRID_execution_mode='help'

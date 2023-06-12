@@ -7,17 +7,16 @@
 #
 #===================================================
 
+# NOTE: We do not want to change the config file, hence we read sections into
+#       local (string) variables and then use these as input to yq to read keys
+#       and deleting the key from the variable content.
 function Validate_And_Parse_Configuration_File()
 {
     Remove_Comments_In_File "${HYBRID_configuration_file}"  # This checks for existence, too
-    # NOTE: We do not want to change the config file, hence we read sections into
-    #       local (string) variables and then use these as input to yq to read keys
-    #       and deleting the key from the variable content.
     __static__Abort_If_Configuration_File_Is_Not_A_Valid_YAML_File
     __static__Abort_If_Sections_Are_Violating_Any_Requirement
     __static__Abort_If_Invalid_Keys_Were_Used
     # Needed steps:
-    #  3. Move valid keys to global constant arrays (?)
     #  4. Parse 'Hybrid-handler' section
     #  5. Parse software sections setting all needed variables
     #      -> see global_variables.bash
@@ -79,11 +78,6 @@ function __static__Abort_If_Sections_Are_Violating_Any_Requirement()
 
 function __static__Abort_If_Invalid_Keys_Were_Used()
 {
-    local -r common_software_keys=(
-        'Executable'
-        'Input_file'
-        'Input_keys'
-    )
     local -r yaml_config="$(< "${HYBRID_configuration_file}")"
     local valid_keys invalid_report
     invalid_report=() # Use array entries to split lines to feed into logger
@@ -91,22 +85,26 @@ function __static__Abort_If_Invalid_Keys_Were_Used()
     valid_keys=()
     # IC section
     valid_keys=(
-        "${common_software_keys[@]}"
+        "${HYBRID_valid_common_software_keys[@]}"
+        "${HYBRID_ic_valid_keys[@]}"
     )
     __static__Validate_Keys_Of_Section 'IC'
     # Hydro section
     valid_keys=(
-        "${common_software_keys[@]}"
+        "${HYBRID_valid_common_software_keys[@]}"
+        "${HYBRID_hydro_valid_keys[@]}"
     )
     __static__Validate_Keys_Of_Section 'Hydro'
     # Sampler section
     valid_keys=(
-        "${common_software_keys[@]}"
+        "${HYBRID_valid_common_software_keys[@]}"
+        "${HYBRID_sampler_valid_keys[@]}"
     )
     __static__Validate_Keys_Of_Section 'Sampler'
     # Afterburner section
     valid_keys=(
-        "${common_software_keys[@]}"
+        "${HYBRID_valid_common_software_keys[@]}"
+        "${HYBRID_afterburner_valid_keys[@]}"
     )
     __static__Validate_Keys_Of_Section 'Afterburner'
     # Abort if some validation failed
