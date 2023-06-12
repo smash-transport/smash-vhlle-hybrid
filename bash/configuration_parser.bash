@@ -16,7 +16,7 @@ function Validate_And_Parse_Configuration_File()
     __static__Abort_If_Configuration_File_Is_Not_A_Valid_YAML_File
     __static__Abort_If_Sections_Are_Violating_Any_Requirement
     __static__Abort_If_Invalid_Keys_Were_Used
-    __static__Parse_Section 'Hybrid-handler'
+    __static__Parse_Section 'Hybrid_handler'
     __static__Parse_Section 'IC'
     __static__Parse_Section 'Hydro'
     __static__Parse_Section 'Sampler'
@@ -80,34 +80,20 @@ function __static__Abort_If_Invalid_Keys_Were_Used()
     local -r yaml_config="$(< "${HYBRID_configuration_file}")"
     local valid_keys invalid_report
     invalid_report=() # Use array entries to split lines to feed into logger
-    # Hybrid-Handler section
-    valid_keys=(
-        "${HYBRID_hybrid_handler_valid_keys[@]}"
-    )
-    __static__Validate_Keys_Of_Section 'Hybrid-handler'
+    # Hybrid_handler section
+    valid_keys=( "${!HYBRID_hybrid_handler_valid_keys[@]}" )
+    __static__Validate_Keys_Of_Section 'Hybrid_handler'
     # IC section
-    valid_keys=(
-        "${HYBRID_valid_common_software_keys[@]}"
-        "${HYBRID_ic_valid_keys[@]}"
-    )
+    valid_keys=( "${!HYBRID_ic_valid_keys[@]}" )
     __static__Validate_Keys_Of_Section 'IC'
     # Hydro section
-    valid_keys=(
-        "${HYBRID_valid_common_software_keys[@]}"
-        "${HYBRID_hydro_valid_keys[@]}"
-    )
+    valid_keys=( "${!HYBRID_hydro_valid_keys[@]}" )
     __static__Validate_Keys_Of_Section 'Hydro'
     # Sampler section
-    valid_keys=(
-        "${HYBRID_valid_common_software_keys[@]}"
-        "${HYBRID_sampler_valid_keys[@]}"
-    )
+    valid_keys=( "${!HYBRID_sampler_valid_keys[@]}" )
     __static__Validate_Keys_Of_Section 'Sampler'
     # Afterburner section
-    valid_keys=(
-        "${HYBRID_valid_common_software_keys[@]}"
-        "${HYBRID_afterburner_valid_keys[@]}"
-    )
+    valid_keys=( "${!HYBRID_afterburner_valid_keys[@]}" )
     __static__Validate_Keys_Of_Section 'Afterburner'
     # Abort if some validation failed
     if [[ "${#invalid_report[@]}" -ne 0 ]]; then
@@ -154,63 +140,19 @@ function __static__Parse_Section()
     local -r\
         section_label=$1\
         yaml_config="$(< "${HYBRID_configuration_file}")"
-    local yaml_section
+    local yaml_section valid_key
     if Has_YAML_String_Given_Key "${yaml_config}" "${section_label}"; then
         yaml_section="$(Read_From_YAML_String_Given_Key "${yaml_config}" "${section_label}")"
-        Call_Function_If_Existing_Or_Exit\
-            __static__Parse_Section_${section_label} "${yaml_section}"
+        if [[ ${section_label} != 'Hybrid_handler' ]]; then
+            HYBRID_given_software_sections+=( "${section_label}" )
+        fi
+        declare -n reference_to_map="HYBRID_${section_label,,}_valid_keys"
+        for valid_key in "${!reference_to_map[@]}"; do
+            Ensure_That_Given_Variables_Are_Set "${reference_to_map[${valid_key}]}"
+            __static__Parse_Key_And_Store_It "${valid_key}" "${reference_to_map[${valid_key}]}"
+        done
+        __static__YAML_section_must_be_empty "${yaml_section}" "${section_label}"
     fi
-}
-
-function __static__Parse_Section_Hybrid-handler()
-{
-    local yaml_section=$1
-    # No key to be parsed for the moment
-    __static__YAML_section_must_be_empty "${yaml_section}" 'Hybrid-handler'
-}
-
-function __static__Parse_Section_IC()
-{
-    local yaml_section key
-    yaml_section=$1
-    HYBRID_given_software_section+=( "${yaml_section}" )
-    __static__Parse_Key_And_Store_It 'Executable' HYBRID_software_executable[IC]
-    __static__Parse_Key_And_Store_It 'Input_file' HYBRID_software_base_config_file[IC]
-    __static__Parse_Key_And_Store_It 'Software_keys' HYBRID_software_new_input_keys[IC]
-    __static__YAML_section_must_be_empty "${yaml_section}" 'IC'
-}
-
-function __static__Parse_Section_Hydro()
-{
-    local yaml_section key
-    yaml_section=$1
-    HYBRID_given_software_section+=( "${yaml_section}" )
-    __static__Parse_Key_And_Store_It 'Executable' HYBRID_software_executable[Hydro]
-    __static__Parse_Key_And_Store_It 'Input_file' HYBRID_software_base_config_file[Hydro]
-    __static__Parse_Key_And_Store_It 'Software_keys' HYBRID_software_new_input_keys[Hydro]
-    __static__YAML_section_must_be_empty "${yaml_section}" 'Hydro'
-}
-
-function __static__Parse_Section_Sampler()
-{
-    local yaml_section key
-    yaml_section=$1
-    HYBRID_given_software_section+=( "${yaml_section}" )
-    __static__Parse_Key_And_Store_It 'Executable' HYBRID_software_executable[Sampler]
-    __static__Parse_Key_And_Store_It 'Input_file' HYBRID_software_base_config_file[Sampler]
-    __static__Parse_Key_And_Store_It 'Software_keys' HYBRID_software_new_input_keys[Sampler]
-    __static__YAML_section_must_be_empty "${yaml_section}" 'Sampler'
-}
-
-function __static__Parse_Section_Afterburner()
-{
-    local yaml_section key
-    yaml_section=$1
-    HYBRID_given_software_section+=( "${yaml_section}" )
-    __static__Parse_Key_And_Store_It 'Executable' HYBRID_software_executable[Afterburner]
-    __static__Parse_Key_And_Store_It 'Input_file' HYBRID_software_base_config_file[Afterburner]
-    __static__Parse_Key_And_Store_It 'Software_keys' HYBRID_software_new_input_keys[Afterburner]
-    __static__YAML_section_must_be_empty "${yaml_section}" 'Afterburner'
 }
 
 function __static__Parse_Key_And_Store_It()

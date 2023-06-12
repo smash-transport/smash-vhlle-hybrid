@@ -87,7 +87,7 @@ function Unit_Test__configuration-validate-section-labels()
         return 1
     fi
     # Test case 5 (no software section)
-    printf 'Hybrid-handler: Values\n' > "${HYBRID_configuration_file}"
+    printf 'Hybrid_handler: Values\n' > "${HYBRID_configuration_file}"
     ( Validate_And_Parse_Configuration_File &> /dev/null )
     if [[ $? -eq 0 ]]; then
         Print_Error 'Validation of configuration file with no software section succeeded.'
@@ -107,7 +107,7 @@ function Unit_Test__configuration-validate-all-keys()
 {
     HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
     printf '
-    Hybrid-handler:
+    Hybrid_handler:
       Try: 1
     IC:
       Fake: Values
@@ -128,7 +128,7 @@ function Unit_Test__configuration-validate-all-keys()
         return 1
     fi
     printf '
-    Hybrid-handler: {}
+    Hybrid_handler: {}
     IC:
       Executable: /path/to/exec
       Invalid: 42
@@ -139,7 +139,7 @@ function Unit_Test__configuration-validate-all-keys()
         return 1
     fi
     printf '
-    Hybrid-handler: {}
+    Hybrid_handler: {}
     IC:
       Executable: /path/to/exec
     Hydro:
@@ -163,7 +163,7 @@ function Make_Test_Preliminary_Operations__configuration-parse-general-section()
 function Unit_Test__configuration-parse-general-section()
 {
     HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
-    printf 'Hybrid-handler: {}\nIC:\n  Executable: foo\n' > "${HYBRID_configuration_file}"
+    printf 'Hybrid_handler: {}\nIC:\n  Executable: foo\n' > "${HYBRID_configuration_file}"
     ( Validate_And_Parse_Configuration_File )
     if [[ $? -ne 0 ]]; then
         Print_Error 'Parsing of general section failed.'

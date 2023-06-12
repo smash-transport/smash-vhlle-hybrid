@@ -7,6 +7,12 @@
 #
 #===================================================
 
+# ATTENTION: The top-level section labels (i.e. 'IC', 'Hydro', etc.) are used in variable
+#            names as well, although with lower-case letters only. In the codebase it has
+#            been exerted leverage on this aspect and at some point the name of variables
+#            are built using the section labels transformed into lower-case words. Hence,
+#            it is important that section labels do not contain characters that would break
+#            this mechanism, like dashes or spaces!
 function Define_Further_Global_Variables()
 {
     # Constant information
@@ -17,19 +23,32 @@ function Define_Further_Global_Variables()
         'Afterburner'
     )
     readonly HYBRID_valid_auxiliary_configuration_sections=(
-        'Hybrid-handler'
+        'Hybrid_handler'
     )
-    readonly HYBRID_valid_common_software_keys=(
-        'Executable'
-        'Input_file'
-        'Software_keys'
-    )
-    readonly HYBRID_hybrid_handler_valid_keys=()
-    readonly HYBRID_ic_valid_keys=()
-    readonly HYBRID_hydro_valid_keys=()
-    readonly HYBRID_sampler_valid_keys=()
-    readonly HYBRID_afterburner_valid_keys=()
     readonly HYBRID_default_configurations_folder="${HYBRID_repository_global_path}/configs"
+    # The following associative arrays declare maps between valid keys in the handler config
+    # file and bash variables in which the input information will be stored once parsed.
+    declare -rgA HYBRID_hybrid_handler_valid_keys=()
+    declare -rgA HYBRID_ic_valid_keys=(
+        [Executable]='HYBRID_software_executable[IC]'
+        [Input_file]='HYBRID_software_base_config_file[IC]'
+        [Software_keys]='HYBRID_software_new_input_keys[IC]'
+    )
+    declare -rgA HYBRID_hydro_valid_keys=(
+        [Executable]='HYBRID_software_executable[Hydro]'
+        [Input_file]='HYBRID_software_base_config_file[Hydro]'
+        [Software_keys]='HYBRID_software_new_input_keys[Hydro]'
+    )
+    declare -rgA HYBRID_sampler_valid_keys=(
+        [Executable]='HYBRID_software_executable[Sampler]'
+        [Input_file]='HYBRID_software_base_config_file[Sampler]'
+        [Software_keys]='HYBRID_software_new_input_keys[Sampler]'
+    )
+    declare -rgA HYBRID_afterburner_valid_keys=(
+        [Executable]='HYBRID_software_executable[Afterburner]'
+        [Input_file]='HYBRID_software_base_config_file[Afterburner]'
+        [Software_keys]='HYBRID_software_new_input_keys[Afterburner]'
+    )
     # Variables to be set from command line
     HYBRID_execution_mode='help'
     HYBRID_configuration_file='./config.yaml'
