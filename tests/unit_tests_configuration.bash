@@ -174,6 +174,25 @@ function Unit_Test__configuration-parse-general-section()
 
 #-------------------------------------------------------------------------------
 
+function __static__Test_Section_Parsing_In_Subshell()
+(
+    local section executable input_file new_keys
+    section=$1
+    executable=$2
+    input_file=$3
+    new_keys=$4
+    Validate_And_Parse_Configuration_File
+    if [[ ${HYBRID_software_executable[${section}]} != "${executable}" ]]; then
+        Print_Fatal_And_Exit "Parsing of ${section} section failed (software executable)."
+    fi
+    if [[ ${HYBRID_software_base_config_file[${section}]} != "${input_file}" ]]; then
+        Print_Fatal_And_Exit 'Parsing of ${section} section failed (input file).'
+    fi
+    if [[ ${HYBRID_software_new_input_keys[${section}]} != "${new_keys}" ]]; then
+        Print_Fatal_And_Exit "Parsing of ${section} section failed (software keys)."
+    fi
+)
+
 function Make_Test_Preliminary_Operations__configuration-parse-IC-section()
 {
     Make_Test_Preliminary_Operations__configuration-validate-existence
@@ -190,18 +209,7 @@ function Unit_Test__configuration-parse-IC-section()
         General:
           Randomseed: 12345
     ' > "${HYBRID_configuration_file}"
-    (
-        Validate_And_Parse_Configuration_File
-        if [[ ${HYBRID_software_executable[IC]} != 'foo' ]]; then
-            Print_Fatal_And_Exit "Parsing of IC section failed (software executable)."
-        fi
-        if [[ ${HYBRID_software_base_config_file[IC]} != 'bar' ]]; then
-            Print_Fatal_And_Exit 'Parsing of IC section failed (input file).'
-        fi
-        if [[ ${HYBRID_software_new_input_keys[IC]} != $'General:\n  Randomseed: 12345' ]]; then
-            Print_Fatal_And_Exit "Parsing of IC section failed (software keys)."
-        fi
-    )
+    __static__Test_Section_Parsing_In_Subshell 'IC' 'foo' 'bar' $'General:\n  Randomseed: 12345'
     if [[ $? -ne 0 ]]; then
         return 1
     fi
@@ -225,18 +233,7 @@ function Unit_Test__configuration-parse-Hydro-section()
       Software_keys:
         etaS: 0.12345
     ' > "${HYBRID_configuration_file}"
-    (
-        Validate_And_Parse_Configuration_File
-        if [[ ${HYBRID_software_executable[Hydro]} != 'foo' ]]; then
-            Print_Fatal_And_Exit "Parsing of Hydro section failed (software executable)."
-        fi
-        if [[ ${HYBRID_software_base_config_file[Hydro]} != 'bar' ]]; then
-            Print_Fatal_And_Exit 'Parsing of Hydro section failed (input file).'
-        fi
-        if [[ ${HYBRID_software_new_input_keys[Hydro]} != 'etaS: 0.12345' ]]; then
-            Print_Fatal_And_Exit "Parsing of Hydro section failed (software keys)."
-        fi
-    )
+    __static__Test_Section_Parsing_In_Subshell 'Hydro' 'foo' 'bar' 'etaS: 0.12345'
     if [[ $? -ne 0 ]]; then
         return 1
     fi
@@ -260,18 +257,7 @@ function Unit_Test__configuration-parse-Sampler-section()
       Software_keys:
         shear: 1.2345
     ' > "${HYBRID_configuration_file}"
-    (
-        Validate_And_Parse_Configuration_File
-        if [[ ${HYBRID_software_executable[Sampler]} != 'foo' ]]; then
-            Print_Fatal_And_Exit "Parsing of Sampler section failed (software executable)."
-        fi
-        if [[ ${HYBRID_software_base_config_file[Sampler]} != 'bar' ]]; then
-            Print_Fatal_And_Exit 'Parsing of Sampler section failed (input file).'
-        fi
-        if [[ ${HYBRID_software_new_input_keys[Sampler]} != 'shear: 1.2345' ]]; then
-            Print_Fatal_And_Exit "Parsing of Sampler section failed (software keys)."
-        fi
-    )
+    __static__Test_Section_Parsing_In_Subshell 'Sampler' 'foo' 'bar' 'shear: 1.2345'
     if [[ $? -ne 0 ]]; then
         return 1
     fi
@@ -296,18 +282,7 @@ function Unit_Test__configuration-parse-Afterburner-section()
         General:
           End_Time: 42000
     ' > "${HYBRID_configuration_file}"
-    (
-        Validate_And_Parse_Configuration_File
-        if [[ ${HYBRID_software_executable[Afterburner]} != 'foo' ]]; then
-            Print_Fatal_And_Exit "Parsing of Afterburner section failed (software executable)."
-        fi
-        if [[ ${HYBRID_software_base_config_file[Afterburner]} != 'bar' ]]; then
-            Print_Fatal_And_Exit 'Parsing of Afterburner section failed (input file).'
-        fi
-        if [[ ${HYBRID_software_new_input_keys[Afterburner]} != $'General:\n  End_Time: 42000' ]]; then
-            Print_Fatal_And_Exit "Parsing of Afterburner section failed (software keys)."
-        fi
-    )
+    __static__Test_Section_Parsing_In_Subshell 'Afterburner' 'foo' 'bar' $'General:\n  End_Time: 42000'
     if [[ $? -ne 0 ]]; then
         return 1
     fi
