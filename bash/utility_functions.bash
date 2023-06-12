@@ -171,17 +171,23 @@ function Call_Function_If_Existing_Or_No_Op()
     fi
 }
 
-# NOTE: In Bash there are several ways to declare variables and somehow these
-#       are (apparently) not consistent w.r.t. resulting set when tested via
-#       [[ -v ... ]] and therefore here we decided to use the 'declare' command.
+# NOTE: In Bash there are several ways to declare variables and somehow these are
+#       (apparently) not consistent w.r.t. the variable resulting set when tested via
+#       [[ -v ... ]] and therefore here we decided to also use the 'declare' command.
 #       For example, 'local foo' is not setting a variable (the -v test fails, which
 #       makes sense). However, also 'foo=()' is not setting the array variable
-#       which is not what we want here. In this function "set" means declared in
-#       some way and 'foo=()' should not result in an error.
+#       which is not what we want here. In this function "set" means DECLARED IN
+#       SOME WAY and 'foo=()' should not result in an error. On the other hand,
+#       if this function is used to test existence of an entry of an array, then
+#       'declare -p array[0]' would fail even if array[0] existed, while the test
+#       [[ -v array[0] ]] would succeed. Hence we treat this case separately.
 function Ensure_That_Given_Variables_Are_Set() {
     local variable_name
     for variable_name in "$@"; do
         if ! declare -p "${variable_name}" &>/dev/null; then
+            if [[ ${variable_name} =~ \]$  &&  -v ${variable_name} ]]; then
+                continue
+            fi
             Print_Internal_And_Exit\
                 "Variable \"${variable_name}\" not set in function \"${FUNCNAME[1]}\"."
         fi
@@ -199,7 +205,7 @@ function Ensure_That_Given_Variables_Are_Set_And_Not_Empty() {
     for variable_name in "$@"; do
         # The following can be done using the "${ref@A}" bash-5 expansion which
         # would return the variable declared attributes (e.g. 'a' for arrays).
-        if [[ $(declare -p "${variable_name}") =~ ^declare\ -[aA] ]]; then
+        if [[ $(declare -p "${variable_name}" 2>/dev/null ) =~ ^declare\ -[aA] ]]; then
             declare -n ref=${variable_name}
             if [[ ${#ref[@]} -ne 0 ]]; then
                 continue

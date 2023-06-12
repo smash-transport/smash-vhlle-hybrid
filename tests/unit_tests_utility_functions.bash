@@ -195,6 +195,17 @@ function Unit_Test__utility-check-shell-variables-set()
         Print_Error 'Checking array variable set to one empty entry failed.'
         return 1
     fi
+    declare -A bar=([Hi]='')
+    ( Ensure_That_Given_Variables_Are_Set bar )
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Checking associative array variable set to one empty entry failed.'
+        return 1
+    fi
+    ( Ensure_That_Given_Variables_Are_Set bar[Hi] )
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Checking associative array entry set to one empty entry failed.'
+        return 1
+    fi
 }
 
 function Unit_Test__utility-check-shell-variables-set-not-empty()
@@ -236,9 +247,20 @@ function Unit_Test__utility-check-shell-variables-set-not-empty()
         return 1
     fi
     bar['key']=''
-    ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty bar &> /dev/null )
+    ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty bar )
     if [[ $? -ne 0 ]]; then
         Print_Error 'Checking set associative array failed.'
+        return 1
+    fi
+    ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty bar[key] &> /dev/null )
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Checking empty associative array entry succeeded.'
+        return 1
+    fi
+    bar['key']='something'
+    ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty bar[key] )
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Checking set associative array entry failed.'
         return 1
     fi
 }
