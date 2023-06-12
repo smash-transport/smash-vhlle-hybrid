@@ -107,6 +107,8 @@ function Unit_Test__configuration-validate-all-keys()
 {
     HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
     printf '
+    Hybrid-handler:
+      Try: 1
     IC:
       Fake: Values
       Invalid: 42
@@ -126,6 +128,7 @@ function Unit_Test__configuration-validate-all-keys()
         return 1
     fi
     printf '
+    Hybrid-handler: {}
     IC:
       Executable: /path/to/exec
       Invalid: 42
@@ -136,6 +139,7 @@ function Unit_Test__configuration-validate-all-keys()
         return 1
     fi
     printf '
+    Hybrid-handler: {}
     IC:
       Executable: /path/to/exec
     Hydro:
@@ -156,20 +160,156 @@ function Make_Test_Preliminary_Operations__configuration-parse-general-section()
     Make_Test_Preliminary_Operations__configuration-validate-existence
 }
 
-# function Unit_Test__configuration-parse-general-section()
-# {
-#     HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
-#     printf 'Hybrid-handler:\n  Key: Value\nIC:\n Fake: Values' > "${HYBRID_configuration_file}"
-#     ( Validate_And_Parse_Configuration_File )
-#     if [[ $? -eq 0 ]]; then
-#         Print_Error 'Validation of invalid general section in configuration file succeeded.'
-#         return 1
-#     fi
-#     printf 'Hybrid-handler:\n' > "${HYBRID_configuration_file}"
-    # ( Validate_And_Parse_Configuration_File )
-    # if [[ $? -ne 0 ]]; then
-    #     Print_Error 'Validation of configuration file with invalid keys succeeded.'
-    #     return 1
-    # fi
-#     rm "${HYBRID_configuration_file}"
-# }
+function Unit_Test__configuration-parse-general-section()
+{
+    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    printf 'Hybrid-handler: {}\nIC:\n  Executable: foo\n' > "${HYBRID_configuration_file}"
+    ( Validate_And_Parse_Configuration_File )
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Parsing of general section failed.'
+        return 1
+    fi
+    rm "${HYBRID_configuration_file}"
+}
+
+#-------------------------------------------------------------------------------
+
+function Make_Test_Preliminary_Operations__configuration-parse-IC-section()
+{
+    Make_Test_Preliminary_Operations__configuration-validate-existence
+}
+
+function Unit_Test__configuration-parse-IC-section()
+{
+    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    printf '
+    IC:
+      Executable: foo
+      Input_file: bar
+      Software_keys:
+        General:
+          Randomseed: 12345
+    ' > "${HYBRID_configuration_file}"
+    (
+        Validate_And_Parse_Configuration_File
+        if [[ ${HYBRID_software_executable[IC]} != 'foo' ]]; then
+            Print_Fatal_And_Exit "Parsing of IC section failed (software executable)."
+        fi
+        if [[ ${HYBRID_software_base_config_file[IC]} != 'bar' ]]; then
+            Print_Fatal_And_Exit 'Parsing of IC section failed (input file).'
+        fi
+        if [[ ${HYBRID_software_new_input_keys[IC]} != $'General:\n  Randomseed: 12345' ]]; then
+            Print_Fatal_And_Exit "Parsing of IC section failed (software keys)."
+        fi
+    )
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
+    rm "${HYBRID_configuration_file}"
+}
+
+#-------------------------------------------------------------------------------
+
+function Make_Test_Preliminary_Operations__configuration-parse-Hydro-section()
+{
+    Make_Test_Preliminary_Operations__configuration-validate-existence
+}
+
+function Unit_Test__configuration-parse-Hydro-section()
+{
+    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    printf '
+    Hydro:
+      Executable: foo
+      Input_file: bar
+      Software_keys:
+        etaS: 0.12345
+    ' > "${HYBRID_configuration_file}"
+    (
+        Validate_And_Parse_Configuration_File
+        if [[ ${HYBRID_software_executable[Hydro]} != 'foo' ]]; then
+            Print_Fatal_And_Exit "Parsing of Hydro section failed (software executable)."
+        fi
+        if [[ ${HYBRID_software_base_config_file[Hydro]} != 'bar' ]]; then
+            Print_Fatal_And_Exit 'Parsing of Hydro section failed (input file).'
+        fi
+        if [[ ${HYBRID_software_new_input_keys[Hydro]} != 'etaS: 0.12345' ]]; then
+            Print_Fatal_And_Exit "Parsing of Hydro section failed (software keys)."
+        fi
+    )
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
+    rm "${HYBRID_configuration_file}"
+}
+
+#-------------------------------------------------------------------------------
+
+function Make_Test_Preliminary_Operations__configuration-parse-Sampler-section()
+{
+    Make_Test_Preliminary_Operations__configuration-validate-existence
+}
+
+function Unit_Test__configuration-parse-Sampler-section()
+{
+    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    printf '
+    Sampler:
+      Executable: foo
+      Input_file: bar
+      Software_keys:
+        shear: 1.2345
+    ' > "${HYBRID_configuration_file}"
+    (
+        Validate_And_Parse_Configuration_File
+        if [[ ${HYBRID_software_executable[Sampler]} != 'foo' ]]; then
+            Print_Fatal_And_Exit "Parsing of Sampler section failed (software executable)."
+        fi
+        if [[ ${HYBRID_software_base_config_file[Sampler]} != 'bar' ]]; then
+            Print_Fatal_And_Exit 'Parsing of Sampler section failed (input file).'
+        fi
+        if [[ ${HYBRID_software_new_input_keys[Sampler]} != 'shear: 1.2345' ]]; then
+            Print_Fatal_And_Exit "Parsing of Sampler section failed (software keys)."
+        fi
+    )
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
+    rm "${HYBRID_configuration_file}"
+}
+
+#-------------------------------------------------------------------------------
+
+function Make_Test_Preliminary_Operations__configuration-parse-Afterburner-section()
+{
+    Make_Test_Preliminary_Operations__configuration-validate-existence
+}
+
+function Unit_Test__configuration-parse-Afterburner-section()
+{
+    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    printf '
+    Afterburner:
+      Executable: foo
+      Input_file: bar
+      Software_keys:
+        General:
+          End_Time: 42000
+    ' > "${HYBRID_configuration_file}"
+    (
+        Validate_And_Parse_Configuration_File
+        if [[ ${HYBRID_software_executable[Afterburner]} != 'foo' ]]; then
+            Print_Fatal_And_Exit "Parsing of Afterburner section failed (software executable)."
+        fi
+        if [[ ${HYBRID_software_base_config_file[Afterburner]} != 'bar' ]]; then
+            Print_Fatal_And_Exit 'Parsing of Afterburner section failed (input file).'
+        fi
+        if [[ ${HYBRID_software_new_input_keys[Afterburner]} != $'General:\n  End_Time: 42000' ]]; then
+            Print_Fatal_And_Exit "Parsing of Afterburner section failed (software keys)."
+        fi
+    )
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
+    rm "${HYBRID_configuration_file}"
+}

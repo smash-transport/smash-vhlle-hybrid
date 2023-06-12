@@ -22,8 +22,9 @@ function Define_Further_Global_Variables()
     readonly HYBRID_valid_common_software_keys=(
         'Executable'
         'Input_file'
-        'Input_keys'
+        'Software_keys'
     )
+    readonly HYBRID_hybrid_handler_valid_keys=()
     readonly HYBRID_ic_valid_keys=()
     readonly HYBRID_hydro_valid_keys=()
     readonly HYBRID_sampler_valid_keys=()
@@ -34,15 +35,23 @@ function Define_Further_Global_Variables()
     HYBRID_configuration_file='./config.yaml'
     HYBRID_output_directory='.'
     # Variables to be set from configuration/setup
-    HYBRID_ic_software_executable=''
-    HYBRID_hydro_software_executable=''
-    HYBRID_sampler_software_executable=''
-    HYBRID_Afterburner_software_executable=''
     HYBRID_given_software_sections=()
-    declare -gA HYBRID_software_input=(
-        ['IC']=''
-        ['Hydro']=''
-        ['Sampler']=''
-        ['Afterburner']=''
+    declare -gA HYBRID_software_executable=(
+        [IC]=''
+        [Hydro]=''
+        [Sampler]=''
+        [Afterburner]=''
+    )
+    declare -gA HYBRID_software_base_config_file=(
+        [IC]="${HYBRID_default_configurations_folder}/smash_initial_conditions_AuAu.yaml"
+        [Hydro]="${HYBRID_default_configurations_folder}/vhlle_hydro"
+        [Sampler]="${HYBRID_default_configurations_folder}/hadron_sampler"
+        [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"
+    )
+    declare -gA HYBRID_software_new_input_keys=(
+        [IC]=''
+        [Hydro]=''
+        [Sampler]=''
+        [Afterburner]=''
     )
 }
