@@ -25,6 +25,60 @@ function Element_In_Array_Matches()
     return 1
 }
 
+# NOTE: This function needs to be called with the YAML string as first argument
+#       and the section key(s) as remaining argument(s). If YAML is invalid,
+#       an error is printed and the function exits.
+function Has_YAML_String_Given_Key()
+{
+    local yaml_string section key
+    if [[ $# -lt 2 ]]; then
+        Print_Internal_And_Exit "Function '${FUNCNAME}' called with less than 2 arguments."
+    fi
+    yaml_string=$1; shift
+    if ! yq <<< "${yaml_string}" &> /dev/null; then
+        Print_Internal_And_Exit "Function '${FUNCNAME}' called with invalid YAML string."
+    fi
+    section="$(printf '.%s' "${@:1:$#-1}")" # All arguments but last
+    key=${@: -1}                            # Last argument
+    if [[ $(yq "${section}"' | has("'"${key}"'")' <<< "${yaml_string}") = 'true' ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# NOTE: This function needs to be called with the YAML string as first argument
+#       and the section key(s) as remaining argument(s). If YAML does not contain
+#       the key (or it is invalid) the function exits with an error.
+function Read_From_YAML_String_Given_Key()
+{
+    local yaml_string key
+    if [[ $# -lt 2 ]]; then
+        Print_Internal_And_Exit "Function '${FUNCNAME}' called with less than 2 arguments."
+    elif ! Has_YAML_String_Given_Key "$@"; then
+        Print_Internal_And_Exit "Function '${FUNCNAME}' called with YAML string not containing given key."
+    fi
+    yaml_string=$1; shift
+    key="$(printf '.%s' "$@")"
+    yq "${key}" <<< "${yaml_string}"
+}
+
+# NOTE: This function needs to be called with the YAML string as first argument
+#       and the section key(s) as remaining argument(s). If YAML does not contain
+#       the key (or it is invalid) the function exits with an error.
+function Print_YAML_String_Without_Given_Key()
+{
+    local yaml_string key
+    if [[ $# -lt 2 ]]; then
+        Print_Internal_And_Exit "Function '${FUNCNAME}' called with less than 2 arguments."
+    elif ! Has_YAML_String_Given_Key "$@"; then
+        Print_Internal_And_Exit "Function '${FUNCNAME}' called with YAML string not containing given key."
+    fi
+    yaml_string=$1; shift
+    key="$(printf '.%s' "$@")"
+    yq 'del('"${key}"')' <<< "${yaml_string}"
+}
+
 function Print_Line_of_Equals()
 {
     local length indentation prefix postfix
@@ -71,7 +125,7 @@ function Print_Not_Implemented_Function_Error()
     Print_Error "Function \"${FUNCNAME[1]}\" not implemented yet, skipping it."
 }
 
-function Remove_Comments_In_Existing_File()
+function Remove_Comments_In_File()
 {
     # NOTE: This function considers as comments anything coming after ANY occurrence of
     #       the specified comment character and you should not use it if there might
@@ -117,10 +171,59 @@ function Call_Function_If_Existing_Or_No_Op()
     fi
 }
 
+# NOTE: In Bash there are several ways to declare variables and somehow these are
+#       (apparently) not consistent w.r.t. the variable resulting set when tested via
+#       [[ -v ... ]] and therefore here we decided to also use the 'declare' command.
+#       For example, 'local foo' is not setting a variable (the -v test fails, which
+#       makes sense). However, also 'foo=()' is not setting the array variable
+#       which is not what we want here. In this function "set" means DECLARED IN
+#       SOME WAY and 'foo=()' should not result in an error. On the other hand,
+#       if this function is used to test existence of an entry of an array, then
+#       'declare -p array[0]' would fail even if array[0] existed, while the test
+#       [[ -v array[0] ]] would succeed. Hence we treat this case separately.
+function Ensure_That_Given_Variables_Are_Set() {
+    local variable_name
+    for variable_name in "$@"; do
+        if ! declare -p "${variable_name}" &>/dev/null; then
+            if [[ ${variable_name} =~ \]$  &&  -v ${variable_name} ]]; then
+                continue
+            fi
+            Print_Internal_And_Exit\
+                "Variable \"${variable_name}\" not set in function \"${FUNCNAME[1]}\"."
+        fi
+    done
+}
+
+# NOTE: See Ensure_That_Given_Variables_Are_Set comment. Moreover, since we indirectly
+#       access the variable through its name, we need to check separately the case
+#       in which the variable is an array. In bash, the "array length" of a non-array
+#       variable is 1 (as accessing an array without index returns the first entry).
+#       Hence, for 'foo=""', ${#foo[@]} would return 1 and a non zero length is not
+#       synonym of a non-empty variable.
+function Ensure_That_Given_Variables_Are_Set_And_Not_Empty() {
+    local variable_name
+    for variable_name in "$@"; do
+        # The following can be done using the "${ref@A}" bash-5 expansion which
+        # would return the variable declared attributes (e.g. 'a' for arrays).
+        if [[ $(declare -p "${variable_name}" 2>/dev/null ) =~ ^declare\ -[aA] ]]; then
+            declare -n ref=${variable_name}
+            if [[ ${#ref[@]} -ne 0 ]]; then
+                continue
+            fi
+        else
+            if [[ "${!variable_name}" != '' ]]; then
+                continue
+            fi
+        fi
+        Print_Internal_And_Exit\
+            "Variable \"${variable_name}\" unset or empty in function \"${FUNCNAME[1]}\"."
+    done
+}
+
 function Make_Functions_Defined_In_This_File_Readonly()
 {
     # Here we assume all functions are defined with the same stile,
-    # including empty parenteses and the braces on new lines! I.e.
+    # including empty parentheses and the braces on new lines! I.e.
     #
     #    function nameOfTheFunction()
     #
