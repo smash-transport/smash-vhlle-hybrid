@@ -7,12 +7,19 @@
 #
 #===================================================
 
+# NOTE: The following unit test checks the system requirements code by defining functions
+#       with the same name as the required system commands. This will make bash run these
+#       instead of the system ones (remember that functions have higher priority than
+#       external commands). As each fake command print the variable ${version} as version
+#       number, it is then possible to mimic a system complying with the requirements and
+#       another one violating them.
+
 function __static__Fake_Command_Version()
 {
     if [[ "$3" = "$1" ]]; then
-        echo $2
+        printf "$2\n"
     else
-        Print_Fatal_And_Exit "wrong usage of ${FUNCNAME[1]}"
+        Print_Fatal_And_Exit "Wrong usage of ${FUNCNAME[1]} function."
     fi
 }
 
@@ -32,31 +39,24 @@ function __static__Inhibit_Commands_Version()
     }
     function yq()
     {
-	__static__Fake_Command_Version '--version' "yq (https://github.com/mikefarah/yq/) version v${version}" "$@"
+       __static__Fake_Command_Version '--version' "yq (https://github.com/mikefarah/yq/) version v${version}" "$@"
     }
 }
-
-# This tests asks Check_System_Requirements first for success, in case of a 'good' input;
-# and for failure, in case of a 'bad' one. Here 99.0.0 and 1.0 respectively should suffice 
-# for most commands. Since the check only uses the commands to look for their version, they
-# are faked here to only accept the specific version flag, and fail otherwise.  
 
 function Unit_Test__system-requirements()
 {
     __static__Inhibit_Commands_Version
-    local good_version='99.0.0'
-    local bad_version='1.0'
-
+    local good_version='999.0.0' bad_version='0.0'
     local version=${good_version}
-    ( Check_System_Requirements &> /dev/null )
+    ( Check_System_Requirements )
     if [[ $? -ne 0 ]]; then
-        Print_Error "${good_version} is lower than some requirements"
+        Print_Error "Check system requirements of good system failed."
         return 1
     fi
     version=${bad_version}
     ( Check_System_Requirements &> /dev/null )
-    if [[ $? -ne 1 ]]; then
-        Print_Error "${bad_version} is higher than some requirements"
+    if [[ $? -eq 0 ]]; then
+        Print_Error "Check system requirements of bad system succeeded."
         return 1
     fi
 }
