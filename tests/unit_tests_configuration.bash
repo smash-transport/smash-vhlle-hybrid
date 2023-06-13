@@ -58,35 +58,30 @@ function Make_Test_Preliminary_Operations__configuration-validate-section-labels
 function Unit_Test__configuration-validate-section-labels()
 {
     HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
-    # Test case 1
     printf 'Invalid: Value\n' > "${HYBRID_configuration_file}"
     ( Validate_And_Parse_Configuration_File &> /dev/null )
     if [[ $? -eq 0 ]]; then
         Print_Error 'Validation of configuration file with invalid section succeeded.'
         return 1
     fi
-    # Test case 2 (wrong ordering of blocks)
     printf 'Afterburner: Values\nIC: Values\nHydro: Values\n' > "${HYBRID_configuration_file}"
     ( Validate_And_Parse_Configuration_File &> /dev/null )
     if [[ $? -eq 0 ]]; then
         Print_Error 'Validation of configuration file with sections in wrong order succeeded.'
         return 1
     fi
-    # Test case 3 (repeated block)
     printf 'IC: Values\nSampler: Values\nIC: Again\n' > "${HYBRID_configuration_file}"
     ( Validate_And_Parse_Configuration_File &> /dev/null )
     if [[ $? -eq 0 ]]; then
         Print_Error 'Validation of configuration file with repeated section succeeded.'
         return 1
     fi
-    # Test case 4 (ordering fine, but missing block)
     printf 'IC: Values\nSampler: Values\n' > "${HYBRID_configuration_file}"
     ( Validate_And_Parse_Configuration_File &> /dev/null )
     if [[ $? -eq 0 ]]; then
         Print_Error 'Validation of configuration file with missing sections succeeded.'
         return 1
     fi
-    # Test case 5 (no software section)
     printf 'Hybrid_handler: Values\n' > "${HYBRID_configuration_file}"
     ( Validate_And_Parse_Configuration_File &> /dev/null )
     if [[ $? -eq 0 ]]; then
