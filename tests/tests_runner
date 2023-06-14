@@ -112,6 +112,8 @@ function Run_Tests()
         (( HYBRIDT_tests_run++ ))
         # Run in sub-shell to have the same starting environment
         (
+            # Make sure each test is run from the same folder (no matter from where tests are run)
+            cd "${HYBRIDT_folder_to_run_tests}" || exit ${HYBRID_fatal_builtin}
             Call_through_interface 'Make_Test_Preliminary_Operations' "${test_name}"
             Announce_Running_Test "${test_name}"
             Call_through_interface 'Run_Test' "${test_name}"
