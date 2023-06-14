@@ -28,21 +28,25 @@ function Define_Available_Tests()
 
 function Make_Test_Preliminary_Operations()
 {
-    Call_Function_If_Existing_Or_No_Op ${FUNCNAME}__$1
+    local test_name=$1
+    {
+        # The following global variable is needed whe defining the software global variables
+        # and since it is likely that most unit tests need it, let's always define it
+        readonly HYBRID_repository_global_path="${HYBRIDT_repository_top_level_path}"
+        # Write header to the log file to give some structure to it
+        printf "\n[$(date)]\nRunning test \"%s\"\n\n" "${test_name}"
+        Call_Function_If_Existing_Or_No_Op ${FUNCNAME}__$1
+    } &>> "${HYBRIDT_log_file}"
 }
 
 function Run_Test()
 {
-    local test_name=$1
-    {
-        printf "\n[$(date)]\nRunning test \"%s\"\n\n" "${test_name}"
-        Unit_Test__${test_name}
-    } &>> "${HYBRIDT_log_file}"
+    Unit_Test__$1 &>> "${HYBRIDT_log_file}"
 }
 
 function Clean_Tests_Environment_For_Following_Test()
 {
-    Call_Function_If_Existing_Or_No_Op ${FUNCNAME}__$1
+    Call_Function_If_Existing_Or_No_Op ${FUNCNAME}__$1 &>> "${HYBRIDT_log_file}"
 }
 
 #=======================================================================================================================

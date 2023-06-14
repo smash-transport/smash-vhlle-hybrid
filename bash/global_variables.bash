@@ -15,6 +15,7 @@
 #            this mechanism, like dashes or spaces!
 function Define_Further_Global_Variables()
 {
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty HYBRID_repository_global_path
     # Constant information
     readonly HYBRID_valid_software_configuration_sections=(
         'IC'
