@@ -42,6 +42,33 @@ function Parse_Execution_Mode()
 
 function Parse_Command_Line_Options()
 {
-    Print_Not_Implemented_Function_Error
-    return 1
+    if [[ ${HYBRID_execution_mode} != 'do' ]]; then
+        Print_Internal_And_Exit 'Command line options are allowed only in "do" mode for now.'
+    fi
+    set -- "${HYBRID_command_line_options_to_parse[@]}"
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -o | --output-directory )
+                if [[ ${2:-} =~ ^(-|$) ]]; then
+                    Print_Option_Specification_Error_And_Exit "$1"
+                else
+                    readonly HYBRID_output_directory=$2
+                fi
+                shift 2
+                ;;
+            -c | --configuration-file )
+                if [[ ${2:-} =~ ^(-|$) ]]; then
+                    Print_Option_Specification_Error_And_Exit "$1"
+                else
+                    readonly HYBRID_configuration_file=$2
+                fi
+                shift 2
+                ;;
+            * )
+                exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit\
+                    "Invalid option \"$1\" specified in '${HYBRID_execution_mode}' execution mode!"\
+                    'Use the "--help" option to get further information.'
+                ;;
+        esac
+    done
 }
