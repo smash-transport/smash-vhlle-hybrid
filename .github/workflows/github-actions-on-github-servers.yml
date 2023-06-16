@@ -62,6 +62,8 @@ jobs:
         # now we install yq
         wget -nv -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64
         chmod +x /usr/local/bin/yq
+        # we set the TERM environment variable (used by utilities exploited in the tests)
+        export TERM="xterm"
         # now we enter into the tests directory and execute the tests with maximum detail (-r 3)
         cd $main_dir/tests
         ${BASH_EXE} tests_runner unit -r 3 -k ||\
