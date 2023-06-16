@@ -10,13 +10,16 @@
 
 function __static__Declare_System_Requirements()
 {
-    declare -gA HYBRID_system_requirements=(
-        [bash]='4.4'
-        [awk]='4.1'
-        [sed]='4.2.1'
-        [tput]='5.7'
-        [yq]='4'
-    )
+    if ! declare -p HYBRID_versions_requirements &> /dev/null; then
+        declare -rgA HYBRID_versions_requirements=(
+            [bash]='4.4'
+            [awk]='4.1'
+            [sed]='4.2.1'
+            [tput]='5.7'
+            [yq]='4'
+        )
+        declare -rga HYBRID_gnu_programs_required=( awk sed sort wc )
+    fi
 }
 
 function Check_System_Requirements()
