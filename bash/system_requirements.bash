@@ -101,6 +101,7 @@ function __static__Try_Find_Requirement()
 
 function __static__Try_Find_Version()
 {
+    Ensure_That_Given_Variables_Are_Set system_information
     local found_version
     case "$1" in
         bash )
@@ -123,7 +124,7 @@ function __static__Try_Find_Version()
             return 1
             ;;
     esac
-    if [[ ${found_version} =~ ^[0-9]([.0-9])*$ ]]; then
+    if [[ ${found_version} =~ ^[0-9](.[0-9]+)*$ ]]; then
         system_information["$1"]+="${found_version}|"
     else
         system_information["$1"]+='---|'
@@ -135,14 +136,16 @@ function __static__Try_Find_Version()
 #       impose to have GNU coreutils installed, which we should probably do next...
 function __static__Check_Version_Suffices()
 {
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty system_information
     # Here we assume that the programs were found and their version, too
     local program version_required version_found index
     program=$1
     version_required="${HYBRID_system_requirements[${program}]}"
     version_found=$(cut -d'|' -f2 <<< "${system_information[${program}]}")
-    # Drop dot at the end of versions, if any is there (it would break version filling)
-    version_required=${version_required%.}
-    version_found=${version_found%.}
+    if [[ ! ${version_found}    =~ ^[0-9](.[0-9]+)*$ ]] ||\
+       [[ ! ${version_required} =~ ^[0-9](.[0-9]+)*$ ]]; then
+        Print_Internal_And_Exit "Wrong syntax in version strings in ${FUNCNAME}."
+    fi
     # Ensure versions are of the same length to make following algorithm work
     if [[ ${#version_found} -ne ${#version_required} ]]; then
         if [[ ${#version_found} -lt ${#version_required} ]]; then

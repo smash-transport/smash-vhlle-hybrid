@@ -95,7 +95,7 @@ function Prepare_Test_Environment()
     local postfix
     postfix=$(date +'%Y-%m-%d_%H%M%S')
     if [[ -d "${HYBRIDT_folder_to_run_tests}" ]]; then
-        Print_Warning "Found \"${HYBRIDT_folder_to_run_tests}\", renaming it!"
+        Print_Warning "Found \"${HYBRIDT_folder_to_run_tests}\", renaming it!\n"
         mv "${HYBRIDT_folder_to_run_tests}"\
            "${HYBRIDT_folder_to_run_tests}_${postfix}" || exit ${HYBRID_fatal_builtin}
     fi
@@ -105,7 +105,7 @@ function Prepare_Test_Environment()
 function Run_Tests()
 {
     if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
-        Print_Info "\nRunning ${#HYBRIDT_tests_to_be_run[@]} test(s):\n"
+        Print_Info "Running ${#HYBRIDT_tests_to_be_run[@]} test(s):\n"
     fi
     local test_name
     for test_name in "${HYBRIDT_tests_to_be_run[@]}"; do
