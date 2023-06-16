@@ -11,34 +11,41 @@
 function __static__Declare_System_Requirements()
 {
     declare -gA HYBRID_system_requirements=(
-        ['bash']='4.4.0'
-        ['awk']='4.1.0'
-        ['sed']='4.2.1'
-        ['tput']='5.9.0' # the last number is a date
-        ['yq']='4.0'
+        [bash]='4.4.0'
+        [awk]='4.1.0'
+        [sed]='4.2.1'
+        [tput]='5.7'
+        [yq]='4.0'
     )
 }
 
 function Check_System_Requirements()
 {
+    __static__Declare_System_Requirements
     local program requirements_present min_version
     requirements_present=0
-    declare -A system_found_versions
-    __static__Declare_System_Requirements
+    # NOTE: The following associative array will be used to store system information
+    #       and since bash does not support arrays entries in associative arrays, then
+    #       just strings with information will be used. Each entry of this array
+    #       contains whether the command was found, its version and whether the version
+    #       meets the requirement or not. A '|' is used to separate the fields in the
+    #       string and '---' is used to indicate a negative outcome in the field
+    declare -A system_information
+    __static__Analyze_System_Properties
     for program in "${!HYBRID_system_requirements[@]}"; do
         min_version=${HYBRID_system_requirements["${program}"]}
-        if ! __static__Try_Find_Requirement "${program}"; then
+        if [[ $(cut -d'|' -f1 <<< "${system_information[${program}]}") = '---' ]]; then
             Print_Error "'${program}' command not found! Minimum version ${min_version} is required."
             requirements_present=1
             continue
         fi
-        if ! __static__Try_Find_Version "${program}"; then
+        if [[ $(cut -d'|' -f2 <<< "${system_information[${program}]}") = '---' ]]; then
             Print_Warning "Unable to find version of '${program}', skipping version check!"\
                 "Please ensure that current version is at least ${min_version}."
             continue
         fi
-        if ! __static__Check_Version_Suffices "${program}"; then
-            Print_Error "'${program}' version ${system_found_versions[${program}]} found,"\
+        if [[ $(cut -d'|' -f3 <<< "${system_information[${program}]}") = '---' ]]; then
+            Print_Error "'${program}' version ${system_information[${program}]} found,"\
                 " but version ${min_version} is required."
             requirements_present=1
         fi
@@ -46,6 +53,29 @@ function Check_System_Requirements()
     if [[ ${requirements_present} -ne 0 ]]; then
         Print_Fatal_And_Exit 'Please install (maybe locally) the required versions of the above programs.'
     fi
+}
+
+function __static__Analyze_System_Properties()
+{
+    Ensure_That_Given_Variables_Are_Set system_information
+    local program
+    for program in "${!HYBRID_system_requirements[@]}"; do
+        min_version=${HYBRID_system_requirements["${program}"]}
+        if __static__Try_Find_Requirement "${program}"; then
+            system_information[${program}]='found|'
+        else
+            system_information[${program}]='---||' # Empty following fields
+            continue
+        fi
+        if ! __static__Try_Find_Version "${program}"; then
+            continue
+        fi
+        if __static__Check_Version_Suffices "${program}"; then
+            system_information[${program}]+='OK'
+        else
+            system_information[${program}]+='---'
+        fi
+    done
 }
 
 function __static__Try_Find_Requirement()
@@ -82,25 +112,53 @@ function __static__Try_Find_Version()
             ;;
     esac
     if [[ ${found_version} =~ ^[0-9]([.0-9])*$ ]]; then
-        system_found_versions["$1"]="${found_version}"
+        system_information["$1"]+="${found_version}|"
     else
+        system_information["$1"]+='---|'
         return 1
     fi
 }
 
+# NOTE: This function would be almost a one-liner using 'sort -V', but at the moment we do not
+#       impose to have GNU coreutils installed, which we should probably do next...
 function __static__Check_Version_Suffices()
 {
-    # Here we assume that the programs follow the semantic versioning standard
-    local required found versioning
-    required=($(echo "${HYBRID_system_requirements[$1]}" | tr '.' ' '))
-    found=($(echo "${system_found_versions[$1]}" | tr '.' ' '))
-    if [[ "${required[${versioning}]}" -eq "${found[${versioning}]}" ]]; then
+    # Here we assume that the programs were found and their version, too
+    local program version_required version_found index
+    program=$1
+    version_required="${HYBRID_system_requirements[${program}]}"
+    version_found=$(cut -d'|' -f2 <<< "${system_information[${program}]}")
+    # Drop dot at the end of versions, if any is there (it would break version filling)
+    version_required=${version_required%.}
+    version_found=${version_found%.}
+    # Ensure versions are of the same length to make following algorithm work
+    if [[ ${#version_found} -ne ${#version_required} ]]; then
+        if [[ ${#version_found} -lt ${#version_required} ]]; then
+            declare -n shorter_array=version_found
+            declare -n longer_array=version_required
+        else
+            declare -n shorter_array=version_required
+            declare -n longer_array=version_found
+        fi
+        while [[ ${#version_found[@]} -ne ${#version_required[@]} ]]; do
+            shorter_array+='.0' # Add zeroes to shorter string
+        done
+    fi
+    # If versions are equal, we're done
+    if [[ "${version_required}" = "${version_found}" ]]; then
         return 0
     fi
-    for versioning in ${!required[@]}; do
-        if [[ "${required[${versioning}]}" -lt "${found[${versioning}]}" ]]; then
+    # Split version strings into array of numbers replacing '.' by ' ' and let word splitting do the split
+    version_required=( ${version_required//./ } )
+    version_found=( ${version_found//./ } )
+    # Now version arrays have same number of entries, compare them
+    for index in ${!version_required[@]}; do
+        if [[ "${version_required[index]}" -eq "${version_found[index]}" ]]; then
+            continue
+        elif [[ "${version_required[index]}" -lt "${version_found[index]}" ]]; then
             return 0
+        else
+            return 1
         fi
     done
-    return 1
 }
