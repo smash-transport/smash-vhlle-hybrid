@@ -48,7 +48,7 @@ jobs:
         export main_dir=${PWD}
         # if we are not using the default bash version, we download and compile the desired one
         if [ ${BASH_TESTED_VERSION} != "default" ]; then
-            wget https://ftp.gnu.org/gnu/bash/${BASH_TESTED_VERSION}.tar.gz
+            wget -nv https://ftp.gnu.org/gnu/bash/${BASH_TESTED_VERSION}.tar.gz
             tar xf ${BASH_TESTED_VERSION}.tar.gz
             cd ${BASH_TESTED_VERSION}
             ./configure
@@ -60,9 +60,12 @@ jobs:
         # we print the bash version to check that we used the desired one
         printf "\n$(${BASH_EXE} --version)\n"
         # now we install yq
-        wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64
+        wget -nv -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64
         chmod +x /usr/local/bin/yq
         # now we enter into the tests directory and execute the tests with maximum detail (-r 3)
         cd $main_dir/tests
-        ${BASH_EXE} tests_runner unit -r 3
-        ${BASH_EXE} tests_runner functional -r 3
+        ${BASH_EXE} tests_runner unit -r 3 -k ||\
+        { printf "\nDetailed output of unit tests for debugging purposes:\n"; cat run_tests/*; exit 1; }
+        rm -rf run_tests
+        ${BASH_EXE} tests_runner functional -r 3 -k ||\
+        { printf "\nDetailed output of functional tests for debugging purposes:\n"; cat run_tests/*; exit 1; }
