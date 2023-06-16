@@ -17,9 +17,9 @@
 function __static__Fake_Command_Version()
 {
     if [[ "$3" = "$1" ]]; then
-        printf "$2\n"
+        printf "$2\n" # If version was requested print fake string
     else
-        Print_Fatal_And_Exit "Wrong usage of ${FUNCNAME[1]} function."
+        command ${FUNCNAME[1]} "${@:3}" # otherwise run original commands with given arguments
     fi
 }
 
