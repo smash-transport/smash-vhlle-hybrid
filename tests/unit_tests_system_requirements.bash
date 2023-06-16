@@ -60,13 +60,23 @@ function Unit_Test__system-requirements()
         Print_Error "Check system requirements of good system failed."
         return 1
     fi
+    ( Check_System_Requirements_And_Make_Report )
+    if [[ $? -ne 0 ]]; then
+        Print_Error "Check system requirements making report of good system failed."
+        return 1
+    fi
     awk_version=4.0.9
     sed_version=4.2.0
-    tput_version=5.8
+    tput_version=5.9
     yq_version=3.9.98
     ( Check_System_Requirements &> /dev/null )
     if [[ $? -eq 0 ]]; then
         Print_Error "Check system requirements of bad system succeeded."
+        return 1
+    fi
+    ( Check_System_Requirements_And_Make_Report )
+    if [[ $? -ne 0 ]]; then
+        Print_Error "Check system requirements making report of bad system failed."
         return 1
     fi
 }

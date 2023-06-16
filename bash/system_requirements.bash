@@ -11,11 +11,11 @@
 function __static__Declare_System_Requirements()
 {
     declare -gA HYBRID_system_requirements=(
-        [bash]='4.4.0'
-        [awk]='4.1.0'
+        [bash]='4.4'
+        [awk]='4.1'
         [sed]='4.2.1'
         [tput]='5.7'
-        [yq]='4.0'
+        [yq]='4'
     )
 }
 
@@ -53,6 +53,18 @@ function Check_System_Requirements()
     if [[ ${requirements_present} -ne 0 ]]; then
         Print_Fatal_And_Exit 'Please install (maybe locally) the required versions of the above programs.'
     fi
+}
+
+function Check_System_Requirements_And_Make_Report()
+{
+    __static__Declare_System_Requirements
+    local program command_found_string required_version_label
+    declare -A system_information
+    __static__Analyze_System_Properties
+    printf "\n \e[93mSystem requirements overview:${default}\n\n"
+    for program in "${!HYBRID_system_requirements[@]}"; do
+        __static__Print_Requirement_Report_Line "${program}"
+    done
 }
 
 function __static__Analyze_System_Properties()
@@ -161,4 +173,43 @@ function __static__Check_Version_Suffices()
             return 1
         fi
     done
+}
+
+function __static__Print_Requirement_Report_Line()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty system_information
+    local -r emph_color='\e[96m'\
+             red='\e[91m'\
+             green='\e[92m'\
+             yellow='\e[93m'\
+             text_color='\e[38;5;38m'\
+             default='\e[0m'
+    local line found version_found version_ok tmp_array program=$1
+    tmp_array=( ${system_information[${program}]//|/ } ) # Unquoted to let word splitting act
+    found=${tmp_array[0]}
+    version_found=${tmp_array[1]}
+    version_ok=${tmp_array[2]}
+    printf -v line "   ${text_color}Command ${emph_color}%6s${text_color}: ${default}" "${program}"
+    if [[ ${found} = '---' ]]; then
+        line+="${red}NOT "
+    else
+        line+="${green}    "
+    fi
+    line+=$(printf "found  ${text_color}Required version: ${emph_color}%5s${default}"\
+                   "${HYBRID_system_requirements[${program}]}")
+    if [[ ${found} != '---' ]]; then
+        line+="  ${text_color}System version:${default} "
+        if [[ ${version_found} = '---' ]]; then
+            line+="${yellow}Unable to recover"
+        else
+            if [[ ${version_ok} = '---' ]]; then
+                line+="${red}"
+            else
+                line+="${green}"
+            fi
+            line+="${version_found}"
+        fi
+        line+="${default}"
+    fi
+    printf "${line}\n"
 }
