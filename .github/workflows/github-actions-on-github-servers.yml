@@ -59,6 +59,9 @@ jobs:
         fi
         # we print the bash version to check that we used the desired one
         printf "\n$(${BASH_EXE} --version)\n"
+        # now we install yq
+        wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64
+        chmod +x /usr/local/bin/yq
         # now we enter into the tests directory and execute the tests with maximum detail (-r 3)
         cd $main_dir/tests
         ${BASH_EXE} tests_runner unit -r 3
