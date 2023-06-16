@@ -32,11 +32,15 @@ function Check_System_Requirements()
     #       just strings with information will be used. Each entry of this array
     #       contains whether the command was found, its version and whether the version
     #       meets the requirement or not. A '|' is used to separate the fields in the
-    #       string and '---' is used to indicate a negative outcome in the field
+    #       string and '---' is used to indicate a negative outcome in the field.
+    #       It has been decided to use the same array to store the availability of GNU
+    #       tools. For these, the key is prefixed by 'GNU-' and the content has a first
+    #       "field" that is 'found' or '---' and a second one that is either 'OK' or '---'
+    #       to indicate whether the GNU version of the command is in use or not.
     declare -A system_information
     __static__Analyze_System_Properties
-    for program in "${!HYBRID_system_requirements[@]}"; do
-        min_version=${HYBRID_system_requirements["${program}"]}
+    for program in "${!HYBRID_versions_requirements[@]}"; do
+        min_version=${HYBRID_versions_requirements["${program}"]}
         if [[ $(cut -d'|' -f1 <<< "${system_information[${program}]}") = '---' ]]; then
             Print_Error "'${program}' command not found! Minimum version ${min_version} is required."
             requirements_present=1
@@ -56,26 +60,50 @@ function Check_System_Requirements()
     if [[ ${requirements_present} -ne 0 ]]; then
         Print_Fatal_And_Exit 'Please install (maybe locally) the required versions of the above programs.'
     fi
+    for program in "${HYBRID_gnu_programs_required[@]}"; do
+        if [[ $(cut -d'|' -f2 <<< "${system_information[${program}]}") = '---' ]]; then
+            Print_Error "'${program#GNU-}' either not found or non-GNU version in use."\
+                        "Please, ensure that '${program}' is installed and in use."
+            requirements_present=1
+        fi
+    done
+    if [[ ${requirements_present} -ne 0 ]]; then
+        Print_Fatal_And_Exit 'The GNU version of the above programs is needed.'
+    fi
 }
 
 function Check_System_Requirements_And_Make_Report()
 {
     __static__Declare_System_Requirements
-    local program command_found_string required_version_label
+    local program gnu_report=()
     declare -A system_information
     __static__Analyze_System_Properties
     printf "\n \e[93mSystem requirements overview:${default}\n\n"
-    for program in "${!HYBRID_system_requirements[@]}"; do
-        __static__Print_Requirement_Report_Line "${program}"
+    for program in "${!HYBRID_versions_requirements[@]}"; do
+        __static__Print_Requirement_Version_Report_Line "${program}"
     done
+    printf '\n'
+    for program in "${HYBRID_gnu_programs_required[@]}"; do
+        gnu_report+=( "$(__static__Get_Gnu_Requirement_Report_For_Single_Program "${program}")" )
+    done
+    # Because of coloured output, we cannot use a tool like 'column' here and
+    # we manually determine how many columns to use.
+    local -r single_field_length=15
+    local -r num_cols=$(( $(tput cols) * 4 / 5 / single_field_length ))
+    local index printf_descriptor
+    printf_descriptor="%${single_field_length}s" # At least one column
+    for ((index=1; index<num_cols; index++)); do
+        printf_descriptor+="  %${single_field_length}s"
+    done
+    printf "${printf_descriptor}\n" "${gnu_report[@]}"
 }
 
 function __static__Analyze_System_Properties()
 {
     Ensure_That_Given_Variables_Are_Set system_information
     local program
-    for program in "${!HYBRID_system_requirements[@]}"; do
-        min_version=${HYBRID_system_requirements["${program}"]}
+    for program in "${!HYBRID_versions_requirements[@]}"; do
+        min_version=${HYBRID_versions_requirements["${program}"]}
         if __static__Try_Find_Requirement "${program}"; then
             system_information[${program}]='found|'
         else
@@ -91,11 +119,34 @@ function __static__Analyze_System_Properties()
             system_information[${program}]+='---'
         fi
     done
+    for program in "${HYBRID_gnu_programs_required[@]}"; do
+        if __static__Try_Find_Requirement "${program}"; then
+            system_information["GNU-${program}"]='found|'
+        else
+            system_information["GNU-${program}"]='---|---'
+            continue
+        fi
+        if __static__Is_Gnu_Version_In_Use "${program}"; then
+            system_information["GNU-${program}"]+='OK'
+        else
+            system_information["GNU-${program}"]+='---'
+        fi
+    done
 }
 
 function __static__Try_Find_Requirement()
 {
     if hash "$1" 2>/dev/null; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+function __static__Is_Gnu_Version_In_Use()
+{
+    # This follows apparently common sense -> https://stackoverflow.com/a/61767587/14967071
+    if [[ $("$1" --version | grep -c 'GNU') -gt 0 ]]; then
         return 0
     else
         return 1
@@ -143,7 +194,7 @@ function __static__Check_Version_Suffices()
     # Here we assume that the programs were found and their version, too
     local program version_required version_found index
     program=$1
-    version_required="${HYBRID_system_requirements[${program}]}"
+    version_required="${HYBRID_versions_requirements[${program}]}"
     version_found=$(cut -d'|' -f2 <<< "${system_information[${program}]}")
     if [[ ! ${version_found}    =~ ^[0-9](.[0-9]+)*$ ]] ||\
        [[ ! ${version_required} =~ ^[0-9](.[0-9]+)*$ ]]; then
@@ -181,7 +232,7 @@ function __static__Check_Version_Suffices()
     done
 }
 
-function __static__Print_Requirement_Report_Line()
+function __static__Print_Requirement_Version_Report_Line()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty system_information
     local -r emph_color='\e[96m'\
@@ -202,7 +253,7 @@ function __static__Print_Requirement_Report_Line()
         line+="${green}    "
     fi
     line+=$(printf "found  ${text_color}Required version: ${emph_color}%5s${default}"\
-                   "${HYBRID_system_requirements[${program}]}")
+                   "${HYBRID_versions_requirements[${program}]}")
     if [[ ${found} != '---' ]]; then
         line+="  ${text_color}System version:${default} "
         if [[ ${version_found} = '---' ]]; then
@@ -218,4 +269,23 @@ function __static__Print_Requirement_Report_Line()
         line+="${default}"
     fi
     printf "${line}\n"
+}
+
+function __static__Get_Gnu_Requirement_Report_For_Single_Program()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty system_information
+    local -r emph_color='\e[96m'\
+             red='\e[91m'\
+             green='\e[92m'\
+             yellow='\e[93m'\
+             text_color='\e[38;5;38m'\
+             default='\e[0m'
+    local line program="GNU-$1"
+    printf -v line "   ${emph_color}%6s${text_color}: ${default}" "${program}"
+    if [[ $(cut -d'|' -f2 <<< "${system_information[${program}]}") = '---' ]]; then
+        line+="${red}✘"
+    else
+        line+="${green}✔︎"
+    fi
+    printf "${line}${default}"
 }

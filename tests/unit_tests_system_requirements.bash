@@ -12,7 +12,7 @@
 #       instead of the system ones (remember that functions have higher priority than
 #       external commands). As each fake command print the variable ${...version} as version
 #       number, it is then possible to mimic a system complying with the requirements and
-#       another one violating them.
+#       another one violating them. The same is valid for the ${gnu} variable.
 
 function __static__Fake_Command_Version()
 {
@@ -28,12 +28,12 @@ function __static__Inhibit_Commands_Version()
     function awk()
     {
         __static__Fake_Command_Version\
-            '--version' "GNU Awk ${awk_version}, API: 3.0 (GNU MPFR 4.1.0, GNU MP 6.2.1)" "$@"
+            '--version' "${gnu} Awk ${awk_version}, API: 3.0 (${gnu} MPFR 4.1.0, ${gnu} MP 6.2.1)" "$@"
     }
     function sed()
     {
         __static__Fake_Command_Version\
-            '--version' "sed (GNU sed) ${sed_version} Packaged by Debian" "$@"
+            '--version' "sed (${gnu} sed) ${sed_version} Packaged by Debian" "$@"
     }
     function tput()
     {
@@ -50,7 +50,8 @@ function __static__Inhibit_Commands_Version()
 function Unit_Test__system-requirements()
 {
     __static__Inhibit_Commands_Version
-    local {awk,sed,tput,yq}_version
+    local gnu {awk,sed,tput,yq}_version
+    gnu='GNU'
     awk_version=4.1
     sed_version=4.2.1
     tput_version=5.9
@@ -65,6 +66,7 @@ function Unit_Test__system-requirements()
         Print_Error "Check system requirements making report of good system failed."
         return 1
     fi
+    gnu='BSD'
     awk_version=4.0.9
     sed_version=4.2.0
     tput_version=5.9
