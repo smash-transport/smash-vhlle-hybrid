@@ -49,7 +49,7 @@ function Setup_Initial_And_Final_Output_Space()
 
 function Define_Repository_Global_Path()
 {
-    readonly HYBRID_repository_global_path=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
+    readonly HYBRID_top_level_path=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
 }
 
 function Store_Command_Line_Options_Into_Global_Variable()
@@ -59,7 +59,7 @@ function Store_Command_Line_Options_Into_Global_Variable()
 
 function Source_Codebase_Files()
 {
-    source "${HYBRID_repository_global_path}/bash/source_codebase_files.bash" || exit 1
+    source "${HYBRID_top_level_path}/bash/source_codebase_files.bash" || exit 1
 }
 
 function Act_And_Exit_If_User_Ran_Auxiliary_Modes()

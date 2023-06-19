@@ -15,7 +15,7 @@
 #            this mechanism, like dashes or spaces!
 function Define_Further_Global_Variables()
 {
-    Ensure_That_Given_Variables_Are_Set_And_Not_Empty HYBRID_repository_global_path
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty HYBRID_top_level_path
     # Constant information
     readonly HYBRID_valid_software_configuration_sections=(
         'IC'
@@ -26,7 +26,7 @@ function Define_Further_Global_Variables()
     readonly HYBRID_valid_auxiliary_configuration_sections=(
         'Hybrid_handler'
     )
-    readonly HYBRID_default_configurations_folder="${HYBRID_repository_global_path}/configs"
+    readonly HYBRID_default_configurations_folder="${HYBRID_top_level_path}/configs"
     # The following associative arrays declare maps between valid keys in the handler config
     # file and bash variables in which the input information will be stored once parsed.
     declare -rgA HYBRID_hybrid_handler_valid_keys=()
