@@ -67,7 +67,7 @@ jobs:
         # now we enter into the tests directory and execute the tests with maximum detail (-r 3)
         cd $main_dir/tests
         ${BASH_EXE} tests_runner unit -r 3 -k ||\
-        { printf "\nDetailed output of unit tests for debugging purposes:\n"; cat run_tests/*; exit 1; }
+        { printf "\nDetailed output of unit tests for debugging purposes:\n"; cat run_tests/tests_runner.log; exit 1; }
         rm -rf run_tests
         ${BASH_EXE} tests_runner functional -r 3 -k ||\
-        { printf "\nDetailed output of functional tests for debugging purposes:\n"; cat run_tests/*; exit 1; }
+        { printf "\nDetailed output of functional tests for debugging purposes:\n"; cat run_tests/tests_runner.log; exit 1; }
