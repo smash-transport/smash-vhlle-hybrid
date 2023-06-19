@@ -11,6 +11,7 @@
 function __static__Declare_System_Requirements()
 {
     if ! declare -p HYBRID_versions_requirements &> /dev/null; then
+        readonly HYBRID_version_regex='[0-9](.[0-9]+)*'
         declare -rgA HYBRID_versions_requirements=(
             [bash]='4.4'
             [awk]='4.1'
@@ -163,22 +164,25 @@ function __static__Try_Find_Version()
             found_version="${found_version// /.}"
             ;;
         awk )
-            found_version=$(awk --version | head -n1 | grep -o "[0-9.]\+" | head -n1)
+            found_version=$(awk --version | head -n1 | grep -oE "${HYBRID_version_regex}" | head -n1)
             ;;
         sed )
-            found_version=$(sed --version | head -n1 | grep -o "[0-9.]\+" | head -n1)
+            found_version=$(sed --version | head -n1 | grep -oE "${HYBRID_version_regex}" | head -n1)
             ;;
         tput )
-            found_version=$(tput -V | grep -o "[0-9.]\+" | cut -d'.' -f1,2)
+            found_version=$(tput -V | grep -oE "${HYBRID_version_regex}" | cut -d'.' -f1,2)
             ;;
         yq )
-            found_version=$(yq --version | grep -o "v[0-9.]\+" | cut -d'v' -f2)
+            # Old versions close to 4.0.0 do not have the 'v' prefix
+            found_version=$(yq --version |\
+                            grep -oE "version [v]?${HYBRID_version_regex}" |\
+                            grep -oE "${HYBRID_version_regex}")
             ;;
         *)
             return 1
             ;;
     esac
-    if [[ ${found_version} =~ ^[0-9](.[0-9]+)*$ ]]; then
+    if [[ ${found_version} =~ ^${HYBRID_version_regex}$ ]]; then
         system_information["$1"]+="${found_version}|"
     else
         system_information["$1"]+='---|'
@@ -196,8 +200,8 @@ function __static__Check_Version_Suffices()
     program=$1
     version_required="${HYBRID_versions_requirements[${program}]}"
     version_found=$(cut -d'|' -f2 <<< "${system_information[${program}]}")
-    if [[ ! ${version_found}    =~ ^[0-9](.[0-9]+)*$ ]] ||\
-       [[ ! ${version_required} =~ ^[0-9](.[0-9]+)*$ ]]; then
+    if [[ ! ${version_found}    =~ ^${HYBRID_version_regex}$ ]] ||\
+       [[ ! ${version_required} =~ ^${HYBRID_version_regex}$ ]]; then
         Print_Internal_And_Exit "Wrong syntax in version strings in ${FUNCNAME}."
     fi
     # Ensure versions are of the same length to make following algorithm work
