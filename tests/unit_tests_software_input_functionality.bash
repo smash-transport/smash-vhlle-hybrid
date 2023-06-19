@@ -43,24 +43,21 @@ function Unit_Test__replace-in-software-input-YAML()
         return 1
     fi
     # Test case 4:
-    printf\
-    '
-    Array:
-      - 1
-      - 2
-      - 3
+    printf 'Array:
+  - 1
+  - 2
+  - 3
 
-    Map:
-      Key_1: Hi
-      Key_2: Bye
-    Foo: Bar
+Map:
+  Key_1: Hi
+  Key_2: Bye
+Foo: Bar
     ' > "${base_input_file}"
     keys_to_be_replaced='
     Array: [5,6,7]
     Foo: BarBar
     '
-    expected_result='
-Array:
+    expected_result='Array:
   - 5
   - 6
   - 7
@@ -69,6 +66,9 @@ Map:
   Key_2: Bye
 Foo: BarBar'
     __static__Replace_Keys_Into_YAML_File
+    # yq in v4.30.6 fixed the behavior of keeping leading empty lines
+    # so it is important here to have no leading empty lines, otherwise
+    # this test would succeed/fail depending on yq version available!
     if [[ "$(cat "${base_input_file}")" != "${expected_result}" ]]; then
         Print_Error "YAML replacement failed!"\
                     '---- OBTAINED: ----' "$(cat "${base_input_file}")"\

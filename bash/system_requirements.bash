@@ -17,7 +17,7 @@ function __static__Declare_System_Requirements()
             [awk]='4.1'
             [sed]='4.2.1'
             [tput]='5.7'
-            [yq]='4'
+            [yq]='4.18.1'
         )
         declare -rga HYBRID_gnu_programs_required=( awk sed sort wc )
     fi
@@ -26,7 +26,7 @@ function __static__Declare_System_Requirements()
 function Check_System_Requirements()
 {
     __static__Declare_System_Requirements
-    local program requirements_present min_version
+    local program requirements_present min_version version_found
     requirements_present=0
     # NOTE: The following associative array will be used to store system information
     #       and since bash does not support arrays entries in associative arrays, then
@@ -47,14 +47,14 @@ function Check_System_Requirements()
             requirements_present=1
             continue
         fi
-        if [[ $(cut -d'|' -f2 <<< "${system_information[${program}]}") = '---' ]]; then
+        version_found=$(cut -d'|' -f2 <<< "${system_information[${program}]}")
+        if [[ ${version_found} = '---' ]]; then
             Print_Warning "Unable to find version of '${program}', skipping version check!"\
                 "Please ensure that current version is at least ${min_version}."
             continue
         fi
         if [[ $(cut -d'|' -f3 <<< "${system_information[${program}]}") = '---' ]]; then
-            Print_Error "'${program}' version ${system_information[${program}]} found,"\
-                " but version ${min_version} is required."
+            Print_Error "'${program}' version ${version_found} found, but version ${min_version} is required."
             requirements_present=1
         fi
     done
@@ -173,7 +173,7 @@ function __static__Try_Find_Version()
             found_version=$(tput -V | grep -oE "${HYBRID_version_regex}" | cut -d'.' -f1,2)
             ;;
         yq )
-            # Old versions close to 4.0.0 do not have the 'v' prefix
+            # Versions before v4.30.3 do not have the 'v' prefix
             found_version=$(yq --version |\
                             grep -oE "version [v]?${HYBRID_version_regex}" |\
                             grep -oE "${HYBRID_version_regex}")
@@ -256,7 +256,7 @@ function __static__Print_Requirement_Version_Report_Line()
     else
         line+="${green}    "
     fi
-    line+=$(printf "found  ${text_color}Required version: ${emph_color}%5s${default}"\
+    line+=$(printf "found  ${text_color}Required version: ${emph_color}%6s${default}"\
                    "${HYBRID_versions_requirements[${program}]}")
     if [[ ${found} != '---' ]]; then
         line+="  ${text_color}System version:${default} "
