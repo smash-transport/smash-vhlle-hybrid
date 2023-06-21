@@ -264,3 +264,31 @@ function Unit_Test__utility-check-shell-variables-set-not-empty()
         return 1
     fi
 }
+
+function __static__Test_ANSI_Code_Removal()
+{
+    Ensure_That_Given_Variables_Are_Set output
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty input expected_output
+    output=$(Strip_ANSI_Color_Codes_From_String "${input}")
+    if [[ "${output}" != "${expected_output}" ]]; then
+        Print_Error "Removing format code from '${expected_output}' failed."
+        return 1
+    fi
+}
+
+function Unit_Test__utility-strip-ANSI-codes()
+{
+    local input output expected_output
+    input=$(printf '\e[1mBold\e[22m text\e[0m')
+    expected_output='Bold text'
+    __static__Test_ANSI_Code_Removal || return 1
+    input=$(printf '\e[1;96mBold color text\e[0m')
+    expected_output='Bold color text'
+    __static__Test_ANSI_Code_Removal || return 1
+    input=$(printf '\e[38;5;202mComplex color text\e[0m')
+    expected_output='Complex color text'
+    __static__Test_ANSI_Code_Removal || return 1
+    input=$(printf '\e[1;38;5;202mComplex bold-color text\e[0m')
+    expected_output='Complex bold-color text'
+    __static__Test_ANSI_Code_Removal || return 1
+}

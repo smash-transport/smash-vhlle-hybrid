@@ -151,6 +151,12 @@ function Remove_Comments_In_File()
     fi
 }
 
+function Strip_ANSI_Color_Codes_From_String()
+{
+    # Adjusted from https://stackoverflow.com/a/18000433/14967071
+    sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,3})*)?[mGK]//g" <<< "$1"
+}
+
 function Call_Function_If_Existing_Or_Exit()
 {
     local name_of_the_function=$1
