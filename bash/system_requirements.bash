@@ -43,6 +43,16 @@ function Check_System_Requirements()
     #       the content is either 'OK' or '---'.
     declare -A system_information
     __static__Analyze_System_Properties
+    for program in "${HYBRID_gnu_programs_required[@]}"; do
+        if [[ $(cut -d'|' -f2 <<< "${system_information[${program}]}") = '---' ]]; then
+            Print_Error "'${program#GNU-}' either not found or non-GNU version in use."\
+                        "Please, ensure that '${program}' is installed and in use."
+            requirements_present=1
+        fi
+    done
+    if [[ ${requirements_present} -ne 0 ]]; then
+        Print_Fatal_And_Exit 'The GNU version of the above programs is needed.'
+    fi
     for program in "${!HYBRID_versions_requirements[@]}"; do
         min_version=${HYBRID_versions_requirements["${program}"]}
         if [[ $(cut -d'|' -f1 <<< "${system_information[${program}]}") = '---' ]]; then
@@ -63,16 +73,6 @@ function Check_System_Requirements()
     done
     if [[ ${requirements_present} -ne 0 ]]; then
         Print_Fatal_And_Exit 'Please install (maybe locally) the required versions of the above programs.'
-    fi
-    for program in "${HYBRID_gnu_programs_required[@]}"; do
-        if [[ $(cut -d'|' -f2 <<< "${system_information[${program}]}") = '---' ]]; then
-            Print_Error "'${program#GNU-}' either not found or non-GNU version in use."\
-                        "Please, ensure that '${program}' is installed and in use."
-            requirements_present=1
-        fi
-    done
-    if [[ ${requirements_present} -ne 0 ]]; then
-        Print_Fatal_And_Exit 'The GNU version of the above programs is needed.'
     fi
     for name in "${HYBRID_env_variables_required[@]}"; do
         if [[ ${system_information[${name}]} = '---' ]]; then
@@ -226,50 +226,24 @@ function __static__Try_Find_Version()
     fi
 }
 
-# NOTE: This function would be almost a one-liner using 'sort -V', but at the moment we do not
-#       impose to have GNU coreutils installed, which we should probably do next...
 function __static__Check_Version_Suffices()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty system_information
     # Here we assume that the programs were found and their version, too
-    local program version_required version_found index
+    local program version_required version_found newer_version
     program=$1
     version_required="${HYBRID_versions_requirements[${program}]}"
     version_found=$(cut -d'|' -f2 <<< "${system_information[${program}]}")
-    if [[ ! ${version_found}    =~ ^${HYBRID_version_regex}$ ]] ||\
-       [[ ! ${version_required} =~ ^${HYBRID_version_regex}$ ]]; then
-        Print_Internal_And_Exit "Wrong syntax in version strings in ${FUNCNAME}."
-    fi
-    # Ensure versions are of the same length to make following algorithm work
-    if [[ ${#version_found} -ne ${#version_required} ]]; then
-        if [[ ${#version_found} -lt ${#version_required} ]]; then
-            declare -n shorter_array=version_found
-            declare -n longer_array=version_required
-        else
-            declare -n shorter_array=version_required
-            declare -n longer_array=version_found
-        fi
-        while [[ ${#version_found[@]} -ne ${#version_required[@]} ]]; do
-            shorter_array+='.0' # Add zeroes to shorter string
-        done
-    fi
     # If versions are equal, we're done
     if [[ "${version_required}" = "${version_found}" ]]; then
         return 0
     fi
-    # Split version strings into array of numbers replacing '.' by ' ' and let word splitting do the split
-    version_required=( ${version_required//./ } )
-    version_found=( ${version_found//./ } )
-    # Now version arrays have same number of entries, compare them
-    for index in ${!version_required[@]}; do
-        if [[ "${version_required[index]}" -eq "${version_found[index]}" ]]; then
-            continue
-        elif [[ "${version_required[index]}" -lt "${version_found[index]}" ]]; then
-            return 0
-        else
-            return 1
-        fi
-    done
+    newer_version=$(printf '%s\n%s' ${version_required} ${version_found} | sort -V | tail -n 1)
+    if [[ ${newer_version} = ${version_required} ]]; then
+        return 1
+    else
+        return 0
+    fi
 }
 
 function __static__Print_Requirement_Version_Report_Line()
