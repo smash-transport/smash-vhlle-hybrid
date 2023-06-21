@@ -27,6 +27,7 @@ function Unit_Test__give-requested-help()
 {
     HYBRID_execution_mode='help'
     __static__Run_Helper_Expecting_Success || return 1
+    printf '\n'
     HYBRID_execution_mode='do-help'
     __static__Run_Helper_Expecting_Success || return 1
 }

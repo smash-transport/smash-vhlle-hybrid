@@ -40,7 +40,7 @@ function __static__Print_Main_Help_Message()
     )
     __static__Print_Handler_Header_And_Usage_Synopsis
     __static__Print_Modes_Description
-    Check_System_Requirements_And_Make_Report 2> /dev/null || true
+    Check_System_Requirements_And_Make_Report
 }
 
 function __static__Print_Do_Help_Message()
@@ -78,7 +78,7 @@ function __static__Print_Modes_Description()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty section_headers "${!section_headers[@]}"
     local section mode
-    printf '\e[38;5;38m  %s\e[0m\n\n'\
+    printf '\e[38;5;38m  %s\e[0m\n'\
            'Here in the following you find an overview of the existing execution modes.'
     for section in "${!section_headers[@]}"; do
         printf "\n  \e[93m${section_headers[${section}]}\e[0m\n"
@@ -89,7 +89,7 @@ function __static__Print_Modes_Description()
                    "${list_of_modes[${mode}]}"
         done | sort --ignore-leading-blanks
     done
-    printf '\n\e[38;5;38m  %s \e[38;5;85m%s \e[38;5;38m%s\n\n'\
+    printf '\n\e[38;5;38m  %s \e[38;5;85m%s \e[38;5;38m%s\e[0m\n\n'\
            'Use' '--help' 'after each non auxiliary mode to get further information about it.'
 }
 
