@@ -19,6 +19,8 @@
 #                                                                            #
 #----------------------------------------------------------------------------#
 
+readonly HYBRID_codebase_version='SMASH-vHLLE-hybrid-1.0'
+
 function Main()
 {
     Enable_Desired_Shell_Behavior
