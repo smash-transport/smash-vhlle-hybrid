@@ -51,7 +51,31 @@ function Setup_Initial_And_Final_Output_Space()
 
 function Define_Repository_Global_Path()
 {
-    readonly HYBRID_top_level_path=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
+    # NOTE: This function would reduce to one line using 'readlink -f'. However this function
+    #       is meant to be called very early and we want to make as few assumptions on the system
+    #       as possible. On macOS the -f option has been added in macOS 12.3 (early 2022) and this
+    #       might be problematic. Hence we basically only use 'readlink' to resolve possible
+    #       symbolic links. Note that we require 'readlink' to exist as this was introduced in
+    #       OpenBSD and GNU around 2000, see comments to https://unix.stackexchange.com/a/136527/370049.
+    if ! hash readlink &> /dev/null; then
+        exit_code=${HYBRID_fatal_builtin} Print_Fatal_And_Exit\
+            "No 'readlink' command found. Please install it and run the Hybrid-handler again."
+    fi
+    local source directory
+    source=${BASH_SOURCE[0]}
+    while [[ -L "${source}" ]]; do # resolve ${source} until the file is no longer a symlink
+        # Find real directory following possible directory symlinks
+        directory=$(cd -P "$(dirname "${source}")" &> /dev/null && pwd)
+        source=$(readlink "${source}")
+        # NOTE: If ${source} was a relative symlink, we need to resolve it relative
+        #       to the path where the symlink file was located. This is needed to ensure
+        #       that readlink still works when the script is invoked from a different
+        #       position from where it is located.
+        if [[ "${source}" != /* ]]; then
+            source=${directory}/${source}
+        fi
+    done
+    readonly HYBRID_top_level_path=$(cd -P "$(dirname "${source}")" &> /dev/null && pwd)
 }
 
 function Store_Command_Line_Options_Into_Global_Variable()
