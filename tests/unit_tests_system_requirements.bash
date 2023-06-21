@@ -69,14 +69,14 @@ function Unit_Test__system-requirements()
     gnu='BSD'
     awk_version=4.0.9
     sed_version=4.2.0
-    tput_version=5.9
+    tput_version=''
     yq_version=3.9.98
     ( Check_System_Requirements &> /dev/null )
     if [[ $? -eq 0 ]]; then
         Print_Error "Check system requirements of bad system succeeded."
         return 1
     fi
-    ( Check_System_Requirements_And_Make_Report )
+    ( unset -v 'TERM';  Check_System_Requirements_And_Make_Report )
     if [[ $? -ne 0 ]]; then
         Print_Error "Check system requirements making report of bad system failed."
         return 1
