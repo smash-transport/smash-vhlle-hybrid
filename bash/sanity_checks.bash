@@ -7,7 +7,7 @@
 #
 #===================================================
 
-function Perform_Sanity_Checks_On_Provided_Input()
+function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables()
 {
     local key base_file
     for key in "${HYBRID_valid_software_configuration_sections[@]}"; do

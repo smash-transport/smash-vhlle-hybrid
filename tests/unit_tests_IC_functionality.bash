@@ -24,7 +24,7 @@ function Make_Test_Preliminary_Operations__IC-create-input-file()
     HYBRID_software_base_config_file[IC]='my_cool_conf.yaml'
     HYBRID_given_software_sections=( 'IC' )
     HYBRID_software_executable[IC]=$(which ls) # Use command as fake executable
-    Perform_Sanity_Checks_On_Provided_Input
+    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 }
 
 function Unit_Test__IC-create-input-file()
