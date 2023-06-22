@@ -120,6 +120,12 @@ function Print_Centered_Line()
            "${padding_utility}"
 }
 
+function Print_Option_Specification_Error_And_Exit()
+{
+    exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit\
+        "The value of the option \"$1\" was not correctly specified (either forgotten or invalid)!"
+}
+
 function Print_Not_Implemented_Function_Error()
 {
     Print_Error "Function \"${FUNCNAME[1]}\" not implemented yet, skipping it."

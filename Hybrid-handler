@@ -54,7 +54,7 @@ function Define_Repository_Global_Path()
 
 function Store_Command_Line_Options_Into_Global_Variable()
 {
-    HYBRID_specified_command_line_options=( "$@" )
+    HYBRID_command_line_options_to_parse=( "$@" )
 }
 
 function Source_Codebase_Files()
@@ -65,13 +65,13 @@ function Source_Codebase_Files()
 function Act_And_Exit_If_User_Ran_Auxiliary_Modes()
 {
     case "${HYBRID_execution_mode}" in
-        help )
+        *help )
             Give_Required_Help
             ;;&
         version )
             Print_Software_Version
             ;;&
-        help | version )
+        *help | version )
             exit ${HYBRID_success_exit_code}
             ;;
     esac

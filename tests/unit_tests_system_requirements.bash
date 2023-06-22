@@ -71,11 +71,13 @@ function Unit_Test__system-requirements()
     sed_version=4.2.0
     tput_version=''
     yq_version=3.9.98
+    printf '\n'
     ( Check_System_Requirements &> /dev/null )
     if [[ $? -eq 0 ]]; then
         Print_Error "Check system requirements of bad system succeeded."
         return 1
     fi
+    printf '\n'
     ( unset -v 'TERM';  Check_System_Requirements_And_Make_Report )
     if [[ $? -ne 0 ]]; then
         Print_Error "Check system requirements making report of bad system failed."

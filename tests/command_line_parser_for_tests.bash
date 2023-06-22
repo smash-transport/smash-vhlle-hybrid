@@ -40,7 +40,7 @@ function Parse_Tests_Command_Line_Options()
                 if [[ $2 =~ ^[0-3]$ ]]; then
                     readonly HYBRIDT_report_level=$2
                 else
-                    __static__Print_Option_Specification_Error_And_Exit "$1"
+                    Print_Option_Specification_Error_And_Exit "$1"
                 fi
                 shift 2 ;;
             -t | --run-tests )
@@ -50,7 +50,7 @@ function Parse_Tests_Command_Line_Options()
                     elif [[ $2 =~ ^[[:alpha:]*?] ]]; then
                         __static__Set_Tests_To_Be_Run_Using_Globbing "$2"
                     else
-                        __static__Print_Option_Specification_Error_And_Exit "$1"
+                        Print_Option_Specification_Error_And_Exit "$1"
                     fi
                 else
                     __static__Print_List_Of_Tests
@@ -173,12 +173,6 @@ function __static__Print_List_Of_Tests()
     for ((index = 0; index < ${#HYBRIDT_tests_to_be_run[@]}; index++)); do
         printf '%3d) %s\n' "$(( index+1 ))" "${HYBRIDT_tests_to_be_run[index]}"
     done | column -c "${width_of_list}"
-}
-
-function __static__Print_Option_Specification_Error_And_Exit()
-{
-    exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit\
-        "The value of the option \"$1\" was not correctly specified (either forgotten or invalid)!"
 }
 
 

@@ -92,7 +92,7 @@ function Check_System_Requirements_And_Make_Report()
     local program name gnu_env_report=()
     declare -A system_information
     __static__Analyze_System_Properties
-    printf "\n \e[93mSystem requirements overview:${default}\n\n"
+    printf "\e[1m  System requirements overview:\e[0m\n\n"
     for program in "${!HYBRID_versions_requirements[@]}"; do
         __static__Print_Requirement_Version_Report_Line "${program}"
     done | sort -b -k3 # the third column is that containing the program name
