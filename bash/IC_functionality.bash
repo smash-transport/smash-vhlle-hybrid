@@ -18,7 +18,7 @@ function Prepare_Software_Input_File_IC()
             "Base configuration file \"${HYBRID_software_base_config_file[IC]}\" was not found."
     fi
     cp "${HYBRID_software_base_config_file[IC]}"\
-        "${HYBRID_software_output_directory[IC]}" || exit ${HYBRID_fatal_builtin}
+       "${HYBRID_software_output_directory[IC]}" || exit ${HYBRID_fatal_builtin}
     if [[ "${HYBRID_software_new_input_keys[IC]}" != '' ]]; then
         Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File\
             'YAML' "${HYBRID_software_configuration_file[IC]}" "${HYBRID_software_new_input_keys[IC]}"

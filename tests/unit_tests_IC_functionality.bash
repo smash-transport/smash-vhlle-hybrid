@@ -46,7 +46,6 @@ function Unit_Test__IC-create-input-file()
         Print_Error 'Preparation of input with existent config succeeded.'
         return 1
     fi
-    return 0
 }
 
 function Clean_Tests_Environment_For_Following_Test__IC-create-input-file()
@@ -79,7 +78,6 @@ function Unit_Test__IC-check-all-input()
         Print_Error 'Ensuring existence of existing folder/file failed.'
         return 1
     fi
-    return 0
 }
 
 function Clean_Tests_Environment_For_Following_Test__IC-check-all-input()
@@ -111,7 +109,6 @@ function Unit_Test__IC-test-run-software()
         Print_Error 'The terminal output has not the expected content.'
         return 1
     fi
-    return 0
 }
 
 function Clean_Tests_Environment_For_Following_Test__IC-test-run-software()
