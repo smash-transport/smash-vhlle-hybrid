@@ -33,12 +33,12 @@ function Unit_Test__IC-create-input-file()
     IC_config_name=$(basename "${HYBRID_software_base_config_file[IC]}")
     IC_input_file_path="${HYBRID_output_directory}/IC/${IC_config_name}"
     if [[ ! -f "${IC_input_file_path}" ]]; then
-        Print_Error 'The config was not properly created.'
+        Print_Error 'The input file(s) were not properly created.'
         return 1
     fi
     ( Prepare_Software_Input_File_IC &> /dev/null )
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Failed checking the existens of the config.'
+        Print_Error 'Preparation of input with existent config succeeded.'
         return 1
     fi
     return 0
@@ -59,13 +59,13 @@ function Unit_Test__IC-check-all-input()
 
     ( Ensure_All_Needed_Input_Exists_IC &> /dev/null )
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Validation of input directory failed.'
+        Print_Error 'Ensuring existence of not-existing output directory succeeded.'
         return 1
     fi
     mkdir "${HYBRID_output_directory}/IC"
     ( Ensure_All_Needed_Input_Exists_IC &> /dev/null )
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Validation of the config file failed.'
+        Print_Error 'Ensuring existence of not-existing config file succeeded.'
         return 1
     fi
     return 0
