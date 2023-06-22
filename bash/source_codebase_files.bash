@@ -11,7 +11,7 @@ function __static__Source_Codebase_Files()
 {
     local list_of_files file_to_be_sourced
     # Source error codes and fail with hard-coded generic error
-    source "${HYBRID_repository_global_path}/bash/error_codes.bash" || exit 1
+    source "${HYBRID_top_level_path}/bash/error_codes.bash" || exit 1
     list_of_files=(
         'command_line_parsers/helper.bash'
         'command_line_parsers/main_parser.bash'
@@ -25,7 +25,7 @@ function __static__Source_Codebase_Files()
         'version.bash'
     )
     for file_to_be_sourced in "${list_of_files[@]}"; do
-        source "${HYBRID_repository_global_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
+        source "${HYBRID_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
     done
 }
 
