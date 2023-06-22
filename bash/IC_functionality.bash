@@ -9,54 +9,40 @@
 
 function Prepare_Software_Input_File_IC()
 {
-    # check if output directory exists
-    local IC_output_directory="${HYBRID_output_directory}/IC"
-    if [[ ! -d "${IC_output_directory}" ]]; then
-        mkdir "${IC_output_directory}" || exit ${HYBRID_fatal_builtin}
-    fi
-
-    # check if config already exists
-    local IC_config_name=$(basename "${HYBRID_software_base_config_file[IC]}")
-    local IC_input_file_path="${IC_output_directory}/${IC_config_name}"
-    if [[ ! -f "${IC_input_file_path}" ]]; then
-        cp "${HYBRID_software_base_config_file[IC]}" "${IC_output_directory}" || exit ${HYBRID_fatal_builtin}
-        if [[ "${HYBRID_software_new_input_keys[IC]}" != '' ]]; then
-            Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File\
-                'YAML' "${IC_input_file_path}" "${HYBRID_software_new_input_keys[IC]}"
-        fi
-    else
+    mkdir -p "${HYBRID_software_output_directory[IC]}" || exit ${HYBRID_fatal_builtin}
+    if [[ -f "${HYBRID_software_configuration_file[IC]}" ]]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-            "File \"${IC_input_file_path}\" is already there."
+            "Configuration file \"${HYBRID_software_configuration_file[IC]}\" is already existing."
+    elif [[ ! -f "${HYBRID_software_base_config_file[IC]}" ]]; then
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+            "Base configuration file \"${HYBRID_software_base_config_file[IC]}\" was not found."
+    fi
+    cp "${HYBRID_software_base_config_file[IC]}"\
+        "${HYBRID_software_output_directory[IC]}" || exit ${HYBRID_fatal_builtin}
+    if [[ "${HYBRID_software_new_input_keys[IC]}" != '' ]]; then
+        Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File\
+            'YAML' "${HYBRID_software_configuration_file[IC]}" "${HYBRID_software_new_input_keys[IC]}"
     fi
 }
 
 function Ensure_All_Needed_Input_Exists_IC()
 {
-    # check if path exists
-    local IC_output_directory="${HYBRID_output_directory}/IC"
-    if [[ ! -d "${IC_output_directory}" ]]; then
+    if [[ ! -d "${HYBRID_software_output_directory[IC]}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            "Folder \"${IC_output_directory}\" does not exist."
+            "Folder \"${HYBRID_software_output_directory[IC]}\" does not exist."
     fi
-    # check if config exists
-    local IC_config_name=$(basename "${HYBRID_software_base_config_file[IC]}")
-    local IC_input_file_path="${IC_output_directory}/${IC_config_name}"
-    if [[ ! -f "${IC_input_file_path}" ]]; then
+    if [[ ! -f "${HYBRID_software_configuration_file[IC]}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            "The config \"${IC_input_file_path}\" does not exist."
+            "The configuration file \"${HYBRID_software_configuration_file[IC]}\" was not found."
     fi
 }
 
 function Run_Software_IC()
 {
-    local IC_output_directory="${HYBRID_output_directory}/IC"
-    local IC_terminal_output="${HYBRID_output_directory}/IC/Terminal_Output.txt"
-    local IC_config_name=$(basename "${HYBRID_software_base_config_file[IC]}")
-    local IC_input_file_path="${IC_output_directory}/${IC_config_name}"
-
+    local ic_terminal_output="${HYBRID_software_output_directory[IC]}/Terminal_Output.txt"
     ./"${HYBRID_software_executable[IC]}" \
-       '-i' "${IC_input_file_path}" \
-       '-o' "${IC_output_directory}" \
+       '-i' "${HYBRID_software_configuration_file[IC]}" \
+       '-o' "${HYBRID_software_output_directory[IC]}" \
        '-n' \
-       >> "${IC_terminal_output}"
+       >> "${ic_terminal_output}"
 }
