@@ -13,7 +13,7 @@ function __static__Source_Codebase_Files()
     # Source error codes and fail with hard-coded generic error
     source "${HYBRID_top_level_path}/bash/error_codes.bash" || exit 1
     source "${HYBRID_top_level_path}/bash/logger.bash"\
-        --fd 3 --default-exit-code ${HYBRID_internal_exit_code} || exit ${HYBRID_fatal_builtin}
+        --fd 42 --default-exit-code ${HYBRID_internal_exit_code} || exit ${HYBRID_fatal_builtin}
     list_of_files=(
         'command_line_parsers/helper.bash'
         'command_line_parsers/main_parser.bash'
