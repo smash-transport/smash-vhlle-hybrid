@@ -18,7 +18,7 @@ function __static__Run_Helper_Expecting_Success()
 {
     ( Give_Required_Help )
     if [[ $? -ne 0 ]]; then
-        Print_Error "Providing help in '${HYBRID_execution_mode}' execution mode failed."
+        Print_Error 'Providing help in ' --emph "${HYBRID_execution_mode}" ' execution mode failed.'
         return 1
     fi
 }

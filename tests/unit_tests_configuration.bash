@@ -179,16 +179,16 @@ function __static__Test_Section_Parsing_In_Subshell()
     Validate_And_Parse_Configuration_File
     if [[ "${#HYBRID_given_software_sections[@]}" -ne 1 ]] ||\
        [[ "${HYBRID_given_software_sections[0]}" != "${section}" ]]; then
-        Print_Fatal_And_Exit "Parsing of ${section} section failed (section storing)."
+        Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (section storing).'
     fi
     if [[ ${HYBRID_software_executable[${section}]} != "${executable}" ]]; then
-        Print_Fatal_And_Exit "Parsing of ${section} section failed (software executable)."
+        Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (software executable).'
     fi
     if [[ ${HYBRID_software_base_config_file[${section}]} != "${input_file}" ]]; then
-        Print_Fatal_And_Exit 'Parsing of ${section} section failed (input file).'
+        Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (input file).'
     fi
     if [[ ${HYBRID_software_new_input_keys[${section}]} != "${new_keys}" ]]; then
-        Print_Fatal_And_Exit "Parsing of ${section} section failed (software keys)."
+        Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (software keys).'
     fi
 )
 

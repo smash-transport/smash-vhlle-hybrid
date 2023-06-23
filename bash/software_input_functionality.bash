@@ -34,9 +34,9 @@ function __static__Replace_Keys_Into_YAML_File()
     # Use yq -P to bring all YAML to same format (crucial for later check on number of lines)
     if ! yq -P --inplace "${base_input_file}" 2> /dev/null; then
         exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
-            "File \"${base_input_file}\" does not seem to contain valid YAML syntax. Run"\
-            "   yq -P --inplace \"${base_input_file}\""\
-            "to have more information about the problem."
+            'File ' --emph "${base_input_file}" ' does not seem to contain valid YAML syntax. Run'\
+            --emph "   yq -P --inplace \"${base_input_file}\""\
+            "\nto have more information about the problem."
     elif ! keys_to_be_replaced=$(yq -P <(printf "${keys_to_be_replaced}\n") 2> /dev/null); then
         exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
             'Keys to be replaced do not seem to contain valid YAML syntax.'
@@ -52,7 +52,7 @@ function __static__Replace_Keys_Into_YAML_File()
     if [[ $(wc -l < "${base_input_file}") -ne ${initial_number_of_lines} ]]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
             'One or more provided software input keys were not found to be replaced'\
-            "in the \"${base_input_file}\" file." "Please, check your configuration file."
+            'in the ' --emph "${base_input_file}" ' file.' 'Please, check your configuration file.'
     fi
 }
 
@@ -62,7 +62,7 @@ function __static__Replace_Keys_Into_Txt_File()
     # Impose that both file and new keys have two entries per line
     if ! awk 'NF != 2 { exit 1 }' "${base_input_file}"; then
         exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
-            "File \"${base_input_file}\" does not seem to contain two columns per line only!"
+            'File ' --emph "${base_input_file}" ' does not seem to contain two columns per line only!'
     elif ! awk 'NF != 2 { exit 1 }' <(printf "${keys_to_be_replaced}\n"); then
         exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
             'Keys to be replaced do not seem to contain valid key-value syntax.'

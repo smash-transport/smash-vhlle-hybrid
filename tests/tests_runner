@@ -96,7 +96,7 @@ function Prepare_Test_Environment()
     local postfix
     postfix=$(date +'%Y-%m-%d_%H%M%S')
     if [[ -d "${HYBRIDT_folder_to_run_tests}" ]]; then
-        Print_Warning "Found \"${HYBRIDT_folder_to_run_tests}\", renaming it!\n"
+        Print_Warning 'Found ' --emph "${HYBRIDT_folder_to_run_tests}" ', renaming it!\n'
         mv "${HYBRIDT_folder_to_run_tests}"\
            "${HYBRIDT_folder_to_run_tests}_${postfix}" || exit ${HYBRID_fatal_builtin}
     fi
@@ -106,7 +106,7 @@ function Prepare_Test_Environment()
 function Run_Tests()
 {
     if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
-        Print_Info "Running ${#HYBRIDT_tests_to_be_run[@]} test(s):\n"
+        Print_Info 'Running ' --emph "${#HYBRIDT_tests_to_be_run[@]}" ' test(s):\n'
     fi
     local test_name
     for test_name in "${HYBRIDT_tests_to_be_run[@]}"; do
@@ -196,7 +196,7 @@ function Print_Tests_Report()
         fi
     fi
     if [[ ${HYBRIDT_tests_failed} -ne 0 ]]; then
-        Print_Error "\n${HYBRIDT_tests_failed} failures were detected! Not deleting log file!"
+        Print_Error '\n' --emph "${HYBRIDT_tests_failed}" ' failures were detected! Not deleting log file!'
     else
         Print_Info "\nAll tests passed!"
     fi
@@ -216,10 +216,10 @@ function Delete_Tests_Files_If_No_Test_Failed_And_User_Wishes_So()
             elif [[ ! -e  "${global_path}" ]]; then
                 continue
             else
-                Print_Internal_And_Exit "Error in \"${FUNCNAME}\"."\
-                "\"${global_path}\" seems to neither be a file nor directory, leaving it!"
+                Print_Internal_And_Exit 'Error in ' --emph "${FUNCNAME}" '.'\
+                    --emph "${global_path}" ' seems to neither be a file nor directory, leaving it!'
             fi
-            Print_Info "Removing ${label} \"${global_path}\""
+            Print_Info "Removing ${label} " --emph "${global_path}" '.'
             if [[ -e "${global_path}" ]]; then # Redundant but safer
                 rm -r "${global_path}"
             fi
