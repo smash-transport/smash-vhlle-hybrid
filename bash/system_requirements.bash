@@ -44,8 +44,8 @@ function Check_System_Requirements()
     declare -A system_information
     __static__Analyze_System_Properties
     for program in "${HYBRID_gnu_programs_required[@]}"; do
-        if [[ $(cut -d'|' -f2 <<< "${system_information[${program}]}") = '---' ]]; then
-            Print_Error "'${program#GNU-}' either not found or non-GNU version in use."\
+        if [[ $(cut -d'|' -f2 <<< "${system_information[GNU-${program}]}") = '---' ]]; then
+            Print_Error "'${program}' either not found or non-GNU version in use."\
                         "Please, ensure that '${program}' is installed and in use."
             requirements_present=1
         fi
