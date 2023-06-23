@@ -85,7 +85,7 @@ function Make_Needed_Operations_Depending_On_Execution_Mode()
         do )
             local software_section
             Validate_And_Parse_Configuration_File
-            Perform_Sanity_Checks_On_Provided_Input
+            Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
             for software_section in "${HYBRID_given_software_sections[@]}"; do
                 Prepare_Software_Input_File "${software_section}"
                 Ensure_All_Needed_Input_Exists "${software_section}"
