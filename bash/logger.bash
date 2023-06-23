@@ -7,12 +7,13 @@
 #
 #===================================================
 #
-# This file has been taken and adapted from the BashLogger project
-# and therefore its original license header is reported here below.
+# This file has been taken from the BashLogger project (v0.2) and, as
+# requested, its original license header is reported here below.
 #
 #----------------------------------------------------------------------------------------
 #
-#  Copyright (c) 2019 Alessandro Sciarra <sciarra@itp.uni-frankfurt.de>
+#  Copyright (c) 2019,2023
+#    Alessandro Sciarra <sciarra@itp.uni-frankfurt.de>
 #
 #  This file is part of BashLogger.
 #
@@ -31,58 +32,128 @@
 #
 #----------------------------------------------------------------------------------------
 #
-# The logger will print output to new file descriptor 3 to be able to use the logger in
-# functions that "return" printing to stdout to be called in $().
+# The logger will print output to the chosen file descriptor (by default 42). This is
+# done (instead of simply let it print to standard output) to be able to use the logger
+# in functions that "return" by printing to stdout and that are meant to be called in $().
 #
-# ATTENTION: It might be checked if fd 3 exists and in case open it in the Logger itself.
-#            However, if the first Logger call is done in a subshell, the fd 3 is not
-#            open globally for the script and, therefore, we should ensure to open the
-#            fd 3 for the script. We do then this at source time.
+# ATTENTION: It might be checked if the chosen fd exists and in case open it in the Logger
+#            function itself. However, if the first Logger call is done in a subshell, then
+#            the chosen fd would not be open globally for the script and following calls to
+#            the Logger would fail. Hence, we open the fd at source time and not close it
+#            in the Logger.
 #
 # NOTE: Nothing is done if this file is executed and not sourced!
 #
 if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-    exec 3>&1
+    BSHLGGR_outputFd=42
+    BSHLGGR_defaultExitCode=1
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --fd )
+                if [[ ! $2 =~ ^[1-9][0-9]*$ ]] || (( $2>254 )); then
+                    printf "Error sourcing BashLogger. '$1' option needs an integer value between 1 and 254.\n"
+                    return 1
+                else
+                    BSHLGGR_outputFd=$2
+                    shift 2
+                fi
+                ;;
+            --default-exit-code )
+                if [[ ! $2 =~ ^[0-9]+$ ]] || (( $2>255 )); then
+                    printf "Error sourcing BashLogger. '$1' option needs an integer value between 0 and 255.\n"
+                    return 1
+                else
+                    BSHLGGR_defaultExitCode=$2
+                    shift 2
+                fi
+                ;;
+            *)
+                printf "Error sourcing BashLogger. Unknown option '$1'.\n"
+                return 1
+                ;;
+        esac
+    done
+    # Probably redundant check, but we want guarantee that 'eval' is safe to use here
+    # e.g. that the BSHLGGR_outputFd cannot be set to '; rm -rf /; #' (AAARGH!).
+    if [[ ! ${BSHLGGR_outputFd} =~ ^[1-9][0-9]*$ ]]; then
+        printf "Unexpected error sourcing BashLogger. Please contact developers.\n"
+        return 1
+    else
+        eval "exec ${BSHLGGR_outputFd}>&1"
+    fi
+    readonly BSHLGGR_outputFd BSHLGGR_defaultExitCode
 fi
 
-function Print_Trace()
+function PrintTrace()
 {
     __static__Logger 'TRACE' "$@"
 }
+function Print_Trace()
+{
+    PrintTrace "$@"
+}
 
-function Print_Debug()
+function PrintDebug()
 {
     __static__Logger 'DEBUG' "$@"
 }
+function Print_Debug()
+{
+    PrintDebug "$@"
+}
 
-function Print_Info()
+function PrintInfo()
 {
     __static__Logger 'INFO' "$@"
 }
+function Print_Info()
+{
+    PrintInfo "$@"
+}
 
-function Print_Attention()
+function PrintAttention()
 {
     __static__Logger 'ATTENTION' "$@"
 }
+function Print_Attention()
+{
+    PrintAttention "$@"
+}
 
-function Print_Warning()
+function PrintWarning()
 {
     __static__Logger 'WARNING' "$@"
 }
+function Print_Warning()
+{
+    PrintWarning "$@"
+}
 
-function Print_Error()
+function PrintError()
 {
     __static__Logger 'ERROR' "$@"
 }
+function Print_Error()
+{
+    PrintError "$@"
+}
 
-function Print_Fatal_And_Exit()
+function PrintFatalAndExit()
 {
     __static__Logger 'FATAL' "$@"
 }
+function Print_Fatal_And_Exit()
+{
+    PrintFatalAndExit "$@"
+}
 
+function PrintInternalAndExit()
+{
+    __static__Logger 'INTERNAL' "$@"
+}
 function Print_Internal_And_Exit()
 {
-    exit_code=${HYBRID_internal:-1} __static__Logger 'INTERNAL' "$@"
+    PrintInternalAndExit "$@"
 }
 
 function __static__Logger()
@@ -90,49 +161,55 @@ function __static__Logger()
     if [[ $# -lt 1 ]]; then
         __static__Logger 'INTERNAL' "${FUNCNAME} called without label!"
     fi
-    local label label_length label_to_be_printed color string final_endline restore_default
-    final_endline='\n'
-    restore_default='\e[0m'
-    label_length=10
+    local label labelLength labelToBePrinted color emphColor finalEndline restoreDefault
+    finalEndline='\n'
+    restoreDefault='\e[0m'
+    labelLength=10
     label="$1"; shift
-    label_to_be_printed=$(printf "%${label_length}s" "${label}:")
+    labelToBePrinted=$(printf "%${labelLength}s" "${label}:")
     if [[ ! ${label} =~ ^(INTERNAL|FATAL|ERROR|WARNING|ATTENTION|INFO|DEBUG|TRACE)$ ]]; then
         __static__Logger 'INTERNAL' "${FUNCNAME} called with unknown label '${label}'!"
     fi
-    __static__Is_Level_On "${label}" || return 0
+    __static__IsLevelOn "${label}" || return 0
     exec 4>&1 # duplicate fd 1 to restore it later
     case "${label}" in
         ERROR|FATAL )
-            color='\e[91m'
-            exec 1>&2 ;; # here stdout to stderr!
+            # ;;& means go on in case matching following patterns
+            color='\e[91m' ;;&
         INTERNAL )
-            color='\e[38;5;202m'
+            color='\e[38;5;202m' ;;&
+        ERROR|FATAL|INTERNAL )
+            emphColor='\e[93m'
             exec 1>&2 ;; # here stdout to stderr!
         INFO )
-            color='\e[92m' # ;;& means go on in case matching following -> do *)
-            ;;&
+            color='\e[92m'
+            emphColor='\e[96m' ;;&
         ATTENTION )
-            color='\e[38;5;200m' ;;&
+            color='\e[38;5;200m'
+            emphColor='\e[38;5;141m' ;;&
         WARNING )
-            color='\e[93m' ;;&
+            color='\e[93m'
+            emphColor='\e[38;5;202m' ;;&
         DEBUG )
-            color='\e[38;5;38m' ;;&
+            color='\e[38;5;38m'
+            emphColor='\e[38;5;48m' ;;&
         TRACE )
-            color='\e[38;5;247m' ;;&
+            color='\e[38;5;247m'
+            emphColor='\e[38;5;256m' ;;&
         * )
-            exec 1>&3 ;; # here stdout to fd 3!
+            exec 1>&"${BSHLGGR_outputFd}" ;; # here stdout to chosen fd
     esac
-    if __static__Is_Element_In_Array '--' "$@"; then
+    if __static__IsElementInArray '--' "$@"; then
         while [[ "$1" != '--' ]]; do
             case "$1" in
                 -n )
-                    final_endline=''
+                    finalEndline=''
                     shift ;;
                 -l )
-                    label_to_be_printed="$(printf "%${label_length}s" '')"
+                    labelToBePrinted="$(printf "%${labelLength}s" '')"
                     shift ;;
                 -d )
-                    restore_default=''
+                    restoreDefault=''
                     shift ;;
                 * )
                     __static__Logger 'INTERNAL' "${FUNCNAME} called with unknown option \"$1\"!" ;;
@@ -140,36 +217,87 @@ function __static__Logger()
         done
         shift
     fi
-    if [[ $# -eq 0 ]]; then
-        __static__Logger 'INTERNAL' "${FUNCNAME} called without message!"
-    fi
+    # Print out initial new-lines before label suppressing first argument if it was endlines only
     while [[ $1 =~ ^\\n ]]; do
         printf '\n'
-        set -- "${1/#\\n/}" "${@:2}"
-    done
-    printf "\e[1m${color}${label_to_be_printed}\e[22m ${1//%/%%}"
-    shift
-    if [[ $# -eq 0 ]]; then
-        printf "${final_endline}" # If nothing more to print use 'final_endline'
-    else
-        printf '\n'
-        while [[ $# -gt 1 ]]; do
-            printf "${label_to_be_printed//?/ } ${1//%/%%}\n"
+        if [[ "${1/#\\n/}" = '' ]]; then
             shift
-        done
-        printf "${label_to_be_printed//?/ } ${1//%/%%}${final_endline}"
+        else
+            set -- "${1/#\\n/}" "${@:2}"
+        fi
+    done
+    # Ensure something to print was given
+    if [[ $# -eq 0 ]]; then
+        __static__Logger 'INTERNAL' "${FUNCNAME} called without message (or with new lines only)!"
     fi
+    # Parse all arguments and save messages for later, possibly modified
+    local messagesToBePrinted emphNextString lastStringWasEmph indentation index
+    messagesToBePrinted=()
+    emphNextString='FALSE'
+    lastStringWasEmph='FALSE'
+    indentation=''
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --emph )
+                # Here two cases should be handled: either '--emph' is an option or a string
+                #   -> it is literal if the last command line option or if following the option
+                #   -> it is an option otherwise
+                # Use a fallthrough to continue matching in the case construct and use *) case
+                # to print. However, shift and continue must be given if '--emph' was an option.
+                if [[ $# -eq 1 || ${emphNextString} = 'TRUE' ]]; then
+                    :
+                else
+                    emphNextString='TRUE'
+                    shift
+                    continue
+                fi
+                ;;&
+            *)
+                if [[ ${#messagesToBePrinted[@]} -gt 0 ]]; then
+                    indentation="${labelToBePrinted//?/ } "
+                fi
+                # Set color and replace % by %% for later printf
+                if [[ ${emphNextString} = 'TRUE' ]]; then
+                    messagesToBePrinted+=( "${emphColor}${1//%/%%}" )
+                    lastStringWasEmph='TRUE'
+                else
+                    if [[ ${lastStringWasEmph} = 'FALSE' ]]; then
+                        if [[ ${#messagesToBePrinted[@]} -gt 0 ]]; then
+                            messagesToBePrinted[-1]+='\n'
+                        fi
+                    else
+                        indentation=''
+                    fi
+                    messagesToBePrinted+=( "${indentation}${color}${1//%/%%}" )
+                    lastStringWasEmph='FALSE'
+                fi
+                emphNextString='FALSE'
+                ;;
+        esac
+        shift
+    done
+    # Last message has no endline, add 'finalEndline' to it
+    messagesToBePrinted[-1]+="${finalEndline}"
+    set -- "${messagesToBePrinted[@]}"
+    # Print first line
+    printf "\e[1m${color}${labelToBePrinted}\e[0m $1"
+    shift
+    # Print possible additional lines
+    while [[ $# -gt 0 ]]; do
+        printf "$1"
+        shift
+    done
     if [[ ${label} = 'INTERNAL' ]]; then
-        printf "${label_to_be_printed//?/ } Please, contact developers.\n"
+        printf "${labelToBePrinted//?/ } Please, contact developers.\n"
     fi
-    printf "${restore_default}"
-    exec 1>&4- # restore fd 1 and close fd 4 and not close fd 3 (it must stay open, see top of the file!)
+    printf "${restoreDefault}"
+    exec 1>&4- # restore fd 1 and close fd 4 and not close chosen fd (it must stay open, see top of the file!)
     if [[ ${label} =~ ^(FATAL|INTERNAL)$ ]]; then
-        exit "${exit_code:-1}"
+        exit "${exit_code:-${BSHLGGR_defaultExitCode}}"
     fi
 }
 
-function __static__Is_Level_On()
+function __static__IsLevelOn()
 {
     local label
     label="$1"
@@ -178,7 +306,7 @@ function __static__Is_Level_On()
         return 0
     fi
     # VERBOSE environment variable defines how verbose the output should be:
-    #  - unset or empty -> till INFO (no DEBUG TRACE)
+    #  - unset, empty, invalid value -> till INFO (no DEBUG TRACE)
     #  - numeric -> till that level (1=ERROR, 2=WARNING, ...)
     #  - string  -> till that level
     local loggerLevels loggerLevelsOn level index
@@ -206,7 +334,7 @@ function __static__Is_Level_On()
     return 1
 }
 
-function __static__Is_Element_In_Array()
+function __static__IsElementInArray()
 {
     # ATTENTION: Since this function is used in the middle of the logger, the
     #            logger cannot be used in this function otherwise fd 4 is closed!
@@ -223,6 +351,14 @@ function __static__Is_Element_In_Array()
 #-----------------------------------------------------------------#
 #Set functions readonly to avoid possible redefinitions elsewhere
 readonly -f \
+         PrintTrace \
+         PrintDebug \
+         PrintInfo \
+         PrintAttention \
+         PrintWarning \
+         PrintError \
+         PrintFatalAndExit \
+         PrintInternalAndExit \
          Print_Trace \
          Print_Debug \
          Print_Info \
@@ -232,5 +368,5 @@ readonly -f \
          Print_Fatal_And_Exit \
          Print_Internal_And_Exit \
          __static__Logger \
-         __static__Is_Level_On \
-         __static__Is_Element_In_Array
+         __static__IsLevelOn \
+         __static__IsElementInArray
