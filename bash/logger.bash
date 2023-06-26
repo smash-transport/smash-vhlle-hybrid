@@ -7,8 +7,9 @@
 #
 #===================================================
 #
-# This file has been taken from the BashLogger project (v0.2) and, as
-# requested, its original license header is reported here below.
+# This file has been taken from the BashLogger project (v0.2)
+#   https://github.com/AxelKrypton/BashLogger
+# and, as requested, its original license header is reported here below.
 #
 #----------------------------------------------------------------------------------------
 #

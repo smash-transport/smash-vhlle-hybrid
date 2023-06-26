@@ -72,7 +72,7 @@ function Source_Needed_Files()
 {
     source "${HYBRIDT_repository_top_level_path}/bash/error_codes.bash" || exit 1
     source "${HYBRIDT_repository_top_level_path}/bash/logger.bash"\
-        --fd 42 --default-exit-code ${HYBRID_internal_exit_code} || exit ${HYBRID_fatal_builtin}
+        --fd 9 --default-exit-code ${HYBRID_internal_exit_code} || exit ${HYBRID_fatal_builtin}
     local -r files_to_be_sourced=(
         "${HYBRIDT_repository_top_level_path}/bash/system_requirements.bash"
         "${HYBRIDT_repository_top_level_path}/bash/utility_functions.bash"
@@ -217,7 +217,7 @@ function Delete_Tests_Files_If_No_Test_Failed_And_User_Wishes_So()
                 continue
             else
                 Print_Internal_And_Exit 'Error in ' --emph "${FUNCNAME}" '.'\
-                    --emph "${global_path}" ' seems to neither be a file nor directory, leaving it!'
+                    --emph "${global_path}" ' seems to neither be a file nor a directory, leaving it!'
             fi
             Print_Info "Removing ${label} " --emph "${global_path}" '.'
             if [[ -e "${global_path}" ]]; then # Redundant but safer
