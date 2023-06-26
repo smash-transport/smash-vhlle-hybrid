@@ -111,13 +111,22 @@ function Check_System_Requirements()
 function Check_System_Requirements_And_Make_Report()
 {
     __static__Declare_System_Requirements
-    local program name is_gnu system_report=()
+    local program report_string name is_gnu system_report=()
     declare -A system_information
     __static__Analyze_System_Properties
     printf "\e[1m  System requirements overview:\e[0m\n\n"
+    # NOTE: sort might not be available, hence put report in string and then optionally sort it
+    report_string=''
     for program in "${!HYBRID_versions_requirements[@]}"; do
-        __static__Print_Requirement_Version_Report_Line "${program}"
-    done | sort -b -k3 # the third column is that containing the program name
+        report_string+=$(__static__Print_Requirement_Version_Report_Line "${program}")$'\n'
+    done
+    if hash sort &> /dev/null; then
+        # The third column is that containing the program name; remember that the
+        # 'here-string' adds a newline to the string when feeding it into the command
+        sort -b -k3 <<< "${report_string%?}"
+    else
+        printf '%s' "${report_string}"
+    fi
     printf '\n'
     # This variable is used to prepare the report correctly formatted
     local -r single_field_length=15
