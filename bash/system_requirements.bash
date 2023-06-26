@@ -45,8 +45,8 @@ function Check_System_Requirements()
     __static__Analyze_System_Properties
     for program in "${HYBRID_gnu_programs_required[@]}"; do
         if [[ $(cut -d'|' -f2 <<< "${system_information[GNU-${program}]}") = '---' ]]; then
-            Print_Error "'${program}' either not found or non-GNU version in use."\
-                        "Please, ensure that '${program}' is installed and in use."
+            Print_Error --emph "${program}" ' either not found or non-GNU version in use.'\
+                        'Please, ensure that ' --emph "${program}" ' is installed and in use.'
             requirements_present=1
         fi
     done
@@ -56,18 +56,20 @@ function Check_System_Requirements()
     for program in "${!HYBRID_versions_requirements[@]}"; do
         min_version=${HYBRID_versions_requirements["${program}"]}
         if [[ $(cut -d'|' -f1 <<< "${system_information[${program}]}") = '---' ]]; then
-            Print_Error "'${program}' command not found! Minimum version ${min_version} is required."
+            Print_Error --emph "${program}" ' command not found! Minimum version '\
+                        --emph "${min_version}" ' is required.'
             requirements_present=1
             continue
         fi
         version_found=$(cut -d'|' -f2 <<< "${system_information[${program}]}")
         if [[ ${version_found} = '---' ]]; then
-            Print_Warning "Unable to find version of '${program}', skipping version check!"\
-                          "Please ensure that current version is at least ${min_version}."
+            Print_Warning 'Unable to find version of ' --emph "${program}" ', skipping version check!'\
+                          'Please ensure that current version is at least ' --emph "${min_version}" '.'
             continue
         fi
         if [[ $(cut -d'|' -f3 <<< "${system_information[${program}]}") = '---' ]]; then
-            Print_Error "'${program}' version ${version_found} found, but version ${min_version} is required."
+            Print_Error --emph "${program}" ' version ' --emph "${version_found}"\
+                        ' found, but version ' --emph "${min_version}" ' is required.'
             requirements_present=1
         fi
     done
@@ -76,8 +78,8 @@ function Check_System_Requirements()
     fi
     for name in "${HYBRID_env_variables_required[@]}"; do
         if [[ ${system_information[${name}]} = '---' ]]; then
-            Print_Error "'${name}' environment variable either unset or empty."\
-                        "Please, ensure that '${name}' is properly set."
+            Print_Error --emph "${name}" ' environment variable either unset or empty.'\
+                        'Please, ensure that ' --emph "${name}" ' is properly set.'
             requirements_present=1
         fi
     done

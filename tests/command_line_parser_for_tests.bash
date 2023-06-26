@@ -13,13 +13,13 @@ function Parse_Tests_Suite_Parameter_And_Source_Specific_Code()
     suite_name="$1"
     if [[ ! ${suite_name} =~ ^(functional|unit)$ ]]; then
         exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
-            "Invalid tests type \"${suite_name}\". Valid values: \"functional\", \"unit\"."\
-            "Use the '--help' option to get more information."
+            'Invalid tests type ' --emph "${suite_name}" '. Valid values: ' --emph 'functional'\
+            ', ' --emph 'unit' '.' 'Use the ' --emph '--help' ' option to get more information.'
     fi
     code_filename="${HYBRIDT_tests_folder}/${suite_name}_tests.bash"
     if [[ ! -f "${code_filename}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            "File \"${code_filename}\" not found."
+            'File ' --emph "${code_filename}" ' not found.'
     else
         source "${code_filename}" || exit ${HYBRID_fatal_builtin}
     fi
@@ -62,7 +62,8 @@ function Parse_Tests_Command_Line_Options()
                 shift ;;
             * )
                 exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit\
-                    "Invalid option \"$1\" specified! Use the \"--help\" option to get further information."
+                    'Invalid option ' --emph "$1" ' specified! Use the '\
+                    --emph '--help' ' option to get further information.'
                 ;;
         esac
     done
@@ -128,7 +129,7 @@ function __static__Set_Tests_To_Be_Run_Using_Numbers()
          /\-/{split($0, res, "-"); for(i=res[1]; i<=res[2]; i++){printf "%d\n", i}; next}
          {printf "%d\n", $0}' <<< "${selection_string}")
     )
-    Print_Debug "Selected tests indices: ( ${numeric_list[*]} )"
+    Print_Debug 'Selected tests indices: ' --emph "( ${numeric_list[*]} )"
     selected_tests=()
     for number in "${numeric_list[@]}"; do
         # The user selects human-friendly numbers (1,2,...), here go back to array indices
@@ -137,12 +138,12 @@ function __static__Set_Tests_To_Be_Run_Using_Numbers()
             selected_tests+=( "${HYBRIDT_tests_to_be_run[number]}" )
         else
             exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit\
-                "Some specified test number within \"$1\" is not valid! Use"\
-                "the '-t' option without value to get a list of available tests."
+                'Some specified test number within ' --emph "$1" ' is not valid! Use'\
+                'the ' --emph '-t' ' option without value to get a list of available tests.'
         fi
     done
     HYBRIDT_tests_to_be_run=( "${selected_tests[@]}" )
-    Print_Debug "Selected tests: ( ${HYBRIDT_tests_to_be_run[*]} )"
+    Print_Debug 'Selected tests: ' --emph "( ${HYBRIDT_tests_to_be_run[*]} )"
 }
 
 function __static__Set_Tests_To_Be_Run_Using_Globbing()
@@ -162,7 +163,7 @@ function __static__Set_Tests_To_Be_Run_Using_Globbing()
             "No test name found matching \"$1\" globbing pattern! Use"\
             "the '-t' option without value to get a list of available tests."
     fi
-    Print_Debug "Selected tests: ( ${HYBRIDT_tests_to_be_run[*]} )"
+    Print_Debug 'Selected tests: ' --emph "( ${HYBRIDT_tests_to_be_run[*]} )"
 }
 
 function __static__Print_List_Of_Tests()

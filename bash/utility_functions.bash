@@ -32,11 +32,11 @@ function Has_YAML_String_Given_Key()
 {
     local yaml_string section key
     if [[ $# -lt 2 ]]; then
-        Print_Internal_And_Exit "Function '${FUNCNAME}' called with less than 2 arguments."
+        Print_Internal_And_Exit 'Function ' --emph "${FUNCNAME}" ' called with less than 2 arguments.'
     fi
     yaml_string=$1; shift
     if ! yq <<< "${yaml_string}" &> /dev/null; then
-        Print_Internal_And_Exit "Function '${FUNCNAME}' called with invalid YAML string."
+        Print_Internal_And_Exit 'Function ' --emph "${FUNCNAME}" ' called with invalid YAML string.'
     fi
     section="$(printf '.%s' "${@:1:$#-1}")" # All arguments but last
     key=${@: -1}                            # Last argument
@@ -54,9 +54,9 @@ function Read_From_YAML_String_Given_Key()
 {
     local yaml_string key
     if [[ $# -lt 2 ]]; then
-        Print_Internal_And_Exit "Function '${FUNCNAME}' called with less than 2 arguments."
+        Print_Internal_And_Exit 'Function ' --emph "${FUNCNAME}" ' called with less than 2 arguments.'
     elif ! Has_YAML_String_Given_Key "$@"; then
-        Print_Internal_And_Exit "Function '${FUNCNAME}' called with YAML string not containing given key."
+        Print_Internal_And_Exit 'Function ' --emph "${FUNCNAME}" ' called with YAML string not containing given key.'
     fi
     yaml_string=$1; shift
     key="$(printf '.%s' "$@")"
@@ -70,9 +70,9 @@ function Print_YAML_String_Without_Given_Key()
 {
     local yaml_string key
     if [[ $# -lt 2 ]]; then
-        Print_Internal_And_Exit "Function '${FUNCNAME}' called with less than 2 arguments."
+        Print_Internal_And_Exit 'Function ' --emph "${FUNCNAME}" ' called with less than 2 arguments.'
     elif ! Has_YAML_String_Given_Key "$@"; then
-        Print_Internal_And_Exit "Function '${FUNCNAME}' called with YAML string not containing given key."
+        Print_Internal_And_Exit 'Function ' --emph "${FUNCNAME}" ' called with YAML string not containing given key.'
     fi
     yaml_string=$1; shift
     key="$(printf '.%s' "$@")"
@@ -105,7 +105,7 @@ function Print_Centered_Line()
     # Determine length of input at net of formatting codes (color, face)
     real_length=$(printf '%s' "${input_string}" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,3})*)?[mGK]//g" | wc -c)
     if (( output_total_width - 2 - real_length < 0 )); then
-        Print_Fatal_And_Exit "Error in \"${FUNCNAME}\": specify larger total width!"
+        Print_Fatal_And_Exit 'Error in ' --emph "${FUNCNAME}" ': specify larger total width!'
     fi
     # In the following we build a very long string of padding characters that
     # will be later truncated when printing the output string. Very long is
@@ -123,12 +123,12 @@ function Print_Centered_Line()
 function Print_Option_Specification_Error_And_Exit()
 {
     exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit\
-        "The value of the option \"$1\" was not correctly specified (either forgotten or invalid)!"
+        'The value of the option ' --emph "$1" ' was not correctly specified (either forgotten or invalid)!'
 }
 
 function Print_Not_Implemented_Function_Error()
 {
-    Print_Error "Function \"${FUNCNAME[1]}\" not implemented yet, skipping it."
+    Print_Error 'Function ' --emph "${FUNCNAME[1]}" ' not implemented yet, skipping it.'
 }
 
 function Remove_Comments_In_File()
@@ -143,9 +143,9 @@ function Remove_Comments_In_File()
     comment_character=${2:-#}
     if [[ ! -f ${filename} ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            "File \"${filename}\" not found."
+            'File ' --emph "${filename}" ' not found.'
     elif [[ ${#comment_character} -ne 1 ]]; then
-        Print_Internal_And_Exit "Comment character \"${comment_character}\" invalid!"
+        Print_Internal_And_Exit 'Comment character ' --emph "${comment_character}" ' invalid!'
     else
         sed -i '/^[[:blank:]]*'"${comment_character}"'/d;s/[[:blank:]]*'"${comment_character}"'.*//' "${filename}"
     fi
@@ -168,8 +168,8 @@ function Call_Function_If_Existing_Or_Exit()
         ${name_of_the_function} "$@" || return $?
     else
         exit_code=${HYBRID_fatal_missing_feature} Print_Internal_And_Exit\
-            "\nFunction \"${name_of_the_function}\" not found!"\
-            "Please provide an implementation following the in-code documentation."
+            '\nFunction ' --emph "${name_of_the_function}" ' not found!'\
+            'Please provide an implementation following the in-code documentation.'
     fi
 }
 
@@ -201,7 +201,7 @@ function Ensure_That_Given_Variables_Are_Set() {
                 continue
             fi
             Print_Internal_And_Exit\
-                "Variable \"${variable_name}\" not set in function \"${FUNCNAME[1]}\"."
+                'Variable ' --emph "${variable_name}" ' not set in function ' --emph "${FUNCNAME[1]}" '.'
         fi
     done
 }
@@ -228,7 +228,7 @@ function Ensure_That_Given_Variables_Are_Set_And_Not_Empty() {
             fi
         fi
         Print_Internal_And_Exit\
-            "Variable \"${variable_name}\" unset or empty in function \"${FUNCNAME[1]}\"."
+            'Variable ' --emph "${variable_name}" ' unset or empty in function ' --emph "${FUNCNAME[1]}" '.'
     done
 }
 
@@ -249,7 +249,8 @@ function Make_Functions_Defined_In_This_File_Readonly()
     )
     if [[ ${#declared_functions[@]} -eq 0 ]]; then
         Print_Internal_And_Exit\
-            "Function \"${FUNCNAME}\" called, but no function found in file\n file \"${BASH_SOURCE[1]}\""
+            'Function ' --emph "${FUNCNAME}" ' called, but no function found in file\n file '\
+            --emph "${BASH_SOURCE[1]}" '.'
     else
         readonly -f "${declared_functions[@]}"
     fi

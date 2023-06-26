@@ -23,17 +23,17 @@ function Unit_Test__utility-has-YAML-string-given-key()
     fi
     ( Has_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a' 'b' 'c' &> /dev/null )
     if [[ $? -ne 0 ]] ; then
-        Print_Error "Existing key '{a: {b: {c:}}}' not found."
+        Print_Error 'Existing key ' --emph '{a: {b: {c:}}}' ' not found.'
         return 1
     fi
     ( Has_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a' 'b' &> /dev/null )
     if [[ $? -ne 0 ]] ; then
-        Print_Error "Existing key '{a: {b:}}' not found."
+        Print_Error 'Existing key ' --emph '{a: {b:}}' ' not found.'
         return 1
     fi
     ( Has_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a' &> /dev/null )
     if [[ $? -ne 0 ]] ; then
-        Print_Error "Existing key '{a:}' not found."
+        Print_Error 'Existing key ' --emph '{a:}' ' not found.'
         return 1
     fi
     ( Has_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a' 'b' 'nope' &> /dev/null )
@@ -123,7 +123,7 @@ function Unit_Test__utility-remove-comments-in-existing-file()
     printf '   # Comment\n' > "${file_containing_one_commented_line_only}"
     Remove_Comments_In_File "${file_containing_one_commented_line_only}"
     if [[ -s "${file_containing_one_commented_line_only}" ]]; then
-        Print_Error "File \"${file_containing_one_commented_line_only}\" not empty."
+        Print_Error 'File ' --emph "${file_containing_one_commented_line_only}" ' not empty.'
         return 1
     fi
     rm "${file_containing_one_commented_line_only}"
@@ -133,7 +133,7 @@ function Unit_Test__utility-remove-comments-in-existing-file()
     number_of_lines=$(wc -l < "${file_containing_no_comments}")
     Remove_Comments_In_File "${file_containing_no_comments}"
     if [[ $(wc -l < "${file_containing_no_comments}") -ne ${number_of_lines} ]]; then
-        Print_Error "Removing comments in \"${file_containing_no_comments}\" file failed."
+        Print_Error 'Removing comments in ' --emph "${file_containing_no_comments}" ' file failed.'
         return 1
     fi
     rm "${file_containing_no_comments}"
@@ -143,7 +143,7 @@ function Unit_Test__utility-remove-comments-in-existing-file()
     number_of_lines=$(wc -l < "${file_containing_three_commented_lines}")
     Remove_Comments_In_File "${file_containing_three_commented_lines}"
     if (( $(wc -l < "${file_containing_three_commented_lines}") != number_of_lines - 3 )); then
-        Print_Error "Removing comments in \"${file_containing_three_commented_lines}\" file failed."
+        Print_Error 'Removing comments in ' --emph "${file_containing_three_commented_lines}" ' file failed.'
         return 1
     fi
     rm "${file_containing_three_commented_lines}"
@@ -152,7 +152,7 @@ function Unit_Test__utility-remove-comments-in-existing-file()
     printf 'Hello   %% Comment\n' > "${file_containing_one_line_with_an_inline_comment}"
     Remove_Comments_In_File "${file_containing_one_line_with_an_inline_comment}" '%'
     if [[ $(cat "${file_containing_one_line_with_an_inline_comment}") != 'Hello' ]]; then
-        Print_Error "Removing comments in \"${file_containing_one_line_with_an_inline_comment}\" file failed."
+        Print_Error 'Removing comments in ' --emph "${file_containing_one_line_with_an_inline_comment}" ' file failed.'
         return 1
     fi
     rm "${file_containing_one_line_with_an_inline_comment}"
@@ -271,7 +271,7 @@ function __static__Test_ANSI_Code_Removal()
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty input expected_output
     output=$(Strip_ANSI_Color_Codes_From_String "${input}")
     if [[ "${output}" != "${expected_output}" ]]; then
-        Print_Error "Removing format code from '${expected_output}' failed."
+        Print_Error 'Removing format code from ' --emph "${expected_output}" ' failed.'
         return 1
     fi
 }

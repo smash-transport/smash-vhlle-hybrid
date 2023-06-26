@@ -26,7 +26,8 @@ function Parse_Execution_Mode()
             ;;
         * )
             exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit\
-                  "Specified mode '$1' not valid! Run 'Hybrid-handler help' to get further information."
+                  'Specified mode ' --emph "$1" ' not valid! Run '\
+                  --emph 'Hybrid-handler help' ' to get further information.'
     esac
     shift
     # Update the global array with remaining options to be parsed
@@ -43,7 +44,7 @@ function Parse_Execution_Mode()
 function Parse_Command_Line_Options()
 {
     if [[ ${HYBRID_execution_mode} != 'do' ]]; then
-        Print_Internal_And_Exit 'Command line options are allowed only in "do" mode for now.'
+        Print_Internal_And_Exit 'Command line options are allowed only in ' --emph 'do' ' mode for now.'
     fi
     set -- "${HYBRID_command_line_options_to_parse[@]}"
     while [[ $# -gt 0 ]]; do
@@ -66,8 +67,8 @@ function Parse_Command_Line_Options()
                 ;;
             * )
                 exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit\
-                    "Invalid option \"$1\" specified in '${HYBRID_execution_mode}' execution mode!"\
-                    'Use the "--help" option to get further information.'
+                    'Invalid option ' --emph "$1" ' specified in ' --emph "${HYBRID_execution_mode}"\
+                    ' execution mode!' 'Use the ' --emph '--help' ' option to get further information.'
                 ;;
         esac
     done

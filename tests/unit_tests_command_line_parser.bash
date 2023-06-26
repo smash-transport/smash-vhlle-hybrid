@@ -29,7 +29,7 @@ function __static__Test_Parsing_Of_Execution_Mode_In_Subshell_Expecting_Success(
     if [[ $? -ne 0 ]] ||\
        [[ "${HYBRID_execution_mode}" != "${expected_option}" ]] ||\
        [[ ${#HYBRID_command_line_options_to_parse[@]} -ne "${expected_size}" ]]; then
-        Print_Error "Parsing of valid execution mode '${first_option}' failed."
+        Print_Error 'Parsing of valid execution mode ' --emph "${first_option}" ' failed.'
         return 1
     fi
 )
@@ -75,7 +75,8 @@ function __static__Test_CLO_Parsing_Missing_Value()
 {
     ( Parse_Command_Line_Options &> /dev/null )
     if [[ $? -eq 0 ]]; then
-        Print_Error "Parsing of CLO '${HYBRID_command_line_options_to_parse[0]}' with missing value succeeded."
+        Print_Error 'Parsing of CLO ' --emph "${HYBRID_command_line_options_to_parse[0]}"\
+                    ' with missing value succeeded.'
         return 1
     fi
 }
@@ -84,7 +85,7 @@ function __static__Test_Single_CLO_Parsing_In_Subshell()
 (
     Parse_Command_Line_Options
     if [[ $? -ne 0 ]] || [[ ${!1} != "$2" ]]; then
-        Print_Error 'Parsing of '${HYBRID_command_line_options_to_parse[0]}' with valid value failed.'
+        Print_Error 'Parsing of ' --emph "${HYBRID_command_line_options_to_parse[0]}" ' with valid value failed.'
         return 1
     fi
 )

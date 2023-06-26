@@ -15,7 +15,7 @@ function Define_Available_Tests()
         "${HYBRIDT_tests_folder}/"unit_tests_*.bash
     )
     for file_to_be_sourced in "${files_to_be_sourced[@]}"; do
-        Print_Debug "Sourcing ${file_to_be_sourced}"
+        Print_Debug 'Sourcing ' --emph "${file_to_be_sourced}"
         source "${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
     done
     # Available tests are based on functions in this file whose names begins with "Unit_Test__"
@@ -36,17 +36,18 @@ function Make_Test_Preliminary_Operations()
         # Write header to the log file to give some structure to it
         printf "\n[$(date)]\nRunning test \"%s\"\n\n" "${test_name}"
         Call_Function_If_Existing_Or_No_Op ${FUNCNAME}__$1
-    } &>> "${HYBRIDT_log_file}" 3>&1 # The fd 3 is used by the logger.
+    } &>> "${HYBRIDT_log_file}" 9>&1 # The fd 9 is used by the logger.
 }
 
 function Run_Test()
 {
-    Unit_Test__$1 &>> "${HYBRIDT_log_file}" 3>&1  # The fd 3 is used by the logger.
+    Unit_Test__$1 &>> "${HYBRIDT_log_file}" 9>&1  # The fd 9 is used by the logger.
 }
 
 function Clean_Tests_Environment_For_Following_Test()
 {
-    Call_Function_If_Existing_Or_No_Op ${FUNCNAME}__$1 &>> "${HYBRIDT_log_file}" 3>&1 # The fd 3 is used by the logger.
+    # The fd 9 is used by the logger.
+    Call_Function_If_Existing_Or_No_Op ${FUNCNAME}__$1 &>> "${HYBRIDT_log_file}" 9>&1
 }
 
 #=======================================================================================================================

@@ -24,7 +24,7 @@ function Unit_Test__version()
         return 1
     fi
     if hash git &> /dev/null; then
-        std_output=$(Print_Software_Version 3>&1) # We want to capture here a logger message that goes to fd 3
+        std_output=$(Print_Software_Version 9>&1) # We want to capture here a logger message that goes to fd 9
         if [[ $? -ne 0 || $(grep -c "${HYBRID_codebase_version}" <<< "${std_output}") -eq 0 ]] ; then
             Print_Error "Version printing with git failed."
             return 1

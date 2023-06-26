@@ -49,7 +49,7 @@ function __static__Abort_If_Sections_Are_Violating_Any_Requirement()
                 fi
             done
             exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
-                "Invalid section \"${label}\" found in the handler configuration file."
+                'Invalid section ' --emph "${label}" ' found in the handler configuration file.'
         fi
     done
     # Here all given sections are valid. Check possible duplicates/holes and ordering using the stored indices
@@ -172,7 +172,7 @@ function __static__YAML_section_must_be_empty()
     local yaml_section=$1
     if [[ "${yaml_section}" != '{}' ]]; then
         Print_Internal_And_Exit\
-            "Not all keys in ${2:-some} section have been parsed. Remaining:"\
-            "\n${yaml_section}\n"
+            'Not all keys in ' --emph "${2:-some}" ' section have been parsed. Remaining:'\
+            --emph "\n${yaml_section}\n"
     fi
 }

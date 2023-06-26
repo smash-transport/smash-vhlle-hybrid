@@ -12,10 +12,10 @@ function Prepare_Software_Input_File_IC()
     mkdir -p "${HYBRID_software_output_directory[IC]}" || exit ${HYBRID_fatal_builtin}
     if [[ -f "${HYBRID_software_configuration_file[IC]}" ]]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-            "Configuration file \"${HYBRID_software_configuration_file[IC]}\" is already existing."
+            'Configuration file ' --emph "${HYBRID_software_configuration_file[IC]}" ' is already existing.'
     elif [[ ! -f "${HYBRID_software_base_config_file[IC]}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            "Base configuration file \"${HYBRID_software_base_config_file[IC]}\" was not found."
+            'Base configuration file ' --emph "${HYBRID_software_base_config_file[IC]}" ' was not found.'
     fi
     cp "${HYBRID_software_base_config_file[IC]}"\
        "${HYBRID_software_output_directory[IC]}" || exit ${HYBRID_fatal_builtin}
@@ -29,11 +29,11 @@ function Ensure_All_Needed_Input_Exists_IC()
 {
     if [[ ! -d "${HYBRID_software_output_directory[IC]}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            "Folder \"${HYBRID_software_output_directory[IC]}\" does not exist."
+            'Folder ' --emph "${HYBRID_software_output_directory[IC]}" ' does not exist.'
     fi
     if [[ ! -f "${HYBRID_software_configuration_file[IC]}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            "The configuration file \"${HYBRID_software_configuration_file[IC]}\" was not found."
+            'The configuration file ' --emph "${HYBRID_software_configuration_file[IC]}" ' was not found.'
     fi
 }
 

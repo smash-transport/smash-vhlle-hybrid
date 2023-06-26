@@ -21,4 +21,4 @@ readonly HYBRID_fatal_value_error=68
 readonly HYBRID_fatal_logic_error=110
 readonly HYBRID_fatal_missing_feature=111
 readonly HYBRID_fatal_variable_unset=112
-readonly HYBRID_internal=113
+readonly HYBRID_internal_exit_code=113

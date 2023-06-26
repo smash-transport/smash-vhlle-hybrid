@@ -27,12 +27,12 @@ function __static__Ensure_Executable_Exists()
     file_path="${HYBRID_software_executable[${label}]}"
     if [[ "${file_path}" = '' ]]; then
         exit_code=${HYBRID_fatal_variable_unset} Print_Fatal_And_Exit\
-            "Software executable for '${label}' run was not specified."
+            'Software executable for ' --emph "${label}" ' run was not specified.'
     elif [[ ! -f "${file_path}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            "The executable file for the '${label}' run was not found."
+            'The executable file for the ' --emph "${label}" ' run was not found.'
     elif [[ ! -x "${file_path}" ]]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-            "The executable file for the '${label}' run is not executable."
+            'The executable file for the ' --emph "${label}" ' run is not executable.'
     fi
 }

@@ -18,7 +18,8 @@ function Give_Required_Help()
             ;;
         * )
             Print_Internal_And_Exit\
-                'Unexpected value of HYBRID_execution_mode=${HYBRID_execution_mode} in ${FUNCNAME}'
+                'Unexpected value of ' --emph "HYBRID_execution_mode=${HYBRID_execution_mode}"\
+                ' in ' --emph "${FUNCNAME}"
             ;;
     esac
 

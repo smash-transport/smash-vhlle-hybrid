@@ -12,6 +12,9 @@ function __static__Source_Codebase_Files()
     local list_of_files file_to_be_sourced
     # Source error codes and fail with hard-coded generic error
     source "${HYBRID_top_level_path}/bash/error_codes.bash" || exit 1
+    # Source logger using fd 9 (not too small and still smaller than 10 as bash manual suggests)
+    source "${HYBRID_top_level_path}/bash/logger.bash"\
+        --fd 9 --default-exit-code ${HYBRID_internal_exit_code} || exit ${HYBRID_fatal_builtin}
     list_of_files=(
         'command_line_parsers/helper.bash'
         'command_line_parsers/main_parser.bash'
@@ -19,7 +22,6 @@ function __static__Source_Codebase_Files()
         'configuration_parser.bash'
         'dispatch_functions.bash'
         'global_variables.bash'
-        'logger.bash'
         'system_requirements.bash'
         'utility_functions.bash'
         'version.bash'
