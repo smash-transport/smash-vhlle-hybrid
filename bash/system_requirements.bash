@@ -198,15 +198,12 @@ function __static__Try_Find_Version()
     Ensure_That_Given_Variables_Are_Set system_information
     local found_version
     case "$1" in
+        awk | sed )
+            found_version=$($1 --version | head -n1 | grep -oE "${HYBRID_version_regex}" | head -n1)
+            ;;
         bash )
             found_version="${BASH_VERSINFO[@]:0:3}"
             found_version="${found_version// /.}"
-            ;;
-        awk )
-            found_version=$(awk --version | head -n1 | grep -oE "${HYBRID_version_regex}" | head -n1)
-            ;;
-        sed )
-            found_version=$(sed --version | head -n1 | grep -oE "${HYBRID_version_regex}" | head -n1)
             ;;
         tput )
             found_version=$(tput -V | grep -oE "${HYBRID_version_regex}" | cut -d'.' -f1,2)
@@ -218,7 +215,7 @@ function __static__Try_Find_Version()
                             grep -oE "${HYBRID_version_regex}")
             ;;
         *)
-            return 1
+            Print_Internal_And_Exit 'Version finding for ' --emph "$1" ' to be added!'
             ;;
     esac
     if [[ ${found_version} =~ ^${HYBRID_version_regex}$ ]]; then
