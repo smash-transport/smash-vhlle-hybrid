@@ -27,6 +27,8 @@ function Give_Required_Help()
 
 function __static__Print_Main_Help_Message()
 {
+    # NOTE: This function is thought to be run in ANY user system and it might be
+    #       that handler prerequisites are missing. Hence, possibly only bash should be used.
     declare -A section_headers auxiliary_modes_description execution_modes_description
     section_headers=(
         [auxiliary_modes_description]='Auxiliary modes for help, information or setup'
@@ -78,17 +80,26 @@ function __static__Print_Handler_Header_And_Usage_Synopsis()
 function __static__Print_Modes_Description()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty section_headers "${!section_headers[@]}"
-    local section mode
+    local section mode section_string
     printf '\e[38;5;38m  %s\e[0m\n'\
            'Here in the following you find an overview of the existing execution modes.'
     for section in "${!section_headers[@]}"; do
         printf "\n  \e[93m${section_headers[${section}]}\e[0m\n"
         declare -n list_of_modes="${section}"
+        section_string=''
         for mode in "${!list_of_modes[@]}"; do
-            printf '\e[38;5;85m%15s   \e[96m%s\e[0m\n'\
-                   "${mode}"\
-                   "${list_of_modes[${mode}]}"
-        done | sort --ignore-leading-blanks
+            # Remember that $(...) strip trailing '\n' -> Add new-line manually to the string
+            section_string+="$(printf '\e[38;5;85m%15s   \e[96m%s\e[0m'\
+                                     "${mode}"\
+                                     "${list_of_modes[${mode}]}")"$'\n'
+        done
+        if hash sort &> /dev/null; then
+            # Remember that the 'here-string' adds a newline to the string when
+            # feeding it into the command -> get rid of it here
+            sort --ignore-leading-blanks <<< "${section_string%?}"
+        else
+            printf "%s" "${section_string}"
+        fi
     done
     printf '\n\e[38;5;38m  %s \e[38;5;85m%s \e[38;5;38m%s\e[0m\n\n'\
            'Use' '--help' 'after each non auxiliary mode to get further information about it.'
@@ -117,3 +128,6 @@ function __static__Print_Command_Line_Option_Help()
     done
     printf "%${left_column_length}sDefault: ${default_value_color}${default_value}${default_text}\n" ''
 }
+
+
+Make_Functions_Defined_In_This_File_Readonly

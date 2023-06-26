@@ -67,7 +67,7 @@ function Unit_Test__system-requirements()
         return 1
     fi
     gnu='BSD'
-    awk_version=4.0.9
+    awk_version=4.1.0
     sed_version=4.2.0
     tput_version=''
     yq_version=3.9.98

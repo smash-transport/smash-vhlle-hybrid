@@ -88,3 +88,6 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
     )
 }
+
+
+Make_Functions_Defined_In_This_File_Readonly

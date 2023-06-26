@@ -46,3 +46,6 @@ function Run_Software_IC()
        '-n' \
        >> "${ic_terminal_output}"
 }
+
+
+Make_Functions_Defined_In_This_File_Readonly

@@ -74,3 +74,6 @@ function __static__Replace_Keys_Into_Txt_File()
     __static__Replace_Keys_Into_YAML_File
     awk -i inplace 'BEGIN{FS=": "}{printf "%-20s%s\n", $1, $2}' "${base_input_file}"
 }
+
+
+Make_Functions_Defined_In_This_File_Readonly

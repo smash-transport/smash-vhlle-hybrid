@@ -15,6 +15,9 @@ function __static__Source_Codebase_Files()
     # Source logger using fd 9 (not too small and still smaller than 10 as bash manual suggests)
     source "${HYBRID_top_level_path}/bash/logger.bash"\
         --fd 9 --default-exit-code ${HYBRID_internal_exit_code} || exit ${HYBRID_fatal_builtin}
+    # Source utility functions to be able to mark all functions as readonly
+    # when sourcing the codebase files (otherwise this would not work)
+    source "${HYBRID_top_level_path}/bash/utility_functions.bash" || exit ${HYBRID_fatal_builtin}
     list_of_files=(
         'command_line_parsers/helper.bash'
         'command_line_parsers/main_parser.bash'
@@ -23,7 +26,6 @@ function __static__Source_Codebase_Files()
         'dispatch_functions.bash'
         'global_variables.bash'
         'system_requirements.bash'
-        'utility_functions.bash'
         'version.bash'
     )
     for file_to_be_sourced in "${list_of_files[@]}"; do
@@ -34,6 +36,5 @@ function __static__Source_Codebase_Files()
 # Call the function above and source the codebase files when this script is sourced
 if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
     __static__Source_Codebase_Files
+    Make_Functions_Defined_In_This_File_Readonly
 fi
-
-Make_Functions_Defined_In_This_File_Readonly
