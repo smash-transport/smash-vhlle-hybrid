@@ -115,12 +115,13 @@ function Check_System_Requirements_And_Make_Report()
             )"
         )
     done
-    # Because of coloured output, we cannot use a tool like 'column' here and
-    # we manually determine how many columns to use.
-    local -r single_field_length=15
-    # NOTE: tput needs the TERM environment variable to be set. Here, since that is a
-    #       requirement, we use 'xterm' in case that environment variable was not set.
-    local -r num_cols=$(( $(tput -T ${TERM:-xterm} cols) * 4 / 5 / single_field_length ))
+    # Because of coloured output, we cannot use a tool like 'column' here to format output
+    # and we manually determine how many columns to use. Furthermore tput needs the TERM
+    # environment variable to be set and, as tput is a requirement, we cannot rely on it
+    # here. Although in some cases this might fail, we refresh and use COLUMNS variable
+    # here (see https://stackoverflow.com/a/48016366/14967071 for more information).
+    cat /dev/null # Refresh LINES and COLUMNS
+    local -r num_cols=$(( COLUMNS / 2 / single_field_length ))
     local index printf_descriptor
     printf_descriptor="%${single_field_length}s" # At least one column
     for ((index=1; index<num_cols; index++)); do
