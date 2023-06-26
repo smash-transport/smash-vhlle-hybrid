@@ -138,10 +138,10 @@ function __static__Analyze_System_Properties()
         if __static__Try_Find_Requirement "${program}"; then
             system_information[${program}]='found|'
         else
-            system_information[${program}]='---||' # Empty following fields
+            system_information[${program}]='---|---|---'
             continue
         fi
-        if ! __static__Try_Find_Version "${program}"; then
+        if ! __static__Try_Find_Version "${program}"; then # This writes to system_information
             continue
         fi
         if __static__Check_Version_Suffices "${program}"; then
@@ -223,7 +223,7 @@ function __static__Try_Find_Version()
     if [[ ${found_version} =~ ^${HYBRID_version_regex}$ ]]; then
         system_information["$1"]+="${found_version}|"
     else
-        system_information["$1"]+='---|'
+        system_information["$1"]+='---|---'
         return 1
     fi
 }
