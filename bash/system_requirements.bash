@@ -7,6 +7,12 @@
 #
 #===================================================
 
+# ATTENTION: The code in this file might look here and there a bit "strange" and not
+#            what one would write at first. However, this is due to the fact that
+#            we want to check the availability of many system requirements without
+#            using them, otherwise the output for those users missing features would
+#            be more confusing than helpful. Please, keep this in mind if you are
+#            going to modify this file and/or change requirements.
 
 function __static__Declare_System_Requirements()
 {
