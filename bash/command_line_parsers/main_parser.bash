@@ -73,3 +73,6 @@ function Parse_Command_Line_Options()
         esac
     done
 }
+
+
+Make_Functions_Defined_In_This_File_Readonly

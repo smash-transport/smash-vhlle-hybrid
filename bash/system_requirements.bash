@@ -331,3 +331,6 @@ function __static__Get_Single_Tick_Cross_Requirement_Report()
     fi
     printf "${line}${default}"
 }
+
+
+Make_Functions_Defined_In_This_File_Readonly

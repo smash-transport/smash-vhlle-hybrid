@@ -176,3 +176,6 @@ function __static__YAML_section_must_be_empty()
             --emph "\n${yaml_section}\n"
     fi
 }
+
+
+Make_Functions_Defined_In_This_File_Readonly

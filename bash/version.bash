@@ -68,3 +68,6 @@ function __static__Is_Git_Version_Older_Than()
         return 0
     fi
 }
+
+
+Make_Functions_Defined_In_This_File_Readonly

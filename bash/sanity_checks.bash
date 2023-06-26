@@ -36,3 +36,6 @@ function __static__Ensure_Executable_Exists()
             'The executable file for the ' --emph "${label}" ' run is not executable.'
     fi
 }
+
+
+Make_Functions_Defined_In_This_File_Readonly

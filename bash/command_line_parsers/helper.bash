@@ -117,3 +117,6 @@ function __static__Print_Command_Line_Option_Help()
     done
     printf "%${left_column_length}sDefault: ${default_value_color}${default_value}${default_text}\n" ''
 }
+
+
+Make_Functions_Defined_In_This_File_Readonly
