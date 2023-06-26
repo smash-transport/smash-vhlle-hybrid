@@ -114,6 +114,9 @@ function Check_System_Requirements_And_Make_Report()
     local program report_string name is_gnu system_report=()
     declare -A system_information
     __static__Analyze_System_Properties
+    for program in "${!system_information[@]}"; do
+        Print_Debug "${program} -> ${system_information[${program}]}"
+    done
     printf "\e[1m  System requirements overview:\e[0m\n\n"
     # NOTE: sort might not be available, hence put report in string and then optionally sort it
     report_string=''
@@ -252,7 +255,7 @@ function __static__Is_Gnu_Version_In_Use()
 function __static__Try_Find_Version()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[$1]"
-    if ! hash grep &> /dev/null; then
+    if ! hash grep &> /dev/null && [[ $1 != 'bash' ]]; then
         system_information["$1"]+='?|---'
         return 1
     fi
