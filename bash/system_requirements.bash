@@ -13,11 +13,19 @@ function __static__Declare_System_Requirements()
     if ! declare -p HYBRID_versions_requirements &> /dev/null; then
         readonly HYBRID_version_regex='[0-9](.[0-9]+)*'
         declare -rgA HYBRID_versions_requirements=(
-            [bash]='4.4'
             [awk]='4.1'
+            [bash]='4.4'
             [sed]='4.2.1'
             [tput]='5.7'
             [yq]='4.18.1'
+        )
+        declare -rga HYBRID_programs_just_required=(
+            cat
+            column
+            cut
+            grep
+            head
+            tail
         )
         declare -rga HYBRID_gnu_programs_required=( awk sed sort wc )
         declare -rga HYBRID_env_variables_required=( TERM )
@@ -35,6 +43,9 @@ function Check_System_Requirements()
     #       contains whether the command was found, its version and whether the version
     #       meets the requirement or not. A '|' is used to separate the fields in the
     #       string and '---' is used to indicate a negative outcome in the field.
+    #       The same array is used to store the availability of programs that are just
+    #       required, without any version requirement. For these, only the found field
+    #       is stored (either 'found' or '---').
     #       The same array is used to store the availability of GNU tools. For these,
     #       the key is prefixed by 'GNU-' and the content has a first "field" that is
     #       'found' or '---' and a second one that is either 'OK' or '---' to indicate
@@ -91,7 +102,7 @@ function Check_System_Requirements()
 function Check_System_Requirements_And_Make_Report()
 {
     __static__Declare_System_Requirements
-    local program name gnu_env_report=()
+    local program name system_report=()
     declare -A system_information
     __static__Analyze_System_Properties
     printf "\e[1m  System requirements overview:\e[0m\n\n"
@@ -99,8 +110,18 @@ function Check_System_Requirements_And_Make_Report()
         __static__Print_Requirement_Version_Report_Line "${program}"
     done | sort -b -k3 # the third column is that containing the program name
     printf '\n'
+    # This variable is used to prepare the report correctly formatted
+    local -r single_field_length=15
+    for name in "${HYBRID_programs_just_required[@]}"; do
+        system_report+=(
+            "$(__static__Get_Single_Tick_Cross_Requirement_Report\
+                "PROG ${name}"\
+                "${system_information[${name}]}"
+            )"
+        )
+    done
     for program in "${HYBRID_gnu_programs_required[@]}"; do
-        gnu_env_report+=(
+        system_report+=(
             "$(__static__Get_Single_Tick_Cross_Requirement_Report\
                 "GNU ${program}"\
                 "$(cut -d'|' -f2 <<< "${system_information["GNU-${program}"]}")"
@@ -108,7 +129,7 @@ function Check_System_Requirements_And_Make_Report()
         )
     done
     for name in "${HYBRID_env_variables_required[@]}"; do
-        gnu_env_report+=(
+        system_report+=(
             "$(__static__Get_Single_Tick_Cross_Requirement_Report\
                 "ENV ${name}"\
                 "${system_information[${name}]}"
@@ -127,7 +148,7 @@ function Check_System_Requirements_And_Make_Report()
     for ((index=1; index<num_cols; index++)); do
         printf_descriptor+="  %${single_field_length}s"
     done
-    printf "${printf_descriptor}\n" "${gnu_env_report[@]}"
+    printf "${printf_descriptor}\n" "${system_report[@]}"
 }
 
 function __static__Analyze_System_Properties()
@@ -149,6 +170,13 @@ function __static__Analyze_System_Properties()
             system_information[${program}]+='OK'
         else
             system_information[${program}]+='---'
+        fi
+    done
+    for program in "${HYBRID_programs_just_required[@]}"; do
+        if __static__Try_Find_Requirement "${program}"; then
+            system_information["${program}"]='found'
+        else
+            system_information["${program}"]='---'
         fi
     done
     for program in "${HYBRID_gnu_programs_required[@]}"; do
@@ -287,14 +315,15 @@ function __static__Print_Requirement_Version_Report_Line()
 
 function __static__Get_Single_Tick_Cross_Requirement_Report()
 {
-    Ensure_That_Given_Variables_Are_Set_And_Not_Empty system_information
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty system_information single_field_length
     local -r emph_color='\e[96m'\
              red='\e[91m'\
              green='\e[92m'\
              text_color='\e[38;5;38m'\
              default='\e[0m'
-    local line name="$1" status=$2
-    printf -v line "   ${emph_color}%6s${text_color}: ${default}" "${name}"
+    local line name="$1" status=$2 name_string
+    printf -v name_string "%s ${emph_color}%s" "${name% *}" "${name#* }"
+    printf -v line "   %*s${text_color}: ${default}" "${single_field_length}" "${name_string}"
     if [[ ${status} = '---' ]]; then
         line+="${red}✘"
     else
