@@ -183,9 +183,8 @@ function Check_System_Requirements_And_Make_Report()
 function __static__Analyze_System_Properties()
 {
     Ensure_That_Given_Variables_Are_Set system_information
-    local program name
+    local program name return_code
     for program in "${!HYBRID_versions_requirements[@]}"; do
-        min_version=${HYBRID_versions_requirements["${program}"]}
         if __static__Try_Find_Requirement "${program}"; then
             system_information[${program}]='found|'
         else
@@ -215,8 +214,8 @@ function __static__Analyze_System_Properties()
             system_information["GNU-${program}"]='---|---'
             continue
         fi
-        # Needed handling of command exit code to be done in this form because of errexit mode
-        local return_code=0
+        # Handling of function exit code must be done in this form because of errexit mode
+        return_code=0
         __static__Is_Gnu_Version_In_Use "${program}" || return_code=$?
         case "${return_code}" in
             0)
@@ -228,8 +227,11 @@ function __static__Analyze_System_Properties()
         esac
     done
     for name in "${HYBRID_env_variables_required[@]}"; do
-        ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty "${name}" &> /dev/null )
-        if [[ $? -eq 0 ]]; then
+        # Handling of function exit code must be done in this form because of errexit mode;
+        # the subshell is needed because the function exits when the variable is unset or empty
+        return_code=0
+        ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty "${name}" &> /dev/null ) || return_code=$?
+        if [[ ${return_code} -eq 0 ]]; then
             system_information["${name}"]='OK'
         else
             system_information["${name}"]='---'
