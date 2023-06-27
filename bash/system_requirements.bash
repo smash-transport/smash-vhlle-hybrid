@@ -16,7 +16,7 @@
 
 function __static__Declare_System_Requirements()
 {
-    if ! declare -p HYBRID_versions_requirements &> /dev/null; then
+    if ! declare -p HYBRID_version_regex &> /dev/null; then
         readonly HYBRID_version_regex='[0-9](.[0-9]+)*'
         declare -rgA HYBRID_versions_requirements=(
             [awk]='4.1'
@@ -41,8 +41,6 @@ function __static__Declare_System_Requirements()
 function Check_System_Requirements()
 {
     __static__Declare_System_Requirements
-    local program requirements_present
-    requirements_present=0
     # NOTE: The following associative array will be used to store system information
     #       and since bash does not support arrays entries in associative arrays, then
     #       just strings with information will be used. Each entry of this array
@@ -64,121 +62,26 @@ function Check_System_Requirements()
     #            is an implementation detail and we have full control on its content.
     declare -A system_information
     __static__Analyze_System_Properties
-    for program in "${HYBRID_gnu_programs_required[@]}"; do
-        local is_gnu=$(__static__Get_Field_In_System_Information_String "GNU-${program}" 1)
-        if [[ ${is_gnu} = '---' ]]; then
-            Print_Error --emph "${program}" ' either not found or non-GNU version in use.'\
-                        'Please, ensure that ' --emph "${program}" ' is installed and in use.'
-            requirements_present=1
-        fi
-    done
-    if [[ ${requirements_present} -ne 0 ]]; then
-        Print_Fatal_And_Exit 'The GNU version of the above programs is needed.'
-    fi
-    for program in "${!HYBRID_versions_requirements[@]}"; do
-        local  min_version  program_found version_found version_ok
-        min_version=${HYBRID_versions_requirements["${program}"]}
-        program_found=$(__static__Get_Field_In_System_Information_String "${program}" 0)
-        version_found=$(__static__Get_Field_In_System_Information_String "${program}" 1)
-        version_ok=$(   __static__Get_Field_In_System_Information_String "${program}" 2)
-        if [[ "${program_found}" = '---' ]]; then
-            Print_Error --emph "${program}" ' command not found! Minimum version '\
-                        --emph "${min_version}" ' is required.'
-            requirements_present=1
-            continue
-        fi
-        if [[ ${version_found} = '---' ]]; then
-            Print_Warning 'Unable to find version of ' --emph "${program}" ', skipping version check!'\
-                          'Please ensure that current version is at least ' --emph "${min_version}" '.'
-            continue
-        fi
-        if [[ "${version_ok}" = '---' ]]; then
-            Print_Error --emph "${program}" ' version ' --emph "${version_found}"\
-                        ' found, but version ' --emph "${min_version}" ' is required.'
-            requirements_present=1
-        fi
-    done
-    if [[ ${requirements_present} -ne 0 ]]; then
-        Print_Fatal_And_Exit 'Please install (maybe locally) the required versions of the above programs.'
-    fi
-    local name
-    for name in "${HYBRID_env_variables_required[@]}"; do
-        if [[ ${system_information[${name}]} = '---' ]]; then
-            Print_Error --emph "${name}" ' environment variable either unset or empty.'\
-                        'Please, ensure that ' --emph "${name}" ' is properly set.'
-            requirements_present=1
-        fi
-    done
-    if [[ ${requirements_present} -ne 0 ]]; then
-        Print_Fatal_And_Exit 'Some needed environment variables are not correctly set.'
-    fi
+    __static__Exit_If_Some_GNU_Requirement_Is_Missing
+    __static__Exit_If_Minimum_Versions_Are_Not_Available
+    __static__Exit_If_Some_Needed_Environment_Variable_Is_Missing
 }
 
 function Check_System_Requirements_And_Make_Report()
 {
     __static__Declare_System_Requirements
-    local program report_string name is_gnu system_report=()
-    declare -A system_information
+    local system_report=()
+    local -r single_field_length=15  # This variable is used to prepare the report correctly formatted
+    declare -A system_information    # Same use of this variable as in 'Check_System_Requirements' function
     __static__Analyze_System_Properties
-    for program in "${!system_information[@]}"; do
-        Print_Debug "${program} -> ${system_information[${program}]}"
-    done
-    printf "\e[1m  System requirements overview:\e[0m\n\n"
-    # NOTE: sort might not be available, hence put report in string and then optionally sort it
-    report_string=''
-    for program in "${!HYBRID_versions_requirements[@]}"; do
-        report_string+=$(__static__Print_Requirement_Version_Report_Line "${program}")$'\n'
-    done
-    if hash sort &> /dev/null; then
-        # The third column is that containing the program name; remember that the
-        # 'here-string' adds a newline to the string when feeding it into the command
-        sort -b -k3 <<< "${report_string%?}"
-    else
-        printf '%s' "${report_string}"
-    fi
-    printf '\n'
-    # This variable is used to prepare the report correctly formatted
-    local -r single_field_length=15
-    for name in "${HYBRID_programs_just_required[@]}"; do
-        system_report+=(
-            "$(__static__Get_Single_Tick_Cross_Requirement_Report\
-                "PROG ${name}"\
-                "${system_information[${name}]}"
-            )"
-        )
-    done
-    for program in "${HYBRID_gnu_programs_required[@]}"; do
-        is_gnu=$(__static__Get_Field_In_System_Information_String "GNU-${program}" 1)
-        system_report+=(
-            "$(__static__Get_Single_Tick_Cross_Requirement_Report\
-                "GNU ${program}"\
-                "${is_gnu}"
-            )"
-        )
-    done
-    for name in "${HYBRID_env_variables_required[@]}"; do
-        system_report+=(
-            "$(__static__Get_Single_Tick_Cross_Requirement_Report\
-                "ENV ${name}"\
-                "${system_information[${name}]}"
-            )"
-        )
-    done
-    # Because of coloured output, we cannot use a tool like 'column' here to format output
-    # and we manually determine how many columns to use. Furthermore tput needs the TERM
-    # environment variable to be set and, as tput is a requirement, we cannot rely on it
-    # here. Although in some cases this might fail, we refresh and use COLUMNS variable
-    # here (see https://stackoverflow.com/a/48016366/14967071 for more information).
-    shopt -s checkwinsize # Do not assume it is on (as it usually is)
-    ( : )  # Refresh LINES and COLUMNS, this happens when a child process exits
-    local -r num_cols=$(( COLUMNS / 2 / single_field_length ))
-    local index printf_descriptor
-    printf_descriptor="%${single_field_length}s" # At least one column
-    for ((index=1; index<num_cols; index++)); do
-        printf_descriptor+="  %${single_field_length}s"
-    done
-    printf "${printf_descriptor}\n" "${system_report[@]}"
+    __static__Print_Report_Title
+    __static__Print_Report_Of_Programs_With_Minimum_version
+    __static__Prepare_Binary_Report_Array
+    __static__Print_Formatted_Binary_Report
 }
+
+#===================================================================================================
+# First level of Utility functions for functionality above
 
 function __static__Analyze_System_Properties()
 {
@@ -237,23 +140,155 @@ function __static__Analyze_System_Properties()
             system_information["${name}"]='---'
         fi
     done
+    for program in "${!system_information[@]}"; do
+        Print_Debug "${program} -> ${system_information[${program}]}"
+    done
 }
+
+function __static__Exit_If_Some_GNU_Requirement_Is_Missing()
+{
+    local program errors is_gnu
+    errors=0
+    for program in "${HYBRID_gnu_programs_required[@]}"; do
+        Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[GNU-${program}]"
+        is_gnu=$(__static__Get_Field_In_System_Information_String "GNU-${program}" 1)
+        if [[ ${is_gnu} = '---' ]]; then
+            Print_Error --emph "${program}" ' either not found or non-GNU version in use.'\
+                        'Please, ensure that ' --emph "${program}" ' is installed and in use.'
+            (( errors++ )) || true
+        fi
+    done
+    if [[ ${errors} -ne 0 ]]; then
+        Print_Fatal_And_Exit 'The GNU version of the above program(s) is needed.'
+    fi
+}
+
+function __static__Exit_If_Minimum_Versions_Are_Not_Available()
+{
+    local program errors min_version program_found version_found version_ok
+    for program in "${!HYBRID_versions_requirements[@]}"; do
+        Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[${program}]"
+        min_version=${HYBRID_versions_requirements["${program}"]}
+        program_found=$(__static__Get_Field_In_System_Information_String "${program}" 0)
+        version_found=$(__static__Get_Field_In_System_Information_String "${program}" 1)
+        version_ok=$(   __static__Get_Field_In_System_Information_String "${program}" 2)
+        if [[ "${program_found}" = '---' ]]; then
+            Print_Error --emph "${program}" ' command not found! Minimum version '\
+                        --emph "${min_version}" ' is required.'
+            (( errors++ )) || true
+            continue
+        fi
+        if [[ ${version_found} = '---' ]]; then
+            Print_Warning 'Unable to find version of ' --emph "${program}" ', skipping version check!'\
+                          'Please ensure that current version is at least ' --emph "${min_version}" '.'
+            continue
+        fi
+        if [[ "${version_ok}" = '---' ]]; then
+            Print_Error --emph "${program}" ' version ' --emph "${version_found}"\
+                        ' found, but version ' --emph "${min_version}" ' is required.'
+            (( errors++ )) || true
+        fi
+    done
+    if [[ ${errors} -ne 0 ]]; then
+        Print_Fatal_And_Exit 'Please install (maybe locally) the required versions of the above program(s).'
+    fi
+}
+
+function __static__Exit_If_Some_Needed_Environment_Variable_Is_Missing()
+{
+    local name errors
+    for name in "${HYBRID_env_variables_required[@]}"; do
+        Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[${name}]"
+        if [[ ${system_information[${name}]} = '---' ]]; then
+            Print_Error --emph "${name}" ' environment variable either unset or empty.'\
+                        'Please, ensure that ' --emph "${name}" ' is properly set.'
+            (( errors++ )) || true
+        fi
+    done
+    if [[ ${errors} -ne 0 ]]; then
+        Print_Fatal_And_Exit 'Please, set the above environment variable(s) to appropriate value(s).'
+    fi
+}
+
+function __static__Print_Report_Title()
+{
+    printf "\e[1m  System requirements overview:\e[0m\n\n"
+}
+
+function __static__Print_Report_Of_Programs_With_Minimum_version()
+{
+    local report_string program
+    # NOTE: sort might not be available, hence put report in string and then optionally sort it
+    report_string=''
+    for program in "${!HYBRID_versions_requirements[@]}"; do
+        report_string+=$(__static__Print_Requirement_Version_Report_Line "${program}")$'\n'
+    done
+    if hash sort &> /dev/null; then
+        # The third column is that containing the program name; remember that the
+        # 'here-string' adds a newline to the string when feeding it into the command
+        sort -b -k3 <<< "${report_string%?}"
+    else
+        printf '%s' "${report_string}"
+    fi
+    printf '\n'
+}
+
+function __static__Prepare_Binary_Report_Array()
+{
+    Ensure_That_Given_Variables_Are_Set system_report
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty single_field_length
+    for name in "${HYBRID_programs_just_required[@]}"; do
+        system_report+=(
+            "$(__static__Get_Single_Tick_Cross_Requirement_Report\
+                "PROG ${name}"\
+                "${system_information[${name}]}"
+            )"
+        )
+    done
+    for program in "${HYBRID_gnu_programs_required[@]}"; do
+        is_gnu=$(__static__Get_Field_In_System_Information_String "GNU-${program}" 1)
+        system_report+=(
+            "$(__static__Get_Single_Tick_Cross_Requirement_Report\
+                "GNU ${program}"\
+                "${is_gnu}"
+            )"
+        )
+    done
+    for name in "${HYBRID_env_variables_required[@]}"; do
+        system_report+=(
+            "$(__static__Get_Single_Tick_Cross_Requirement_Report\
+                "ENV ${name}"\
+                "${system_information[${name}]}"
+            )"
+        )
+    done
+}
+
+function __static__Print_Formatted_Binary_Report()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty system_report
+    # Because of coloured output, we cannot use a tool like 'column' here to format output
+    # and we manually determine how many columns to use. Furthermore tput needs the TERM
+    # environment variable to be set and, as tput is a requirement, we cannot rely on it
+    # here. Although in some cases this might fail, we refresh and use COLUMNS variable
+    # here (see https://stackoverflow.com/a/48016366/14967071 for more information).
+    shopt -s checkwinsize # Do not assume it is on (as it usually is)
+    ( : )  # Refresh LINES and COLUMNS, this happens when a child process exits
+    local -r num_cols=$(( COLUMNS / 2 / single_field_length ))
+    local index printf_descriptor
+    printf_descriptor="%${single_field_length}s" # At least one column
+    for ((index=1; index<num_cols; index++)); do
+        printf_descriptor+="  %${single_field_length}s"
+    done
+    printf "${printf_descriptor}\n" "${system_report[@]}"
+}
+
+#===================================================================================================
+# Second level of Utility functions for functionality above
 
 function __static__Try_Find_Requirement()
 {
     if hash "$1" 2>/dev/null; then
-        return 0
-    else
-        return 1
-    fi
-}
-
-function __static__Is_Gnu_Version_In_Use()
-{
-    # This follows apparently common sense -> https://stackoverflow.com/a/61767587/14967071
-    if ! hash grep &> /dev/null || ! "$1" --version &> /dev/null; then
-        return 2
-    elif [[ $("$1" --version | grep -c 'GNU') -gt 0 ]]; then
         return 0
     else
         return 1
@@ -320,6 +355,61 @@ function __static__Check_Version_Suffices()
     else
         return 0
     fi
+}
+
+function __static__Is_Gnu_Version_In_Use()
+{
+    # This follows apparently common sense -> https://stackoverflow.com/a/61767587/14967071
+    if ! hash grep &> /dev/null || ! "$1" --version &> /dev/null; then
+        return 2
+    elif [[ $("$1" --version | grep -c 'GNU') -gt 0 ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+#===================================================================================================
+# Third level of Utility functions for functionality above
+
+function __static__Get_Larger_Version()
+{
+    local v1=$1 v2=$2
+    if [[ ! "${v1}.${v2}" =~ ${HYBRID_version_regex} ]]; then
+        Print_Internal_And_Exit 'Wrong arguments passed to ' --emph "${FUNCNAME}" '.'
+    fi
+    # Ensure versions are of the same length to make following algorithm work
+    if [[ ${#v1} -lt ${#v2} ]]; then
+        declare -n shorter_array=v1
+        declare -n longer_array=v2
+    else
+        declare -n shorter_array=v2
+        declare -n longer_array=v1
+    fi
+    while [[ ${#v1[@]} -ne ${#v2[@]} ]]; do
+        shorter_array+='.0' # Add zeroes to shorter string
+    done
+     # If versions are equal, we're done
+     if [[ "${v2}" = "${v1}" ]]; then
+         printf "${v1}"
+         return
+     fi
+    # Split version strings into array of numbers replacing '.' by ' ' and let word splitting do the split
+    local v{1,2}_array index
+    v1_array=( ${v1//./ } )
+    v2_array=( ${v2//./ } )
+    # Now version arrays have same number of entries, compare them
+    for index in ${!v1_array[@]}; do
+        if [[ "${v1_array[index]}" -eq "${v2_array[index]}" ]]; then
+            continue
+        elif [[ "${v1_array[index]}" -lt "${v2_array[index]}" ]]; then
+            printf "$2"  # Print input version, unchanged
+            return
+        else
+            printf "$1"  # Print input version, unchanged
+            return
+        fi
+    done
 }
 
 function __static__Print_Requirement_Version_Report_Line()
@@ -390,8 +480,8 @@ function __static__Get_Field_In_System_Information_String()
     printf '%s' "${tmp_array[$2]}"
 }
 
-# This is basically a partial bash implementation of head, which we want avoid
-# using in this file as it is a requirement that we want to check
+# This is basically a partial bash implementation of head, which we want to
+# avoid using in this file as it is a requirement that we want to check
 function __static__Get_First_Line_From_String()
 {
     while IFS= read -r line; do
@@ -399,45 +489,6 @@ function __static__Get_First_Line_From_String()
         return
     done < <(printf '%s\n' "$1")
     # The \n in printf is important to avoid skipping the last line (which might be the only input)
-}
-
-function __static__Get_Larger_Version()
-{
-    local v1=$1 v2=$2
-    if [[ ! "${v1}.${v2}" =~ ${HYBRID_version_regex} ]]; then
-        Print_Internal_And_Exit 'Wrong arguments passed to ' --emph "${FUNCNAME}" '.'
-    fi
-    # Ensure versions are of the same length to make following algorithm work
-    if [[ ${#v1} -lt ${#v2} ]]; then
-        declare -n shorter_array=v1
-        declare -n longer_array=v2
-    else
-        declare -n shorter_array=v2
-        declare -n longer_array=v1
-    fi
-    while [[ ${#v1[@]} -ne ${#v2[@]} ]]; do
-        shorter_array+='.0' # Add zeroes to shorter string
-    done
-     # If versions are equal, we're done
-     if [[ "${v2}" = "${v1}" ]]; then
-         printf "${v1}"
-     fi
-    # Split version strings into array of numbers replacing '.' by ' ' and let word splitting do the split
-    local v{1,2}_array index
-    v1_array=( ${v1//./ } )
-    v2_array=( ${v2//./ } )
-    # Now version arrays have same number of entries, compare them
-    for index in ${!v1_array[@]}; do
-        if [[ "${v1_array[index]}" -eq "${v2_array[index]}" ]]; then
-            continue
-        elif [[ "${v1_array[index]}" -lt "${v2_array[index]}" ]]; then
-            printf "$2"  # Print input version, unchanged
-            return
-        else
-            printf "$1"  # Print input version, unchanged
-            return
-        fi
-    done
 }
 
 
