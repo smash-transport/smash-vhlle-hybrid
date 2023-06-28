@@ -71,7 +71,7 @@ function Check_System_Requirements_And_Make_Report()
 {
     __static__Declare_System_Requirements
     local system_report=()
-    local -r single_field_length=15  # This variable is used to prepare the report correctly formatted
+    local -r single_field_length=16  # This variable is used to prepare the report correctly formatted
     declare -A system_information    # Same use of this variable as in 'Check_System_Requirements' function
     __static__Analyze_System_Properties
     __static__Print_Report_Title
@@ -462,7 +462,7 @@ function __static__Get_Single_Tick_Cross_Requirement_Report()
              default='\e[0m'
     local line name="$1" status=$2 name_string
     printf -v name_string "%s ${emph_color}%s" "${name% *}" "${name#* }"
-    printf -v line "   %*s${text_color}: ${default}" "${single_field_length}" "${name_string}"
+    printf -v line " %*s${text_color}: ${default}" "${single_field_length}" "${name_string}"
     if [[ ${status} = '---' ]]; then
         line+="${red}✘"
     elif [[ ${status} = '?' ]]; then
