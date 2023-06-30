@@ -151,7 +151,7 @@ function Unit_Test__utility-remove-comments-in-existing-file()
     local -r file_containing_one_line_with_an_inline_comment=${FUNCNAME}_4.txt
     printf 'Hello   %% Comment\n' > "${file_containing_one_line_with_an_inline_comment}"
     Remove_Comments_In_File "${file_containing_one_line_with_an_inline_comment}" '%'
-    if [[ $(cat "${file_containing_one_line_with_an_inline_comment}") != 'Hello' ]]; then
+    if [[ $(< "${file_containing_one_line_with_an_inline_comment}") != 'Hello' ]]; then
         Print_Error 'Removing comments in ' --emph "${file_containing_one_line_with_an_inline_comment}" ' file failed.'
         return 1
     fi

@@ -69,9 +69,9 @@ Foo: BarBar'
     # yq in v4.30.6 fixed the behavior of keeping leading empty lines
     # so it is important here to have no leading empty lines, otherwise
     # this test would succeed/fail depending on yq version available!
-    if [[ "$(cat "${base_input_file}")" != "${expected_result}" ]]; then
+    if [[ "$(< "${base_input_file}")" != "${expected_result}" ]]; then
         Print_Error "YAML replacement failed!"\
-                    '---- OBTAINED: ----' "$(cat "${base_input_file}")"\
+                    '---- OBTAINED: ----' "$(< "${base_input_file}")"\
                     '---- EXPECTED: ----' "${expected_result}"\
                     '-------------------'
         return 1
@@ -119,9 +119,9 @@ function Unit_Test__replace-in-software-input-TXT()
     printf -v expected_result "%-20s%s\n" 'a' '42' 'b' '0.456' 'c' '77'
     expected_result=${expected_result%?} # Get rid of trailing endline
     __static__Replace_Keys_Into_Txt_File
-    if [[ "$(cat "${base_input_file}")" != "${expected_result}" ]]; then
+    if [[ "$(< "${base_input_file}")" != "${expected_result}" ]]; then
         Print_Error "YAML replacement failed!"\
-                    "---- OBTAINED: ----\n$(cat "${base_input_file}")"\
+                    "---- OBTAINED: ----\n$(< "${base_input_file}")"\
                     "---- EXPECTED: ----\n${expected_result}"\
                     '-------------------'
         return 1
