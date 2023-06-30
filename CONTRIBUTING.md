@@ -63,7 +63,7 @@ Finally, a short remark about `extglob` option. To motivate why we decided to en
 ## Bash notation in the codebase
 
 The general advice is pretty trivial: **Be consistent with what you find**.
-Here a list of some aspects worth mentioning:
+Here a list of some aspects worth mentioning about the codebase:
 * indentation is done _exclusively with spaces_ and **no** <kbd>Tab</kbd> should be used;
 * lines of code are split around 100 characters and should never be longer than 120;
 * bash functions use both the `function` keyword and parenthesis and the enclosing braces are put on separate lines,
@@ -83,7 +83,10 @@ Here a list of some aspects worth mentioning:
 * quotes are correctly used, i.e. everything that _might_ break if unquoted is quoted;
 * single quotes are used if there is no need of using double or different quotes;
 * all functions declared in each separate file are marked in the end of the file as `readonly`;
-* files are sourced all together by sourcing a single dedicated file (cf. *bash/source_codebase_files.bash* file);
+* files are sourced all together by sourcing a single dedicated file (cf. *bash/source_codebase_files.bash* file).
+
+Here, instead, a list of aspects specific to tests that should be kept in mind:
 * unit tests must be put in files whose names begin with `unit_tests_` and have the `.bash` extension (this convention allows the runner to source them all automatically) in the ***tests*** folder;
 * unit tests are automatically recognized by the tests runner as functions having the `Unit_Test__` prefix (and the remaining part of the function will be the unit test name);
-* operations to be done before or after a unit test can be put in the `Make_Test_Preliminary_Operations__[test-name]` and `Clean_Tests_Environment_For_Following_Test__[test-name]` functions, respectively (here `[test-name]` must match the string used in the unit test function name).
+* operations to be done before or after a unit test can be put in the `Make_Test_Preliminary_Operations__[test-name]` and `Clean_Tests_Environment_For_Following_Test__[test-name]` functions, respectively (here `[test-name]` must match the string used in the unit test function name);
+* codebase functions to be invoked in unit tests should be called through the `Call_Codebase_Function` and `Call_Codebase_Function_In_Subshell` interface functions (passing the name of the function to be invoked as first argument and the arguments to be forward afterwards).
