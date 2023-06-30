@@ -24,7 +24,7 @@ function __static__Test_Parsing_Of_Execution_Mode_In_Subshell_Expecting_Success(
 (
     local expected_option=$1\
           expected_size=$2\
-          first_option="${HYBRID_command_line_options_to_parse[0]}"
+          first_option="${HYBRID_command_line_options_to_parse[0]-}"
     Parse_Execution_Mode
     if [[ $? -ne 0 ]] ||\
        [[ "${HYBRID_execution_mode}" != "${expected_option}" ]] ||\

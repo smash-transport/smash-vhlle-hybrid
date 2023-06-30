@@ -147,8 +147,7 @@ function __static__Analyze_System_Properties()
 
 function __static__Exit_If_Some_GNU_Requirement_Is_Missing()
 {
-    local program errors is_gnu
-    errors=0
+    local program errors=0 is_gnu
     for program in "${HYBRID_gnu_programs_required[@]}"; do
         Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[GNU-${program}]"
         is_gnu=$(__static__Get_Field_In_System_Information_String "GNU-${program}" 1)
@@ -165,7 +164,7 @@ function __static__Exit_If_Some_GNU_Requirement_Is_Missing()
 
 function __static__Exit_If_Minimum_Versions_Are_Not_Available()
 {
-    local program errors min_version program_found version_found version_ok
+    local program errors=0 min_version program_found version_found version_ok
     for program in "${!HYBRID_versions_requirements[@]}"; do
         Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[${program}]"
         min_version=${HYBRID_versions_requirements["${program}"]}
@@ -196,7 +195,7 @@ function __static__Exit_If_Minimum_Versions_Are_Not_Available()
 
 function __static__Exit_If_Some_Needed_Environment_Variable_Is_Missing()
 {
-    local name errors
+    local name errors=0
     for name in "${HYBRID_env_variables_required[@]}"; do
         Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[${name}]"
         if [[ ${system_information[${name}]} = '---' ]]; then
@@ -274,7 +273,7 @@ function __static__Print_Formatted_Binary_Report()
     # here (see https://stackoverflow.com/a/48016366/14967071 for more information).
     shopt -s checkwinsize # Do not assume it is on (as it usually is)
     ( : )  # Refresh LINES and COLUMNS, this happens when a child process exits
-    local -r num_cols=$(( COLUMNS / 2 / single_field_length ))
+    local -r num_cols=$(( ${COLUMNS-80} / 2 / single_field_length ))
     local index printf_descriptor
     printf_descriptor="%${single_field_length}s" # At least one column
     for ((index=1; index<num_cols; index++)); do
@@ -317,7 +316,7 @@ function __static__Try_Find_Version()
         tput )
             found_version=$(tput -V | grep -oE "${HYBRID_version_regex}")
             found_version=( ${found_version//./ } ) # Use word split to separate version numbers
-            found_version="${found_version[0]}.${found_version[1]}"
+            found_version="${found_version[0]-}.${found_version[1]-}" # Use empty variables if 'tput -V' failed
             ;;
         yq )
             # Versions before v4.30.3 do not have the 'v' prefix
@@ -386,7 +385,7 @@ function __static__Get_Larger_Version()
         declare -n shorter_array=v2
         declare -n longer_array=v1
     fi
-    while [[ ${#v1[@]} -ne ${#v2[@]} ]]; do
+    while [[ ${#v1} -ne ${#v2} ]]; do
         shorter_array+='.0' # Add zeroes to shorter string
     done
      # If versions are equal, we're done

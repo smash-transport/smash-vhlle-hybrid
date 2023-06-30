@@ -225,6 +225,7 @@ function Ensure_That_Given_Variables_Are_Set_And_Not_Empty() {
         else
             set +u  # Here variable_name might be unset! Do not exit if so
             if [[ "${!variable_name}" != '' ]]; then
+                set -u
                 continue
             fi
             set -u

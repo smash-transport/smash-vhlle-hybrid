@@ -50,7 +50,7 @@ function Parse_Command_Line_Options()
     while [[ $# -gt 0 ]]; do
         case "$1" in
             -o | --output-directory )
-                if [[ ${2:-} =~ ^(-|$) ]]; then
+                if [[ ${2-} =~ ^(-|$) ]]; then
                     Print_Option_Specification_Error_And_Exit "$1"
                 else
                     readonly HYBRID_output_directory=$2
@@ -58,7 +58,7 @@ function Parse_Command_Line_Options()
                 shift 2
                 ;;
             -c | --configuration-file )
-                if [[ ${2:-} =~ ^(-|$) ]]; then
+                if [[ ${2-} =~ ^(-|$) ]]; then
                     Print_Option_Specification_Error_And_Exit "$1"
                 else
                     readonly HYBRID_configuration_file=$2

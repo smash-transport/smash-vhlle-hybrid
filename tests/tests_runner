@@ -164,7 +164,7 @@ function Print_Tests_Report()
               index separator_length passed_string failed_string
         indentation='           '
         left_margin='   '
-        test_name_string_length=$(printf '%s\n' "${testsToBeRun[@]}" | wc -L)
+        test_name_string_length=$(printf '%s\n' "${HYBRIDT_tests_to_be_run[@]}" | wc -L)
         if [[ ${test_name_string_length} -lt 25 ]]; then # Minimum length
             test_name_string_length=25
         fi
@@ -187,10 +187,10 @@ function Print_Tests_Report()
                       }' <<< "${HYBRIDT_tests_passed} ${HYBRIDT_tests_run}")
         Print_Centered_Line "${percentage} of tests passed!" ${separator_length} "${indentation}"
         Print_Line_of_Equals "${separator_length}" "${indentation}" '\e[96m' '\e[0m\n'
-        if [[ ${testsFailed} -ne 0 ]]; then
-            printf "${indentation}${left_margin}The following tests failed:\n"
+        if [[ ${HYBRIDT_tests_failed} -ne 0 ]]; then
+            printf "${indentation}${left_margin}\e[91mThe following tests failed:\e[0m\n"
             for name in "${HYBRIDT_which_tests_failed[@]}"; do
-                printf "${indentation}${left_margin} ${name}\n  "
+                printf "${indentation}${left_margin} - \e[93m${name}\e[0m\n"
             done
             Print_Line_of_Equals "${separator_length}" "${indentation}" '\e[96m' '\e[0m\n'
         fi
