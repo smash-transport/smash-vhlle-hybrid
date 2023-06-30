@@ -36,18 +36,33 @@ function Make_Test_Preliminary_Operations()
         # Write header to the log file to give some structure to it
         printf "\n[$(date)]\nRunning test \"%s\"\n\n" "${test_name}"
         Call_Function_If_Existing_Or_No_Op ${FUNCNAME}__$1
-    } &>> "${HYBRIDT_log_file}" 9>&1 # The fd 9 is used by the logger.
+    } &>> "${HYBRIDT_log_file}" 9>&1 # The fd 9 is used by the logger
 }
 
 function Run_Test()
 {
-    Unit_Test__$1 &>> "${HYBRIDT_log_file}" 9>&1  # The fd 9 is used by the logger.
+    Unit_Test__$1 &>> "${HYBRIDT_log_file}" 9>&1  # The fd 9 is used by the logger
 }
 
 function Clean_Tests_Environment_For_Following_Test()
 {
-    # The fd 9 is used by the logger.
+    # The fd 9 is used by the logger
     Call_Function_If_Existing_Or_No_Op ${FUNCNAME}__$1 &>> "${HYBRIDT_log_file}" 9>&1
+}
+
+function Call_Codebase_Function()
+{
+    # Set stricter bash mode to run codebase code in the mode it is supposed to be run
+    set -o errexit
+    shopt -s inherit_errexit
+    # NOTE: Call the codebase function in subshell to avoid exiting the test if in the
+    #       codebase function runs an exit command.
+    local return_code=0
+    ( Call_Function_If_Existing_Or_Exit "$@" ) || return_code=$?
+    # Switch off errexit bash mode to handle errors in a standard way inspecting $?
+    set +o errexit
+    shopt -u inherit_errexit
+    return ${return_code}
 }
 
 #=======================================================================================================================
