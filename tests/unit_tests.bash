@@ -50,7 +50,19 @@ function Clean_Tests_Environment_For_Following_Test()
     Call_Function_If_Existing_Or_No_Op ${FUNCNAME}__$1 &>> "${HYBRIDT_log_file}" 9>&1
 }
 
+function Call_Codebase_Function_In_Subshell()
+{
+    __static__Call_Codebase_Function_As_Desired 'IN_SUBSHELL' "$@"
+}
+
 function Call_Codebase_Function()
+{
+    __static__Call_Codebase_Function_As_Desired "$@"
+}
+
+#=======================================================================================================================
+
+function __static__Call_Codebase_Function_As_Desired()
 {
     # Set stricter bash mode to run codebase code in the mode it is supposed to be run
     set -o errexit
@@ -58,11 +70,13 @@ function Call_Codebase_Function()
     # NOTE: Call the codebase function in subshell to avoid exiting the test if in the
     #       codebase function runs an exit command.
     local return_code=0
-    ( Call_Function_If_Existing_Or_Exit "$@" ) || return_code=$?
+    if [[ ${1-} = 'IN_SUBSHELL' ]]; then
+        ( Call_Function_If_Existing_Or_Exit "${@:2}" ) || return_code=$?
+    else
+        Call_Function_If_Existing_Or_Exit "$@" || return_code=$?
+    fi
     # Switch off errexit bash mode to handle errors in a standard way inspecting $?
     set +o errexit
     shopt -u inherit_errexit
     return ${return_code}
 }
-
-#=======================================================================================================================

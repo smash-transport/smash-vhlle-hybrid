@@ -60,7 +60,7 @@ function Enable_Global_Needed_Shell_Options()
     # NOTE: The behavior about 'errexit' mode here is not the same as in the handler, i.e. we do
     #       not enable such a mode globally. This is because we want to easily have access to exit
     #       codes in tests to test success/failure. The errexit mode is enabled only when running
-    #       the codebase functions, see 'Call_Codebase_Function'.
+    #       the codebase functions, see 'Call_Codebase_Function[_In_Subshell]'.
 }
 
 function Define_Tests_Global_Variables ()
