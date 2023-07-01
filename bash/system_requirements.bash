@@ -373,26 +373,31 @@ function __static__Is_Gnu_Version_In_Use()
 
 function __static__Get_Larger_Version()
 {
-    local v1=$1 v2=$2
+    local v1=$1 v2=$2 dots_of_v1 dots_of_v2
     if [[ ! "${v1}.${v2}" =~ ${HYBRID_version_regex} ]]; then
         Print_Internal_And_Exit 'Wrong arguments passed to ' --emph "${FUNCNAME}" '.'
     fi
     # Ensure versions are of the same length to make following algorithm work
-    if [[ ${#v1} -lt ${#v2} ]]; then
-        declare -n shorter_array=v1
-        declare -n longer_array=v2
+    dots_of_v1=${v1//[^.]/}
+    dots_of_v2=${v2//[^.]/}
+    if [[ ${#dots_of_v1} -lt ${#dots_of_v2} ]]; then
+        declare -n shorter_version=v1\
+                   dots_of_shorter_version=dots_of_v1\
+                   dots_of_longer_version=dots_of_v2
     else
-        declare -n shorter_array=v2
-        declare -n longer_array=v1
+        declare -n shorter_version=v2\
+                   dots_of_shorter_version=dots_of_v2\
+                   dots_of_longer_version=dots_of_v1
     fi
-    while [[ ${#v1} -ne ${#v2} ]]; do
-        shorter_array+='.0' # Add zeroes to shorter string
+    while [[ ${#dots_of_shorter_version} -ne ${#dots_of_longer_version} ]]; do
+        shorter_version+='.0'         # Add zeroes to shorter string
+        dots_of_shorter_version+='.'  # Add dot to keep counting accurate
     done
-     # If versions are equal, we're done
-     if [[ "${v2}" = "${v1}" ]]; then
-         printf "${v1}"
-         return
-     fi
+    # If versions are equal, we're done
+    if [[ "${v2}" = "${v1}" ]]; then
+        printf "${v1}"
+        return
+    fi
     # Split version strings into array of numbers replacing '.' by ' ' and let word splitting do the split
     local v{1,2}_array index
     v1_array=( ${v1//./ } )
