@@ -30,18 +30,18 @@ function Make_Test_Preliminary_Operations__IC-create-input-file()
 function Unit_Test__IC-create-input-file()
 {
     touch "${HYBRID_software_base_config_file[IC]}"
-    Prepare_Software_Input_File_IC
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_IC
     if [[ ! -f "${HYBRID_software_configuration_file[IC]}" ]]; then
         Print_Error 'The output directory and/or software input file were not properly created.'
         return 1
     fi
     rm -r "${HYBRID_output_directory}/"*
-    Prepare_Software_Input_File_IC
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_IC
     if [[ ! -f "${HYBRID_software_configuration_file[IC]}" ]]; then
         Print_Error 'The input file was not properly created in the output folder.'
         return 1
     fi
-    ( Prepare_Software_Input_File_IC &> /dev/null )
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_IC &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Preparation of input with existent config succeeded.'
         return 1
@@ -61,19 +61,19 @@ function Make_Test_Preliminary_Operations__IC-check-all-input()
 
 function Unit_Test__IC-check-all-input()
 {
-    ( Ensure_All_Needed_Input_Exists_IC &> /dev/null )
+    Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_IC &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of not-existing output directory succeeded.'
         return 1
     fi
     mkdir -p "${HYBRID_software_output_directory[IC]}"
-    ( Ensure_All_Needed_Input_Exists_IC &> /dev/null )
+    Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_IC &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of not-existing config file succeeded.'
         return 1
     fi
     touch "${HYBRID_software_configuration_file[IC]}"
-    ( Ensure_All_Needed_Input_Exists_IC )
+    Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_IC
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of existing folder/file failed.'
         return 1
@@ -98,7 +98,7 @@ function Unit_Test__IC-test-run-software()
     printf '#!/usr/bin/env bash\n\necho "$@"\n' > "${HYBRID_software_executable[IC]}"
     chmod a+x "${HYBRID_software_executable[IC]}"
     local terminal_output_result correct_result
-    Run_Software_IC
+    Call_Codebase_Function_In_Subshell Run_Software_IC
     if [[ ! -f "${ic_terminal_output}" ]]; then
         Print_Error 'The terminal output was not created.'
         return 1

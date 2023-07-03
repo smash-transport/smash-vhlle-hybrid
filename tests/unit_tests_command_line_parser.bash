@@ -25,7 +25,7 @@ function __static__Test_Parsing_Of_Execution_Mode_In_Subshell_Expecting_Success(
     local expected_option=$1\
           expected_size=$2\
           first_option="${HYBRID_command_line_options_to_parse[0]-}"
-    Parse_Execution_Mode
+    Call_Codebase_Function Parse_Execution_Mode
     if [[ $? -ne 0 ]] ||\
        [[ "${HYBRID_execution_mode}" != "${expected_option}" ]] ||\
        [[ ${#HYBRID_command_line_options_to_parse[@]} -ne "${expected_size}" ]]; then
@@ -57,7 +57,7 @@ function Unit_Test__parse-execution-mode()
     HYBRID_command_line_options_to_parse=( 'do' '-o' '/path/to/folder' '--help' )
     __static__Test_Parsing_Of_Execution_Mode_In_Subshell_Expecting_Success 'do-help' 0 || return 1
     HYBRID_command_line_options_to_parse=( 'invalid-mode' )
-    ( Parse_Execution_Mode &> /dev/null )
+    Call_Codebase_Function_In_Subshell Parse_Execution_Mode &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Parsing of invalid execution mode succeeded.'
         return 1
@@ -73,7 +73,7 @@ function Make_Test_Preliminary_Operations__parse-command-line-options()
 
 function __static__Test_CLO_Parsing_Missing_Value()
 {
-    ( Parse_Command_Line_Options &> /dev/null )
+    Call_Codebase_Function_In_Subshell Parse_Command_Line_Options &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Parsing of CLO ' --emph "${HYBRID_command_line_options_to_parse[0]}"\
                     ' with missing value succeeded.'
@@ -83,7 +83,7 @@ function __static__Test_CLO_Parsing_Missing_Value()
 
 function __static__Test_Single_CLO_Parsing_In_Subshell()
 (
-    Parse_Command_Line_Options
+    Call_Codebase_Function Parse_Command_Line_Options
     if [[ $? -ne 0 ]] || [[ ${!1} != "$2" ]]; then
         Print_Error 'Parsing of ' --emph "${HYBRID_command_line_options_to_parse[0]}" ' with valid value failed.'
         return 1
@@ -92,7 +92,7 @@ function __static__Test_Single_CLO_Parsing_In_Subshell()
 
 function Unit_Test__parse-command-line-options()
 {
-    ( Parse_Command_Line_Options &> /dev/null )
+    Call_Codebase_Function_In_Subshell Parse_Command_Line_Options &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Parsing of CLO in wrong execution mode succeeded.'
         return 1
@@ -103,7 +103,7 @@ function Unit_Test__parse-command-line-options()
     HYBRID_command_line_options_to_parse=( --configuration-file )
     __static__Test_CLO_Parsing_Missing_Value || return 1
     HYBRID_command_line_options_to_parse=()
-    ( Parse_Command_Line_Options )
+    Call_Codebase_Function_In_Subshell Parse_Command_Line_Options
     if [[ $? -ne 0 ]]; then
         Print_Error 'Parsing of CLO with no CLO failed.'
         return 1

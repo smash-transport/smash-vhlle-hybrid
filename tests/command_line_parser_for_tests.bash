@@ -37,14 +37,14 @@ function Parse_Tests_Command_Line_Options()
                 exit ${HYBRID_success_exit_code}
                 shift ;;
             -r | --report-level )
-                if [[ $2 =~ ^[0-3]$ ]]; then
+                if [[ ${2-} =~ ^[0-3]$ ]]; then
                     readonly HYBRIDT_report_level=$2
                 else
                     Print_Option_Specification_Error_And_Exit "$1"
                 fi
                 shift 2 ;;
             -t | --run-tests )
-                if [[ ! $2 =~ ^- && "$2" != '' ]]; then
+                if [[ ! ${2-} =~ ^- && "${2-}" != '' ]]; then
                     if [[ $2 =~ ^[1-9][0-9]*([,\-][1-9][0-9]*)*$ ]]; then
                         __static__Set_Tests_To_Be_Run_Using_Numbers "$2"
                     elif [[ $2 =~ ^[[:alpha:]*?] ]]; then

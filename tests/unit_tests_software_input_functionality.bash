@@ -21,7 +21,7 @@ function Unit_Test__replace-in-software-input-YAML()
     base_input_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
     # Test case 1:
     printf 'Scalar\nKey: Value\n' > "${base_input_file}"
-    ( __static__Replace_Keys_Into_YAML_File &> /dev/null )
+    Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_YAML_File &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'YAML replacement in invalid file succeeded.'
         return 1
@@ -29,7 +29,7 @@ function Unit_Test__replace-in-software-input-YAML()
     # Test case 2:
     printf 'Key: Value\n' > "${base_input_file}"
     keys_to_be_replaced=$'Invalid\nyaml: syntax'
-    ( __static__Replace_Keys_Into_YAML_File &> /dev/null )
+    Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_YAML_File &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Invalid YAML replacement in valid file succeeded.'
         return 1
@@ -37,7 +37,7 @@ function Unit_Test__replace-in-software-input-YAML()
     # Test case 3:
     printf 'Key: Value\n' > "${base_input_file}"
     keys_to_be_replaced='New_key: value'
-    ( __static__Replace_Keys_Into_YAML_File &> /dev/null )
+    Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_YAML_File &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Valid YAML replacement but with non existent key in valid file succeeded.'
         return 1
@@ -65,13 +65,13 @@ Map:
   Key_1: Hi
   Key_2: Bye
 Foo: BarBar'
-    __static__Replace_Keys_Into_YAML_File
+    Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_YAML_File
     # yq in v4.30.6 fixed the behavior of keeping leading empty lines
     # so it is important here to have no leading empty lines, otherwise
     # this test would succeed/fail depending on yq version available!
-    if [[ "$(cat "${base_input_file}")" != "${expected_result}" ]]; then
+    if [[ "$(< "${base_input_file}")" != "${expected_result}" ]]; then
         Print_Error "YAML replacement failed!"\
-                    '---- OBTAINED: ----' "$(cat "${base_input_file}")"\
+                    '---- OBTAINED: ----' "$(< "${base_input_file}")"\
                     '---- EXPECTED: ----' "${expected_result}"\
                     '-------------------'
         return 1
@@ -92,7 +92,7 @@ function Unit_Test__replace-in-software-input-TXT()
     base_input_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
     # Test case 1:
     printf 'Key Value Extra-field\n' > "${base_input_file}"
-    ( __static__Replace_Keys_Into_Txt_File &> /dev/null )
+    Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_Txt_File &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'TXT replacement in invalid file succeeded'
         return 1
@@ -100,7 +100,7 @@ function Unit_Test__replace-in-software-input-TXT()
     # Test case 2:
     printf 'Key: Value\n' > "${base_input_file}"
     keys_to_be_replaced='Invalid txt syntax'
-    ( __static__Replace_Keys_Into_Txt_File &> /dev/null )
+    Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_Txt_File &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Invalid TXT replacement in valid file succeeded'
         return 1
@@ -108,7 +108,7 @@ function Unit_Test__replace-in-software-input-TXT()
     # Test case 3:
     printf 'Key Value\n' > "${base_input_file}"
     keys_to_be_replaced='New_key value'
-    ( __static__Replace_Keys_Into_Txt_File &> /dev/null )
+    Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_Txt_File &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Valid TXT replacement but with non existent key in valid file succeeded'
         return 1
@@ -118,10 +118,10 @@ function Unit_Test__replace-in-software-input-TXT()
     keys_to_be_replaced=$'a 42\nc 77'
     printf -v expected_result "%-20s%s\n" 'a' '42' 'b' '0.456' 'c' '77'
     expected_result=${expected_result%?} # Get rid of trailing endline
-    __static__Replace_Keys_Into_Txt_File
-    if [[ "$(cat "${base_input_file}")" != "${expected_result}" ]]; then
+    Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_Txt_File
+    if [[ "$(< "${base_input_file}")" != "${expected_result}" ]]; then
         Print_Error "YAML replacement failed!"\
-                    "---- OBTAINED: ----\n$(cat "${base_input_file}")"\
+                    "---- OBTAINED: ----\n$(< "${base_input_file}")"\
                     "---- EXPECTED: ----\n${expected_result}"\
                     '-------------------'
         return 1

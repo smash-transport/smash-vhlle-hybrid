@@ -27,6 +27,7 @@ function Main()
 {
     Setup_Initial_And_Final_Output_Space
     Define_Tests_Global_Variables
+    Enable_Global_Needed_Shell_Options
     Source_Needed_Files
     Print_Helper_And_Exit_If_Requested "$@"
     Parse_Tests_Suite_Parameter_And_Source_Specific_Code "$1"
@@ -49,6 +50,17 @@ function Setup_Initial_And_Final_Output_Space()
 {
     printf '\n'
     trap 'printf "\n"' EXIT
+}
+
+function Enable_Global_Needed_Shell_Options()
+{
+    # See CONTRIBUTING for explanation about why globally
+    shopt -s extglob
+    set -o pipefail -o nounset
+    # NOTE: The behavior about 'errexit' mode here is not the same as in the handler, i.e. we do
+    #       not enable such a mode globally. This is because we want to easily have access to exit
+    #       codes in tests to test success/failure. The errexit mode is enabled only when running
+    #       the codebase functions, see 'Call_Codebase_Function[_In_Subshell]'.
 }
 
 function Define_Tests_Global_Variables ()
