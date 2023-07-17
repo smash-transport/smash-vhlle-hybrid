@@ -9,10 +9,13 @@
 
 function Prepare_Software_Input_File_Hydro()
 {
-   # check if output-dir is there and create
-    local Hydro_output_directory="${HYBRID_output_directory}/Hydro" # this could also be a global variable
-    if [[ ! -d "${Hydro_output_directory}" ]]; then
-        mkdir "${Hydro_output_directory}"
+    mkdir -p "${HYBRID_software_output_directory[Hydro]}" || exit ${HYBRID_fatal_builtin}
+    if [[ -f "${HYBRID_software_configuration_file[Hydro]}" ]]; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+            'Configuration file ' --emph "${HYBRID_software_configuration_file[Hydro]}" ' is already existing.'
+    elif [[ ! -f "${HYBRID_software_base_config_file[Hydro]}" ]]; then
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+            'Base configuration file ' --emph "${HYBRID_software_base_config_file[Hydro]}" ' was not found.'
     fi
     # check if config already exists in the output directory, exit if yes
     local Hydro_input_file_path="${Hydro_output_directory}/vhlle_config"
@@ -22,26 +25,18 @@ function Prepare_Software_Input_File_Hydro()
         exit_code=${HYBRID_fatal_builtin} Print_Fatal_And_Exit\
             "File \"${Hydro_input_file_path}\" is already there."
     fi
-    
-    # replace all fields with input configs
-    Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File\
-        'TXT' "${Hydro_input_file_path}" "${HYBRID_software_input['Hydro']}"
 }
 
 function Ensure_All_Needed_Input_Exists_Hydro()
 {
-   #check that input lists exists
-   local IC_output_directory="${HYBRID_output_directory}/IC" # this could also be a global variable
-    if [[ ! -d "${IC_output_directory}" ]]; then
-        mkdir "${IC_output_directory}"
+    if [[ ! -d "${HYBRID_software_output_directory[Hydro]}" ]]; then
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+            'Folder ' --emph "${HYBRID_software_output_directory[Hydro]}" ' does not exist.'
     fi
-    # check if input exists
-    local IC_output_file_path="${IC_output_directory}/SMASH_IC.dat"
-    if [[ ! -f "${IC_output_file_path}" ]]; then
-        exit_code=${HYBRID_fatal_builtin} Print_Fatal_And_Exit\
-                "File \"${IC_output_file_path}\" is not there."
+    if [[ ! -f "${HYBRID_software_configuration_file[Hydro]}" ]]; then
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+            'The configuration file ' --emph "${HYBRID_software_configuration_file[Hydro]}" ' was not found.'
     fi
-        
 }
 
 function Run_Software_Hydro()
@@ -51,9 +46,13 @@ function Run_Software_Hydro()
     local Hydro_output_directory="${HYBRID_output_directory}/Hydro"
     ./"${HYBRID_hydro_software_executable}" "-params" "${Hydro_input_file_path}" 
         "-ISinput" "${IC_output_file_path}" 
-        "-outputDir" "${Hydro_output_directory}"
-            ">" "${Hydro_output_directory}/Terminal_Output.txt"
+        "-outputDir" "${HYBRID_software_output_directory[Hydro]}"
+            ">" "${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt"
 }
 
+<<<<<<< HEAD
 
 Make_Functions_Defined_In_This_File_Readonly
+=======
+Make_Functions_Defined_In_This_File_Readonly
+>>>>>>> Implement hydro functionality
