@@ -20,7 +20,7 @@ function Make_Test_Preliminary_Operations()
         # and since it is likely that most unit tests need it, let's always define it
         readonly HYBRID_top_level_path="${HYBRIDT_repository_top_level_path}"
         # Write header to the log file to give some structure to it
-        printf "\n[$(date)]\nRunning test \"%s\"\n\n" "${test_name}"
+        printf "\n[$(date)]\nRunning unit test \"%s\"\n\n" "${test_name}"
         Call_Function_If_Existing_Or_No_Op ${FUNCNAME}__$1
     } &>> "${HYBRIDT_log_file}" 9>&1 # The fd 9 is used by the logger
 }
