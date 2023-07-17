@@ -85,10 +85,11 @@ function Source_Needed_Files()
     source "${HYBRIDT_repository_top_level_path}/bash/error_codes.bash" || exit 1
     source "${HYBRIDT_repository_top_level_path}/bash/logger.bash"\
         --fd 9 --default-exit-code ${HYBRID_internal_exit_code} || exit ${HYBRID_fatal_builtin}
-    source "${HYBRIDT_repository_top_level_path}/bash/utility_functions.bash" || exit ${HYBRID_fatal_builtin}
     local -r files_to_be_sourced=(
+        "${HYBRIDT_repository_top_level_path}/bash/utility_functions.bash"
         "${HYBRIDT_repository_top_level_path}/bash/system_requirements.bash"
         "${HYBRIDT_tests_folder}/command_line_parser_for_tests.bash"
+        "${HYBRIDT_tests_folder}/utility_functions.bash"
     )
     local file
     for file in "${files_to_be_sourced[@]}"; do

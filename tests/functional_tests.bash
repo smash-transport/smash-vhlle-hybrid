@@ -9,10 +9,7 @@
 
 function Define_Available_Tests()
 {
-    HYBRIDT_tests_to_be_run=(
-        'help-'{1..3}
-        'version-'{1,2}
-    )
+    Define_Available_Tests_For 'functional_tests'
 }
 
 function Make_Test_Preliminary_Operations()
