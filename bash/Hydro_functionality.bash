@@ -37,6 +37,10 @@ function Ensure_All_Needed_Input_Exists_Hydro()
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
             'The configuration file ' --emph "${HYBRID_software_configuration_file[Hydro]}" ' was not found.'
     fi
+    if [[ ! -f "${HYBRID_software_input_file[Hydro]}" ]]; then
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+            'The input file ' --emph "${HYBRID_software_input_file[Hydro]}" ' was not found.'
+    fi
 }
 
 function Run_Software_Hydro()
@@ -50,9 +54,5 @@ function Run_Software_Hydro()
             ">" "${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt"
 }
 
-<<<<<<< HEAD
 
 Make_Functions_Defined_In_This_File_Readonly
-=======
-Make_Functions_Defined_In_This_File_Readonly
->>>>>>> Implement hydro functionality
