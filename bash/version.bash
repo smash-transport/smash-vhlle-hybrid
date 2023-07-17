@@ -13,8 +13,8 @@ function Print_Software_Version()
     # First handle cases where git is not available, or codebase downloaded as archive and not cloned
     # NOTE: Git introduced -C option in version 1.8.5
     if ! hash git &> /dev/null ||\
-       ! git -C "${HYBRID_top_level_path}" rev-parse --is-inside-work-tree &> /dev/null ||\
-       __static__Is_Git_Version_Older_Than '1.8.3'; then
+       __static__Is_Git_Version_Older_Than '1.8.3' ||\
+       ! git -C "${HYBRID_top_level_path}" rev-parse --is-inside-work-tree &> /dev/null; then
         __static__Print_Pretty_Version_Line "${HYBRID_codebase_version}"
         return 0
     fi

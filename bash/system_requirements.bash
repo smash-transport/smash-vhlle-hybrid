@@ -273,7 +273,7 @@ function __static__Print_Formatted_Binary_Report()
     # here (see https://stackoverflow.com/a/48016366/14967071 for more information).
     shopt -s checkwinsize # Do not assume it is on (as it usually is)
     ( : )  # Refresh LINES and COLUMNS, this happens when a child process exits
-    local -r num_cols=$(( ${COLUMNS-80} / 2 / single_field_length ))
+    local -r num_cols=$(( ${COLUMNS-100} / 2 / single_field_length ))
     local index printf_descriptor
     printf_descriptor="%${single_field_length}s" # At least one column
     for ((index=1; index<num_cols; index++)); do
