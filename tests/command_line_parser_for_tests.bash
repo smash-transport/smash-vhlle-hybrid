@@ -13,8 +13,9 @@ function Parse_Tests_Suite_Parameter_And_Source_Specific_Code()
     suite_name="$1"
     if [[ ! ${suite_name} =~ ^(functional|unit)$ ]]; then
         exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
-            'Invalid tests type ' --emph "${suite_name}" '. Valid values: ' --emph 'functional'\
-            ', ' --emph 'unit' '.' 'Use the ' --emph '--help' ' option to get more information.'
+            'Invalid tests type ' --emph "${suite_name:-<no value>}" '. Valid values: '\
+            --emph 'unit' ' or ' --emph 'functional' '.'\
+            'Use the ' --emph '--help' ' option to get more information.'
     fi
     code_filename="${HYBRIDT_tests_folder}/${suite_name}_tests.bash"
     if [[ ! -f "${code_filename}" ]]; then
