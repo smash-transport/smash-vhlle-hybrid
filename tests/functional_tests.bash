@@ -32,3 +32,8 @@ function Clean_Tests_Environment_For_Following_Test()
     # The fd 9 is used by the logger
     Call_Function_If_Existing_Or_No_Op ${FUNCNAME}__$1 &>> "${HYBRIDT_log_file}" 9>&1
 }
+
+function Run_Hybrid_Handler_With_Given_Options_In_Subshell()
+{
+   ( "${HYBRIDT_repository_top_level_path}/Hybrid-handler" "$@" )
+}
