@@ -12,10 +12,10 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
     local key base_file
     for key in "${HYBRID_valid_software_configuration_sections[@]}"; do
         if Element_In_Array_Equals_To "${key}" "${HYBRID_given_software_sections[@]}"; then
-            __static__Ensure_Executable_Exists 'IC'
-            HYBRID_software_output_directory[IC]="${HYBRID_output_directory}/${key}"
+            __static__Ensure_Executable_Exists "${key}"
+            HYBRID_software_output_directory[${key}]="${HYBRID_output_directory}/${key}"
             base_file=$(basename "${HYBRID_software_base_config_file[${key}]}")
-            HYBRID_software_configuration_file[IC]="${HYBRID_software_output_directory[${key}]}/${base_file}"
+            HYBRID_software_configuration_file[${key}]="${HYBRID_software_output_directory[${key}]}/${base_file}"
         fi
     done
     readonly HYBRID_software_output_directory HYBRID_software_configuration_file
