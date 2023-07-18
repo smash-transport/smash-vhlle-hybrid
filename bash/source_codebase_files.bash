@@ -19,12 +19,18 @@ function __static__Source_Codebase_Files()
     # when sourcing the codebase files (otherwise this would not work)
     source "${HYBRID_top_level_path}/bash/utility_functions.bash" || exit ${HYBRID_fatal_builtin}
     list_of_files=(
+        'Afterburner_functionality.bash'
         'command_line_parsers/helper.bash'
         'command_line_parsers/main_parser.bash'
         'command_line_parsers/sub_parser.bash'
         'configuration_parser.bash'
         'dispatch_functions.bash'
         'global_variables.bash'
+        'Hydro_functionality.bash'
+        'IC_functionality.bash'
+        'Sampler_functionality.bash'
+        'sanity_checks.bash'
+        'software_input_functionality.bash'
         'system_requirements.bash'
         'version.bash'
     )
