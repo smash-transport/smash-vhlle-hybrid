@@ -3,16 +3,17 @@
 import argparse
 import os
 import sys
+import textwrap
 import time
 
 def check_config(valid_config):
     if args.i is None:
         args.i = "./config.yaml"
     if not os.path.exists(args.i):
-        print(fatal_error+"The configuration file was expected at './config.yaml', but the file does not exist.")
+        print(fatal_error + "The configuration file was expected at '" + args.i + "', but the file does not exist.")
         sys.exit(1)
     if not valid_config:
-        print(fatal_error+"Validation of SMASH input failed.")
+        print(fatal_error + "Validation of SMASH input failed.")
         sys.exit(1)
     return
 
@@ -90,28 +91,29 @@ def finish():
     else:
         print("somehow the output file (.dat) was not properly written")
         sys.exit(1)
-    
+
     # remove smash.lock file
     os.remove(args.o+file_name_is_running)
     return
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
+                                     epilog=textwrap.dedent('''
+                                       Use the BLACK_BOX_FAIL environment variable set to either "invalid_config"
+                                       or to "smash_crashes" to mimic a particular failure in the black box.
+                                     '''))
     parser.add_argument("-i", required=False,
                         help="File to the config.yaml")
     parser.add_argument("-o", required=False,
                         help="Path to the output folder")
     parser.add_argument("-c", required=False,
                         help="Make changes to config.yaml (this is not tested here)")
-    parser.add_argument("--fail_with", required=False,
-                        default=None,
-                        choices=["invalid_config", "smash_crashes"],
-                        help="Choose a place where SMASH should fail")
-
+    parser.add_argument("-n", required=False, default=False, action='store_true',
+                        help="As SMASH -n (this is not affecting any behavior here)")
     args = parser.parse_args()
 
-    config_is_valid = args.fail_with != "invalid_config"
-    smash_finishes = args.fail_with != "smash_crashes"
+    config_is_valid = os.environ.get('BLACK_BOX_FAIL') != "invalid_config"
+    smash_finishes = os.environ.get('BLACK_BOX_FAIL') != "smash_crashes"
 
     fatal_error = "FATAL         Main        : SMASH failed with the following error:\n\t\t\t    "
     file_name_is_running = "smash.lock"
