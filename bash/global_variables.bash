@@ -27,6 +27,7 @@ function Define_Further_Global_Variables()
         'Hybrid_handler'
     )
     readonly HYBRID_default_configurations_folder="${HYBRID_top_level_path}/configs"
+    readonly HYBRID_python_folder="${HYBRID_top_level_path}/python"
     # The following associative arrays declare maps between valid keys in the handler config
     # file and bash variables in which the input information will be stored once parsed.
     declare -rgA HYBRID_hybrid_handler_valid_keys=()
@@ -86,6 +87,13 @@ function Define_Further_Global_Variables()
         [Hydro]=''
         [Sampler]=''
         [Afterburner]=''
+    )
+    declare -gA HYBRID_optional_feature=(
+        [Add_Spectators]=''
+    )
+
+    declare -gA HYBRID_external_python_scripts=(
+        [Add_Spectators]='${HYBRID_python_folder}/add_spectators.py'
     )
 }
 
