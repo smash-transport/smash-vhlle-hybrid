@@ -4,6 +4,7 @@ import argparse
 import os
 import sys
 import re
+import textwrap
 import time
 
 def check_config(valid_config):
@@ -173,7 +174,11 @@ def parse_command_line_config_options():
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
+                                     epilog=textwrap.dedent('''
+                                       Use the BLACK_BOX_FAIL environment variable set to either "invalid_config"
+                                       or to "smash_crashes" to mimic a particular failure in the black box.
+                                     '''))
     parser.add_argument("-i", required=False,
                         help="File to the config.yaml")
     parser.add_argument("-o", required=False,
@@ -189,6 +194,9 @@ if __name__ == '__main__':
                         help="Choose a place where SMASH should fail")
 
     args = parser.parse_args()
+
+    config_is_valid = os.environ.get('BLACK_BOX_FAIL') != "invalid_config"
+    smash_finishes = os.environ.get('BLACK_BOX_FAIL') != "smash_crashes"
 
     smash_finishes = args.fail_with != "smash_crashes"
     fatal_error = "FATAL         Main        : SMASH failed with the following error:\n\t\t\t    "
