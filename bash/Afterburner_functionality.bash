@@ -28,43 +28,40 @@ function Prepare_Software_Input_File_Afterburner()
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
             'Sampler output file ' --emph "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar" ' does not exist.'
     fi
-
     if [[ "${HYBRID_optional_feature[Add_Spectators]}" = true ]]; then
         if [[ -f "${HYBRID_software_output_directory[Sampler]}/sampling0" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
                 'The input file for the afterburner ' --emph "${HYBRID_software_output_directory[Sampler]}/sampling0" ' already exists.'
-        elif [[ ! -f "${HYBRID_software_configuration_file[IC]}" ]]; then
+        elif [[ ! -f "${HYBRID_software_output_directory[IC]}/config.yaml" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                'Initial condition configuration file ' --emph "${HYBRID_software_configuration_file[IC]}" ' does not exist which is needed to check number of initial nucleons.'
+                'Initial condition configuration file ' --emph "${HYBRID_software_output_directory[IC]}/config.yaml" ' does not exist which is needed to check number of initial nucleons.'
         elif [[ ! -f "${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
                 'Initial condition file ' --emph "${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar" ' does not exist.'
-    fi
-
-        "${HYBRID_external_python_scripts[Add_Spectators]}" \
-        '--sampled_particle_list' "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"
-        '--initial_particle_list' "${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar"
-        '--output_file' "${HYBRID_software_output_directory[Afterburner]}/sampling0"
-        '--smash_config' "${HYBRID_software_configuration_file[IC]}"
+        fi
+        "${HYBRID_external_python_scripts[Add_Spectators]}"\
+            '--sampled_particle_list' "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
+            '--initial_particle_list' "${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar"\
+            '--output_file' "${HYBRID_software_output_directory[Sampler]}/sampling0"\
+            '--smash_config' "${HYBRID_software_output_directory[IC]}/config.yaml"
     else
-        # rename? check if necessary
-        mv "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar" "${HYBRID_software_output_directory[Sampler]}/sampling0" 
+        ln -s "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar" "${HYBRID_software_output_directory[Sampler]}/sampling0" 
     fi
 }
 
 function Ensure_All_Needed_Input_Exists_Afterburner()
 {
-    if [[ ! -f "${HYBRID_software_output_directory[Sampler]}/sampling0" ]]; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-            'Sampler output file ' --emph "${HYBRID_software_output_directory[Sampler]}/sampling0" ' does not exist.'
-    fi
     if [[ ! -d "${HYBRID_software_output_directory[Afterburner]}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
             'Folder ' --emph "${HYBRID_software_output_directory[Afterburner]}" ' does not exist.'
     fi
     if [[ ! -f "${HYBRID_software_configuration_file[Afterburner]}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            'The configuration file ' --emph "${HYBRID_software_configuration_file[Afterburner]}" ' was not found.'
+            'Folder ' --emph "${HYBRID_software_output_directory[Afterburner]}" ' does not exist.'
+    fi
+    if [[ ! -f "${HYBRID_software_output_directory[Sampler]}/sampling0" ]]; then
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+            'The input file ' --emph "${HYBRID_software_configuration_file[Sampler]}/sampling0" ' s not found.'
     fi
 }
 

@@ -63,11 +63,17 @@ function Define_Further_Global_Variables()
         [Sampler]=''
         [Afterburner]=''
     )
+    declare -gA HYBRID_software_base_config_file_names=(
+        [IC]="smash_initial_conditions_AuAu.yaml"
+        [Hydro]="vhlle_hydro"
+        [Sampler]="hadron_sampler"
+        [Afterburner]="smash_afterburner.yaml"
+    )
     declare -gA HYBRID_software_base_config_file=(
-        [IC]="${HYBRID_default_configurations_folder}/smash_initial_conditions_AuAu.yaml"
-        [Hydro]="${HYBRID_default_configurations_folder}/vhlle_hydro"
-        [Sampler]="${HYBRID_default_configurations_folder}/hadron_sampler"
-        [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"
+        [IC]="${HYBRID_default_configurations_folder}/${HYBRID_software_base_config_file_names[IC]}"
+        [Hydro]="${HYBRID_default_configurations_folder}/${HYBRID_software_base_config_file_names[Hydro]}"
+        [Sampler]="${HYBRID_default_configurations_folder}/${HYBRID_software_base_config_file_names[Sampler]}"
+        [Afterburner]="${HYBRID_default_configurations_folder}/${HYBRID_software_base_config_file_names[Afterburner]}"
     )
     declare -gA HYBRID_software_new_input_keys=(
         [IC]=''
@@ -91,9 +97,8 @@ function Define_Further_Global_Variables()
     declare -gA HYBRID_optional_feature=(
         [Add_Spectators]=''
     )
-
     declare -gA HYBRID_external_python_scripts=(
-        [Add_Spectators]='${HYBRID_python_folder}/add_spectators.py'
+        [Add_Spectators]="${HYBRID_python_folder}/add_spectators.py"
     )
 }
 
