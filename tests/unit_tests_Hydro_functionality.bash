@@ -31,7 +31,7 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
     
 }
-#is the second touch in the function here wrong?
+
 function Unit_Test__Hydro-create-input-file()
 {
     touch "${HYBRID_software_base_config_file[Hydro]}"
@@ -98,7 +98,7 @@ function Unit_Test__Hydro-test-run-software()
 {
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     local -r hydro_terminal_output="${HYBRID_output_directory}/Hydro/Terminal_Output.txt"\
-             Hydro_input_file_path="${HYBRID_software_configuration_file[Hydro]}"
+             Hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}"
              IC_output_file_path="${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
              terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_Hydro
@@ -107,7 +107,7 @@ function Unit_Test__Hydro-test-run-software()
         return 1
     fi
     terminal_output_result=$(< "${hydro_terminal_output}")
-    correct_result="-params ${Hydro_input_file_path} -ISinput ${IC_output_file_path} -outputDir ${HYBRID_software_output_directory[Hydro]}"
+    correct_result="-params ${Hydro_config_file_path} -ISinput ${IC_output_file_path} -outputDir ${HYBRID_software_output_directory[Hydro]}"
     if [[ "${terminal_output_result}" != "${correct_result}" ]]; then
         Print_Error 'The terminal output has not the expected content.'
         return 1

@@ -44,11 +44,11 @@ function Ensure_All_Needed_Input_Exists_Hydro()
 function Run_Software_Hydro()
 {
     local -r\
-        hydro_input_file_path="${HYBRID_software_output_directory[Hydro]}/${HYBRID_software_input_file[Hydro]}"\
+        hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}"\
         ic_output_file_path="${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"\
         hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt"
-     ./"${HYBRID_software_executable[Hydro]}" "-params" "${Hydro_input_file_path}"\
-         "-ISinput" "${IC_output_file_path}" "-outputDir" "${HYBRID_software_output_directory[Hydro]}" >> "${hydro_terminal_output}" 
+     ./"${HYBRID_software_executable[Hydro]}" "-params" "${hydro_config_file_path}"\
+         "-ISinput" "${ic_output_file_path}" "-outputDir" "${HYBRID_software_output_directory[Hydro]}" >> "${hydro_terminal_output}" 
 }
 
 

@@ -186,7 +186,7 @@ def print_timestep(timestep):
 def run_hydro(outputDirSpecified):
     # create freezout hypersurface file
     # only if output directory is specified
-    if outputDirSpecified: freezeout = open(args.outputDir+"hypersurface.dat", "w")
+    if outputDirSpecified: freezeout = open(args.outputDir+"freezeout.dat", "w")
     variableList = ["tau", "E", "Efull", "Nb", "Sfull", "EtotSurf", "elements", "susp.", "%cut"]
     # run the black box
     print("{: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10}".format(*variableList))
