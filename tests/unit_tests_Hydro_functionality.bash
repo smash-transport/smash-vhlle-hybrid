@@ -7,9 +7,6 @@
 #
 #===================================================
 
-#TODO IC ALREADY GIVEN
-
-
 function Make_Test_Preliminary_Operations__Hydro-create-input-file()
 {
     local file_to_be_sourced list_of_files
@@ -27,30 +24,23 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
     HYBRID_software_base_config_file[Hydro]='vhlle_config_cool'
     HYBRID_given_software_sections=('Hydro' )
     HYBRID_software_output_directory[IC]="${HYBRID_output_directory}/IC"
-    HYBRID_software_executable[Hydro]=$(which ls) # Use command as fake executable
+    HYBRID_software_executable[Hydro]="${HYBRID_output_directory}/dummy_exec_Hydro.bash"
+    mkdir -p ${HYBRID_output_directory}
+    printf '#!/usr/bin/env bash\n\necho "$@"\n' > "${HYBRID_software_executable[Hydro]}"
+    chmod a+x "${HYBRID_software_executable[Hydro]}"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
     
 }
-
+#is the second touch in the function here wrong?
 function Unit_Test__Hydro-create-input-file()
 {
     touch "${HYBRID_software_base_config_file[Hydro]}"
     mkdir -p "${HYBRID_software_output_directory[IC]}"
-    local plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
-    touch "${plist_IC}"
-    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
-    touch "${HYBRID_software_input_file[Hydro]}"
-    if [[ ! -f "${HYBRID_software_configuration_file[Hydro]}" ]]; then
-        Print_Error 'The output directory and/or software input file were not properly created.'
-        return 1
-    fi
-    rm -r "${HYBRID_output_directory}/"*
-    mkdir -p "${HYBRID_software_output_directory[IC]}"
-    local plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
-    touch "${plist_IC}"
+    local -r plist_ic="${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
+    touch "${plist_ic}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
     if [[ ! -f "${HYBRID_software_configuration_file[Hydro]}" ]]; then
-        Print_Error 'The input file was not properly created in the output folder.'
+        Print_Error 'The config was not properly created in the output folder.'
         return 1
     fi
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro &> /dev/null
@@ -79,15 +69,14 @@ function Unit_Test__Hydro-check-all-input()
         Print_Error 'Ensuring existence of not-existing output directory succeeded, although failure was expected.'
         return 1
     fi
-    mkdir -p "${HYBRID_software_output_directory[Hydro]}"
-    mkdir -p "${HYBRID_software_output_directory[IC]}"
+    mkdir -p "${HYBRID_software_output_directory[Hydro]}"\
+                "${HYBRID_software_output_directory[IC]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of not-existing config file succeeded, although failure was expected.'
         return 1
     fi
-    touch "${HYBRID_software_configuration_file[Hydro]}"
-    touch "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
+    touch "${HYBRID_software_configuration_file[Hydro]}" "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of existing folder/file failed.'
@@ -107,14 +96,11 @@ function Make_Test_Preliminary_Operations__Hydro-test-run-software()
 
 function Unit_Test__Hydro-test-run-software()
 {
-    HYBRID_software_executable[Hydro]="${HYBRID_output_directory}/dummy_exec_Hydro.bash"
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
-    local -r hydro_terminal_output="${HYBRID_output_directory}/Hydro/Terminal_Output.txt"
-    local Hydro_input_file_path="${HYBRID_software_output_directory[Hydro]}/${HYBRID_software_input_file[Hydro]}"
-    local IC_output_file_path="${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
-    printf '#!/usr/bin/env bash\n\necho "$@"\n' > "${HYBRID_software_executable[Hydro]}"
-    chmod a+x "${HYBRID_software_executable[Hydro]}"
-    local terminal_output_result correct_result
+    local -r hydro_terminal_output="${HYBRID_output_directory}/Hydro/Terminal_Output.txt"\
+             Hydro_input_file_path="${HYBRID_software_configuration_file[Hydro]}"
+             IC_output_file_path="${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
+             terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_Hydro
     if [[ ! -f "${hydro_terminal_output}" ]]; then
         Print_Error 'The terminal output was not created.'
