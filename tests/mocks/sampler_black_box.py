@@ -3,12 +3,12 @@
 # README:
 # The sampler black box is called like:
 #
-#     ./sampler_black_box events NUM PATH_TO_CONFIG_FILE
+#     ./sampler_black_box events NUM path_to_config_FILE
 #
 # with:
 # - events: This is not a variable. This must be the string 'events'
 # - NUM: random number set by the user. In hybrid NUM=1
-# - PATH_TO_CONFIG_FILE: Path to the sampler configuration
+# - path_to_config_FILE: Path to the sampler configuration
 
 # How it works:
 # The sampler black box starts by checking if the sampler config exists.
@@ -30,53 +30,54 @@ import random
 
 def check_input_arguments():
     calling_instruction = 'Call the sampler black box by:\n\n' +\
-                          './sampler_black_box.py events NUM PATH_TO_CONFIG_FILE \n\n' +\
+                          './sampler_black_box.py events num path_to_config_file \n\n' +\
                           '- events: This is not a variable. This must be the string "events"\n' +\
                           '- NUM: random number set by the user. In hybrid NUM=1\n' +\
-                          '- PATH_TO_CONFIG_FILE: Path to the sampler configuration\n'
+                          '- path_to_config_file: Path to the sampler configuration\n'
                           
     if len(sys.argv) < 4 or len(sys.argv) > 5:
         err_msg = 'Invalid number of arguments!\n' + calling_instruction
-        raise IndexError(err_msg) 
+        print(err_msg)
+        sys.exit(1)
     elif not sys.argv[1] == 'events':
         err_msg = 'Invalid first argument passed!\n' +\
                   'The first argument must be the string "events"\n' + calling_instruction
-        raise NameError(err_msg)
+        print(err_msg)
+        sys.exit(1)
     
     
-def check_if_file_exists(PATH):
-    if os.path.isfile(PATH):
-        pass
-    else:
-        err_msg = 'Input file not found at given path: ' + PATH
-        raise RuntimeError(err_msg)
+def check_if_file_exists(path):
+    if not os.path.isfile(path):
+        err_msg = 'File not found at given path: ' + path
+        print(err_msg)
+        sys.exit(1)
         
-def check_if_directory_exists(PATH):
-    if os.path.isdir(PATH):
-        pass
-    else:
-        err_msg = PATH + ' is not a valid directory or does not exist!'
-        raise RuntimeError(err_msg)
+def check_if_directory_exists(path):
+    if not os.path.isdir(path):
+        err_msg = path + ' is not a valid directory or does not exist!'
+        print(err_msg)
+        sys.exit(1)
         
-def split_line_in_config_and_remove_spaces(line_in_config):
-    line_in_config = line_in_config.replace('\n','').split(' ')
+def get_first_two_fields_in_line(line_in_config):
+    line_in_config = line_in_config[:-1].split(' ')
     splitted_line_in_config = list(filter(None, line_in_config))
     splitted_line_in_config[0]=str(splitted_line_in_config[0])
     splitted_line_in_config[1]=str(splitted_line_in_config[1])
     return splitted_line_in_config
         
-def get_value_as_string_from_config_by_keyword(PATH_TO_CONFIG, keyword):
+def get_value_as_string_from_config_by_keyword(path_to_config, keyword):
     #Valid keywords: 
     #surface, spectra_dir, number_of_events, weakContribution, shear, ecrit
-    file = open(PATH_TO_CONFIG)
+    file = open(path_to_config)
     
     while True:
         line_in_config = file.readline()
         if not line_in_config:
             exception_message = 'Keyword '+str(keyword)+' is not contained in the config file!'
-            raise Exception(exception_message)
+            print(exception_message)
+            sys.exit(1)
         else:
-            splitted_line_in_config = split_line_in_config_and_remove_spaces(line_in_config)
+            splitted_line_in_config = get_first_two_fields_in_line(line_in_config)
             key_in_config_line = splitted_line_in_config[0]
             value_of_key_in_config_line = splitted_line_in_config[1]
             
@@ -84,7 +85,7 @@ def get_value_as_string_from_config_by_keyword(PATH_TO_CONFIG, keyword):
                 return value_of_key_in_config_line
 
 
-def write_terminal_output():
+def make_fake_run():
     header ="\n"+\
      "   _____         __  __ _____  _      ______ _____    ____  _               _____ _  __  ____   ______   __\n"+\
      "  / ____|  /\   |  \/  |  __ \| |    |  ____|  __ \  |  _ \| |        /\   / ____| |/ / |  _ \ / __ \ \ / /\n"+\
@@ -104,13 +105,13 @@ def write_terminal_output():
         time.sleep(0.1)
         
 
-def create_output_file(OUTPUT_DIR):
+def create_output_file(output_dir):
     header = '#!OSCAR2013 particle_lists t x y z mass p0 px py pz pdg ID charge\n' +\
              '# Units: fm fm fm fm GeV GeV GeV GeV GeV none none e\n' +\
              '# SMASH-3.0-1-g0985d6b3\n'          
     format_oscar2013 = '%g %g %g %g %g %g %g %g %g %d %d %d'
     
-    output_file = OUTPUT_DIR+'/particle_lists_test.oscar'
+    output_file = output_dir+'/particle_lists_test.oscar'
     
     file = open(output_file, 'w')
     file.write(header)
@@ -150,23 +151,23 @@ def create_output_file(OUTPUT_DIR):
   
 if __name__=='__main__':
   
-    sampler_finishes = os.environ.get('BLACK_BOX_FAIL') != 'fail'
+    sampler_finishes = os.environ.get('BLACK_BOX_FAIL') != 'true'
   
     check_input_arguments()  
   
-    string_events = sys.argv[1]
-    random_number = sys.argv[2]
-    PATH_TO_CONFIG = sys.argv[3]
+    path_to_config = sys.argv[3]
     
-    PATH_TO_FREEZEOUT = get_value_as_string_from_config_by_keyword(PATH_TO_CONFIG, 'surface')
-    OUTPUT_DIR = get_value_as_string_from_config_by_keyword(PATH_TO_CONFIG, 'spectra_dir')
+    check_if_file_exists(path_to_config)
     
-    check_if_file_exists(PATH_TO_CONFIG)
-    check_if_file_exists(PATH_TO_FREEZEOUT)
-    check_if_directory_exists(OUTPUT_DIR)
+    path_to_freezeout = get_value_as_string_from_config_by_keyword(path_to_config, 'surface')
+    output_dir = get_value_as_string_from_config_by_keyword(path_to_config, 'spectra_dir')
+    
+    check_if_file_exists(path_to_freezeout)
+    check_if_directory_exists(output_dir)
     
     if sampler_finishes:
-        write_terminal_output()
-        create_output_file(OUTPUT_DIR)
+        make_fake_run()
+        create_output_file(output_dir)
     else:
-        exit(1)
+        print("Sampler black-box crashed!")
+        sys.exit(1)
