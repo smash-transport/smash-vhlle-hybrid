@@ -188,17 +188,11 @@ if __name__ == '__main__':
                              "  -c 'Modi: { List: { File_Directory: <dir-path>} }'"
                              "  -c 'General: { Nevents: <N-events> }'")
 
-    parser.add_argument("--fail_with", required=False,
-                        default=None,
-                        choices=["invalid_config", "smash_crashes"],
-                        help="Choose a place where SMASH should fail")
-
     args = parser.parse_args()
 
     config_is_valid = os.environ.get('BLACK_BOX_FAIL') != "invalid_config"
     smash_finishes = os.environ.get('BLACK_BOX_FAIL') != "smash_crashes"
 
-    smash_finishes = args.fail_with != "smash_crashes"
     fatal_error = "FATAL         Main        : SMASH failed with the following error:\n\t\t\t    "
     file_name_is_running = "smash.lock"
     name_unfinished = ".unfinished"
@@ -208,7 +202,7 @@ if __name__ == '__main__':
     sampler_dir=parse_command_line_config_options()
 
     # initialize the system
-    check_config(args.fail_with != "invalid_config")
+    check_config(config_is_valid)
     create_folders_structure()
     ensure_no_output_is_overwritten()
 
