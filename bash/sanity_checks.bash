@@ -29,6 +29,7 @@ function Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts()
         if [[ ! -f "${external_file}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
             'The external script ' --emph "${external_file}" ' was not found.'
+        fi
     done 
 }
 

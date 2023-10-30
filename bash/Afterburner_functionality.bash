@@ -18,7 +18,7 @@ function Prepare_Software_Input_File_Afterburner()
             'Base configuration file ' --emph "${HYBRID_software_base_config_file[Afterburner]}" ' was not found.'
     fi
     cp "${HYBRID_software_base_config_file[Afterburner]}"\
-       "${HYBRID_software_output_directory[Afterburner]}" || exit ${HYBRID_fatal_builtin}
+       "${HYBRID_software_configuration_file[Afterburner]}" || exit ${HYBRID_fatal_builtin}
     if [[ "${HYBRID_software_new_input_keys[Afterburner]}" != '' ]]; then
         Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File\
             'YAML' "${HYBRID_software_configuration_file[Afterburner]}" "${HYBRID_software_new_input_keys[Afterburner]}"
@@ -28,7 +28,7 @@ function Prepare_Software_Input_File_Afterburner()
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
             'Sampler output file ' --emph "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar" ' does not exist.'
     fi
-    if [[ "${HYBRID_optional_feature[Add_Spectators]}" = true ]]; then
+    if [[ "${HYBRID_optional_feature[Add_Spectators]}" = 'true' ]]; then
         if [[ -f "${HYBRID_software_output_directory[Sampler]}/sampling0" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
                 'The input file for the afterburner ' --emph "${HYBRID_software_output_directory[Sampler]}/sampling0" ' already exists.'
@@ -61,13 +61,13 @@ function Ensure_All_Needed_Input_Exists_Afterburner()
     fi
     if [[ ! -f "${HYBRID_software_output_directory[Sampler]}/sampling0" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            'The input file ' --emph "${HYBRID_software_configuration_file[Sampler]}/sampling0" ' s not found.'
+            'The input file ' --emph "${HYBRID_software_configuration_file[Sampler]}/sampling0" ' was not found.'
     fi
 }
 
 function Run_Software_Afterburner()
 {
-    local afterburner_terminal_output="${HYBRID_software_output_directory[Afterburner]}/Terminal_Output.txt"
+    local -r afterburner_terminal_output="${HYBRID_software_output_directory[Afterburner]}/Terminal_Output.txt"
     "${HYBRID_software_executable[Afterburner]}" \
        '-i' "${HYBRID_software_configuration_file[Afterburner]}" \
        '-o' "${HYBRID_software_output_directory[Afterburner]}" \

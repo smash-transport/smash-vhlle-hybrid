@@ -34,9 +34,10 @@ function Unit_Test__Afterburner-create-input-file()
 {
     touch "${HYBRID_software_base_config_file[Afterburner]}"
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
-    local plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"
-    local plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar"
-    local plist_Final="${HYBRID_software_output_directory[Sampler]}/sampling0"
+    local -r\
+        plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
+        plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar"\
+        plist_Final="${HYBRID_software_output_directory[Sampler]}/sampling0"
     touch "${plist_Sampler}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner
     if [[ ! -f "${HYBRID_software_configuration_file[Afterburner]}" ]]; then
@@ -77,28 +78,25 @@ function Unit_Test__Afterburner-create-input-file()
     touch "${plist_Sampler}" "${plist_Final}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Preperation succeeded even though the final particle list already exists.'
+        Print_Error 'Preparation succeeded even though the final particle list already exists.'
         return 1
     fi
     rm "${plist_Final}" "${HYBRID_output_directory}/Afterburner/"*
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Preperation succeeded even though the config.yaml of the IC doesnt exist.'
+        Print_Error 'Preparation succeeded even though the config.yaml of the IC does not exist.'
         return 1
     fi
     rm "${HYBRID_output_directory}/Afterburner/"*
     touch "${HYBRID_software_output_directory[IC]}/config.yaml"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Preperation succeeded even though the SMASH_IC.oscar doesnt exist.'
+        Print_Error 'Preparation succeeded even though the SMASH_IC.oscar does not exist.'
         return 1
     fi
     rm -r "${HYBRID_output_directory}/"*
     mkdir -p "${HYBRID_software_output_directory[IC]}" "${HYBRID_software_output_directory[Sampler]}" "${HYBRID_software_output_directory[Afterburner]}"
-    cp "${HYBRID_software_base_config_file[IC]}" "${HYBRID_software_output_directory[IC]}"
-    base_config_name=$(basename "${HYBRID_software_base_config_file[IC]}")
-    mv "${HYBRID_software_output_directory[IC]}/${base_config_name}" "${HYBRID_software_output_directory[IC]}/config.yaml"
-    touch "${plist_Sampler}" "${plist_IC}"
+    touch "${HYBRID_software_output_directory[IC]}/config.yaml" "${plist_Sampler}" "${plist_IC}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner
     if [[ ! -f "${plist_Final}" ]]; then
         Print_Error 'The final input file was not properly created in the output folder.'
@@ -136,7 +134,6 @@ function Unit_Test__Afterburner-check-all-input()
         Print_Error 'Ensuring existence of input file failed.'
         return 1
     fi
-    touch "${HYBRID_software_configuration_file[Afterburner]}"
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     touch "${HYBRID_software_output_directory[Sampler]}/sampling0"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner
