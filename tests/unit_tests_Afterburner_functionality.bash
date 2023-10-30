@@ -27,6 +27,7 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file()
     HYBRID_software_output_directory[Sampler]="${HYBRID_output_directory}/Sampler"
     HYBRID_software_output_directory[IC]="${HYBRID_output_directory}/IC"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
+    Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts
 }
 
 function Unit_Test__Afterburner-create-input-file()
@@ -100,7 +101,8 @@ function Unit_Test__Afterburner-create-input-file()
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     mkdir -p "${HYBRID_software_output_directory[Afterburner]}"
     cp "${HYBRID_software_base_config_file[IC]}" "${HYBRID_software_output_directory[IC]}"
-    mv "${HYBRID_software_output_directory[IC]}/${HYBRID_software_base_config_file_names[IC]}" "${HYBRID_software_output_directory[IC]}/config.yaml"
+    base_config_name=$(basename "${HYBRID_software_base_config_file[IC]}")
+    mv "${HYBRID_software_output_directory[IC]}/${base_config_name}" "${HYBRID_software_output_directory[IC]}/config.yaml"
     touch "${plist_Sampler}"
     touch "${plist_IC}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner
