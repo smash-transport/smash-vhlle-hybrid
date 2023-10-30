@@ -64,15 +64,29 @@ function Unit_Test__Afterburner-create-input-file()
         return 1
     fi
     rm -r "${HYBRID_output_directory}/"*
-    HYBRID_optional_feature[Add_Spectators]=false
-    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
-    touch "${plist_Sampler}"
-    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner
-    if [[ ! -f "${plist_Final}" ]]; then
-        Print_Error 'The final input file was not properly created in the output folder.'
-        return 1
-    fi
+}
+
+function Clean_Tests_Environment_For_Following_Test__Afterburner-create-input-file()
+{
+    rm "${HYBRID_software_base_config_file[Afterburner]}"
+    rm -r "${HYBRID_output_directory}"
+}
+
+function Make_Test_Preliminary_Operations__Afterburner-create-input-file-with-spectators()
+{
+    Make_Test_Preliminary_Operations__Afterburner-create-input-file
+}
+
+function Unit_Test__Afterburner-create-input-file-with-spectators()
+{
     HYBRID_optional_feature[Add_Spectators]=true
+    touch "${HYBRID_software_base_config_file[Afterburner]}"
+    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
+    local -r\
+        plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
+        plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar"\
+        plist_Final="${HYBRID_software_output_directory[Sampler]}/sampling0"
+    touch "${plist_Sampler}"
     rm -r "${HYBRID_output_directory}/"*
     mkdir -p "${HYBRID_software_output_directory[IC]}" "${HYBRID_software_output_directory[Sampler]}"
     touch "${plist_Sampler}" "${plist_Final}"
@@ -104,7 +118,7 @@ function Unit_Test__Afterburner-create-input-file()
     fi
 }
 
-function Clean_Tests_Environment_For_Following_Test__Afterburner-create-input-file()
+function Clean_Tests_Environment_For_Following_Test__Afterburner-create-input-file-with-spectators()
 {
     rm "${HYBRID_software_base_config_file[Afterburner]}"
     rm -r "${HYBRID_output_directory}"
