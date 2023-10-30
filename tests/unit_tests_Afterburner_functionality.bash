@@ -73,17 +73,14 @@ function Unit_Test__Afterburner-create-input-file()
     fi
     HYBRID_optional_feature[Add_Spectators]=true
     rm -r "${HYBRID_output_directory}/"*
-    mkdir -p "${HYBRID_software_output_directory[IC]}"
-    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
-    touch "${plist_Sampler}"
-    touch "${plist_Final}"
+    mkdir -p "${HYBRID_software_output_directory[IC]}" "${HYBRID_software_output_directory[Sampler]}"
+    touch "${plist_Sampler}" "${plist_Final}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Preperation succeeded even though the final particle list already exists.'
         return 1
     fi
-    rm "${plist_Final}"
-    rm "${HYBRID_output_directory}/Afterburner/"*
+    rm "${plist_Final}" "${HYBRID_output_directory}/Afterburner/"*
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Preperation succeeded even though the config.yaml of the IC doesnt exist.'
@@ -97,14 +94,11 @@ function Unit_Test__Afterburner-create-input-file()
         return 1
     fi
     rm -r "${HYBRID_output_directory}/"*
-    mkdir -p "${HYBRID_software_output_directory[IC]}"
-    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
-    mkdir -p "${HYBRID_software_output_directory[Afterburner]}"
+    mkdir -p "${HYBRID_software_output_directory[IC]}" "${HYBRID_software_output_directory[Sampler]}" "${HYBRID_software_output_directory[Afterburner]}"
     cp "${HYBRID_software_base_config_file[IC]}" "${HYBRID_software_output_directory[IC]}"
     base_config_name=$(basename "${HYBRID_software_base_config_file[IC]}")
     mv "${HYBRID_software_output_directory[IC]}/${base_config_name}" "${HYBRID_software_output_directory[IC]}/config.yaml"
-    touch "${plist_Sampler}"
-    touch "${plist_IC}"
+    touch "${plist_Sampler}" "${plist_IC}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner
     if [[ ! -f "${plist_Final}" ]]; then
         Print_Error 'The final input file was not properly created in the output folder.'
