@@ -5,6 +5,7 @@
 | Alessandro Sciarra | asciarra@fias.uni-frankfurt.de   |
 | Jan Hammelmann     | hammelmann@fias.uni-frankfurt.de |
 | Niklas Götz        | goetz@fias.uni-frankfurt.de      |
+| Nils Saß           | nsass@fias.uni-frankfurt.de      |
 | Renan Hirayama     | hirayama@fias.uni-frankfurt.de   |
 | Zuzana Paulinyova  | zuzana.paulinyova@upjs.sk        |
 
