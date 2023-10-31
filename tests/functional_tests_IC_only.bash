@@ -27,7 +27,7 @@ function Functional_Test__do-IC-only()
     fi
     unfinished_files=( IC/*.unfinished )
     output_files=( IC/* )
-    if [[ ${#unfinished_files[@]} -lt 0 ]]; then
+    if [[ ${#unfinished_files[@]} -gt 0 ]]; then
         Print_Error 'Some unexpected ' --emph '.unfinished' ' output file remained.'
         return 1
     elif [[ ${#output_files[@]} -ne 5 ]]; then
