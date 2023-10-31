@@ -23,7 +23,7 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file()
     HYBRID_output_directory="${HYBRIDT_tests_folder}/test_dir_Afterburner"
     HYBRID_software_base_config_file[Afterburner]='my_cool_conf.yaml'
     HYBRID_given_software_sections=( 'Afterburner' )
-    HYBRID_software_executable[Afterburner]=$(which ls) # Use command as fake executable
+    HYBRID_software_executable[Afterburner]=$(which echo) # Use command as fake executable
     HYBRID_software_output_directory[Sampler]="${HYBRID_output_directory}/Sampler"
     HYBRID_software_output_directory[IC]="${HYBRID_output_directory}/IC"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
@@ -112,8 +112,7 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
 
 function Clean_Tests_Environment_For_Following_Test__Afterburner-create-input-file-with-spectators()
 {
-    rm "${HYBRID_software_base_config_file[Afterburner]}"
-    rm -r "${HYBRID_output_directory}"
+    Clean_Tests_Environment_For_Following_Test__Afterburner-create-input-file
 }
 
 function Make_Test_Preliminary_Operations__Afterburner-check-all-input()
@@ -161,11 +160,8 @@ function Make_Test_Preliminary_Operations__Afterburner-test-run-software()
 
 function Unit_Test__Afterburner-test-run-software()
 {
-    HYBRID_software_executable[Afterburner]="${HYBRID_output_directory}/dummy_exec_IC.bash"
     mkdir -p "${HYBRID_software_output_directory[Afterburner]}"
     local -r afterburner_terminal_output="${HYBRID_output_directory}/Afterburner/Terminal_Output.txt"
-    printf '#!/usr/bin/env bash\n\necho "$@"\n' > "${HYBRID_software_executable[Afterburner]}"
-    chmod a+x "${HYBRID_software_executable[Afterburner]}"
     local terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_Afterburner
     if [[ ! -f "${afterburner_terminal_output}" ]]; then
