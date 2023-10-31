@@ -28,6 +28,7 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file()
     HYBRID_software_output_directory[IC]="${HYBRID_output_directory}/IC"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
     Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts
+    Perform_Sanity_Checks_On_Optional_Features
 }
 
 function Unit_Test__Afterburner-create-input-file()
@@ -79,7 +80,7 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file-with-sp
 
 function Unit_Test__Afterburner-create-input-file-with-spectators()
 {
-    HYBRID_optional_feature[Add_Spectators]=true
+    HYBRID_optional_feature[Add_Spectators_From_IC]='TRUE'
     touch "${HYBRID_software_base_config_file[Afterburner]}"
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     local -r\

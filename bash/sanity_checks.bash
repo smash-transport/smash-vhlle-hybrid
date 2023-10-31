@@ -27,10 +27,18 @@ function Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts()
 {
     for external_file in "${HYBRID_external_python_scripts[@]}"; do
         if [[ ! -f "${external_file}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            'The external script ' --emph "${external_file}" ' was not found.'
+            exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+                'The external script ' --emph "${external_file}" ' was not found.'
         fi
     done 
+}
+
+function Perform_Sanity_Checks_On_Optional_Features()
+{
+    if [[ "${HYBRID_optional_feature[Add_Spectators_From_IC]}"  = 'TRUE' ]]; then
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+        'The optional feature "Add_Spectators_From_IC" should be false by default but is ' --emph "${HYBRID_optional_feature[Add_Spectators_From_IC]}" '.'
+    fi
 }
 
 function __static__Ensure_Executable_Exists()
