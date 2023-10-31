@@ -3,24 +3,24 @@
 # README:
 # The sampler black box is called like:
 #
-#     ./sampler_black_box events NUM path_to_config_FILE
+#     ./sampler_black_box events num path_to_config_file
 #
 # with:
 # - events: This is not a variable. This must be the string 'events'
-# - NUM: random number set by the user. In hybrid NUM=1
-# - path_to_config_FILE: Path to the sampler configuration
+# - num: random number set by the user. In hybrid NUM=1
+# - path_to_config_file: Path to the sampler configuration
 
 # How it works:
 # The sampler black box starts by checking if the sampler config exists.
 # If it is the case, it gets the path to the freezeout hypersurface and the output 
 # directory from the config and checks that also the freezeout surface exists.
 #
-# Use the BLACK_BOX_FAIL environment variable set to "fail"
+# Use the BLACK_BOX_FAIL environment variable set to "true"
 # to mimic a particular failure in the black box.
 #
 # If it got everything correctly, it will produce a dummy terminal output and
 # a) particle_lists.oscar in the output directory if the optional argument is not given
-# b) nothing if the BLACK_BOX_FAIL environment variable is set to "fail"
+# b) nothing if the BLACK_BOX_FAIL environment variable is set to "true"
 
 import sys
 import os.path
@@ -32,7 +32,7 @@ def check_input_arguments():
     calling_instruction = 'Call the sampler black box by:\n\n' +\
                           './sampler_black_box.py events num path_to_config_file \n\n' +\
                           '- events: This is not a variable. This must be the string "events"\n' +\
-                          '- NUM: random number set by the user. In hybrid NUM=1\n' +\
+                          '- num: random number set by the user. In hybrid num=1\n' +\
                           '- path_to_config_file: Path to the sampler configuration\n'
                           
     if len(sys.argv) < 4 or len(sys.argv) > 5:
@@ -59,6 +59,7 @@ def check_if_directory_exists(path):
         sys.exit(1)
         
 def get_first_two_fields_in_line(line_in_config):
+    #deleting the last character to omit the newline character '\n'
     line_in_config = line_in_config[:-1].split(' ')
     splitted_line_in_config = list(filter(None, line_in_config))
     splitted_line_in_config[0]=str(splitted_line_in_config[0])
