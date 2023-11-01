@@ -179,10 +179,8 @@ if __name__ == '__main__':
                         help="File to the config.yaml")
     parser.add_argument("-o", required=False,
                         help="Path to the output folder")
-    # parser.add_argument("-c", required=False,action='append',nargs='+',
-    #                     help="Use:"
-    #                          "  -c 'Modi: { List: { File_Directory: <dir-path>} }'"
-    #                          "  -c 'General: { Nevents: <N-events> }'")
+    parser.add_argument("-n", required=False, nargs='?', const='',
+                        help="Option to not store the tabulations")
 
     args = parser.parse_args()
 
@@ -195,10 +193,10 @@ if __name__ == '__main__':
     name_oscar = ".oscar"
     name_bin = ".bin"
     name_particles_file = "particle_lists"
-    sampler_dir=parse_command_line_config_options()
 
     # initialize the system
     check_config(config_is_valid)
+    sampler_dir=parse_command_line_config_options()
     create_folders_structure()
     ensure_no_output_is_overwritten()
 
