@@ -6,6 +6,7 @@ import sys
 import re
 import textwrap
 import time
+import yaml
 
 def check_config(valid_config):
     if args.i is None:
@@ -139,29 +140,24 @@ def finish():
     return
 
 def parse_command_line_config_options():
+    with open(args.i, 'r') as file:
+        data_config = yaml.safe_load(file)
+
     sampler_dir=""
     dir_config=False
     n_events_config=False
-    if(args.c == None):
-        print("No -c command line option was given")
-        sys.exit(1)
-    else:
-        for option in args.c:
-            if "Modi:" in option[0].split():
-                sampler_dir=option[0].split()[5].split("}")[0]
-                dir_config=True
-            elif "Nevents:" in option[0].split():
-                try:
-                    n_events=int(option[0].split()[3].strip())
-                    n_events_config=True
-                except:
-                    print("Nevents could not be parsed")
-                    sys.exit(1)
 
-    if not (dir_config and n_events_config):
-        print("Necessary command line options not found\n"
-              "  -c 'Modi: { List: { File_Directory: <dir-path>} }'\n"
-              "  -c 'General: { Nevents: <N-events> }'")
+    try:
+        n_events=data_config['General']['Nevents']
+        n_events_config=True
+    except:
+        print("Nevents could not be parsed")
+        sys.exit(1)
+    try:
+        sampler_dir=data_config['Modi']['List']['File_Directory']
+        dir_config=True
+    except:
+        print("File directory could not be parsed")
         sys.exit(1)
 
     if not os.path.isdir(sampler_dir):
@@ -183,10 +179,10 @@ if __name__ == '__main__':
                         help="File to the config.yaml")
     parser.add_argument("-o", required=False,
                         help="Path to the output folder")
-    parser.add_argument("-c", required=False,action='append',nargs='+',
-                        help="Use:"
-                             "  -c 'Modi: { List: { File_Directory: <dir-path>} }'"
-                             "  -c 'General: { Nevents: <N-events> }'")
+    # parser.add_argument("-c", required=False,action='append',nargs='+',
+    #                     help="Use:"
+    #                          "  -c 'Modi: { List: { File_Directory: <dir-path>} }'"
+    #                          "  -c 'General: { Nevents: <N-events> }'")
 
     args = parser.parse_args()
 
