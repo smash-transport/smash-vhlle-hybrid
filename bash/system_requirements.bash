@@ -31,6 +31,7 @@ function __static__Declare_System_Requirements()
             cut
             grep
             head
+            realpath
             tail
         )
         declare -rga HYBRID_gnu_programs_required=( awk sed sort wc )
@@ -71,7 +72,7 @@ function Check_System_Requirements_And_Make_Report()
 {
     __static__Declare_System_Requirements
     local system_report=()
-    local -r single_field_length=16  # This variable is used to prepare the report correctly formatted
+    local -r single_field_length=18  # This variable is used to prepare the report correctly formatted
     declare -A system_information    # Same use of this variable as in 'Check_System_Requirements' function
     __static__Analyze_System_Properties
     __static__Print_Report_Title

@@ -85,6 +85,7 @@ function __static__Test_Single_CLO_Parsing_In_Subshell()
 (
     Call_Codebase_Function Parse_Command_Line_Options
     if [[ $? -ne 0 ]] || [[ ${!1} != "$2" ]]; then
+        Print_Debug --emph "${!1}" ' != ' --emph "$2"
         Print_Error 'Parsing of ' --emph "${HYBRID_command_line_options_to_parse[0]}" ' with valid value failed.'
         return 1
     fi
@@ -108,8 +109,8 @@ function Unit_Test__parse-command-line-options()
         Print_Error 'Parsing of CLO with no CLO failed.'
         return 1
     fi
-    HYBRID_command_line_options_to_parse=( -o /path/to/dir )
-    __static__Test_Single_CLO_Parsing_In_Subshell HYBRID_output_directory '/path/to/dir' || return 1
+    HYBRID_command_line_options_to_parse=( -o "${HOME}" )
+    __static__Test_Single_CLO_Parsing_In_Subshell HYBRID_output_directory "${HOME}" || return 1
     HYBRID_command_line_options_to_parse=( -c /path/to/file )
     __static__Test_Single_CLO_Parsing_In_Subshell HYBRID_configuration_file '/path/to/file' || return 1
 }

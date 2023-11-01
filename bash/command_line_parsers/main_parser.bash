@@ -53,7 +53,11 @@ function Parse_Command_Line_Options()
                 if [[ ${2-} =~ ^(-|$) ]]; then
                     Print_Option_Specification_Error_And_Exit "$1"
                 else
-                    readonly HYBRID_output_directory=$2
+                    if ! realpath "$2" &> /dev/null; then
+                        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+                            'Specified output directory ' --emph "$2" ' not found'
+                    fi
+                    readonly HYBRID_output_directory="$(realpath "$2")"
                 fi
                 shift 2
                 ;;
