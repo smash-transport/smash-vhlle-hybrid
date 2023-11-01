@@ -113,10 +113,39 @@ function Unit_Test__replace-in-software-input-TXT()
         Print_Error 'Valid TXT replacement but with non existent key in valid file succeeded'
         return 1
     fi
-    # Test case 4:
+    # Test case 5:
+    printf 'Key Value\n' > "${base_input_file}"
+    keys_to_be_replaced=$'New_key: value\nOther_key value'
+    Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_Txt_File &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Invalid TXT replacement with inconsistent colons succeeded'
+        return 1
+    fi
+    # Test case 6:
+    printf 'Key Value\n' > "${base_input_file}"
+    keys_to_be_replaced=$'New_key:: value\nOther_key:: value'
+    Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_Txt_File &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Invalid TXT replacement with too many colons succeeded'
+        return 1
+    fi
+    # Test case 7:
     printf 'a 0.123\nb 0.456\nc 0.789\n' > "${base_input_file}"
     keys_to_be_replaced=$'a 42\nc 77'
-    printf -v expected_result "%-20s%s\n" 'a' '42' 'b' '0.456' 'c' '77'
+    printf -v expected_result "%-20s %s\n" 'a' '42' 'b' '0.456' 'c' '77'
+    expected_result=${expected_result%?} # Get rid of trailing endline
+    Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_Txt_File
+    if [[ "$(< "${base_input_file}")" != "${expected_result}" ]]; then
+        Print_Error "YAML replacement failed!"\
+                    "---- OBTAINED: ----\n$(< "${base_input_file}")"\
+                    "---- EXPECTED: ----\n${expected_result}"\
+                    '-------------------'
+        return 1
+    fi
+    # Test case 8:
+    printf 'a 0.123\nb 0.456\nvery_very_very_long_key 0.789\n' > "${base_input_file}"
+    keys_to_be_replaced=$'a: 42\nvery_very_very_long_key: 77'
+    printf -v expected_result "%-20s %s\n" 'a' '42' 'b' '0.456' 'very_very_very_long_key' '77'
     expected_result=${expected_result%?} # Get rid of trailing endline
     Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_Txt_File
     if [[ "$(< "${base_input_file}")" != "${expected_result}" ]]; then

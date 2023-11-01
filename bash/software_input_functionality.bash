@@ -67,12 +67,24 @@ function __static__Replace_Keys_Into_Txt_File()
         exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
             'Keys to be replaced do not seem to contain valid key-value syntax.'
     fi
+    local number_of_fields_per_line=( $(awk 'BEGIN{FS=":"}{print NF}' <(printf "${keys_to_be_replaced}\n") | sort -u) )
+    if [[ ${#number_of_fields_per_line[@]} -gt 1 ]]; then
+        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
+            'Keys to be replaced do not have consistent colon-terminated keys syntax.'
+    elif [[ ${number_of_fields_per_line[0]} -gt 2 ]]; then
+        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
+            'Keys to be replaced seem to use more than a colon after key(s).'
+    fi
     # NOTE: Since the YAML implementation is very general, here we can take advantage of it
-    #       on constraint of inserting and then removing a ':' after the "key".
+    #       on constraint of inserting (if needed) and then removing a ':' after the "key".
     awk -i inplace 'BEGIN{OFS=": "}{print $1, $2}' "${base_input_file}"
-    keys_to_be_replaced=$(awk 'BEGIN{OFS=": "}{print $1, $2}' <<< "${keys_to_be_replaced}")
+    if [[ ${number_of_fields_per_line[0]} -eq 1 ]]; then
+        keys_to_be_replaced=$(awk 'BEGIN{OFS=": "}{print $1, $2}' <<< "${keys_to_be_replaced}")
+    fi
     __static__Replace_Keys_Into_YAML_File
-    awk -i inplace 'BEGIN{FS=": "}{printf "%-20s%s\n", $1, $2}' "${base_input_file}"
+    # NOTE: Using ':' as field separator, spaces after it will be preserved, hence there
+    #       is no worry about having potentially the two fields merged into one in printf.
+    awk -i inplace 'BEGIN{FS=":"}{printf("%-20s%s\n", $1, $2)}' "${base_input_file}"
 }
 
 
