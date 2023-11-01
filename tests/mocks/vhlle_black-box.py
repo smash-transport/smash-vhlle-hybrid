@@ -6,6 +6,7 @@ import sys
 import random
 import time
 import datetime
+import textwrap
 
 def print_terminal_start():
     # generated with https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20
@@ -191,6 +192,7 @@ def run_hydro(outputDirSpecified):
     # run the black box
     print("{: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10}".format(*variableList))
     if crash:
+        print("Crash happened in vHLLE")
         sys.exit(1)
     for ts in range(1,13):
         print_timestep(ts)
@@ -202,7 +204,12 @@ def run_hydro(outputDirSpecified):
 
 
 if __name__ == '__main__': 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
+                                     epilog=textwrap.dedent('''
+                                       Use the BLACK_BOX_FAIL environment variable set to either "invalid_config",
+                                       "invalid_input" or to "smash_crashes" to mimic a particular failure in the 
+                                       black box.
+                                     '''))
     parser.add_argument("-params", required=False,
                         help="Path to vhlle_config",
                         default="")

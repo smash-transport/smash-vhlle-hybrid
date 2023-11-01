@@ -20,12 +20,6 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             HYBRID_software_configuration_file[${key}]="${HYBRID_software_output_directory[${key}]}/${base_file}"
         fi
     done
-    declare -gA HYBRID_software_input_file=(
-        [Hydro]="${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar"
-        [Sampler]="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
-        [Afterburner]="${HYBRID_software_output_directory[Sampler]}/sampling0"
-    )
-    #TODO not fix IC input, read from config
     readonly HYBRID_software_output_directory HYBRID_software_configuration_file HYBRID_software_input_file
 }
 

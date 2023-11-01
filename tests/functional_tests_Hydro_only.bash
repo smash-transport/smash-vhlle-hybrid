@@ -9,7 +9,6 @@
 
 function Functional_Test__do-Hydro-only()
 {
-    #how to define the output directory
     shopt -s nullglob
     local -r config_filename='vhlle_hydro'
     local output_files terminal_output_file failure_message
@@ -17,9 +16,9 @@ function Functional_Test__do-Hydro-only()
     Hydro:
       Executable: %s/tests/mocks/vhlle_black-box.py
     ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
-    # Expect success and test presence of freezeout
-    mkdir -p './IC'
-    touch './IC/SMASH_IC.dat'
+    # Run the hydro stage and check if freezeout is successfully generated
+    mkdir -p 'IC'
+    touch 'IC/SMASH_IC.dat'
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -ne 0 ]]; then
@@ -32,7 +31,7 @@ function Functional_Test__do-Hydro-only()
         return 1
     fi
     mv 'Hydro' 'Hydro-success'
-    # Expect failure
+    # Expect failure when giving an invalid IC output
     Print_Info 'Running Hybrid-handler expecting invalid IC argument'
     terminal_output_file='Hydro/Terminal_Output.txt'
     BLACK_BOX_FAIL='invalid_input'\
@@ -50,7 +49,7 @@ function Functional_Test__do-Hydro-only()
         return 1
     fi
     mv 'Hydro' 'Hydro-invalid-input'
-    # Expect failure
+    # Expect failure when an invalid config was supplied
     Print_Info 'Running Hybrid-handler expecting invalid config argument'
     terminal_output_file='Hydro/Terminal_Output.txt'
     BLACK_BOX_FAIL='invalid_config'\
@@ -68,7 +67,7 @@ function Functional_Test__do-Hydro-only()
         return 1
     fi
     mv 'Hydro' 'Hydro-invalid-config'
-    # Expect failure and test terminal output
+    # Expect failure and test terminal output in the case of a crash of vHLLE
     Print_Info 'Running Hybrid-handler expecting crash in Hydro'
     BLACK_BOX_FAIL='crash'\
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
@@ -77,7 +76,7 @@ function Functional_Test__do-Hydro-only()
         return 1
     fi
     failure_message=$(tail -n 1 "${terminal_output_file}" | sed -e 's/^[[:space:]]*//g' -e 's/[[:space:]]*$//g')
-    if [[ "${failure_message}" == *'-nan'* ]]; then
+    if [[ "${failure_message}" != *'Crash happened in vHLLE'* ]]; then
         Print_Error 'Hydro finished although crash was expected.'
         return 1
     fi

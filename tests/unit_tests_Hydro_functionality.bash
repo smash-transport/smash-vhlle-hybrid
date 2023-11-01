@@ -24,10 +24,7 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
     HYBRID_software_base_config_file[Hydro]='vhlle_config_cool'
     HYBRID_given_software_sections=('Hydro' )
     HYBRID_software_output_directory[IC]="${HYBRID_output_directory}/IC"
-    HYBRID_software_executable[Hydro]="${HYBRID_output_directory}/dummy_exec_Hydro.bash"
-    mkdir -p ${HYBRID_output_directory}
-    printf '#!/usr/bin/env bash\n\necho "$@"\n' > "${HYBRID_software_executable[Hydro]}"
-    chmod a+x "${HYBRID_software_executable[Hydro]}"
+    HYBRID_software_executable[Hydro]="$(which echo)"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
     
 }
@@ -48,7 +45,6 @@ function Unit_Test__Hydro-create-input-file()
         Print_Error 'Preparation of input with existent config succeeded.'
         return 1
     fi
-     rm -r "${HYBRID_output_directory}/"*
 }
 
 function Clean_Tests_Environment_For_Following_Test__Hydro-create-input-file()

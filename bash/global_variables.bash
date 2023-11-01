@@ -50,8 +50,7 @@ function Define_Further_Global_Variables()
         [Input_file]='HYBRID_software_base_config_file[Afterburner]'
         [Software_keys]='HYBRID_software_new_input_keys[Afterburner]'
     )
-
-    # Variables to be set from command line
+    # Variables to be set (and possibly made readonly) from command line
     HYBRID_execution_mode='help'
     HYBRID_configuration_file='./config.yaml'
     HYBRID_output_directory="$(realpath .)"
@@ -77,7 +76,7 @@ function Define_Further_Global_Variables()
     )
     # Variables to be set (and possibly made readonly) after all sanity checks on input succeeded
     declare -gA HYBRID_software_output_directory=(
-        [IC]='IC'
+        [IC]=''
         [Hydro]=''
         [Sampler]=''
         [Afterburner]=''
