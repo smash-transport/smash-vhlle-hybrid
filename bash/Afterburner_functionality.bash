@@ -46,8 +46,6 @@ function Prepare_Software_Input_File_Afterburner()
     else
         ln -s "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar" "${HYBRID_software_output_directory[Afterburner]}/sampling0" 
     fi
-    echo " in after func: "
-    ls -l "${HYBRID_software_output_directory[Afterburner]}"
 }
 
 function Ensure_All_Needed_Input_Exists_Afterburner()
