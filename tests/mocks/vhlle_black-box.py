@@ -6,6 +6,7 @@ import sys
 import random
 import time
 import datetime
+import textwrap
 
 def print_terminal_start():
     # generated with https://patorjk.com/software/taag/#p=display&f=Graffiti&t=Type%20Something%20
@@ -120,7 +121,7 @@ def check_command_line():
         sys.exit(1)
     # check if config file exists
     if not args.params == "":
-        if not os.path.isfile(args.params): 
+        if not os.path.isfile(args.params) or not config_is_valid: 
             print("cannot open parameters file ", args.params)
             sys.exit(1)
     return
@@ -166,7 +167,7 @@ IC done
 Init time = 9 [sec]"""
     
     print("fluid allocation done")
-    if os.path.exists(args.ISinput):
+    if os.path.exists(args.ISinput) and input_is_valid:
         print(messageExample)
     else:
         print("I/O error with",args.ISinput)
@@ -177,7 +178,7 @@ def print_timestep(timestep):
     for i in range(1, 10):
         number = round(random.random(), 2)
         randomList.append(str(number))
-    if timestep > 10:
+    if timestep > 10 and not crash:
         randomList[8] = "-nan"
     print("{: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10}".format(*randomList))
     return
@@ -186,10 +187,13 @@ def print_timestep(timestep):
 def run_hydro(outputDirSpecified):
     # create freezout hypersurface file
     # only if output directory is specified
-    if outputDirSpecified: freezeout = open(args.outputDir+"hypersurface.dat", "w")
+    if outputDirSpecified: freezeout = open(args.outputDir+"freezeout.dat", "w")
     variableList = ["tau", "E", "Efull", "Nb", "Sfull", "EtotSurf", "elements", "susp.", "%cut"]
     # run the black box
     print("{: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10}".format(*variableList))
+    if crash:
+        print("Crash happened in vHLLE")
+        sys.exit(1)
     for ts in range(1,13):
         print_timestep(ts)
         time.sleep(0.1)
@@ -200,7 +204,12 @@ def run_hydro(outputDirSpecified):
 
 
 if __name__ == '__main__': 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
+                                     epilog=textwrap.dedent('''
+                                       Use the BLACK_BOX_FAIL environment variable set to either "invalid_config",
+                                       "invalid_input" or to "crash" to mimic a particular failure in the 
+                                       black box.
+                                     '''))
     parser.add_argument("-params", required=False,
                         help="Path to vhlle_config",
                         default="")
@@ -210,6 +219,10 @@ if __name__ == '__main__':
     parser.add_argument("-outputDir", required=False,
                         help="Path to the output folder",
                         default="")
+
+    input_is_valid = os.environ.get('BLACK_BOX_FAIL') != "invalid_input"
+    config_is_valid = os.environ.get('BLACK_BOX_FAIL') != "invalid_config"
+    crash = os.environ.get('BLACK_BOX_FAIL') == "crash"
     args = parser.parse_args()
     outputDirGiven = not args.outputDir == ""
     

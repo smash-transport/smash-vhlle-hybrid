@@ -20,7 +20,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             HYBRID_software_configuration_file[${key}]="${HYBRID_software_output_directory[${key}]}/${base_file}"
         fi
     done
-    readonly HYBRID_software_output_directory HYBRID_software_configuration_file
+    readonly HYBRID_software_output_directory HYBRID_software_configuration_file 
 }
 
 function __static__Ensure_Executable_Exists()
