@@ -76,7 +76,7 @@ function Functional_Test__do-Hydro-only()
         return 1
     fi
     failure_message=$(tail -n 1 "${terminal_output_file}" | sed -e 's/^[[:space:]]*//g' -e 's/[[:space:]]*$//g')
-    if [[ "${failure_message}" != *'Crash happened in vHLLE'* ]]; then
+    if [[ "${failure_message}" != 'Crash happened in vHLLE' ]]; then
         Print_Error 'Hydro finished although crash was expected.'
         return 1
     fi

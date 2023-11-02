@@ -207,7 +207,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
                                      epilog=textwrap.dedent('''
                                        Use the BLACK_BOX_FAIL environment variable set to either "invalid_config",
-                                       "invalid_input" or to "smash_crashes" to mimic a particular failure in the 
+                                       "invalid_input" or to "crash" to mimic a particular failure in the 
                                        black box.
                                      '''))
     parser.add_argument("-params", required=False,
