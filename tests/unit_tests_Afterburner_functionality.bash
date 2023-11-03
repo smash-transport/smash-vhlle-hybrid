@@ -37,7 +37,7 @@ function Unit_Test__Afterburner-create-input-file()
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     local -r\
         plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
-        plist_Final="${HYBRID_software_output_directory[Sampler]}/sampling0"
+        plist_Final="${HYBRID_software_output_directory[Afterburner]}/sampling0"
     touch "${plist_Sampler}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner
     if [[ ! -f "${HYBRID_software_configuration_file[Afterburner]}" ]]; then
@@ -77,7 +77,7 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
     local -r\
         plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
         plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar"\
-        plist_Final="${HYBRID_software_output_directory[Sampler]}/sampling0"
+        plist_Final="${HYBRID_software_output_directory[Afterburner]}/sampling0"
     touch "${plist_Sampler}"
     rm -r "${HYBRID_output_directory}/"*
     mkdir -p "${HYBRID_software_output_directory[IC]}" "${HYBRID_software_output_directory[Sampler]}"
@@ -140,7 +140,7 @@ function Unit_Test__Afterburner-check-all-input()
         return 1
     fi
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
-    touch "${HYBRID_software_output_directory[Sampler]}/sampling0"
+    touch "${HYBRID_software_output_directory[Afterburner]}/sampling0"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of existing folder/file succeeded.'
