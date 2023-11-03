@@ -73,4 +73,31 @@ function Functional_Test__do-Afterburner-only()
         return 1
     fi
     mv 'Afterburner' 'Afterburner-software-crash'
+    # Expect success and test the add_spectator functionality
+    mkdir 'IC'
+    touch 'IC/config.yaml' 'IC/SMASH_IC.oscar'
+    printf '
+    Afterburner:
+      Executable: %s/tests/mocks/smash_afterburner_black-box.py
+      Add_Spectators_From_IC: TRUE
+      Software_keys:
+        Modi:
+          List:
+            File_Directory: "./Afterburner"
+    ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Hybrid-handler unexpectedly failed.'
+        return 1
+    fi
+    unfinished_files=( Afterburner/*.unfinished )
+    output_files=( Afterburner/* )
+    if [[ ${#unfinished_files[@]} -lt 0 ]]; then
+        Print_Error 'Some unexpected ' --emph '.unfinished' ' output file remained.'
+        return 1
+    elif [[ ${#output_files[@]} -ne 6 ]]; then
+        Print_Error 'Expected ' --emph '6' " output files, but ${#output_files[@]} found."
+        return 1
+    fi
+    mv 'Afterburner' 'Afterburner-success-with-spectators'
 }
