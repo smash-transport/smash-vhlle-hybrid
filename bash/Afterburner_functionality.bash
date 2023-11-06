@@ -57,7 +57,7 @@ function Ensure_All_Needed_Input_Exists_Afterburner()
     fi
     if [[ ! -f "${HYBRID_software_configuration_file[Afterburner]}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            'Folder ' --emph "${HYBRID_software_output_directory[Afterburner]}" ' does not exist.'
+            'The configuration file ' --emph "${HYBRID_software_configuration_file[Afterburner]}" ' does not exist.'
     fi
     if [[ ! -e "${HYBRID_software_output_directory[Afterburner]}/sampling0" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\

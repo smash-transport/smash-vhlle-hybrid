@@ -127,14 +127,13 @@ function Unit_Test__Afterburner-check-all-input()
     touch "${HYBRID_software_configuration_file[Afterburner]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Ensuring existence of input file succeeded.'
+        Print_Error 'Ensuring existence of auxiliary input data file succeeded.'
         return 1
     fi
-    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     touch "${HYBRID_software_output_directory[Afterburner]}/sampling0"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner
     if [[ $? -ne 0 ]]; then
-        Print_Error 'Ensuring existence of existing folder/file succeeded.'
+        Print_Error 'Ensuring existence of existing folder/file unexpectedly failed.'
         return 1
     fi
 }
@@ -152,7 +151,7 @@ function Make_Test_Preliminary_Operations__Afterburner-test-run-software()
 function Unit_Test__Afterburner-test-run-software()
 {
     mkdir -p "${HYBRID_software_output_directory[Afterburner]}"
-    local -r afterburner_terminal_output="${HYBRID_output_directory}/Afterburner/Terminal_Output.txt"
+    local -r afterburner_terminal_output="${HYBRID_software_output_directory[Afterburner]}/Terminal_Output.txt"
     local terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_Afterburner
     if [[ ! -f "${afterburner_terminal_output}" ]]; then
