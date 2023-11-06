@@ -76,6 +76,12 @@ function Define_Further_Global_Variables()
         [Sampler]=''
         [Afterburner]=''
     )
+    declare -gA HYBRID_optional_feature=(
+        [Add_Spectators_From_IC]='FALSE'
+    )
+    declare -rgA HYBRID_external_python_scripts=(
+        [Add_Spectators_From_IC]="${HYBRID_python_folder}/add_spectators.py"
+    )
     # Variables to be set (and possibly made readonly) after all sanity checks on input succeeded
     declare -gA HYBRID_software_output_directory=(
         [IC]=''
@@ -88,12 +94,6 @@ function Define_Further_Global_Variables()
         [Hydro]=''
         [Sampler]=''
         [Afterburner]=''
-    )
-    declare -gA HYBRID_optional_feature=(
-        [Add_Spectators_From_IC]='FALSE'
-    )
-    declare -rgA HYBRID_external_python_scripts=(
-        [Add_Spectators_From_IC]="${HYBRID_python_folder}/add_spectators.py"
     )
 }
 

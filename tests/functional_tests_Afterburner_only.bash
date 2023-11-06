@@ -9,10 +9,27 @@
 
 # NOTE: These functional tests just require code to run and finish with zero exit code.
 
+function __static__Check_Successful_Handler_Run()
+{
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Hybrid-handler unexpectedly failed.'
+        return 1
+    fi
+    unfinished_files=( Afterburner/*.unfinished )
+    output_files=( Afterburner/* )
+    if [[ ${#unfinished_files[@]} -lt 0 ]]; then
+        Print_Error 'Some unexpected ' --emph '.unfinished' ' output file remained.'
+        return 1
+    elif [[ ${#output_files[@]} -ne 6 ]]; then
+        Print_Error 'Expected ' --emph '6' " output files, but ${#output_files[@]} found."
+        return 1
+    fi
+}
+
 function Functional_Test__do-Afterburner-only()
 {
     shopt -s nullglob
-    local -r config_filename='Afterburner_config.yaml'
+    local -r config_filename='Handler_config.yaml'
     local unfinished_files output_files terminal_output_file failure_message
     mkdir 'Sampler'
     touch 'Sampler/particle_lists.oscar'
@@ -27,19 +44,7 @@ function Functional_Test__do-Afterburner-only()
     # Expect success and test absence of "SMASH" unfinished file
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
-    if [[ $? -ne 0 ]]; then
-        Print_Error 'Hybrid-handler unexpectedly failed.'
-        return 1
-    fi
-    unfinished_files=( Afterburner/*.unfinished )
-    output_files=( Afterburner/* )
-    if [[ ${#unfinished_files[@]} -lt 0 ]]; then
-        Print_Error 'Some unexpected ' --emph '.unfinished' ' output file remained.'
-        return 1
-    elif [[ ${#output_files[@]} -ne 6 ]]; then
-        Print_Error 'Expected ' --emph '6' " output files, but ${#output_files[@]} found."
-        return 1
-    fi
+    __static__Check_Successful_Handler_Run || return 1
     mv 'Afterburner' 'Afterburner-success'
     # Expect failure and test "SMASH" message
     Print_Info 'Running Hybrid-handler expecting invalid Afterburner input file failure'
@@ -74,6 +79,7 @@ function Functional_Test__do-Afterburner-only()
     fi
     mv 'Afterburner' 'Afterburner-software-crash'
     # Expect success and test the add_spectator functionality
+    Print_Info 'Running Hybrid-handler expecting success with the add_spectator option'
     mkdir 'IC'
     touch 'IC/config.yaml' 'IC/SMASH_IC.oscar'
     printf '
@@ -86,18 +92,6 @@ function Functional_Test__do-Afterburner-only()
             File_Directory: "./Afterburner"
     ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
-    if [[ $? -ne 0 ]]; then
-        Print_Error 'Hybrid-handler unexpectedly failed.'
-        return 1
-    fi
-    unfinished_files=( Afterburner/*.unfinished )
-    output_files=( Afterburner/* )
-    if [[ ${#unfinished_files[@]} -lt 0 ]]; then
-        Print_Error 'Some unexpected ' --emph '.unfinished' ' output file remained.'
-        return 1
-    elif [[ ${#output_files[@]} -ne 6 ]]; then
-        Print_Error 'Expected ' --emph '6' " output files, but ${#output_files[@]} found."
-        return 1
-    fi
+    __static__Check_Successful_Handler_Run || return 1
     mv 'Afterburner' 'Afterburner-success-with-spectators'
 }
