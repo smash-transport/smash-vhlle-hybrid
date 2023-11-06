@@ -24,8 +24,6 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file()
     HYBRID_software_base_config_file[Afterburner]='my_cool_conf.yaml'
     HYBRID_given_software_sections=( 'Afterburner' )
     HYBRID_software_executable[Afterburner]=$(which echo) # Use command as fake executable
-    HYBRID_software_output_directory[Sampler]="${HYBRID_output_directory}/Sampler"
-    HYBRID_software_output_directory[IC]="${HYBRID_output_directory}/IC"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
     Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts
 }
@@ -54,7 +52,6 @@ function Unit_Test__Afterburner-create-input-file()
         Print_Error 'Preparation of input succeeded even though the particle_list.oscar does not exist.'
         return 1
     fi
-    rm -r "${HYBRID_output_directory}/"*
 }
 
 function Clean_Tests_Environment_For_Following_Test__Afterburner-create-input-file()
@@ -71,16 +68,12 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file-with-sp
 function Unit_Test__Afterburner-create-input-file-with-spectators()
 {
     HYBRID_optional_feature[Add_Spectators_From_IC]='TRUE'
-    touch "${HYBRID_software_base_config_file[Afterburner]}"
-    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
+    mkdir -p "${HYBRID_software_output_directory[Sampler]}" "${HYBRID_software_output_directory[IC]}"
     local -r\
         plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
         plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar"\
         plist_Final="${HYBRID_software_output_directory[Afterburner]}/sampling0"
-    touch "${plist_Sampler}"
-    rm -r "${HYBRID_output_directory}/"*
-    mkdir -p "${HYBRID_software_output_directory[IC]}" "${HYBRID_software_output_directory[Sampler]}"
-    touch "${plist_Sampler}" "${plist_Final}"
+    touch "${HYBRID_software_base_config_file[Afterburner]}" "${plist_Sampler}" "${plist_Final}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Preparation succeeded even though the final particle list already exists.'
@@ -92,15 +85,14 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
         Print_Error 'Preparation succeeded even though the config.yaml of the IC does not exist.'
         return 1
     fi
-    rm "${HYBRID_output_directory}/Afterburner/"*
+    rm "${HYBRID_software_output_directory[Afterburner]}/"*
     touch "${HYBRID_software_output_directory[IC]}/config.yaml"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Preparation succeeded even though the SMASH_IC.oscar does not exist.'
         return 1
     fi
-    rm -r "${HYBRID_output_directory}/"*
-    mkdir -p "${HYBRID_software_output_directory[IC]}" "${HYBRID_software_output_directory[Sampler]}" "${HYBRID_software_output_directory[Afterburner]}"
+    rm "${HYBRID_software_output_directory[Afterburner]}/"*
     touch "${HYBRID_software_output_directory[IC]}/config.yaml" "${plist_Sampler}" "${plist_IC}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner
     if [[ ! -f "${plist_Final}" ]]; then
