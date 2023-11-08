@@ -71,7 +71,9 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file-with-sp
 function Unit_Test__Afterburner-create-input-file-with-spectators()
 {
     HYBRID_optional_feature[Add_Spectators_From_IC]='TRUE'
-    mkdir -p "${HYBRID_software_output_directory[Sampler]}" "${HYBRID_software_output_directory[IC]}"
+    mkdir -p "${HYBRID_software_output_directory[Sampler]}"\
+             "${HYBRID_software_output_directory[IC]}"\
+             "${HYBRID_software_output_directory[Afterburner]}"
     local -r\
         plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
         plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar"\
@@ -82,7 +84,7 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
         Print_Error 'Preparation succeeded even though the final particle list already exists.'
         return 1
     fi
-    rm "${plist_Final}" "${HYBRID_output_directory}/Afterburner/"*
+    rm "${HYBRID_software_output_directory[Afterburner]}/"*
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Preparation succeeded even though the config.yaml of the IC does not exist.'
@@ -183,7 +185,9 @@ function Unit_Test__Afterburner-test-run-software()
         return 1
     fi
     terminal_output_result=$(< "${afterburner_terminal_output}")
-    correct_result="-i ${HYBRID_software_configuration_file[Afterburner]} -o ${HYBRID_software_output_directory[Afterburner]} -n"
+    printf -v correct_result '%s'\
+       "-i ${HYBRID_software_configuration_file[Afterburner]} "\
+       "-o ${HYBRID_software_output_directory[Afterburner]} -n"
     if [[ "${terminal_output_result}" != "${correct_result}" ]]; then
         Print_Error 'The terminal output has not the expected content.'
         return 1
