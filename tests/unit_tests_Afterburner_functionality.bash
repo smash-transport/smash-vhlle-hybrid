@@ -40,6 +40,9 @@ function Unit_Test__Afterburner-create-input-file()
     if [[ ! -f "${HYBRID_software_configuration_file[Afterburner]}" ]]; then
         Print_Error 'The input file was not properly created in the output folder.'
         return 1
+    elif [[ ! -L "${plist_Final}" ]]; then
+        Print_Error 'The input particle list was not properly created in the output folder.'
+        return 1
     fi
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
     if [[ $? -eq 0 ]]; then
@@ -134,6 +137,27 @@ function Unit_Test__Afterburner-check-all-input()
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of existing folder/file unexpectedly failed.'
+        return 1
+    fi
+    rm "${HYBRID_software_output_directory[Afterburner]}/sampling0"
+    Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Ensuring existence of non-existing file unexpectedly succeeded.'
+        return 1
+    fi
+    mkdir "${HYBRID_software_output_directory[Sampler]}"
+    touch "${HYBRID_software_output_directory[Sampler]}/original_sampling0"
+    ln -s "${HYBRID_software_output_directory[Sampler]}/original_sampling0"\
+          "${HYBRID_software_output_directory[Afterburner]}/sampling0"
+    Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner &> /dev/null
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Ensuring existence of existing file unexpectedly failed.'
+        return 1
+    fi
+    rm "${HYBRID_software_output_directory[Sampler]}/original_sampling0"
+    Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Ensuring existence of a link to a non-existing file unexpectedly succeeded.'
         return 1
     fi
 }
