@@ -20,7 +20,7 @@ function Make_Test_Preliminary_Operations__IC-create-input-file()
         source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
     done
     Define_Further_Global_Variables
-    HYBRID_output_directory="./test_dir_IC"
+    HYBRID_output_directory="${HYBRIDT_tests_folder}/test_dir_IC"
     HYBRID_software_base_config_file[IC]='my_cool_conf.yaml'
     HYBRID_given_software_sections=( 'IC' )
     HYBRID_software_executable[IC]=$(which echo) # Use command as fake executable

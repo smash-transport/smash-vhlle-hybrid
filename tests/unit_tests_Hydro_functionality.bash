@@ -20,7 +20,7 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
         source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
     done
     Define_Further_Global_Variables
-    HYBRID_output_directory="./test_dir_Hydro"
+    HYBRID_output_directory="${HYBRIDT_tests_folder}/test_dir_Hydro"
     HYBRID_software_base_config_file[Hydro]='vhlle_config_cool'
     HYBRID_given_software_sections=('Hydro' )
     HYBRID_software_output_directory[IC]="${HYBRID_output_directory}/IC"
@@ -93,7 +93,7 @@ function Make_Test_Preliminary_Operations__Hydro-test-run-software()
 function Unit_Test__Hydro-test-run-software()
 {
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
-    local -r hydro_terminal_output="${HYBRID_output_directory}/Hydro/Terminal_Output.txt"\
+    local -r hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt"\
              Hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}"\
              IC_output_file_path="${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
     local terminal_output_result correct_result

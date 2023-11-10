@@ -39,7 +39,7 @@ function Functional_Test__do-Afterburner-only()
       Software_keys:
         Modi:
           List:
-            File_Directory: "./Afterburner"
+            File_Directory: "."
     ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
     # Expect success and test absence of "SMASH" unfinished file
     Print_Info 'Running Hybrid-handler expecting success'
@@ -89,7 +89,7 @@ function Functional_Test__do-Afterburner-only()
       Software_keys:
         Modi:
           List:
-            File_Directory: "./Afterburner"
+            File_Directory: "."
     ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     __static__Check_Successful_Handler_Run  $? || return 1
