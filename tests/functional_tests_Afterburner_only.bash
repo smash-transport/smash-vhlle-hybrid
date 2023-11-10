@@ -11,7 +11,7 @@
 
 function __static__Check_Successful_Handler_Run()
 {
-    if [[ $? -ne 0 ]]; then
+    if [[ $1 -ne 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly failed.'
         return 1
     fi
@@ -44,7 +44,7 @@ function Functional_Test__do-Afterburner-only()
     # Expect success and test absence of "SMASH" unfinished file
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
-    __static__Check_Successful_Handler_Run || return 1
+    __static__Check_Successful_Handler_Run $? || return 1
     mv 'Afterburner' 'Afterburner-success'
     # Expect failure and test "SMASH" message
     Print_Info 'Running Hybrid-handler expecting invalid Afterburner input file failure'
@@ -92,6 +92,6 @@ function Functional_Test__do-Afterburner-only()
             File_Directory: "./Afterburner"
     ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
-    __static__Check_Successful_Handler_Run || return 1
+    __static__Check_Successful_Handler_Run  $? || return 1
     mv 'Afterburner' 'Afterburner-success-with-spectators'
 }

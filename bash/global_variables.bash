@@ -28,6 +28,9 @@ function Define_Further_Global_Variables()
     )
     readonly HYBRID_default_configurations_folder="${HYBRID_top_level_path}/configs"
     readonly HYBRID_python_folder="${HYBRID_top_level_path}/python"
+    declare -rgA HYBRID_external_python_scripts=(
+        [Add_spectators_from_IC]="${HYBRID_python_folder}/add_spectators.py"
+    )
     # The following associative arrays declare maps between valid keys in the handler config
     # file and bash variables in which the input information will be stored once parsed.
     declare -rgA HYBRID_hybrid_handler_valid_keys=()
@@ -78,9 +81,6 @@ function Define_Further_Global_Variables()
     )
     declare -gA HYBRID_optional_feature=(
         [Add_spectators_from_IC]='FALSE'
-    )
-    declare -rgA HYBRID_external_python_scripts=(
-        [Add_spectators_from_IC]="${HYBRID_python_folder}/add_spectators.py"
     )
     # Variables to be set (and possibly made readonly) after all sanity checks on input succeeded
     declare -gA HYBRID_software_output_directory=(

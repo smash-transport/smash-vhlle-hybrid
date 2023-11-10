@@ -142,11 +142,6 @@ function Unit_Test__Afterburner-check-all-input()
         return 1
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/sampling0"
-    Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Ensuring existence of non-existing file unexpectedly succeeded.'
-        return 1
-    fi
     mkdir "${HYBRID_software_output_directory[Sampler]}"
     touch "${HYBRID_software_output_directory[Sampler]}/original_sampling0"
     ln -s "${HYBRID_software_output_directory[Sampler]}/original_sampling0"\

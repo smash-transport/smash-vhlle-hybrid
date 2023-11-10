@@ -65,6 +65,7 @@ function Ensure_All_Needed_Input_Exists_Afterburner()
             'The configuration file ' --emph "${HYBRID_software_configuration_file[Afterburner]}"\
             ' does not exist.'
     fi
+    # sampling0 could be either a symlink or an actual file, therefore the check for existence is necessary
     if [[ ! -e "${HYBRID_software_output_directory[Afterburner]}/sampling0" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
             'The input file ' --emph "${HYBRID_software_configuration_file[Afterburner]}/sampling0"\
