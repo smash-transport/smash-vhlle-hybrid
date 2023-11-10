@@ -85,7 +85,7 @@ function Functional_Test__do-Afterburner-only()
     printf '
     Afterburner:
       Executable: %s/tests/mocks/smash_afterburner_black-box.py
-      Add_Spectators_From_IC: TRUE
+      Add_spectators_from_IC: TRUE
       Software_keys:
         Modi:
           List:

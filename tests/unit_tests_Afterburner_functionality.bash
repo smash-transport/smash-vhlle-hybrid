@@ -70,7 +70,7 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file-with-sp
 
 function Unit_Test__Afterburner-create-input-file-with-spectators()
 {
-    HYBRID_optional_feature[Add_Spectators_From_IC]='TRUE'
+    HYBRID_optional_feature[Add_spectators_from_IC]='TRUE'
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"\
              "${HYBRID_software_output_directory[IC]}"\
              "${HYBRID_software_output_directory[Afterburner]}"

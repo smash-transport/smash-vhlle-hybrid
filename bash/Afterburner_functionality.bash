@@ -29,7 +29,7 @@ function Prepare_Software_Input_File_Afterburner()
             'Sampler output file ' --emph "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
             ' does not exist.'
     fi
-    if [[ "${HYBRID_optional_feature[Add_Spectators_From_IC]}" = 'TRUE' ]]; then
+    if [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
         if [[ -f "${HYBRID_software_output_directory[Sampler]}/sampling0" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
                 'The input file for the afterburner ' --emph "${HYBRID_software_output_directory[Sampler]}/sampling0"\
@@ -43,7 +43,7 @@ function Prepare_Software_Input_File_Afterburner()
                 'Initial condition file ' --emph "${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar"\
                 ' does not exist.'
         fi
-        "${HYBRID_external_python_scripts[Add_Spectators_From_IC]}"\
+        "${HYBRID_external_python_scripts[Add_spectators_from_IC]}"\
             '--sampled_particle_list' "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
             '--initial_particle_list' "${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar"\
             '--output_file' "${HYBRID_software_output_directory[Afterburner]}/sampling0"\
@@ -81,5 +81,6 @@ function Run_Software_Afterburner()
        '-n' \
        >> "${afterburner_terminal_output}"
 }
+
 
 Make_Functions_Defined_In_This_File_Readonly
