@@ -4,7 +4,9 @@ import argparse
 import os
 import sys
 import re
+import textwrap
 import time
+import yaml
 
 def check_config(valid_config):
     if args.i is None:
@@ -138,29 +140,24 @@ def finish():
     return
 
 def parse_command_line_config_options():
+    with open(args.i, 'r') as file:
+        data_config = yaml.safe_load(file)
+
     sampler_dir=""
     dir_config=False
     n_events_config=False
-    if(args.c == None):
-        print("No -c command line option was given")
-        sys.exit(1)
-    else:
-        for option in args.c:
-            if "Modi:" in option[0].split():
-                sampler_dir=option[0].split()[5].split("}")[0]
-                dir_config=True
-            elif "Nevents:" in option[0].split():
-                try:
-                    n_events=int(option[0].split()[3].strip())
-                    n_events_config=True
-                except:
-                    print("Nevents could not be parsed")
-                    sys.exit(1)
 
-    if not (dir_config and n_events_config):
-        print("Necessary command line options not found\n"
-              "  -c 'Modi: { List: { File_Directory: <dir-path>} }'\n"
-              "  -c 'General: { Nevents: <N-events> }'")
+    try:
+        n_events=data_config['General']['Nevents']
+        n_events_config=True
+    except:
+        print("Nevents could not be parsed")
+        sys.exit(1)
+    try:
+        sampler_dir=data_config['Modi']['List']['File_Directory']
+        dir_config=True
+    except:
+        print("File directory could not be parsed")
         sys.exit(1)
 
     if not os.path.isdir(sampler_dir):
@@ -173,34 +170,33 @@ def parse_command_line_config_options():
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
+                                     epilog=textwrap.dedent('''
+                                       Use the BLACK_BOX_FAIL environment variable set to either "invalid_config"
+                                       or to "smash_crashes" to mimic a particular failure in the black box.
+                                     '''))
     parser.add_argument("-i", required=False,
                         help="File to the config.yaml")
     parser.add_argument("-o", required=False,
                         help="Path to the output folder")
-    parser.add_argument("-c", required=False,action='append',nargs='+',
-                        help="Use:"
-                             "  -c 'Modi: { List: { File_Directory: <dir-path>} }'"
-                             "  -c 'General: { Nevents: <N-events> }'")
-
-    parser.add_argument("--fail_with", required=False,
-                        default=None,
-                        choices=["invalid_config", "smash_crashes"],
-                        help="Choose a place where SMASH should fail")
+    parser.add_argument("-n", required=False, nargs='?', const='',
+                        help="Option to not store the tabulations")
 
     args = parser.parse_args()
 
-    smash_finishes = args.fail_with != "smash_crashes"
+    config_is_valid = os.environ.get('BLACK_BOX_FAIL') != "invalid_config"
+    smash_finishes = os.environ.get('BLACK_BOX_FAIL') != "smash_crashes"
+
     fatal_error = "FATAL         Main        : SMASH failed with the following error:\n\t\t\t    "
     file_name_is_running = "smash.lock"
     name_unfinished = ".unfinished"
     name_oscar = ".oscar"
     name_bin = ".bin"
     name_particles_file = "particle_lists"
-    sampler_dir=parse_command_line_config_options()
 
     # initialize the system
-    check_config(args.fail_with != "invalid_config")
+    check_config(config_is_valid)
+    sampler_dir=parse_command_line_config_options()
     create_folders_structure()
     ensure_no_output_is_overwritten()
 

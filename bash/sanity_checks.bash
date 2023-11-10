@@ -23,6 +23,16 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
     readonly HYBRID_software_output_directory HYBRID_software_configuration_file 
 }
 
+function Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts()
+{
+    for external_file in "${HYBRID_external_python_scripts[@]}"; do
+        if [[ ! -f "${external_file}" ]]; then
+            exit_code=${HYBRID_fatal_file_not_found} Print_Internal_And_Exit\
+                'The python script ' --emph "${external_file}" ' was not found.'
+        fi
+    done 
+}
+
 function __static__Ensure_Executable_Exists()
 {
     local label=$1 file_path

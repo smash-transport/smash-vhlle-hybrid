@@ -27,6 +27,10 @@ function Define_Further_Global_Variables()
         'Hybrid_handler'
     )
     readonly HYBRID_default_configurations_folder="${HYBRID_top_level_path}/configs"
+    readonly HYBRID_python_folder="${HYBRID_top_level_path}/python"
+    declare -rgA HYBRID_external_python_scripts=(
+        [Add_spectators_from_IC]="${HYBRID_python_folder}/add_spectators.py"
+    )
     # The following associative arrays declare maps between valid keys in the handler config
     # file and bash variables in which the input information will be stored once parsed.
     declare -rgA HYBRID_hybrid_handler_valid_keys=()
@@ -49,6 +53,7 @@ function Define_Further_Global_Variables()
         [Executable]='HYBRID_software_executable[Afterburner]'
         [Input_file]='HYBRID_software_base_config_file[Afterburner]'
         [Software_keys]='HYBRID_software_new_input_keys[Afterburner]'
+        [Add_spectators_from_IC]='HYBRID_optional_feature[Add_spectators_from_IC]'
     )
     # Variables to be set (and possibly made readonly) from command line
     HYBRID_execution_mode='help'
@@ -73,6 +78,9 @@ function Define_Further_Global_Variables()
         [Hydro]=''
         [Sampler]=''
         [Afterburner]=''
+    )
+    declare -gA HYBRID_optional_feature=(
+        [Add_spectators_from_IC]='FALSE'
     )
     # Variables to be set (and possibly made readonly) after all sanity checks on input succeeded
     declare -gA HYBRID_software_output_directory=(

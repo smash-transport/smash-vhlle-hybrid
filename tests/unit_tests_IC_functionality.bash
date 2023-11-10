@@ -23,7 +23,7 @@ function Make_Test_Preliminary_Operations__IC-create-input-file()
     HYBRID_output_directory="./test_dir_IC"
     HYBRID_software_base_config_file[IC]='my_cool_conf.yaml'
     HYBRID_given_software_sections=( 'IC' )
-    HYBRID_software_executable[IC]=$(which ls) # Use command as fake executable
+    HYBRID_software_executable[IC]=$(which echo) # Use command as fake executable
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 }
 
@@ -92,11 +92,8 @@ function Make_Test_Preliminary_Operations__IC-test-run-software()
 
 function Unit_Test__IC-test-run-software()
 {
-    HYBRID_software_executable[IC]="${HYBRID_output_directory}/dummy_exec_IC.bash"
     local -r ic_terminal_output="${HYBRID_output_directory}/IC/Terminal_Output.txt"
     mkdir -p "${HYBRID_software_output_directory[IC]}"
-    printf '#!/usr/bin/env bash\n\necho "$@"\n' > "${HYBRID_software_executable[IC]}"
-    chmod a+x "${HYBRID_software_executable[IC]}"
     local terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_IC
     if [[ ! -f "${ic_terminal_output}" ]]; then
