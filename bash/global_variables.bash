@@ -85,14 +85,14 @@ function Define_Further_Global_Variables()
     # Variables to be set (and possibly made readonly) after all sanity checks on input succeeded
     declare -gA HYBRID_software_output_directory=(
         [IC]=''
-        [Hydro]='Hydro'
-        [Sampler]='Sampler'
+        [Hydro]=''
+        [Sampler]=''
         [Afterburner]=''
     )
     declare -gA HYBRID_software_configuration_file=(
         [IC]=''
         [Hydro]=''
-        [Sampler]='Sampler'
+        [Sampler]=''
         [Afterburner]=''
     )
 }

@@ -33,8 +33,6 @@ function Unit_Test__Hydro-create-input-file()
 {
     touch "${HYBRID_software_base_config_file[Hydro]}"
     mkdir -p "${HYBRID_software_output_directory[IC]}"
-    local -r plist_ic="${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
-    touch "${plist_ic}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
     if [[ ! -f "${HYBRID_software_configuration_file[Hydro]}" ]]; then
         Print_Error 'The config was not properly created in the output folder.'
