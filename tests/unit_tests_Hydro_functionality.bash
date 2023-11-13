@@ -20,7 +20,7 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
         source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
     done
     Define_Further_Global_Variables
-    HYBRID_output_directory="${HYBRIDT_tests_folder}/test_dir_Hydro"
+    HYBRID_output_directory="${HYBRIDT_folder_to_run_tests}/test_dir_Hydro"
     HYBRID_software_base_config_file[Hydro]='vhlle_config_cool'
     HYBRID_given_software_sections=('Hydro' )
     HYBRID_software_output_directory[IC]="${HYBRID_output_directory}/IC"
