@@ -43,6 +43,7 @@ function Ensure_All_Needed_Input_Exists_Hydro()
 
 function Run_Software_Hydro()
 {
+    cd "${HYBRID_software_output_directory[Hydro]}"
     local -r\
         hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}"\
         ic_output_file_path="${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"\

@@ -75,6 +75,7 @@ function Ensure_All_Needed_Input_Exists_Afterburner()
 
 function Run_Software_Afterburner()
 {
+    cd "${HYBRID_software_output_directory[Afterburner]}"
     local -r afterburner_terminal_output="${HYBRID_software_output_directory[Afterburner]}/Terminal_Output.txt"
     "${HYBRID_software_executable[Afterburner]}" \
        '-i' "${HYBRID_software_configuration_file[Afterburner]}" \

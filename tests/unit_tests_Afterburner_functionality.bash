@@ -20,7 +20,7 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file()
         source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
     done
     Define_Further_Global_Variables
-    HYBRID_output_directory="${HYBRIDT_tests_folder}/test_dir_Afterburner"
+    HYBRID_output_directory="${HYBRIDT_folder_to_run_tests}/test_dir_Afterburner"
     HYBRID_software_base_config_file[Afterburner]='my_cool_conf.yaml'
     HYBRID_given_software_sections=( 'Afterburner' )
     HYBRID_software_executable[Afterburner]=$(which echo) # Use command as fake executable
