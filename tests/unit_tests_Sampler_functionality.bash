@@ -35,17 +35,15 @@ function Unit_Test__Sampler-create-input-file()
         'spectra_dir      .' \
         > "${HYBRID_software_base_config_file[Sampler]}"
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
+    touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Sampler
-    if [[ ! -f "${HYBRID_software_configuration_file[Sampler]}" ]]; then
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Preparation of input unexpectedly failed.'
+        return 1
+    elif [[ ! -f "${HYBRID_software_configuration_file[Sampler]}" ]]; then
         Print_Error 'The output directory and/or software input file were not properly created.'
         return 1
     fi
-    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Sampler &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Preparation of input with existent config succeeded.'
-        return 1
-    fi
-
     # Ensure that paths in Sampler config were replaced by global paths
     local surface_path spectra_dir_path
     surface_path=$(awk '$1 == "surface" {print $2; exit}' \
@@ -53,7 +51,13 @@ function Unit_Test__Sampler-create-input-file()
     spectra_dir_path=$(awk '$1 == "spectra_dir" {print $2; exit}' \
                            "${HYBRID_software_configuration_file[Sampler]}")
     if [[ "${surface_path}" != /* || "${spectra_dir_path}" != /* ]]; then
-        Print_Error 'freezeout and/or output directory path in Sampler config is not a global path.'
+        Print_Error 'Freezeout and/or output directory path in Sampler config is not a global path.'
+        return 1
+    fi
+
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Sampler &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Preparation of input with existent config succeeded.'
         return 1
     fi
 }
@@ -94,8 +98,10 @@ function Unit_Test__Sampler-check-all-input()
         Print_Error 'Ensuring existence of not-existing freezeout surface file succeeded.'
         return 1
     fi
-    printf 'surface %s\n' "$(which ls)" > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Sampler &> /dev/null
+    printf '%s\n'\
+           "surface $(which ls)"\
+           "spectra_dir ${HOME}" > "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Sampler
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of all input files unexpectedly failed.'
         return 1
@@ -105,6 +111,103 @@ function Unit_Test__Sampler-check-all-input()
 function Clean_Tests_Environment_For_Following_Test__Sampler-check-all-input()
 {
     rm -r "${HYBRID_output_directory}"
+}
+
+function Make_Test_Preliminary_Operations__Sampler-validate-config-file()
+{
+    Make_Test_Preliminary_Operations__Sampler-create-input-file
+}
+
+function Unit_Test__Sampler-validate-config-file() 
+{
+    local -r config_file='sampler_config.txt' 
+    mkdir -p "${HYBRID_software_output_directory[Sampler]}"        
+
+    # Empty config file
+    touch "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell __static__Validate_Sampler_Config_File &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Config validation passed though config file is empty.'
+        return 1
+    fi
+
+    # Config file with invalid key
+    printf '%s\n' 'invalidKey value' > "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell __static__Validate_Sampler_Config_File &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Config validation passed though config file has invalid key.'
+        return 1
+    fi
+
+    # Config file missing required key 'surface'
+    printf '%s\n' 'spectra_dir .' > "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell __static__Validate_Sampler_Config_File &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Config validation passed though config file does not contain "surface" key.'
+        return 1
+    fi
+
+    # Config file missing required key 'spectra_dir'
+    mkdir -p "${HYBRID_software_output_directory[Hydro]}"
+    touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+    printf '%s\n' 'surface ../Hydro/freezeout.dat' > "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell __static__Validate_Sampler_Config_File &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Config validation passed though config file does not contain "surface" key.'
+        return 1
+    fi
+
+    # Config file missing required keys surface and spectra_dir
+    printf '%s\n' 'numberOfEvents 100' > "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell __static__Validate_Sampler_Config_File &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Config validation passed though config file does not contain "surface" and "spectra_dir" keys.'
+        return 1
+    fi
+
+    # Config file with incorrect surface
+    printf '%s\n' 'surface not-a-file' > "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell __static__Validate_Sampler_Config_File &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Config validation passed though surface key has no string as value.'
+        return 1
+    fi
+
+    # Config file with incorrect spectra_dir
+    printf '%s\n' "spectra_dir ${config_file}" > "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell __static__Validate_Sampler_Config_File &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Config validation passed though spectra_dir key has no directory as value.'
+        return 1
+    fi
+
+    # Config file with incorrect value type for other keys
+    local wrong_key_value
+    for wrong_key_value in \
+      'number_of_events 3.14'\
+      'rescatter 3..14'\
+      'weakContribution #_#'\
+      'shear true'\
+      'ecrit +-1'\
+      'Nbins -100'\
+      'q_max 1.6'; do
+        printf '%s\n' "${wrong_key_value}" > "${HYBRID_software_configuration_file[Sampler]}"
+        Call_Codebase_Function_In_Subshell __static__Validate_Sampler_Config_File #&> /dev/null
+        if [[ $? -eq 0 ]]; then
+            Print_Error "Unexpected success: Key '${wrong_key_value}' accepted."
+            return 1
+        fi
+    done
+
+    # Valid config file
+    printf '%s\n'\
+           'surface ../Hydro/freezeout.dat'\
+           'spectra_dir .' > "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell __static__Validate_Sampler_Config_File
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Sampler config unexpectedly detected as incorrect.'
+        return 1
+    fi
 }
 
 function Make_Test_Preliminary_Operations__Sampler-test-run-software()

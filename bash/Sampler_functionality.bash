@@ -27,6 +27,11 @@ function Prepare_Software_Input_File_Sampler()
             "${HYBRID_software_new_input_keys[Sampler]}"
     fi
 
+    if ! __static__Validate_Sampler_Config_File; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+            "Sampler configuration file invalid."
+    fi
+
     # Replace potentially relative paths in Sampler config with absolute paths
     local freezeout_path output_directory
     freezeout_path=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface')
@@ -58,12 +63,11 @@ function Ensure_All_Needed_Input_Exists_Sampler()
             'Configuration file ' --emph "${HYBRID_software_configuration_file[Sampler]}"\
             ' was not found.'
     fi
-    local freezeout_path
-    freezeout_path=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface')
-    echo "DGFSHJ " "${freezeout_path}"
-    if [[ ! -f "${freezeout_path}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            'Freezeout hypersurface ' --emph "${freezeout_path}" ' does not exist.'
+    # This is already done preparing the input file, but it's logically belonging here, too.
+    # Therefore, we repeat the validation, as its cost is substantially negligible.
+    if ! __static__Validate_Sampler_Config_File; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+            "Sampler configuration file validation failed when ensuring existence of all input."
     fi
 }
 
@@ -79,18 +83,114 @@ function Run_Software_Sampler()
 function __static__Get_Path_Field_From_Sampler_Config_As_Global_Path()
 {
     local field value
-    field=$1
+    field="$1"
+    # We assume here that the configuration file is fine as it was validated before
     value=$(awk -v name="${field}" '$1 == name {print $2; exit}'\
                       "${HYBRID_software_configuration_file[Sampler]}")
-    (
-        cd "${HYBRID_software_output_directory[Sampler]}"
-        # If realpath succeeds, it prints the path that is the result of the function
-        if ! realpath "${value}" 2> /dev/null; then
-            exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-                'Unable to transform relatrive path "' --emph "${value}"\
-                '" into global one.'
-        fi
-    )
+    cd "${HYBRID_software_output_directory[Sampler]}"
+    # If realpath succeeds, it prints the path that is the result of the function
+    if ! realpath "${value}" 2> /dev/null; then
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+            'Unable to transform relatrive path "' --emph "${value}"\
+            '" into global one.'
+    fi
+    cd - > /dev/null
 }
+
+function __static__Validate_Sampler_Config_File() {
+    local -r config_file="${HYBRID_software_configuration_file[Sampler]}"
+
+    # Remove empty lines from configuration file
+    if ! sed -i '/^[[:space:]]*$/d' "${config_file}"; then
+        Print_Internal_And_Exit "Empty lines removal in ${FUNCNAME} failed."
+    fi
+
+    # Check if the config file is empty
+    if [[ ! -s "${config_file}" ]]; then
+        Print_Error 'Sampler configuration file is empty.'
+        return 1
+    fi
+
+    # Check for two columns in each line
+    if [[ $(awk 'NF!=2 {exit 1}' "${config_file}") ]]; then
+        Print_Error 'Each line should consist of two columns.' 
+        return 1
+    fi
+
+    # Check that no key is repeated
+    if [[ $(awk '{print $1}' "${config_file}" | sort | uniq -d) != '' ]]; then
+        Print_Error 'Found repeated key in sampler configuration file.'
+        return 1
+    fi
+
+    # Define allowed keys as an array
+    local -r allowed_keys=(
+        'surface'
+        'spectra_dir'
+        'number_of_events'
+        'rescatter'
+        'weakContribution'
+        'shear'
+        'ecrit'
+        'Nbins'
+        'q_max'
+    )
+
+    local to_be_found_keys=2
+    while read key value; do
+        if ! Element_In_Array_Equals_To "${key}" "${allowed_keys[@]}"; then
+            Print_Error 'Invalid key ' --emph "${key}" ' found in sampler configuration file.'
+            return 1
+        fi
+        case "${key}" in
+            surface )
+                cd "${HYBRID_software_output_directory[Sampler]}"
+                if [[ ! -f "${value}" ]]; then
+                    cd - > /dev/null
+                    Print_Error 'Freeze-out surface file ' --emph "${value}" ' not found!'
+                    return 1
+                fi
+                (( to_be_found_keys-- ))
+                ;;
+            spectra_dir )
+                cd "${HYBRID_software_output_directory[Sampler]}"
+                if [[ ! -d "${value}" ]]; then
+                    cd - > /dev/null
+                    Print_Error 'Sampler output folder ' --emph "${value}" ' not found!'
+                    return 1
+                fi
+                (( to_be_found_keys-- ))
+                ;;
+            rescatter | weakContribution | shear )
+                if [[ ! "${value}" =~ ^[01]$ ]]; then
+                    Print_Error 'Key ' --emph "${key}" ' must be either '\
+                                --emph '0' ' or ' --emph '1' '.'
+                    return 1
+                fi
+                ;;
+            number_of_events | Nbins )
+                if [[ ! "${value}" =~ ^[1-9][0-9]*$ ]]; then
+                    Print_Error 'Found not-integer value ' --emph "${value}"\
+                                ' for ' --emph "${key}" ' key.'
+                    return 1
+                fi
+                ;;
+            * )
+                if [[ ! "${value}" =~ ^[+-]?[0-9]+(\.[0-9]*)?$ ]]; then
+                    Print_Error 'Found invalid value ' --emph "${value}"\
+                                ' for ' --emph "${key}" ' key.'
+                    return 1
+                fi
+                ;;
+        esac
+    done < "${config_file}"
+
+    if [[ ${to_be_found_keys} -gt 0 ]]; then
+        Print_Error 'Either ' --emph 'surface' ' or ' --emph 'spectra_dir'\
+                    ' key is missing in sampler configuration file.'
+        return 1
+    fi
+}
+
 
 Make_Functions_Defined_In_This_File_Readonly
