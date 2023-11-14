@@ -56,18 +56,30 @@ function __static__Replace_Keys_Into_YAML_File()
     fi
 }
 
+# NOTE: In this function we might try to keep the empty lines, but the YAML library will
+#       strip them anyway and therefore it is convenient to strip them immediately.
 function __static__Replace_Keys_Into_Txt_File()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty base_input_file keys_to_be_replaced
+    # Strip lines with space only both in file and in the new keys list
+    sed -i '/^[[:space:]]*$/d' "${base_input_file}"
+    keys_to_be_replaced="$(sed '/^[[:space:]]*$/d' <(printf "${keys_to_be_replaced}\n"))"
     # Impose that both file and new keys have two entries per line
-    if ! awk 'NF != 2 { exit 1 }' "${base_input_file}"; then
+    if ! awk 'NF!=2 {exit 1}' "${base_input_file}"; then
         exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
             'File ' --emph "${base_input_file}" ' does not seem to contain two columns per line only!'
-    elif ! awk 'NF != 2 { exit 1 }' <(printf "${keys_to_be_replaced}\n"); then
+    elif ! awk 'NF!=2 {exit 1}' <(printf "${keys_to_be_replaced}\n"); then
         exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
             'Keys to be replaced do not seem to contain valid key-value syntax.'
     fi
-    local number_of_fields_per_line=( $(awk 'BEGIN{FS=":"}{print NF}' <(printf "${keys_to_be_replaced}\n") | sort -u) )
+    if ! awk '$1 ~ /:$/ {exit 1}' "${base_input_file}"; then
+        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
+            'File ' --emph "${base_input_file}" ' should not have a colon at the end of keys!'
+    fi
+    local number_of_fields_per_line
+    number_of_fields_per_line=(
+        $(awk 'BEGIN{FS=":"}{print NF}' <(printf "${keys_to_be_replaced}\n") | sort -u)
+    )
     if [[ ${#number_of_fields_per_line[@]} -gt 1 ]]; then
         exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
             'Keys to be replaced do not have consistent colon-terminated keys syntax.'
