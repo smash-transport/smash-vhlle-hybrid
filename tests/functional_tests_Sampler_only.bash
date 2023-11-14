@@ -18,7 +18,7 @@ function Functional_Test__do-Sampler-only()
     Sampler:
       Executable: %s/tests/mocks/sampler_black_box.py
     ' "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config}"
-    # Expect success and test presence of particle_lists
+    # Expect success and test presence of output files
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}"
     if [[ $? -ne 0 ]]; then
@@ -31,9 +31,8 @@ function Functional_Test__do-Sampler-only()
         return 1
     fi
     mv 'Sampler' 'Sampler-success'
-
     # Expect failure and test terminal output
-    local terminal_output_file
+    local terminal_output_file error_message
     terminal_output_file='Sampler/Terminal_Output.txt'
     Print_Info 'Running Hybrid-handler expecting crash in Sampler'
     BLACK_BOX_FAIL='true'\
@@ -45,16 +44,12 @@ function Functional_Test__do-Sampler-only()
         Print_Error 'File ' --emph "${terminal_output_file}" ' not found.'
         return 1
     fi
-
-    # Check whether terminal output contains expected error message 
-    local error_message
     error_message="$(<"${terminal_output_file}")"
     if [[ "${error_message}" != 'Sampler black-box crashed!' ]]; then
         Print_Error 'Sampler crashed with unexpected terminal output.'
         return 1
     fi
     mv 'Sampler' 'Sampler-crash'
-
     # Expect Hybrid-handler to crash before calling the Sampler because of invalid config file
     Print_Info 'Running Hybrid-handler expecting invalid config argument'
     BLACK_BOX_FAIL='false'
@@ -67,10 +62,10 @@ function Functional_Test__do-Sampler-only()
       Input_file: %s
     ' "${HYBRIDT_repository_top_level_path}"\
       "${invalid_sampler_config}" > "${hybrid_handler_config}"
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}"  
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}"
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded with invalid config for Sampler.'
         return 1
     fi
     mv 'Sampler' 'Sampler-invalid-config'
-} 
+}
