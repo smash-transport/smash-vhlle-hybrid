@@ -26,15 +26,11 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
     HYBRID_software_output_directory[IC]="${HYBRID_output_directory}/IC"
     HYBRID_software_executable[Hydro]="$(which echo)"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
-    
 }
 
 function Unit_Test__Hydro-create-input-file()
 {
     touch "${HYBRID_software_base_config_file[Hydro]}"
-    mkdir -p "${HYBRID_software_output_directory[IC]}"
-    local -r plist_ic="${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
-    touch "${plist_ic}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
     if [[ ! -f "${HYBRID_software_configuration_file[Hydro]}" ]]; then
         Print_Error 'The config was not properly created in the output folder.'
@@ -108,7 +104,7 @@ function Unit_Test__Hydro-test-run-software()
         Print_Error 'The terminal output has not the expected content.'
         return 1
     fi
-    
+
 }
 
 function Clean_Tests_Environment_For_Following_Test__Hydro-test-run-software()
