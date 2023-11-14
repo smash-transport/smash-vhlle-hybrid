@@ -17,7 +17,7 @@
 # run the test, plus optional preliminary and subsequent operations to the test.
 #
 # The functions that shall be provided by "external" code can be easily located
-# in this file, as they are called by the 'Call_through_interface' function.
+# in this file, as they are called by the 'Call_Through_Interface' function.
 # The driver has a first command line positional option that selects which suite
 # is considered. The parser is then sourcing the specific code and then the code
 # here is ready to be executed.
@@ -32,7 +32,7 @@ function Main()
     Print_Helper_And_Exit_If_Requested "$@"
     Parse_Tests_Suite_Parameter_And_Source_Specific_Code "${1-}"
     Check_System_Requirements
-    Call_through_interface 'Define_Available_Tests'
+    Call_Through_Interface 'Define_Available_Tests'
     Parse_Tests_Command_Line_Options "${@:2}"
     Prepare_Test_Environment
     Run_Tests
@@ -41,7 +41,7 @@ function Main()
     Exit_With_Tests_Outcome_Dependent_Exit_Code
 }
 
-function Call_through_interface()
+function Call_Through_Interface()
 {
     Call_Function_If_Existing_Or_Exit $1 "${@:2}"
 }
@@ -129,10 +129,10 @@ function Run_Tests()
             # Make sure each test is run from the same folder (no matter from where tests are run)
             Announce_Running_Test "${test_name}"
             cd "${HYBRIDT_folder_to_run_tests}" || exit ${HYBRID_fatal_builtin}
-            Call_through_interface 'Make_Test_Preliminary_Operations' "${test_name}"
-            Call_through_interface 'Run_Test' "${test_name}"
+            Call_Through_Interface 'Make_Test_Preliminary_Operations' "${test_name}"
+            Call_Through_Interface 'Run_Test' "${test_name}"
             local test_outcome=$?
-            Call_through_interface 'Clean_Tests_Environment_For_Following_Test' "${test_name}"
+            Call_Through_Interface 'Clean_Tests_Environment_For_Following_Test' "${test_name}"
             exit ${test_outcome}
         )
         Inspect_Test_Outcome $? "${test_name}"
