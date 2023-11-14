@@ -141,7 +141,7 @@ function Remove_Comments_In_File()
     local filename comment_character
     filename=$1
     comment_character=${2:-#}
-    if [[ ! -f ${filename} ]]; then
+    if [[ ! -f "${filename}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
             'File ' --emph "${filename}" ' not found.'
     elif [[ ${#comment_character} -ne 1 ]]; then
