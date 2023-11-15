@@ -12,7 +12,7 @@
 
 # How it works:
 # The sampler black box starts by checking if the sampler config exists.
-# If it is the case, it gets the path to the freezeout hypersurface and the output 
+# If it is the case, it gets the path to the freezeout hypersurface and the output
 # directory from the config and checks that also the freezeout surface exists.
 #
 # Use the BLACK_BOX_FAIL environment variable set to "true"
@@ -34,7 +34,7 @@ def check_input_arguments():
                           '- events: This is not a variable. This must be the string "events"\n' +\
                           '- num: random number set by the user. In hybrid num=1\n' +\
                           '- path_to_config_file: Path to the sampler configuration\n'
-                          
+
     if len(sys.argv) < 4 or len(sys.argv) > 5:
         err_msg = 'Invalid number of arguments!\n' + calling_instruction
         print(err_msg)
@@ -44,20 +44,20 @@ def check_input_arguments():
                   'The first argument must be the string "events"\n' + calling_instruction
         print(err_msg)
         sys.exit(1)
-    
-    
+
+
 def check_if_file_exists(path):
     if not os.path.isfile(path):
         err_msg = 'File not found at given path: ' + path
         print(err_msg)
         sys.exit(1)
-        
+
 def check_if_directory_exists(path):
     if not os.path.isdir(path):
         err_msg = path + ' is not a valid directory or does not exist!'
         print(err_msg)
         sys.exit(1)
-        
+
 def get_first_two_fields_in_line(line_in_config):
     #deleting the last character to omit the newline character '\n'
     line_in_config = line_in_config[:-1].split(' ')
@@ -65,12 +65,12 @@ def get_first_two_fields_in_line(line_in_config):
     splitted_line_in_config[0]=str(splitted_line_in_config[0])
     splitted_line_in_config[1]=str(splitted_line_in_config[1])
     return splitted_line_in_config
-        
+
 def get_value_as_string_from_config_by_keyword(path_to_config, keyword):
-    #Valid keywords: 
+    #Valid keywords:
     #surface, spectra_dir, number_of_events, weakContribution, shear, ecrit
     file = open(path_to_config)
-    
+
     while True:
         line_in_config = file.readline()
         if not line_in_config:
@@ -81,7 +81,7 @@ def get_value_as_string_from_config_by_keyword(path_to_config, keyword):
             splitted_line_in_config = get_first_two_fields_in_line(line_in_config)
             key_in_config_line = splitted_line_in_config[0]
             value_of_key_in_config_line = splitted_line_in_config[1]
-            
+
             if key_in_config_line == str(keyword):
                 return value_of_key_in_config_line
 
@@ -104,25 +104,25 @@ def make_fake_run():
     for i in range(11):
         print('Fake computational progress: ', int(10*i), '%')
         time.sleep(0.1)
-        
+
 
 def create_output_file(output_dir):
     header = '#!OSCAR2013 particle_lists t x y z mass p0 px py pz pdg ID charge\n' +\
              '# Units: fm fm fm fm GeV GeV GeV GeV GeV none none e\n' +\
-             '# SMASH-3.0-1-g0985d6b3\n'          
+             '# SMASH-3.0-1-g0985d6b3\n'
     format_oscar2013 = '%g %g %g %g %g %g %g %g %g %d %d %d'
-    
-    output_file = output_dir+'/particle_lists_test.oscar'
-    
+
+    output_file = output_dir+'/particle_lists.oscar'
+
     file = open(output_file, 'w')
     file.write(header)
     file.close()
-    
+
     with open(output_file, "a") as f_out:
         for counter_event in range(4):
             num_output_of_event = random.randint(10, 20)
             output_event = []
-            
+
             for counter_output in range(num_output_of_event):
                 t = 200.0
                 x = 0.1*random.randint(-1000, 1000)
@@ -136,36 +136,36 @@ def create_output_file(output_dir):
                 pdg = random.randint(0, 10000)
                 ID = random.randint(0, 100)
                 charge = random.randint(-2, 2)
-                
+
                 output_line = [t, x, y, z, mass, p0, px, py, pz, pdg, ID, charge]
                 output_event.append(output_line)
-    
+
             output_event = np.asarray(output_event)
-        
+
 
             f_out.write('# event '+ str(counter_event)+' out '+ str(num_output_of_event)+'\n')
             np.savetxt(f_out, output_event, delimiter=' ', newline='\n', fmt=format_oscar2013)
             f_out.write('# event '+ str(counter_event)+' end 0 impact   0.000 scattering_projectile_target yes\n')
-    
-    
-####################   End Definitions   ####################    
-  
+
+
+####################   End Definitions   ####################
+
 if __name__=='__main__':
-  
+
     sampler_finishes = os.environ.get('BLACK_BOX_FAIL') != 'true'
-  
-    check_input_arguments()  
-  
+
+    check_input_arguments()
+
     path_to_config = sys.argv[3]
-    
+
     check_if_file_exists(path_to_config)
-    
+
     path_to_freezeout = get_value_as_string_from_config_by_keyword(path_to_config, 'surface')
     output_dir = get_value_as_string_from_config_by_keyword(path_to_config, 'spectra_dir')
-    
+
     check_if_file_exists(path_to_freezeout)
     check_if_directory_exists(output_dir)
-    
+
     if sampler_finishes:
         make_fake_run()
         create_output_file(output_dir)

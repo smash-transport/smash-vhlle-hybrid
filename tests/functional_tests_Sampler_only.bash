@@ -16,7 +16,7 @@ function Functional_Test__do-Sampler-only()
     touch 'Hydro/freezeout.dat'
     printf '
     Sampler:
-      Executable: %s/tests/mocks/sampler_black_box.py
+      Executable: %s/tests/mocks/sampler_black-box.py
     ' "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config}"
     # Expect success and test presence of output files
     Print_Info 'Running Hybrid-handler expecting success'
@@ -58,7 +58,7 @@ function Functional_Test__do-Sampler-only()
     touch "${invalid_sampler_config}"
     printf '
     Sampler:
-      Executable: %s/tests/mocks/sampler_black_box.py
+      Executable: %s/tests/mocks/sampler_black-box.py
       Config_file: %s
     ' "${HYBRIDT_repository_top_level_path}"\
       "${invalid_sampler_config}" > "${hybrid_handler_config}"
