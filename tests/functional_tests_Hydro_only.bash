@@ -26,8 +26,8 @@ function Functional_Test__do-Hydro-only()
         return 1
     fi
     output_files=( Hydro/* )
-    if [[ ${#output_files[@]} -ne 3 ]]; then
-        Print_Error 'Expected ' --emph '3' " output files, but ${#output_files[@]} found."
+    if [[ ${#output_files[@]} -ne 4 ]]; then
+        Print_Error 'Expected ' --emph '4' " output files, but ${#output_files[@]} found."
         return 1
     fi
     mv 'Hydro' 'Hydro-success'
