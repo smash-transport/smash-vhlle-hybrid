@@ -17,6 +17,7 @@ function Make_Test_Preliminary_Operations()
     {
         # Write header to the log file to give some structure to it
         printf "\n[$(date)]\nRunning functional test \"%s\"\n\n" "${test_name}"
+        source "${HYBRIDT_tests_folder}/functional_tests_utility_functions.bash" || exit ${HYBRID_fatal_builtin}
         mkdir "$1" || exit ${HYBRID_fatal_builtin}
         cd "$1" || exit ${HYBRID_fatal_builtin}
         Call_Function_If_Existing_Or_No_Op ${FUNCNAME}__$1

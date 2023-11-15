@@ -25,11 +25,7 @@ function Functional_Test__do-Sampler-only()
         Print_Error 'Hybrid-handler unexpectedly failed.'
         return 1
     fi
-    output_files=( Sampler/* )
-    if [[ ${#output_files[@]} -ne 4 ]]; then
-        Print_Error 'Expected ' --emph '4' " output files, but ${#output_files[@]} found."
-        return 1
-    fi
+    Check_If_Software_Produced_Expected_Output 'Sampler' "$(pwd)/Sampler"
     mv 'Sampler' 'Sampler-success'
     # Expect failure and test terminal output
     local terminal_output_file error_message

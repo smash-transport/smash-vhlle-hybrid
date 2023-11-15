@@ -23,15 +23,7 @@ function Functional_Test__do-IC-only()
         Print_Error 'Hybrid-handler unexpectedly failed.'
         return 1
     fi
-    unfinished_files=( IC/*.unfinished )
-    output_files=( IC/* )
-    if [[ ${#unfinished_files[@]} -gt 0 ]]; then
-        Print_Error 'Some unexpected ' --emph '.unfinished' ' output file remained.'
-        return 1
-    elif [[ ${#output_files[@]} -ne 5 ]]; then
-        Print_Error 'Expected ' --emph '5' " output files, but ${#output_files[@]} found."
-        return 1
-    fi
+    Check_If_Software_Produced_Expected_Output 'IC' "$(pwd)/IC"
     mv 'IC' 'IC-success'
     # Expect failure and test "SMASH" message
     Print_Info 'Running Hybrid-handler expecting invalid IC input file failure'
