@@ -30,10 +30,21 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
 
 function Unit_Test__Hydro-create-input-file()
 {
+    local -r ic_file="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     touch "${HYBRID_software_base_config_file[Hydro]}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
     if [[ ! -f "${HYBRID_software_configuration_file[Hydro]}" ]]; then
         Print_Error 'The config was not properly created in the output folder.'
+        return 1
+    elif [[ ! -L "${ic_file}" ]]; then
+        Print_Error 'The symbolic link to the IC file was not properly created in the output folder.'
+        return 1
+    fi
+    rm "${HYBRID_software_output_directory[Hydro]}"/*
+    touch "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro &> /dev/null
+    if [[ ! -f "${ic_file}" ]]; then
+        Print_Error 'The already existing ic regular file was somehow lost.'
         return 1
     fi
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro &> /dev/null
@@ -58,17 +69,31 @@ function Unit_Test__Hydro-check-all-input()
 {
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Ensuring existence of not-existing output directory succeeded, although failure was expected.'
+        Print_Error 'Ensuring existence of not-existing output directory succeeded.'
         return 1
     fi
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"\
-                "${HYBRID_software_output_directory[IC]}"
+             "${HYBRID_software_output_directory[IC]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Ensuring existence of not-existing config file succeeded, although failure was expected.'
+        Print_Error 'Ensuring existence of not-existing config file succeeded.'
         return 1
     fi
-    touch "${HYBRID_software_configuration_file[Hydro]}" "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
+    touch "${HYBRID_software_configuration_file[Hydro]}"
+    Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Ensuring existence of not-existing link to IC file succeeded.'
+        return 1
+    fi
+    ln -s 'not-existing-target' "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+    Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Ensuring existence of broken link to IC file succeeded.'
+        return 1
+    fi
+    touch "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
+    ln -s -f "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"\
+             "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of existing folder/file failed.'
@@ -91,7 +116,7 @@ function Unit_Test__Hydro-test-run-software()
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     local -r hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt"\
              Hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}"\
-             IC_output_file_path="${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
+             IC_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     local terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_Hydro
     if [[ ! -f "${hydro_terminal_output}" ]]; then
