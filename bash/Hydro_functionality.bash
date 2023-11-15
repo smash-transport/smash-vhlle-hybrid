@@ -25,9 +25,15 @@ function Prepare_Software_Input_File_Hydro()
     fi
     # Create symbolic link to IC file, which is assumed to exist here (its existence is checked later).
     # If the file exists we will just use it; if it exists as a broken link we overwrite it with 'ln -f'.
-    if [[ ! -e "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" ]]; then
-        ln -s -f "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"\
-                 "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+    #if [[ ! -e "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" ]]; then
+    #    ln -s -f "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"\
+    #             "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+    #fi
+    #echo "${HYBRID_software_input_file[Hydro]}"
+    base_file=$(basename "${HYBRID_software_input_file[Hydro]}")
+    if [[ ! -e "${HYBRID_software_output_directory[Hydro]}/${base_file}" ]]; then
+        ln -s -f "${HYBRID_software_output_directory[IC]}/${base_file}"\
+                 "${HYBRID_software_input_file[Hydro]}"
     fi
     # Create a symbolic link to the eos folder, which is assumed to exist in the hydro software
     # folder. The user-specified software executable is guaranteed to be either a command name
@@ -71,9 +77,9 @@ function Ensure_All_Needed_Input_Exists_Hydro()
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
             'The configuration file ' --emph "${HYBRID_software_configuration_file[Hydro]}" ' was not found.'
     fi
-    if [[ ! -e "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" ]]; then
+    if [[ ! -e "${HYBRID_software_input_file[Hydro]}" ]]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-        'IC output file ' --emph "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat" ' does not exist.'
+        'IC output file ' --emph "${HYBRID_software_input_file[Hydro]}" ' does not exist.'
     fi
 }
 
@@ -82,7 +88,7 @@ function Run_Software_Hydro()
     cd "${HYBRID_software_output_directory[Hydro]}"
     local -r\
         hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}"\
-        ic_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"\
+        ic_output_file_path="${HYBRID_software_input_file[Hydro]}"\
         hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt"
     "${HYBRID_software_executable[Hydro]}" "-params" "${hydro_config_file_path}"\
          "-ISinput" "${ic_output_file_path}" "-outputDir" "${HYBRID_software_output_directory[Hydro]}" >> "${hydro_terminal_output}"

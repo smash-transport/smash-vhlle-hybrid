@@ -36,22 +36,25 @@ function Define_Further_Global_Variables()
     declare -rgA HYBRID_hybrid_handler_valid_keys=()
     declare -rgA HYBRID_ic_valid_keys=(
         [Executable]='HYBRID_software_executable[IC]'
-        [Input_file]='HYBRID_software_base_config_file[IC]'
+        [Config_file]='HYBRID_software_base_config_file[IC]'
         [Software_keys]='HYBRID_software_new_input_keys[IC]'
     )
     declare -rgA HYBRID_hydro_valid_keys=(
         [Executable]='HYBRID_software_executable[Hydro]'
-        [Input_file]='HYBRID_software_base_config_file[Hydro]'
+        [Config_file]='HYBRID_software_base_config_file[Hydro]'
+        [Input_file]='HYBRID_software_default_input_file[Hydro]'
         [Software_keys]='HYBRID_software_new_input_keys[Hydro]'
     )
     declare -rgA HYBRID_sampler_valid_keys=(
         [Executable]='HYBRID_software_executable[Sampler]'
-        [Input_file]='HYBRID_software_base_config_file[Sampler]'
+        [Config_file]='HYBRID_software_base_config_file[Sampler]'
+        [Input_file]='HYBRID_software_default_input_file[Sampler]'
         [Software_keys]='HYBRID_software_new_input_keys[Sampler]'
     )
     declare -rgA HYBRID_afterburner_valid_keys=(
         [Executable]='HYBRID_software_executable[Afterburner]'
-        [Input_file]='HYBRID_software_base_config_file[Afterburner]'
+        [Config_file]='HYBRID_software_base_config_file[Afterburner]'
+        [Input_file]='HYBRID_software_default_input_file[Afterburner]'
         [Software_keys]='HYBRID_software_new_input_keys[Afterburner]'
         [Add_spectators_from_IC]='HYBRID_optional_feature[Add_spectators_from_IC]'
     )
@@ -79,6 +82,11 @@ function Define_Further_Global_Variables()
         [Sampler]="${HYBRID_default_configurations_folder}/hadron_sampler"
         [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"
     )
+    declare -gA HYBRID_software_default_input_file=(
+        [Hydro]="${HYBRID_output_directory}/IC/SMASH_IC.dat"
+        [Sampler]="${HYBRID_output_directory}/Hydro/freezeout.dat"
+        [Afterburner]="${HYBRID_output_directory}/Sampler/sampling0"
+    )
     declare -gA HYBRID_software_new_input_keys=(
         [IC]=''
         [Hydro]=''
@@ -97,6 +105,11 @@ function Define_Further_Global_Variables()
     )
     declare -gA HYBRID_software_configuration_file=(
         [IC]=''
+        [Hydro]=''
+        [Sampler]=''
+        [Afterburner]=''
+    )
+    declare -gA HYBRID_software_input_file=(
         [Hydro]=''
         [Sampler]=''
         [Afterburner]=''
