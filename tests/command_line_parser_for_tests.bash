@@ -24,6 +24,11 @@ function Parse_Tests_Suite_Parameter_And_Source_Specific_Code()
     else
         source "${code_filename}" || exit ${HYBRID_fatal_builtin}
     fi
+    # If existing, source utility functions of given type of tests
+    code_filename="${HYBRIDT_tests_folder}/utility_functions_${suite_name}.bash"
+    if [[ -f "${code_filename}" ]]; then
+        source "${code_filename}" || exit ${HYBRID_fatal_builtin}
+    fi
 }
 
 function Parse_Tests_Command_Line_Options()
