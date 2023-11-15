@@ -7,8 +7,6 @@
 #
 #===================================================
 
-# NOTE: These functional tests just require code to run and finish with zero exit code.
-
 function __static__Check_Successful_Handler_Run()
 {
     if [[ $1 -ne 0 ]]; then

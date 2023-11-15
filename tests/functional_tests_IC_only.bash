@@ -7,8 +7,6 @@
 #
 #===================================================
 
-# NOTE: These functional tests just require code to run and finish with zero exit code.
-
 function Functional_Test__do-IC-only()
 {
     shopt -s nullglob
