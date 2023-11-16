@@ -25,11 +25,6 @@ function Prepare_Software_Input_File_Hydro()
     fi
     # Create symbolic link to IC file, which is assumed to exist here (its existence is checked later).
     # If the file exists we will just use it; if it exists as a broken link we overwrite it with 'ln -f'.
-    #if [[ ! -e "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" ]]; then
-    #    ln -s -f "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"\
-    #             "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
-    #fi
-    #echo "${HYBRID_software_input_file[Hydro]}"
     base_file=$(basename "${HYBRID_software_input_file[Hydro]}")
     if [[ ! -e "${HYBRID_software_output_directory[Hydro]}/${base_file}" ]]; then
         ln -s -f "${HYBRID_software_output_directory[IC]}/${base_file}"\

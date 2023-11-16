@@ -46,6 +46,22 @@ function Functional_Test__do-Afterburner-only()
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     __static__Check_Successful_Handler_Run $? || return 1
     mv 'Afterburner' 'Afterburner-success'
+    rm 'Sampler/particle_lists.oscar'
+    touch 'Sampler/particle_lists_2.oscar'
+    printf '
+    Afterburner:
+      Executable: %s/tests/mocks/smash_afterburner_black-box.py
+      Input_file: particle_lists_2.oscar
+      Software_keys:
+        Modi:
+          List:
+            File_Directory: "."
+    ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
+    # Expect success and test absence of "SMASH" unfinished file
+    Print_Info 'Running Hybrid-handler expecting success'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+    __static__Check_Successful_Handler_Run $? || return 1
+    mv 'Afterburner' 'Afterburner-success-custom-input'
     # Expect failure and test "SMASH" message
     Print_Info 'Running Hybrid-handler expecting invalid Afterburner input file failure'
     terminal_output_file='Afterburner/Terminal_Output.txt'
@@ -82,10 +98,29 @@ function Functional_Test__do-Afterburner-only()
     Print_Info 'Running Hybrid-handler expecting success with the add_spectator option'
     mkdir 'IC'
     touch 'IC/config.yaml' 'IC/SMASH_IC.oscar'
+    touch 'Sampler/particle_lists.oscar'
     printf '
     Afterburner:
       Executable: %s/tests/mocks/smash_afterburner_black-box.py
       Add_spectators_from_IC: TRUE
+      Software_keys:
+        Modi:
+          List:
+            File_Directory: "."
+    ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+    __static__Check_Successful_Handler_Run  $? || return 1
+    mv 'Afterburner' 'Afterburner-success-with-spectators'
+    # Expect success and test the add_spectator functionality with custom spectator input
+    Print_Info 'Running Hybrid-handler expecting success with the add_spectator option'
+    rm -r 'IC'
+    mkdir 'IC'
+    touch 'IC/config.yaml' 'IC/SMASH_IC_2.oscar'
+    printf '
+    Afterburner:
+      Executable: %s/tests/mocks/smash_afterburner_black-box.py
+      Add_spectators_from_IC: TRUE
+      Spectator_Source: SMASH_IC_2.oscar
       Software_keys:
         Modi:
           List:

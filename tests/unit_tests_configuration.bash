@@ -188,7 +188,7 @@ function __static__Test_Section_Parsing_In_Subshell()
     if [[ ${HYBRID_software_base_config_file[${section}]} != "${config_file}" ]]; then
         Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (config file).'
     fi
-    if [[ ${section} != 'IC' ]]; then
+    if [[ ${section} != 'IC' ]] && [[ ${section} != 'Sampler' ]]; then
         if [[ ${HYBRID_software_default_input_file[${section}]} != "${input_file}" ]]; then
             Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (input file).'
         fi
@@ -262,12 +262,11 @@ function Unit_Test__configuration-parse-Sampler-section()
     Sampler:
       Executable: foo
       Config_file: bar
-      Input_file: ket
       Software_keys:
         shear: 1.2345
     ' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell\
-        'Sampler' 'foo' 'bar' 'ket' 'shear: 1.2345'
+        'Sampler' 'foo' 'bar' '' 'shear: 1.2345'
     if [[ $? -ne 0 ]]; then
         return 1
     fi

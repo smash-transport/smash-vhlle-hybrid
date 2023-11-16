@@ -20,9 +20,12 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
                "${HYBRID_software_output_directory[${key}]}/${HYBRID_software_input_filename[${key}]}"
             base_file=$(basename "${HYBRID_software_base_config_file[${key}]}")
             HYBRID_software_configuration_file[${key}]="${HYBRID_software_output_directory[${key}]}/${base_file}"
-            if [[ ${key} != 'IC' ]]; then
+            if [[ ${key} == 'Hydro' ]]; then
                 base_file=$(basename "${HYBRID_software_default_input_file[${key}]}")
                 HYBRID_software_input_file[${key}]="${HYBRID_software_output_directory[${key}]}/${base_file}"
+            elif [[ ${key} == 'Afterburner' ]]; then
+                base_file=$(basename "${HYBRID_software_default_input_file[${key}]}")
+                HYBRID_software_input_file['Afterburner']="${HYBRID_software_output_directory['Sampler']}/${base_file}"
             fi
         fi
     done

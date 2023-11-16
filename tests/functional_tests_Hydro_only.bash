@@ -34,6 +34,27 @@ function Functional_Test__do-Hydro-only()
         return 1
     fi
     mv 'Hydro' 'Hydro-success'
+    #Expect sucess with custom input file name
+    printf '
+    Hydro:
+      Executable: %s/tests/mocks/vhlle_black-box.py
+      Input_file: input
+    ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
+    # Run the hydro stage and check if freezeout is successfully generated
+    rm 'IC/SMASH_IC.dat'
+    touch 'IC/input'
+    Print_Info 'Running Hybrid-handler expecting success'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Hybrid-handler unexpectedly failed.'
+        return 1
+    fi
+    output_files=( Hydro/* )
+    if [[ ${#output_files[@]} -ne 4 ]]; then
+        Print_Error 'Expected ' --emph '4' " output files, but ${#output_files[@]} found."
+        return 1
+    fi
+    mv 'Hydro' 'Hydro-succes-custom-input'
     # Expect failure when giving an invalid IC output
     Print_Info 'Running Hybrid-handler expecting invalid IC argument'
     terminal_output_file='Hydro/Terminal_Output.txt'
