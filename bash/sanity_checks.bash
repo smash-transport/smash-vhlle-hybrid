@@ -35,17 +35,19 @@ function Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts()
 
 function __static__Ensure_Executable_Exists()
 {
-    local label=$1 file_path
-    file_path="${HYBRID_software_executable[${label}]}"
-    if [[ "${file_path}" = '' ]]; then
+    local label=$1 executable
+    executable="${HYBRID_software_executable[${label}]}"
+    if [[ "${executable}" = '' ]]; then
         exit_code=${HYBRID_fatal_variable_unset} Print_Fatal_And_Exit\
             'Software executable for ' --emph "${label}" ' run was not specified.'
-    elif [[ ! -f "${file_path}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            'The executable file for the ' --emph "${label}" ' run was not found.'
-    elif [[ ! -x "${file_path}" ]]; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-            'The executable file for the ' --emph "${label}" ' run is not executable.'
+    elif ! hash "${executable}"; then 
+        if [[ ! -f "${executable}" ]]; then
+            exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+                'The executable file for the ' --emph "${label}" ' run was not found.'
+        elif [[ ! -x "${executable}" ]]; then
+            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+                'The executable file for the ' --emph "${label}" ' run is not executable.'
+        fi
     fi
 }
 
