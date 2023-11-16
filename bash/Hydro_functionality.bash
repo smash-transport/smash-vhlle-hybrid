@@ -29,6 +29,14 @@ function Prepare_Software_Input_File_Hydro()
         ln -s -f "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"\
                  "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     fi
+    # Create a symbolic link to the eos folder, which is assumed to exist in the vhlle repository.
+    local eos_folder
+    eos_folder="$(dirname $(which "${HYBRID_software_executable[Hydro]}"))/eos"
+    if [[ ! -d "${eos_folder}" ]]; then
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+            'The folder ' --emph "${eos_folder}" ' does not exist.'
+    fi
+    ln -s "${eos_folder}" "${HYBRID_software_output_directory[Hydro]}"
 }
 
 function Ensure_All_Needed_Input_Exists_Hydro()
