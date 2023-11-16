@@ -17,7 +17,7 @@ function Functional_Test__do-Hydro-only()
     mkdir 'eos'
     printf "
     Hydro:
-      Executable: ${HYBRIDT_repository_top_level_path}/tests/run_tests/do-Hydro-only/vhlle_black-box.py
+      Executable: $(pwd)/vhlle_black-box.py
     " "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
     # Run the hydro stage and check if freezeout is successfully generated
     mkdir -p 'IC'
