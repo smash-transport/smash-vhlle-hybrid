@@ -10,12 +10,15 @@
 function Functional_Test__do-Hydro-only()
 {
     shopt -s nullglob
-    local -r config_filename='vhlle_hydro'
+    local -r config_filename='vhlle_hydro_config'
     local output_files terminal_output_file failure_message
-    printf '
+    # Make a symlink to the python mock such that the eos folder doesn't have to be created in the mock folder
+    ln -s "${HYBRIDT_repository_top_level_path}/tests/mocks/vhlle_black-box.py" "vhlle_black-box.py"
+    mkdir 'eos'
+    printf "
     Hydro:
-      Executable: %s/tests/mocks/vhlle_black-box.py
-    ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
+      Executable: ${HYBRIDT_repository_top_level_path}/tests/run_tests/do-Hydro-only/vhlle_black-box.py
+    " "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
     # Run the hydro stage and check if freezeout is successfully generated
     mkdir -p 'IC'
     touch 'IC/SMASH_IC.dat'
@@ -26,8 +29,8 @@ function Functional_Test__do-Hydro-only()
         return 1
     fi
     output_files=( Hydro/* )
-    if [[ ${#output_files[@]} -ne 4 ]]; then
-        Print_Error 'Expected ' --emph '4' " output files, but ${#output_files[@]} found."
+    if [[ ${#output_files[@]} -ne 5 ]]; then
+        Print_Error 'Expected ' --emph '5' " output files, but ${#output_files[@]} found."
         return 1
     fi
     mv 'Hydro' 'Hydro-success'

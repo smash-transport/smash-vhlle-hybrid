@@ -32,6 +32,17 @@ function Unit_Test__Hydro-create-input-file()
 {
     local -r ic_file="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     touch "${HYBRID_software_base_config_file[Hydro]}"
+    local dummy_exec='tmp_exec'
+    touch "${dummy_exec}"
+    chmod +x "${dummy_exec}"
+    HYBRID_software_executable[Hydro]="${HYBRIDT_folder_to_run_tests}/${dummy_exec}"
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Preparation succeeded even though the eos folder does not exist.'
+        return 1
+    fi
+    mkdir 'eos'
+    rm "${HYBRID_software_output_directory[Hydro]}"/*
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
     if [[ ! -f "${HYBRID_software_configuration_file[Hydro]}" ]]; then
         Print_Error 'The config was not properly created in the output folder.'
