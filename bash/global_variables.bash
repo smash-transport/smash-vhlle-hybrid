@@ -55,6 +55,12 @@ function Define_Further_Global_Variables()
         [Software_keys]='HYBRID_software_new_input_keys[Afterburner]'
         [Add_spectators_from_IC]='HYBRID_optional_feature[Add_spectators_from_IC]'
     )
+    declare -rgA HYBRID_software_input_filename=(
+    [IC]='IC_config.yaml'
+    [Hydro]='hydro_config.txt'
+    [Sampler]='sampler_config.txt'
+    [Afterburner]='afterburner_config.yaml'
+    )
     # Variables to be set (and possibly made readonly) from command line
     HYBRID_execution_mode='help'
     HYBRID_configuration_file='./config.yaml'
