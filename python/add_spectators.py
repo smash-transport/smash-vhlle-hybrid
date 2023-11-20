@@ -3,6 +3,8 @@
 import numpy as np
 import argparse
 import os
+import yaml
+import sys
 
 '''
     This script adds the spectators of the collision, that were not included in
@@ -19,20 +21,23 @@ def get_initial_nucleons_from_config():
         We need to find the indented configuration of the projectile and target
         nuclei and read off the number of constituents.
     '''
-
     N_initial_nucleons = 0
-    with open(args.smash_config) as config:
-        for line in config:
-            if line.startswith('      Particles:'):
-                split_line = line.split(':')
-                if len(split_line) != 4:
-                    print ('ERROR: Cannot cope with more than two particle '
-                           'species forming the initial nucleons. Pleae modify '
-                           'the \'python_scripts/add_spectators.py\' script.')
-                    break
-                N_initial_nucleons += int(line.split(':')[2].split(',')[0])
-                N_initial_nucleons += int(line.split(':')[3].split('}')[0])
+    with open(args.smash_config, 'r') as file:
+        data_config = yaml.safe_load(file)
 
+    try:
+        projectile_particles = data_config['Modi']['Collider']['Projectile']['Particles']
+        target_particles = data_config['Modi']['Collider']['Projectile']['Particles']
+
+        for particle in projectile_particles.keys():
+            N_initial_nucleons += projectile_particles[particle]
+
+        for particle in target_particles.keys():
+            N_initial_nucleons += target_particles[particle]
+    except:
+        print("The config file does not contain the necessary information about the projectile and target nuclei.")
+        sys.exit()
+        
     return N_initial_nucleons
 
 
@@ -49,7 +54,7 @@ def extract_spectators():
     spectator_list = []
     with open(args.initial_particle_list, 'r') as f:
         for line in f:
-            if (len(line.split()) != 20): continue  # Comment line
+            if line[0] == "#": continue  # Comment line
             # Is initial nucleon and has not interacted
             if ((int(line.split()[10]) <= N_nucleons) and (int(line.split()[12]) == 0) ):
                 # To properly determine the spectators, we need the extended output.
