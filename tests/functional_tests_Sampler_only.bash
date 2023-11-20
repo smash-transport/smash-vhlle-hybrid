@@ -51,7 +51,7 @@ function Functional_Test__do-Sampler-only()
     fi
     mv 'Sampler' 'Sampler-crash'
     # Expect Hybrid-handler to crash before calling the Sampler because of invalid config file
-    Print_Info 'Running Hybrid-handler expecting invalid config argument'
+    Print_Info 'Running Hybrid-handler expecting invalid config error'
     BLACK_BOX_FAIL='false'
     mkdir -p Sampler
     local -r invalid_sampler_config="invalid_hadron_sampler"

@@ -162,10 +162,7 @@ function Call_Function_If_Existing_Or_Exit()
     local name_of_the_function=$1
     shift
     if [[ "$(type -t ${name_of_the_function})" = 'function' ]]; then
-        # Return value propagates automatically since a function returns the last exit code.
-        # However, when exit on error behavior is active, the script would terminate here if
-        # the function returns non-zero exit code and, instead we want this propagate up!
-        ${name_of_the_function} "$@" || return $?
+        ${name_of_the_function} "$@"
     else
         exit_code=${HYBRID_fatal_missing_feature} Print_Internal_And_Exit\
             '\nFunction ' --emph "${name_of_the_function}" ' not found!'\
@@ -178,8 +175,7 @@ function Call_Function_If_Existing_Or_No_Op()
     local name_of_the_function=$1
     shift
     if [[ "$(type -t ${name_of_the_function})" = 'function' ]]; then
-        # See 'Call_Function_If_Existing_Or_Exit' for more information about 'return $?'
-        ${name_of_the_function} "$@" || return $?
+        ${name_of_the_function} "$@"
     fi
 }
 
