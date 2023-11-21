@@ -33,7 +33,7 @@ function Prepare_Software_Input_File_Hydro()
     # The user-specified software executable is guaranteed to be either a command name or
     # a global path and in both cases 'which' is expected to succeed and print a global path.
     local eos_folder
-    eos_folder="$(dirname $(which "${HYBRID_software_executable[Hydro]}"))/eos"
+    eos_folder="$(dirname $(type -P "${HYBRID_software_executable[Hydro]}"))/eos"
     if [[ ! -d "${eos_folder}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
             'The folder ' --emph "${eos_folder}" ' does not exist.'
