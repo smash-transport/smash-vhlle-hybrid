@@ -15,10 +15,10 @@ function Functional_Test__do-Hydro-only()
     # Make a symlink to the python mock such that the eos folder doesn't have to be created in the mock folder
     ln -s "${HYBRIDT_repository_top_level_path}/tests/mocks/vhlle_black-box.py" "vhlle_black-box.py"
     mkdir 'eos'
-    printf "
+    printf '
     Hydro:
-      Executable: $(pwd)/vhlle_black-box.py
-    " "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
+      Executable: %s/vhlle_black-box.py
+    ' "$(pwd)" > "${config_filename}"
     # Run the hydro stage and check if freezeout is successfully generated
     mkdir -p 'IC'
     touch 'IC/SMASH_IC.dat'

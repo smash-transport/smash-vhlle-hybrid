@@ -30,13 +30,35 @@ function Prepare_Software_Input_File_Hydro()
                  "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     fi
     # Create a symbolic link to the eos folder, which is assumed to exist in the vhlle repository.
+    # The user-specified software executable is guaranteed to be either a command name or
+    # a global path and in both cases 'which' is expected to succeed and print a global path.
     local eos_folder
     eos_folder="$(dirname $(which "${HYBRID_software_executable[Hydro]}"))/eos"
     if [[ ! -d "${eos_folder}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
             'The folder ' --emph "${eos_folder}" ' does not exist.'
     fi
-    ln -s "${eos_folder}" "${HYBRID_software_output_directory[Hydro]}"
+    local -r link_to_eos_folder="${HYBRID_software_output_directory[Hydro]}/eos"
+    if [[ -d "${link_to_eos_folder}" ]]; then
+        if [[ ! "${link_to_eos_folder}" -ef "${eos_folder}" ]]; then
+            if [[ -L "${link_to_eos_folder}" ]]; then
+                Print_Warning 'Found a symlink ' --emph "${HYBRID_software_output_directory[Hydro]}/eos"\
+                ', pointing to a different eos folder. Unlink and link again!\n'
+                unlink "${HYBRID_software_output_directory[Hydro]}/eos"
+                ln -s "${eos_folder}" "${link_to_eos_folder}"
+            else 
+                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+                'A folder called eos already exists at ' --emph "${HYBRID_software_output_directory[Hydro]}"\
+                '. Please clean up the directory.'
+            fi
+        fi
+    elif [[ -e "${link_to_eos_folder}" ]]; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+                'A file called eos already exists at ' --emph "${HYBRID_software_output_directory[Hydro]}"\
+                '. Please clean up the directory.'
+    else
+        ln -s "${eos_folder}" "${link_to_eos_folder}"
+    fi
 }
 
 function Ensure_All_Needed_Input_Exists_Hydro()
