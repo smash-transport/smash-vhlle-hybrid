@@ -20,15 +20,20 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
                "${HYBRID_software_output_directory[${key}]}/${HYBRID_software_input_filename[${key}]}"
             base_file=$(basename "${HYBRID_software_base_config_file[${key}]}")
             HYBRID_software_configuration_file[${key}]="${HYBRID_software_output_directory[${key}]}/${base_file}"
-            if [[ ${key} == 'Hydro' ]]; then
-                base_file=$(basename "${HYBRID_software_default_input_file[${key}]}")
-                HYBRID_software_input_file[${key}]="${HYBRID_software_output_directory[${key}]}/${base_file}"
-            elif [[ ${key} == 'Afterburner' ]]; then
-                base_file=$(basename "${HYBRID_software_default_input_file[${key}]}")
-                HYBRID_software_input_file['Afterburner']="${HYBRID_software_output_directory['Sampler']}/${base_file}"
+            # Set here input data file of software if it was not set by user
+            if [[ ${key} != 'IC' ]] && [[ ${key} != 'Sampler' ]]; then
+                if [[ "${HYBRID_software_input_file[${key}]}" = '' ]]; then
+                    HYBRID_software_input_file[${key}]="${HYBRID_software_output_directory[${HYBRID_relative_key[${key}]}]}/${HYBRID_software_default_input_file["${key}"]}"
+                else
+                    base_file_input=$(basename "${HYBRID_software_default_input_file[${key}]}")
+                    HYBRID_software_input_file[${key}]="${HYBRID_software_output_directory[${HYBRID_relative_key[${key}]}]}/${base_file_input}"
+                fi
             fi
         fi
     done
+    if  [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]] && [[ "${HYBRID_optional_feature[Spectators_source]}" != '' ]]; then
+        HYBRID_software_user_custom_input_file['Spectators']="${HYBRID_optional_feature[Spectators_source]}"
+    fi
     readonly HYBRID_software_output_directory HYBRID_software_configuration_file  HYBRID_software_input_file 
 }
 

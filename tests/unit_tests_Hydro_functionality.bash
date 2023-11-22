@@ -34,6 +34,8 @@ function Unit_Test__Hydro-create-input-file()
     ln -s "$(which ls)" dummy_exec
     HYBRID_software_executable[Hydro]="${HYBRIDT_folder_to_run_tests}/dummy_exec"
     mkdir 'eos'
+    mkdir -p "${HYBRID_software_output_directory[IC]}"
+    touch "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
     if [[ ! -f "${HYBRID_software_configuration_file[Hydro]}" ]]; then
         Print_Error 'The config was not properly created in the output folder.'
@@ -153,7 +155,7 @@ function Unit_Test__Hydro-test-run-software()
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     local -r hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt"\
              Hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}"\
-             IC_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+             IC_output_file_path="${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
     local terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_Hydro
     if [[ ! -f "${hydro_terminal_output}" ]]; then
@@ -163,6 +165,8 @@ function Unit_Test__Hydro-test-run-software()
     terminal_output_result=$(< "${hydro_terminal_output}")
     correct_result="-params ${Hydro_config_file_path} -ISinput ${IC_output_file_path} -outputDir ${HYBRID_software_output_directory[Hydro]}"
     if [[ "${terminal_output_result}" != "${correct_result}" ]]; then
+        echo "${terminal_output_result}"
+        echo "${correct_result}"
         Print_Error 'The terminal output has not the expected content.'
         return 1
     fi

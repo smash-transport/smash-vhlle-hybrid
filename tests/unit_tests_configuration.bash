@@ -189,7 +189,7 @@ function __static__Test_Section_Parsing_In_Subshell()
         Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (config file).'
     fi
     if [[ ${section} != 'IC' ]] && [[ ${section} != 'Sampler' ]]; then
-        if [[ ${HYBRID_software_default_input_file[${section}]} != "${input_file}" ]]; then
+        if [[ ${HYBRID_software_user_custom_input_file[${section}]} != "${input_file}" ]]; then
             Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (input file).'
         fi
     fi

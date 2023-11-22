@@ -42,7 +42,7 @@ function Define_Further_Global_Variables()
     declare -rgA HYBRID_hydro_valid_keys=(
         [Executable]='HYBRID_software_executable[Hydro]'
         [Config_file]='HYBRID_software_base_config_file[Hydro]'
-        [Input_file]='HYBRID_software_default_input_file[Hydro]'
+        [Input_file]='HYBRID_software_user_custom_input_file[Hydro]'
         [Software_keys]='HYBRID_software_new_input_keys[Hydro]'
     )
     declare -rgA HYBRID_sampler_valid_keys=(
@@ -53,10 +53,24 @@ function Define_Further_Global_Variables()
     declare -rgA HYBRID_afterburner_valid_keys=(
         [Executable]='HYBRID_software_executable[Afterburner]'
         [Config_file]='HYBRID_software_base_config_file[Afterburner]'
-        [Input_file]='HYBRID_software_default_input_file[Afterburner]'
+        [Input_file]='HYBRID_software_user_custom_input_file[Afterburner]'
         [Software_keys]='HYBRID_software_new_input_keys[Afterburner]'
         [Add_spectators_from_IC]='HYBRID_optional_feature[Add_spectators_from_IC]'
-        [Spectator_Source]='HYBRID_optional_feature[Spectator_Source]'
+        [Spectators_source]='HYBRID_optional_feature[Spectators_source]'
+    )
+    declare -rgA HYBRID_software_default_input_file=(
+        [IC]=''
+        [Hydro]="SMASH_IC.dat"
+        [Sampler]="freezeout.dat"
+        [Spectators]="SMASH_IC.oscar"
+        [Afterburner_without_spectators]="particle_lists.oscar"
+        [Afterburner]="sampling0"
+    )
+    declare -rgA HYBRID_relative_key=(
+        [Hydro]="IC"
+        [Sampler]="Hydro"
+        [Spectators]="IC"
+        [Afterburner]="Afterburner"
     )
     declare -rgA HYBRID_software_input_filename=(
         [IC]='IC_config.yaml'
@@ -76,15 +90,16 @@ function Define_Further_Global_Variables()
         [Sampler]=''
         [Afterburner]=''
     )
+    declare -gA HYBRID_software_user_custom_input_file=(
+        [Hydro]=''
+        [Spectators]=''
+        [Afterburner]=''
+    )
     declare -gA HYBRID_software_base_config_file=(
         [IC]="${HYBRID_default_configurations_folder}/smash_initial_conditions_AuAu.yaml"
         [Hydro]="${HYBRID_default_configurations_folder}/vhlle_hydro"
         [Sampler]="${HYBRID_default_configurations_folder}/hadron_sampler"
         [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"
-    )
-    declare -gA HYBRID_software_default_input_file=(
-        [Hydro]="${HYBRID_output_directory}/IC/SMASH_IC.dat"
-        [Afterburner]="${HYBRID_output_directory}/Sampler/particle_lists.oscar"
     )
     declare -gA HYBRID_software_new_input_keys=(
         [IC]=''
@@ -94,7 +109,7 @@ function Define_Further_Global_Variables()
     )
     declare -gA HYBRID_optional_feature=(
         [Add_spectators_from_IC]='FALSE'
-        [Spectator_Source]="/SMASH_IC.oscar"
+        [Spectators_source]=''
     )
     # Variables to be set (and possibly made readonly) after all sanity checks on input succeeded
     declare -gA HYBRID_software_output_directory=(
@@ -111,6 +126,7 @@ function Define_Further_Global_Variables()
     )
     declare -gA HYBRID_software_input_file=(
         [Hydro]=''
+        [Spectators]=''
         [Afterburner]=''
     )
 }

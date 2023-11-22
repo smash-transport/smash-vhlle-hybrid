@@ -38,11 +38,12 @@ function Functional_Test__do-Hydro-only()
     printf '
     Hydro:
       Executable: %s/tests/mocks/vhlle_black-box.py
-      Input_file: input
-    ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
+      Input_file: %s/tests/run_tests/do-Hydro-only/test/input
+    ' "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}"  > "${config_filename}"
     # Run the hydro stage and check if freezeout is successfully generated
     rm 'IC/SMASH_IC.dat'
-    touch 'IC/input'
+    mkdir -p test
+    touch 'test/input'
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -ne 0 ]]; then

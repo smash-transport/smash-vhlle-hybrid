@@ -47,16 +47,17 @@ function Functional_Test__do-Afterburner-only()
     __static__Check_Successful_Handler_Run $? || return 1
     mv 'Afterburner' 'Afterburner-success'
     rm 'Sampler/particle_lists.oscar'
-    touch 'Sampler/particle_lists_2.oscar'
+    mkdir -p test
+    touch 'test/particle_lists_2.oscar'
     printf '
     Afterburner:
       Executable: %s/tests/mocks/smash_afterburner_black-box.py
-      Input_file: particle_lists_2.oscar
+      Input_file: %s/tests/run_tests/do-Afterburner-only/test/particle_lists_2.oscar
       Software_keys:
         Modi:
           List:
             File_Directory: "."
-    ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
+    ' "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}"  > "${config_filename}"
     # Expect success and test absence of "SMASH" unfinished file
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
@@ -115,17 +116,19 @@ function Functional_Test__do-Afterburner-only()
     Print_Info 'Running Hybrid-handler expecting success with the add_spectator option'
     rm -r 'IC'
     mkdir 'IC'
-    touch 'IC/config.yaml' 'IC/SMASH_IC_2.oscar'
+    touch 'IC/config.yaml' 
+    mkdir -p test
+    touch 'test/SMASH_IC_2.oscar'
     printf '
     Afterburner:
       Executable: %s/tests/mocks/smash_afterburner_black-box.py
       Add_spectators_from_IC: TRUE
-      Spectator_Source: SMASH_IC_2.oscar
+      Spectators_source: %s/tests/run_tests/do-Afterburner-only/test/SMASH_IC_2.oscar
       Software_keys:
         Modi:
           List:
             File_Directory: "."
-    ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
+    ' "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     __static__Check_Successful_Handler_Run  $? || return 1
     mv 'Afterburner' 'Afterburner-success-with-spectators'
