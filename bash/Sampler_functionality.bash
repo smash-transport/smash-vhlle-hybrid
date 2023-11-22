@@ -11,30 +11,30 @@ function Prepare_Software_Input_File_Sampler()
 {
     mkdir -p "${HYBRID_software_output_directory[Sampler]}" || exit ${HYBRID_fatal_builtin}
     if [[ -f "${HYBRID_software_configuration_file[Sampler]}" ]]; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             'Configuration file ' --emph "${HYBRID_software_configuration_file[Sampler]}"\
             ' is already existing.'
     elif [[ ! -f "${HYBRID_software_base_config_file[Sampler]}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
             'Base configuration file ' --emph "${HYBRID_software_base_config_file[Sampler]}"\
             ' was not found.'
     fi
     cp "${HYBRID_software_base_config_file[Sampler]}"\
        "${HYBRID_software_configuration_file[Sampler]}" || exit ${HYBRID_fatal_builtin}
     if [[ "${HYBRID_software_new_input_keys[Sampler]}" != '' ]]; then
-        Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File\
+        Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
             'TXT' "${HYBRID_software_configuration_file[Sampler]}"\
             "${HYBRID_software_new_input_keys[Sampler]}"
     fi
     if ! __static__Is_Sampler_Config_Valid; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             "Sampler configuration file invalid."
     fi
     # Replace potentially relative paths in Sampler config with absolute paths
     local freezeout_path output_directory
     freezeout_path=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface')
     output_directory=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'spectra_dir')
-    Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File\
+    Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
         'TXT' "${HYBRID_software_configuration_file[Sampler]}"\
         "$(printf "%s: %s\n"\
                   'surface' "${freezeout_path}"\
@@ -51,19 +51,19 @@ function Prepare_Software_Input_File_Sampler()
 function Ensure_All_Needed_Input_Exists_Sampler()
 {
     if [[ ! -d "${HYBRID_software_output_directory[Sampler]}" ]]; then
-         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
              'Folder ' --emph "${HYBRID_software_output_directory[Sampler]}"\
              ' does not exist.'
     fi
     if [[ ! -f "${HYBRID_software_configuration_file[Sampler]}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
             'Configuration file ' --emph "${HYBRID_software_configuration_file[Sampler]}"\
             ' was not found.'
     fi
     # This is already done preparing the input file, but it's logically belonging here, too.
     # Therefore, we repeat the validation, as its cost is substantially negligible.
     if ! __static__Is_Sampler_Config_Valid; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             "Sampler configuration file validation failed when ensuring existence of all input."
     fi
 }
@@ -88,7 +88,7 @@ function __static__Get_Path_Field_From_Sampler_Config_As_Global_Path()
     cd "${HYBRID_software_output_directory[Sampler]}"
     # If realpath succeeds, it prints the path that is the result of the function
     if ! realpath "${value}" 2> /dev/null; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
             'Unable to transform relative path ' --emph "${value}" ' into global one.'
     fi
     cd - > /dev/null

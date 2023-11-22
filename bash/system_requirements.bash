@@ -123,11 +123,14 @@ function __static__Analyze_System_Properties()
         __static__Is_Gnu_Version_In_Use "${program}" || return_code=$?
         case "${return_code}" in
             0)
-                system_information["GNU-${program}"]+='OK' ;;
+                system_information["GNU-${program}"]+='OK'
+                ;;
             2)
-                system_information["GNU-${program}"]+='?' ;;
+                system_information["GNU-${program}"]+='?'
+                ;;
             *)
-                system_information["GNU-${program}"]+='---' ;;
+                system_information["GNU-${program}"]+='---'
+                ;;
         esac
     done
     for name in "${HYBRID_env_variables_required[@]}"; do
@@ -239,7 +242,7 @@ function __static__Prepare_Binary_Report_Array()
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty single_field_length
     for name in "${HYBRID_programs_just_required[@]}"; do
         system_report+=(
-            "$(__static__Get_Single_Tick_Cross_Requirement_Report\
+            "$(__static__Get_Single_Tick_Cross_Requirement_Report \
                 "PROG ${name}"\
                 "${system_information[${name}]}"
             )"
@@ -248,7 +251,7 @@ function __static__Prepare_Binary_Report_Array()
     for program in "${HYBRID_gnu_programs_required[@]}"; do
         is_gnu=$(__static__Get_Field_In_System_Information_String "GNU-${program}" 1)
         system_report+=(
-            "$(__static__Get_Single_Tick_Cross_Requirement_Report\
+            "$(__static__Get_Single_Tick_Cross_Requirement_Report \
                 "GNU ${program}"\
                 "${is_gnu}"
             )"
@@ -256,7 +259,7 @@ function __static__Prepare_Binary_Report_Array()
     done
     for name in "${HYBRID_env_variables_required[@]}"; do
         system_report+=(
-            "$(__static__Get_Single_Tick_Cross_Requirement_Report\
+            "$(__static__Get_Single_Tick_Cross_Requirement_Report \
                 "ENV ${name}"\
                 "${system_information[${name}]}"
             )"
@@ -382,13 +385,15 @@ function __static__Get_Larger_Version()
     dots_of_v1=${v1//[^.]/}
     dots_of_v2=${v2//[^.]/}
     if [[ ${#dots_of_v1} -lt ${#dots_of_v2} ]]; then
-        declare -n shorter_version=v1\
-                   dots_of_shorter_version=dots_of_v1\
-                   dots_of_longer_version=dots_of_v2
+        declare -n \
+            shorter_version=v1\
+            dots_of_shorter_version=dots_of_v1\
+            dots_of_longer_version=dots_of_v2
     else
-        declare -n shorter_version=v2\
-                   dots_of_shorter_version=dots_of_v2\
-                   dots_of_longer_version=dots_of_v1
+        declare -n \
+            shorter_version=v2\
+            dots_of_shorter_version=dots_of_v2\
+            dots_of_longer_version=dots_of_v1
     fi
     while [[ ${#dots_of_shorter_version} -ne ${#dots_of_longer_version} ]]; do
         shorter_version+='.0'         # Add zeroes to shorter string
@@ -420,12 +425,13 @@ function __static__Get_Larger_Version()
 function __static__Print_Requirement_Version_Report_Line()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[$1]"
-    local -r emph_color='\e[96m'\
-             red='\e[91m'\
-             green='\e[92m'\
-             yellow='\e[93m'\
-             text_color='\e[38;5;38m'\
-             default='\e[0m'
+    local -r \
+        emph_color='\e[96m'\
+        red='\e[91m'\
+        green='\e[92m'\
+        yellow='\e[93m'\
+        text_color='\e[38;5;38m'\
+        default='\e[0m'
     local line found version_found version_ok tmp_array program=$1
     tmp_array=( ${system_information[${program}]//|/ } ) # Unquoted to let word splitting act
     found=${tmp_array[0]}
@@ -459,12 +465,13 @@ function __static__Print_Requirement_Version_Report_Line()
 function __static__Get_Single_Tick_Cross_Requirement_Report()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty single_field_length
-    local -r emph_color='\e[96m'\
-             red='\e[91m'\
-             green='\e[92m'\
-             yellow='\e[93m'\
-             text_color='\e[38;5;38m'\
-             default='\e[0m'
+    local -r \
+        emph_color='\e[96m'\
+        red='\e[91m'\
+        green='\e[92m'\
+        yellow='\e[93m'\
+        text_color='\e[38;5;38m'\
+        default='\e[0m'
     local line name="$1" status=$2 name_string
     printf -v name_string "%s ${emph_color}%s" "${name% *}" "${name#* }"
     printf -v line " %*s${text_color}: ${default}" "${single_field_length}" "${name_string}"

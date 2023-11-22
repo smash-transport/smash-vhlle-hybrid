@@ -25,7 +25,7 @@ function Parse_Execution_Mode()
             HYBRID_execution_mode='do'
             ;;
         * )
-            exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit\
+            exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit \
                   'Specified mode ' --emph "$1" ' not valid! Run '\
                   --emph 'Hybrid-handler help' ' to get further information.'
     esac
@@ -54,7 +54,7 @@ function Parse_Command_Line_Options()
                     Print_Option_Specification_Error_And_Exit "$1"
                 else
                     if ! realpath "$2" &> /dev/null; then
-                        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+                        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
                             'Specified output directory ' --emph "$2" ' not found'
                     fi
                     readonly HYBRID_output_directory="$(realpath "$2")"
@@ -70,7 +70,7 @@ function Parse_Command_Line_Options()
                 shift 2
                 ;;
             * )
-                exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit\
+                exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit \
                     'Invalid option ' --emph "$1" ' specified in ' --emph "${HYBRID_execution_mode}"\
                     ' execution mode!' 'Use the ' --emph '--help' ' option to get further information.'
                 ;;

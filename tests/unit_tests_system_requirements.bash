@@ -27,22 +27,22 @@ function __static__Inhibit_Commands_Version()
 {
     function awk()
     {
-        __static__Fake_Command_Version\
+        __static__Fake_Command_Version \
             '--version' "${gnu} Awk ${awk_version}, API: 3.0 (${gnu} MPFR 4.1.0, ${gnu} MP 6.2.1)" "$@"
     }
     function sed()
     {
-        __static__Fake_Command_Version\
+        __static__Fake_Command_Version \
             '--version' "sed (${gnu} sed) ${sed_version} Packaged by Debian" "$@"
     }
     function tput()
     {
-        __static__Fake_Command_Version\
+        __static__Fake_Command_Version \
             '-V' "ncurses ${tput_version}" "$@"
     }
     function yq()
     {
-       __static__Fake_Command_Version\
+        __static__Fake_Command_Version \
             '--version' "yq (https://github.com/mikefarah/yq/) version v${yq_version}" "$@"
     }
 }

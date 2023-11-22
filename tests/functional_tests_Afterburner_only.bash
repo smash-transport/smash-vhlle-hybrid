@@ -10,7 +10,7 @@
 function __static__Check_Successful_Handler_Run()
 {
     if [[ $1 -ne 0 ]]; then
-        exit_code=${HYBRID_failure_exit_code} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_failure_exit_code} Print_Fatal_And_Exit \
             'Hybrid-handler unexpectedly failed.'
         return 1
     fi

@@ -28,12 +28,12 @@ function Check_If_Software_Produced_Expected_Output()
     unfinished_files=( "${folder}"/*.{unfinished,lock} )
     output_files=( "${folder}"/* )
     if [[ ${#unfinished_files[@]} -gt 0 ]]; then
-        exit_code=${HYBRID_failure_exit_code} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_failure_exit_code} Print_Fatal_And_Exit \
             'Some unexpected ' --emph '.{unfinished,lock}' ' output file remained'\
             'in ' --emph "${folder}"
         return 1
     elif [[ ${#output_files[@]} -ne ${expected_output_files} ]]; then
-        exit_code=${HYBRID_failure_exit_code} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_failure_exit_code} Print_Fatal_And_Exit \
             'Expected ' --emph "${expected_output_files}" ' output files in '\
             --emph "${block}" " folder, but ${#output_files[@]} found."
         return 1

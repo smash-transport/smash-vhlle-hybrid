@@ -33,12 +33,12 @@ function __static__Replace_Keys_Into_YAML_File()
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty base_input_file keys_to_be_replaced
     # Use yq -P to bring all YAML to same format (crucial for later check on number of lines)
     if ! yq -P --inplace "${base_input_file}" 2> /dev/null; then
-        exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
             'File ' --emph "${base_input_file}" ' does not seem to contain valid YAML syntax. Run'\
             --emph "   yq -P --inplace \"${base_input_file}\""\
             "\nto have more information about the problem."
     elif ! keys_to_be_replaced=$(yq -P <(printf "${keys_to_be_replaced}\n") 2> /dev/null); then
-        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
             'Keys to be replaced do not seem to contain valid YAML syntax.'
     fi
     local initial_number_of_lines
@@ -50,7 +50,7 @@ function __static__Replace_Keys_Into_YAML_File()
     # The merge must not have changed the number of lines of input file. If it did,
     # it means that some key was not present and has been appended => Error!
     if [[ $(wc -l < "${base_input_file}") -ne ${initial_number_of_lines} ]]; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             'One or more provided software input keys were not found to be replaced'\
             'in the ' --emph "${base_input_file}" ' file.' 'Please, check your configuration file.'
     fi
@@ -66,14 +66,14 @@ function __static__Replace_Keys_Into_Txt_File()
     keys_to_be_replaced="$(sed '/^[[:space:]]*$/d' <(printf "${keys_to_be_replaced}\n"))"
     # Impose that both file and new keys have two entries per line
     if ! awk 'NF!=2 {exit 1}' "${base_input_file}"; then
-        exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
             'File ' --emph "${base_input_file}" ' does not seem to contain two columns per line only!'
     elif ! awk 'NF!=2 {exit 1}' <(printf "${keys_to_be_replaced}\n"); then
-        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
             'Keys to be replaced do not seem to contain valid key-value syntax.'
     fi
     if ! awk '$1 ~ /:$/ {exit 1}' "${base_input_file}"; then
-        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
             'File ' --emph "${base_input_file}" ' should not have a colon at the end of keys!'
     fi
     local number_of_fields_per_line
@@ -81,10 +81,10 @@ function __static__Replace_Keys_Into_Txt_File()
         $(awk 'BEGIN{FS=":"}{print NF}' <(printf "${keys_to_be_replaced}\n") | sort -u)
     )
     if [[ ${#number_of_fields_per_line[@]} -gt 1 ]]; then
-        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
             'Keys to be replaced do not have consistent colon-terminated keys syntax.'
     elif [[ ${number_of_fields_per_line[0]} -gt 2 ]]; then
-        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
             'Keys to be replaced seem to use more than a colon after key(s).'
     fi
     # NOTE: Since the YAML implementation is very general, here we can take advantage of it

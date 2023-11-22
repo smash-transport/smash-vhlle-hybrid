@@ -95,7 +95,7 @@ function Print_Line_of_Equals()
 
 function Print_Centered_Line()
 {
-    local input_string output_total_width indentation padding_character\
+    local input_string output_total_width indentation padding_character \
           postfix real_length padding_utility
     input_string="$1"
     output_total_width="${2:-$(tput cols)}" # Input arg. or full width of terminal
@@ -122,7 +122,7 @@ function Print_Centered_Line()
 
 function Print_Option_Specification_Error_And_Exit()
 {
-    exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit\
+    exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit \
         'The value of the option ' --emph "$1" ' was not correctly specified (either forgotten or invalid)!'
 }
 
@@ -142,7 +142,7 @@ function Remove_Comments_In_File()
     filename=$1
     comment_character=${2:-#}
     if [[ ! -f "${filename}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
             'File ' --emph "${filename}" ' not found.'
     elif [[ ${#comment_character} -ne 1 ]]; then
         Print_Internal_And_Exit 'Comment character ' --emph "${comment_character}" ' invalid!'
@@ -164,7 +164,7 @@ function Call_Function_If_Existing_Or_Exit()
     if [[ "$(type -t ${name_of_the_function})" = 'function' ]]; then
         ${name_of_the_function} "$@"
     else
-        exit_code=${HYBRID_fatal_missing_feature} Print_Internal_And_Exit\
+        exit_code=${HYBRID_fatal_missing_feature} Print_Internal_And_Exit \
             '\nFunction ' --emph "${name_of_the_function}" ' not found!'\
             'Please provide an implementation following the in-code documentation.'
     fi
@@ -196,7 +196,7 @@ function Ensure_That_Given_Variables_Are_Set() {
             if [[ ${variable_name} =~ \]$  &&  -v ${variable_name} ]]; then
                 continue
             fi
-            Print_Internal_And_Exit\
+            Print_Internal_And_Exit \
                 'Variable ' --emph "${variable_name}" ' not set in function ' --emph "${FUNCNAME[1]}" '.'
         fi
     done
@@ -226,7 +226,7 @@ function Ensure_That_Given_Variables_Are_Set_And_Not_Empty() {
             fi
             set -u
         fi
-        Print_Internal_And_Exit\
+        Print_Internal_And_Exit \
             'Variable ' --emph "${variable_name}" ' unset or empty in function ' --emph "${FUNCNAME[1]}" '.'
     done
 }
@@ -253,7 +253,7 @@ function Make_Functions_Defined_In_This_File_Readonly()
            sed -E 's/^[[:space:]]*function[[:space:]]+([^(]+)\(\)[[:space:]]*$/\1/')
     )
     if [[ ${#declared_functions[@]} -eq 0 ]]; then
-        Print_Internal_And_Exit\
+        Print_Internal_And_Exit \
             'Function ' --emph "${FUNCNAME}" ' called, but no function found in file\n file '\
             --emph "${BASH_SOURCE[1]}" '.'
     else

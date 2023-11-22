@@ -39,7 +39,7 @@ function Unit_Test__codebase-formatting()
         )
     fi
     if [[ ${#files_with_too_long_lines[@]} -gt 0 ]]; then
-        Print_Error\
+        Print_Error \
             'There are ' --emph "${#files_with_too_long_lines[@]}" ' file(s) with lines longer than '\
             --emph "${max_length}" ' characters:'
         for file in "${files_with_too_long_lines[@]}"; do
@@ -52,14 +52,15 @@ function Unit_Test__codebase-formatting()
         if [[ ${#files_with_too_long_lines[@]} -gt 0 ]]; then
             printf '\n'
         fi
-        Print_Error\
+        Print_Error \
             'There are ' --emph "${#files_with_wrong_formatting[@]}" ' file(s) wrongly formatted:'
         for file in "${files_with_wrong_formatting[@]}"; do
-            Print_Error -l -- ' - '\
+            Print_Error -l -- ' - ' \
                 --emph "$(realpath --relative-base="${HYBRIDT_repository_top_level_path}" "${file}")"
         done
-        Print_Info '\nTo format all bash files correctly run:\n'\
-                   --emph "shfmt -w -ln bash -i 4 -bn -ci -sr -kp -fn \"${HYBRIDT_repository_top_level_path}\""
+        Print_Info \
+            '\nTo format all bash files correctly run:\n'\
+            --emph "shfmt -w -ln bash -i 4 -bn -ci -sr -kp -fn \"${HYBRIDT_repository_top_level_path}\""
     fi
     if (( ${#files_with_too_long_lines[@]} + ${#files_with_wrong_formatting[@]} > 0 )); then
         return 1

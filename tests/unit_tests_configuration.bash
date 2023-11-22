@@ -212,7 +212,7 @@ function Unit_Test__configuration-parse-IC-section()
         General:
           Randomseed: 12345
     ' > "${HYBRID_configuration_file}"
-    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell\
+    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
         'IC' 'foo' 'bar' '' $'General:\n  Randomseed: 12345'
     if [[ $? -ne 0 ]]; then
         return 1
@@ -238,7 +238,7 @@ function Unit_Test__configuration-parse-Hydro-section()
       Software_keys:
         etaS: 0.12345
     ' > "${HYBRID_configuration_file}"
-    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell\
+    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
         'Hydro' 'foo' 'bar' 'ket' 'etaS: 0.12345'
     if [[ $? -ne 0 ]]; then
         return 1
@@ -263,7 +263,7 @@ function Unit_Test__configuration-parse-Sampler-section()
       Software_keys:
         shear: 1.2345
     ' > "${HYBRID_configuration_file}"
-    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell\
+    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
         'Sampler' 'foo' 'bar' '' 'shear: 1.2345'
     if [[ $? -ne 0 ]]; then
         return 1
@@ -290,7 +290,7 @@ function Unit_Test__configuration-parse-Afterburner-section()
         General:
           End_Time: 42000
     ' > "${HYBRID_configuration_file}"
-    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell\
+    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
         'Afterburner' 'foo' 'bar' 'ket' $'General:\n  End_Time: 42000'
     if [[ $? -ne 0 ]]; then
         return 1

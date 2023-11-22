@@ -13,7 +13,7 @@
 function Validate_And_Parse_Configuration_File()
 {
     if [[ ! -f "${HYBRID_configuration_file}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
             'Handler configuration file ' --emph "${filename}" ' not found.'
     fi
     __static__Abort_If_Configuration_File_Is_Not_A_Valid_YAML_File
@@ -29,7 +29,7 @@ function Validate_And_Parse_Configuration_File()
 function __static__Abort_If_Configuration_File_Is_Not_A_Valid_YAML_File()
 {
     if ! yq "${HYBRID_configuration_file}" &> /dev/null; then
-        exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
             'The handler configuration file does not contain valid YAML syntax.'
     fi
 }
@@ -51,29 +51,29 @@ function __static__Abort_If_Sections_Are_Violating_Any_Requirement()
                     continue 2
                 fi
             done
-            exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
+            exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
                 'Invalid section ' --emph "${label}" ' found in the handler configuration file.'
         fi
     done
     # Here all given sections are valid. Check possible duplicates/holes and ordering using the stored indices
     if [[ ${#software_sections_indices[@]} -eq 0 ]]; then
-        exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
             'No software section was specified in the handler configuration file.'
     elif [[ ${#software_sections_indices[@]} -gt 1 ]]; then
         if [[ $(sort -u <(printf '%d\n' "${software_sections_indices[@]}") | wc -l)\
                 -ne ${#software_sections_indices[@]} ]]; then
-            exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
+            exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
                 'The same software section in the handler configuration file cannot be repeated.'
         fi
         if ! sort -C <(printf '%d\n' "${software_sections_indices[@]}"); then
-            exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
+            exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
                 'Software sections in the handler configuration file are out of order.'
         fi
         local gaps_between_indices
         gaps_between_indices=$(awk 'NR>1{print $1-x}{x=$1}'\
                                 <(printf '%d\n' "${software_sections_indices[@]}") | sort -u)
         if [[ "${gaps_between_indices}" != '1' ]]; then
-            exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
+            exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
                 'Missing software section(s) in the handler configuration file.'
         fi
     fi
@@ -101,7 +101,7 @@ function __static__Abort_If_Invalid_Keys_Were_Used()
     __static__Validate_Keys_Of_Section 'Afterburner'
     # Abort if some validation failed
     if [[ "${#invalid_report[@]}" -ne 0 ]]; then
-        exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
             'Following invalid keys found in the handler configuration file:'\
             '---------------------------------------------------------------'\
             "${invalid_report[@]/%/:}"\
@@ -141,7 +141,7 @@ function __static__Get_Top_Level_Invalid_Keys_In_Given_YAML_string()
 
 function __static__Parse_Section()
 {
-    local -r\
+    local -r \
         section_label=$1\
         yaml_config="$(< "${HYBRID_configuration_file}")"
     local yaml_section valid_key
@@ -174,7 +174,7 @@ function __static__YAML_section_must_be_empty()
 {
     local yaml_section=$1
     if [[ "${yaml_section}" != '{}' ]]; then
-        Print_Internal_And_Exit\
+        Print_Internal_And_Exit \
             'Not all keys in ' --emph "${2:-some}" ' section have been parsed. Remaining:'\
             --emph "\n${yaml_section}\n"
     fi

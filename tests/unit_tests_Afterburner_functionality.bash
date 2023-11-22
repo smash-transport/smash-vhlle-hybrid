@@ -38,7 +38,7 @@ function Unit_Test__Afterburner-create-input-file()
 {
     touch "${HYBRID_software_base_config_file[Afterburner]}"
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
-    local -r\
+    local -r \
         plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
         plist_Final="${HYBRID_software_output_directory[Afterburner]}/sampling0"
     touch "${plist_Sampler}"
@@ -73,10 +73,11 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file-with-sp
 
 function Unit_Test__Afterburner-create-input-file-with-spectators()
 {
-    mkdir -p "${HYBRID_software_output_directory[Sampler]}"\
-             "${HYBRID_software_output_directory[IC]}"\
-             "${HYBRID_software_output_directory[Afterburner]}"
-    local -r\
+    mkdir -p \
+        "${HYBRID_software_output_directory[Sampler]}"\
+        "${HYBRID_software_output_directory[IC]}"\
+        "${HYBRID_software_output_directory[Afterburner]}"
+    local -r \
         plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
         plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar"\
         plist_Final="${HYBRID_software_output_directory[Afterburner]}/sampling0"

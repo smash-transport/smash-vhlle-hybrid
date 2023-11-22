@@ -12,14 +12,14 @@ function Parse_Tests_Suite_Parameter_And_Source_Specific_Code()
     local suite_name code_filename
     suite_name="$1"
     if [[ ! ${suite_name} =~ ^(functional|unit)$ ]]; then
-        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
             'Invalid tests type ' --emph "${suite_name:-<no value>}" '. Valid values: '\
             --emph 'unit' ' or ' --emph 'functional' '.'\
             'Use the ' --emph '--help' ' option to get more information.'
     fi
     code_filename="${HYBRIDT_tests_folder}/${suite_name}_tests.bash"
     if [[ ! -f "${code_filename}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
             'File ' --emph "${code_filename}" ' not found.'
     else
         source "${code_filename}" || exit ${HYBRID_fatal_builtin}
@@ -67,7 +67,7 @@ function Parse_Tests_Command_Line_Options()
                 HYBRIDT_clean_test_folder='FALSE'
                 shift ;;
             * )
-                exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit\
+                exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit \
                     'Invalid option ' --emph "$1" ' specified! Use the '\
                     --emph '--help' ' option to get further information.'
                 ;;
@@ -101,7 +101,7 @@ function __static__Print_Helper()
                                    "Without this option all existing tests are run."
     __static__Add_Option_To_Helper "-k | --keep-tests-folder"\
                                    "Leave all the created folders and files in the test folder."
-    Print_Warning\
+    Print_Warning \
         " Values from options must be separated by space and short options cannot be combined."
 }
 
@@ -130,10 +130,12 @@ function __static__Set_Tests_To_Be_Run_Using_Numbers()
     local selection_string numeric_list number selected_tests
     selection_string=$1
     numeric_list=(
-        $(awk\
-         'BEGIN{RS=","}
-         /\-/{split($0, res, "-"); for(i=res[1]; i<=res[2]; i++){printf "%d\n", i}; next}
-         {printf "%d\n", $0}' <<< "${selection_string}")
+        $(
+            awk \
+                'BEGIN{RS=","}
+                /\-/{split($0, res, "-"); for(i=res[1]; i<=res[2]; i++){printf "%d\n", i}; next}
+                {printf "%d\n", $0}' <<< "${selection_string}"
+        )
     )
     Print_Debug 'Selected tests indices: ' --emph "( ${numeric_list[*]} )"
     selected_tests=()
@@ -143,7 +145,7 @@ function __static__Set_Tests_To_Be_Run_Using_Numbers()
         if [[ ${number} -lt ${#HYBRIDT_tests_to_be_run[@]} ]]; then
             selected_tests+=( "${HYBRIDT_tests_to_be_run[number]}" )
         else
-            exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit\
+            exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit \
                 'Some specified test number within ' --emph "$1" ' is not valid! Use'\
                 'the ' --emph '-t' ' option without value to get a list of available tests.'
         fi
@@ -165,7 +167,7 @@ function __static__Set_Tests_To_Be_Run_Using_Globbing()
     done
     HYBRIDT_tests_to_be_run=( "${selected_tests[@]}" )
     if [[ ${#HYBRIDT_tests_to_be_run[@]} -eq 0 ]]; then
-        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
             "No test name found matching \"$1\" globbing pattern! Use"\
             "the '-t' option without value to get a list of available tests."
     fi

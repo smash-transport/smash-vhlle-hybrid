@@ -17,7 +17,7 @@ function Give_Required_Help()
             __static__Print_Do_Help_Message
             ;;
         * )
-            Print_Internal_And_Exit\
+            Print_Internal_And_Exit \
                 'Unexpected value of ' --emph "HYBRID_execution_mode=${HYBRID_execution_mode}"\
                 ' in ' --emph "${FUNCNAME}"
             ;;
@@ -50,10 +50,10 @@ function __static__Print_Do_Help_Message()
 {
     printf '\e[38;5;38m  %s \e[38;5;85m%s \e[38;5;38m%s\e[0m\n'\
            'You can specify the following command line options to the' 'do' 'execution mode:'
-    __static__Print_Command_Line_Option_Help\
+    __static__Print_Command_Line_Option_Help \
         '-o | --output-directory' "${HYBRID_output_directory}"\
         "Directory where the run folder(s) will be created."
-    __static__Print_Command_Line_Option_Help\
+    __static__Print_Command_Line_Option_Help \
         '-c | --configuration-file' "${HYBRID_configuration_file}"\
         "YAML configuration file to be used by the handler."
 }
@@ -89,9 +89,12 @@ function __static__Print_Modes_Description()
         section_string=''
         for mode in "${!list_of_modes[@]}"; do
             # Remember that $(...) strip trailing '\n' -> Add new-line manually to the string
-            section_string+="$(printf '\e[38;5;85m%15s   \e[96m%s\e[0m'\
-                                     "${mode}"\
-                                     "${list_of_modes[${mode}]}")"$'\n'
+            section_string+="$(
+                printf \
+                    '\e[38;5;85m%15s   \e[96m%s\e[0m'\
+                    "${mode}"\
+                    "${list_of_modes[${mode}]}"
+            )"$'\n'
         done
         if hash sort &> /dev/null; then
             # Remember that the 'here-string' adds a newline to the string when
@@ -107,13 +110,14 @@ function __static__Print_Modes_Description()
 
 function __static__Print_Command_Line_Option_Help()
 {
-    local -r length_option=30\
-             indentation='    '\
-             column_sep='  '\
-             options_color='\e[38;5;85m'\
-             text_color='\e[96m'\
-             default_value_color='\e[93m'\
-             default_text='\e[0m'
+    local -r \
+        length_option=30\
+        indentation='    '\
+        column_sep='  '\
+        options_color='\e[38;5;85m'\
+        text_color='\e[96m'\
+        default_value_color='\e[93m'\
+        default_text='\e[0m'
     local name default_value description left_column left_column_length
     name=$1
     default_value=$2

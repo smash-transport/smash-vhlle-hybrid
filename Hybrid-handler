@@ -58,7 +58,7 @@ function Define_Repository_Global_Path()
     #       symbolic links. Note that we require 'readlink' to exist as this was introduced in
     #       OpenBSD and GNU around 2000, see comments to https://unix.stackexchange.com/a/136527/370049.
     if ! hash readlink &> /dev/null; then
-        exit_code=${HYBRID_fatal_builtin} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_builtin} Print_Fatal_And_Exit \
             "No 'readlink' command found. Please install it and run the Hybrid-handler again."
     fi
     local source directory
