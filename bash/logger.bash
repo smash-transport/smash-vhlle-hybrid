@@ -50,8 +50,8 @@ if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
     BSHLGGR_defaultExitCode=1
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --fd )
-                if [[ ! $2 =~ ^[1-9][0-9]*$ ]] || (( $2>254 )); then
+            --fd)
+                if [[ ! $2 =~ ^[1-9][0-9]*$ ]] || (($2 > 254)); then
                     printf "Error sourcing BashLogger. '$1' option needs an integer value between 1 and 254.\n"
                     return 1
                 else
@@ -59,8 +59,8 @@ if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
                     shift 2
                 fi
                 ;;
-            --default-exit-code )
-                if [[ ! $2 =~ ^[0-9]+$ ]] || (( $2>255 )); then
+            --default-exit-code)
+                if [[ ! $2 =~ ^[0-9]+$ ]] || (($2 > 255)); then
                     printf "Error sourcing BashLogger. '$1' option needs an integer value between 0 and 255.\n"
                     return 1
                 else
@@ -166,7 +166,8 @@ function __static__Logger()
     finalEndline='\n'
     restoreDefault='\e[0m'
     labelLength=10
-    label="$1"; shift
+    label="$1"
+    shift
     labelToBePrinted=$(printf "%${labelLength}s" "${label}:")
     if [[ ! ${label} =~ ^(INTERNAL|FATAL|ERROR|WARNING|ATTENTION|INFO|DEBUG|TRACE)$ ]]; then
         __static__Logger 'INTERNAL' "${FUNCNAME} called with unknown label '${label}'!"
@@ -174,57 +175,81 @@ function __static__Logger()
     __static__IsLevelOn "${label}" || return 0
     exec 4>&1 # duplicate fd 1 to restore it later
     case "${label}" in
-        ERROR|FATAL )
+        ERROR | FATAL)
             # ;;& means go on in case matching following patterns
-            color='\e[91m' ;;&
-        INTERNAL )
-            color='\e[38;5;202m' ;;&
-        ERROR|FATAL|INTERNAL )
+            color='\e[91m'
+            ;;&
+        INTERNAL)
+            color='\e[38;5;202m'
+            ;;&
+        ERROR | FATAL | INTERNAL)
             emphColor='\e[93m'
-            exec 1>&2 ;; # here stdout to stderr!
-        INFO )
+            exec 1>&2 # here stdout to stderr!
+            ;;
+        INFO)
             color='\e[92m'
-            emphColor='\e[96m' ;;&
-        ATTENTION )
+            emphColor='\e[96m'
+            ;;&
+        ATTENTION)
             color='\e[38;5;200m'
-            emphColor='\e[38;5;141m' ;;&
-        WARNING )
+            emphColor='\e[38;5;141m'
+            ;;&
+        WARNING)
             color='\e[93m'
-            emphColor='\e[38;5;202m' ;;&
-        DEBUG )
+            emphColor='\e[38;5;202m'
+            ;;&
+        DEBUG)
             color='\e[38;5;38m'
-            emphColor='\e[38;5;48m' ;;&
-        TRACE )
+            emphColor='\e[38;5;48m'
+            ;;&
+        TRACE)
             color='\e[38;5;247m'
-            emphColor='\e[38;5;256m' ;;&
-        * )
-            exec 1>&"${BSHLGGR_outputFd}" ;; # here stdout to chosen fd
+            emphColor='\e[38;5;256m'
+            ;;&
+        *)
+            exec 1>&"${BSHLGGR_outputFd}" # here stdout to chosen fd
+            ;;
     esac
     if __static__IsElementInArray '--' "$@"; then
         while [[ "$1" != '--' ]]; do
             case "$1" in
-                -n )
+                -n)
                     finalEndline=''
-                    shift ;;
-                -l )
+                    shift
+                    ;;
+                -l)
                     labelToBePrinted="$(printf "%${labelLength}s" '')"
-                    shift ;;
-                -d )
+                    shift
+                    ;;
+                -d)
                     restoreDefault=''
-                    shift ;;
-                * )
-                    __static__Logger 'INTERNAL' "${FUNCNAME} called with unknown option \"$1\"!" ;;
+                    shift
+                    ;;
+                *)
+                    __static__Logger 'INTERNAL' "${FUNCNAME} called with unknown option \"$1\"!"
+                    ;;
             esac
         done
         shift
     fi
     # Print out initial new-lines before label suppressing first argument if it was endlines only
-    while [[ $1 =~ ^\\n ]]; do
+    # Note that endlines could be either '\n' or $'\n' and we want to deal with both.
+    local new_first_argument
+    while [[ $1 =~ ^\\n || "${1:0:1}" = $'\n' ]]; do
         printf '\n'
-        if [[ "${1/#\\n/}" = '' ]]; then
-            shift
+        if [[ $1 =~ ^\\n ]]; then
+            new_first_argument="${1/#\\n/}"
+        elif [[ "${1:0:1}" = $'\n' ]]; then
+            new_first_argument="${1/#$'\n'/}"
+        fi
+        if [[ "${new_first_argument}" = '' ]]; then
+            if [[ $# -eq 1 ]]; then
+                return
+            else
+                shift
+            fi
         else
-            set -- "${1/#\\n/}" "${@:2}"
+            set -- "${new_first_argument}" "${@:2}"
         fi
     done
     # Ensure something to print was given
@@ -232,14 +257,15 @@ function __static__Logger()
         __static__Logger 'INTERNAL' "${FUNCNAME} called without message (or with new lines only)!"
     fi
     # Parse all arguments and save messages for later, possibly modified
-    local messagesToBePrinted emphNextString lastStringWasEmph indentation index
+    local messagesToBePrinted emphNextString lastStringWasEmph indentation message
+    local -r const_indentation="${labelToBePrinted//?/ } "
     messagesToBePrinted=()
     emphNextString='FALSE'
     lastStringWasEmph='FALSE'
     indentation=''
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --emph )
+            --emph)
                 # Here two cases should be handled: either '--emph' is an option or a string
                 #   -> it is literal if the last command line option or if following the option
                 #   -> it is an option otherwise
@@ -259,7 +285,8 @@ function __static__Logger()
                 fi
                 # Set color and replace % by %% for later printf
                 if [[ ${emphNextString} = 'TRUE' ]]; then
-                    messagesToBePrinted+=( "${emphColor}${1//%/%%}" )
+                    message=$(__static__ReplaceEndlinesInMessage "$1")
+                    messagesToBePrinted+=("${emphColor}${message//%/%%}")
                     lastStringWasEmph='TRUE'
                 else
                     if [[ ${lastStringWasEmph} = 'FALSE' ]]; then
@@ -269,7 +296,8 @@ function __static__Logger()
                     else
                         indentation=''
                     fi
-                    messagesToBePrinted+=( "${indentation}${color}${1//%/%%}" )
+                    message=$(__static__ReplaceEndlinesInMessage "$1")
+                    messagesToBePrinted+=("${indentation}${color}${message//%/%%}")
                     lastStringWasEmph='FALSE'
                 fi
                 emphNextString='FALSE'
@@ -298,6 +326,34 @@ function __static__Logger()
     fi
 }
 
+function __static__ReplaceEndlinesInMessage()
+{
+    # Go through the message to be added character by character and prepend indentation
+    # to literal '\n' -> Do this with pure bash not to rely on external tools. Using the
+    # BASH_REMATCH array would make it tougher to iterate "left to right" hitting the replaced
+    # patterns only once in a general fashion.
+    #
+    # NOTE: It is assumed here that the caller has defined the 'const_indentation' variable.
+    local index oneChar twoChars
+    message=''
+    for ((index = 0; index < ${#1}; index++)); do
+        oneChar="${1:${index}:1}"  # one chatacter  from index
+        twoChars="${1:${index}:2}" # two chatacters from index
+        if [[ "${twoChars}" = '\n' ]]; then
+            if [[ ${index} -eq 0 || "${1:$((index - 1)):1}" != '\' ]]; then
+                message+="\n${const_indentation}"
+                ((index++))
+                continue
+            fi
+        elif [[ "${oneChar}" = $'\n' ]]; then
+            message+="\n${const_indentation}"
+            continue
+        fi
+        message+="${oneChar}"
+    done
+    printf '%s' "${message}"
+}
+
 function __static__IsLevelOn()
 {
     local label
@@ -311,21 +367,21 @@ function __static__IsLevelOn()
     #  - numeric -> till that level (1=ERROR, 2=WARNING, ...)
     #  - string  -> till that level
     local loggerLevels loggerLevelsOn level index
-    loggerLevels=( [1]='ERROR' [2]='WARNING' [3]='ATTENTION' [4]='INFO' [5]='DEBUG' [6]='TRACE' )
+    loggerLevels=([1]='ERROR' [2]='WARNING' [3]='ATTENTION' [4]='INFO' [5]='DEBUG' [6]='TRACE')
     loggerLevelsOn=()
     if [[ ${VERBOSE-} =~ ^[0-9]+$ ]]; then
-        loggerLevelsOn=( "${loggerLevels[@]:1:VERBOSE}" )
+        loggerLevelsOn=("${loggerLevels[@]:1:VERBOSE}")
     elif [[ ${VERBOSE-} =~ ^(ERROR|WARNING|ATTENTION|INFO|DEBUG|TRACE)$ ]]; then
         for level in "${loggerLevels[@]}"; do
-            loggerLevelsOn+=( "${level}" )
+            loggerLevelsOn+=("${level}")
             if [[ ${VERBOSE-} = "${level}" ]]; then
                 break
             fi
         done
     elif [[ ${VERBOSE-} =~ ^(FATAL|INTERNAL)$ ]]; then
-        loggerLevelsOn=( 'FATAL' )
+        loggerLevelsOn=('FATAL')
     else
-        loggerLevelsOn=( 'FATAL' 'ERROR' 'WARNING' 'ATTENTION' 'INFO' )
+        loggerLevelsOn=('FATAL' 'ERROR' 'WARNING' 'ATTENTION' 'INFO')
     fi
     for level in "${loggerLevelsOn[@]}"; do
         if [[ ${label} = "${level}" ]]; then
@@ -352,22 +408,22 @@ function __static__IsElementInArray()
 #-----------------------------------------------------------------#
 #Set functions readonly to avoid possible redefinitions elsewhere
 readonly -f \
-         PrintTrace \
-         PrintDebug \
-         PrintInfo \
-         PrintAttention \
-         PrintWarning \
-         PrintError \
-         PrintFatalAndExit \
-         PrintInternalAndExit \
-         Print_Trace \
-         Print_Debug \
-         Print_Info \
-         Print_Attention \
-         Print_Warning \
-         Print_Error \
-         Print_Fatal_And_Exit \
-         Print_Internal_And_Exit \
-         __static__Logger \
-         __static__IsLevelOn \
-         __static__IsElementInArray
+    PrintTrace \
+    PrintDebug \
+    PrintInfo \
+    PrintAttention \
+    PrintWarning \
+    PrintError \
+    PrintFatalAndExit \
+    PrintInternalAndExit \
+    Print_Trace \
+    Print_Debug \
+    Print_Info \
+    Print_Attention \
+    Print_Warning \
+    Print_Error \
+    Print_Fatal_And_Exit \
+    Print_Internal_And_Exit \
+    __static__Logger \
+    __static__IsLevelOn \
+    __static__IsElementInArray
