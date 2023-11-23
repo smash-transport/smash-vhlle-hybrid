@@ -63,6 +63,14 @@ Finally, a short remark about `extglob` option. To motivate why we decided to en
 ## Bash notation in the codebase
 
 The general advice is pretty trivial: **Be consistent with what you find**.
+
+The codebase is formatted using [`shfmt`](https://github.com/mvdan/sh#shfmt).
+Any developer should be aware that, because of the nature of the Bash scripting language, it is probably impossible to have a perfect formatter, which ensure rules in all details (as e.g. `clang-format` does for C++).
+Therefore, it is crucial that everybody tries to be consistent with existing style and, more importantly, takes some minutes to read the following lists.
+In particular, be aware the the formatter will not enforce many of the rules explained below.
+Before opening a PR, make sure all tests pass.
+One of them will try to check formatting and complain if something has to be adjusted.
+
 Here a list of some aspects worth mentioning about the codebase:
 * indentation is done _exclusively with spaces_ and **no** <kbd>Tab</kbd> should be used;
 * lines of code are split around 100 characters and should never be longer than 120;
