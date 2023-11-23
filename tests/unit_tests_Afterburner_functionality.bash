@@ -65,12 +65,29 @@ function Clean_Tests_Environment_For_Following_Test__Afterburner-create-input-fi
 
 function Make_Test_Preliminary_Operations__Afterburner-create-input-file-with-spectators()
 {
-    Make_Test_Preliminary_Operations__Afterburner-create-input-file
+   
+    local file_to_be_sourced list_of_files
+    list_of_files=(
+        'Afterburner_functionality.bash'
+        'global_variables.bash'
+        'software_input_functionality.bash'
+        'sanity_checks.bash'
+    )
+    for file_to_be_sourced in "${list_of_files[@]}"; do
+        source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
+    done
+    Define_Further_Global_Variables
+    HYBRID_output_directory="${HYBRIDT_folder_to_run_tests}/test_dir_Afterburner"
+    HYBRID_software_base_config_file[Afterburner]='my_cool_conf.yaml'
+    HYBRID_given_software_sections=( 'Afterburner' )
+    HYBRID_software_executable[Afterburner]=$(which echo) # Use command as fake executable
+    HYBRID_optional_feature[Add_spectators_from_IC]='TRUE'
+    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
+    Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts
 }
 
 function Unit_Test__Afterburner-create-input-file-with-spectators()
 {
-    HYBRID_optional_feature[Add_spectators_from_IC]='TRUE'
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"\
              "${HYBRID_software_output_directory[IC]}"\
              "${HYBRID_software_output_directory[Afterburner]}"

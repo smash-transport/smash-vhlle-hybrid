@@ -23,94 +23,34 @@ function Prepare_Software_Input_File_Afterburner()
         Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File\
             'YAML' "${HYBRID_software_configuration_file[Afterburner]}" "${HYBRID_software_new_input_keys[Afterburner]}"
     fi
-
+    local -r target_link_name="${HYBRID_software_output_directory[Afterburner]}/sampling0"
+    if [[ ! -f "${HYBRID_software_input_file[Afterburner]}" ]]; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+            'Afterburner input file ' --emph "${HYBRID_software_input_file[Afterburner]}"\
+            ' does not exist.'
+    fi
     if [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
-
-        if [[ "${HYBRID_software_user_custom_input_file[Afterburner]}" = '' ]]; then
-            if [[ ! -e "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_software_default_input_file[Afterburner]}" ]]; then
-                if [[ ! -f "${HYBRID_software_output_directory[Sampler]}/${HYBRID_software_default_input_file[Afterburner_without_spectators]}" ]]; then
-                    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                        'Input to Afterburner' --emph "${HYBRID_software_input_file[Afterburner]}"\
-                        ' does not exist.'
-                fi
-                sampled_particle_list="${HYBRID_software_input_file[Afterburner]}"
-            else
-                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                'The input file for the afterburner ' \ 
-                --emph "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_software_default_input_file[Afterburner]}"
+        if [[ -f "${target_link_name}" ]]; then
+            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+                'The input file for the afterburner ' --emph "${target_link_name}"\
                 ' already exists.'
-            fi
-        else
-            base_file=$(basename "${HYBRID_software_user_custom_input_file[Afterburner]}")
-            if [[ ! -e "${HYBRID_software_output_directory[Afterburner]}/${base_file}" ]]; then
-                if [[ ! -f "${HYBRID_software_user_custom_input_file[Afterburner]}" ]]; then
-                    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                        'Input to Afterburner' --emph "${HYBRID_software_user_custom_input_file[Afterburner]}"\
-                        ' does not exist.'
-                fi
-                sampled_particle_list="${HYBRID_software_user_custom_input_file[Afterburner]}"
-            else
-                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                'The input file for the afterburner ' \ 
-                --emph "${HYBRID_software_output_directory[Afterburner]}/${base_file}"
-                ' already exists.'
-            fi
-
-        fi
-        if [[ ! -f "${HYBRID_software_output_directory[IC]}/config.yaml" ]]; then
+        elif [[ ! -f "${HYBRID_software_output_directory[IC]}/config.yaml" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
                 'Initial condition configuration file ' --emph "${HYBRID_software_output_directory[IC]}/config.yaml"\
                 ' does not exist which is needed to check number of initial nucleons.'
-        fi
-        if [[ "${HYBRID_software_user_custom_input_file[Spectators]}" = '' ]]; then
-            if [[ ! -f "${HYBRID_software_output_directory[IC]}/${HYBRID_software_default_input_file[Spectators]}" ]]; then
-                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                    'Spectator list ' --emph "${HYBRID_software_output_directory[IC]}/${HYBRID_software_default_input_file[Spectators]}"\
-                    ' does not exist.'
-            fi
-            spectator_list="${HYBRID_software_output_directory[IC]}/${HYBRID_software_default_input_file[Spectators]}"
-        else 
-            if [[ ! -f "${HYBRID_software_user_custom_input_file[Spectators]}" ]]; then
-                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                    'Spectator list ' --emph "${HYBRID_software_user_custom_input_file[Spectators]}"\
-                    ' does not exist.'
-            fi
-            spectator_list="${HYBRID_software_user_custom_input_file[Spectators]}"
+        elif [[ ! -f "${HYBRID_software_input_file[Spectators]}"  ]]; then
+            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+                'Spectator file ' --emph "${HYBRID_software_input_file[Spectators]}"\
+                ' does not exist.'
         fi
         "${HYBRID_external_python_scripts[Add_spectators_from_IC]}"\
-            '--sampled_particle_list' "${sampled_particle_list}"\
-            '--initial_particle_list' "${spectator_list}"\
-            '--output_file' "${HYBRID_software_output_directory[Afterburner]}/sampling0"\
+            '--sampled_particle_list' "${HYBRID_software_input_file[Afterburner]}" \
+            '--initial_particle_list' "${HYBRID_software_input_file[Spectators]}"\
+            '--output_file' "${target_link_name}"\
             '--smash_config' "${HYBRID_software_output_directory[IC]}/config.yaml"
-        
     else
-        if [[ "${HYBRID_software_user_custom_input_file[Afterburner]}" = '' ]]; then
-            if [[ ! -e  "${HYBRID_software_output_directory[Afterburner]}/sampling0" ]]; then
-                if [[ ! -f "${HYBRID_software_output_directory[Sampler]}/${HYBRID_software_default_input_file[Afterburner_without_spectators]}"  ]]; then
-                    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                        'Input to Afterburner' --emph "${HYBRID_software_output_directory[Sampler]}/${HYBRID_software_default_input_file[Afterburner_without_spectators]}" \
-                        ' does not exist.'
-                fi
-                ln -s -f "${HYBRID_software_output_directory[Sampler]}/${HYBRID_software_default_input_file[Afterburner_without_spectators]}" \
-                        "${HYBRID_software_output_directory[Afterburner]}/sampling0"
-            else
-                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                'The input file for the afterburner ' --emph "${HYBRID_software_output_directory[Sampler]}/${HYBRID_software_default_input_file[Afterburner_without_spectators]}" ' already exists.'
-            fi
-        else
-            if [[ ! -f "${HYBRID_software_user_custom_input_file[Afterburner]}" ]]; then
-                    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                        'Input to Afterburner' --emph "${HYBRID_software_user_custom_input_file[Afterburner]}"\
-                        ' does not exist.'
-            fi
-            if [[ ! -e "${HYBRID_software_output_directory[Afterburner]}/sampling0" ]]; then
-                ln -s -f "${HYBRID_software_user_custom_input_file[Afterburner]}"\
-                        "${HYBRID_software_output_directory[Afterburner]}/sampling0"
-             else
-                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                'The input file for the afterburner ' --emph "${HYBRID_software_output_directory[Afterburner]}/sampling0" ' already exists.'
-            fi
-        fi
+        ln -s "${HYBRID_software_input_file[Afterburner]}" \
+              "${target_link_name}" 
     fi
 }
 

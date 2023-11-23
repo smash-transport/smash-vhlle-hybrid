@@ -31,6 +31,13 @@ function Define_Further_Global_Variables()
     declare -rgA HYBRID_external_python_scripts=(
         [Add_spectators_from_IC]="${HYBRID_python_folder}/add_spectators.py"
     )
+     declare -rgA HYBRID_software_default_input_filename=(
+        [IC]=''
+        [Hydro]="SMASH_IC.dat"
+        [Sampler]="freezeout.dat"
+        [Spectators]="SMASH_IC.oscar"
+        [Afterburner]="particle_lists.oscar"
+    )
     # The following associative arrays declare maps between valid keys in the handler config
     # file and bash variables in which the input information will be stored once parsed.
     declare -rgA HYBRID_hybrid_handler_valid_keys=()
@@ -58,6 +65,7 @@ function Define_Further_Global_Variables()
         [Add_spectators_from_IC]='HYBRID_optional_feature[Add_spectators_from_IC]'
         [Spectators_source]='HYBRID_optional_feature[Spectators_source]'
     )
+<<<<<<< HEAD
     declare -rgA HYBRID_software_default_input_file=(
         [IC]=''
         [Hydro]="SMASH_IC.dat"
@@ -78,6 +86,8 @@ function Define_Further_Global_Variables()
         [Sampler]='sampler_config.txt'
         [Afterburner]='afterburner_config.yaml'
     )
+=======
+>>>>>>> f60577c (Move custom input logic to sanity checks; fail when custom input is used along input stage)
     # Variables to be set (and possibly made readonly) from command line
     HYBRID_execution_mode='help'
     HYBRID_configuration_file='./config.yaml'
