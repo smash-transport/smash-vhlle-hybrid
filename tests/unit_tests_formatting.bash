@@ -32,12 +32,14 @@ function Unit_Test__codebase-formatting()
     if [[ ${formatter_found} = 'FALSE' ]]; then
         continue
     else
-        # Quoting shfmt manual: "If a given path is a directory, all shell
-        # scripts found under that directory will be used."
+        # Quoting shfmt manual:
+        # "If a given path is a directory, all shell scripts found under that directory will be used."
         files_with_wrong_formatting=(
             $(shfmt -l -ln bash -i 4 -bn -ci -sr -fn "${HYBRIDT_repository_top_level_path}")
         )
     fi
+    # Now some nice report to user
+    local report_before='FALSE'
     if [[ ${#files_with_too_long_lines[@]} -gt 0 ]]; then
         Print_Error \
             'There are ' --emph "${#files_with_too_long_lines[@]}" ' file(s) with lines longer than ' \
@@ -47,9 +49,10 @@ function Unit_Test__codebase-formatting()
                 --emph "$(realpath --relative-base="${HYBRIDT_repository_top_level_path}" "${file}")"
         done
         Print_Info '\nPlease adjust too long lines in the above mentioned files.'
+        report_before='TRUE'
     fi
     if [[ ${#files_with_wrong_formatting[@]} -gt 0 ]]; then
-        if [[ ${#files_with_too_long_lines[@]} -gt 0 ]]; then
+        if [[ ${report_before} = 'TRUE' ]]; then
             printf '\n'
         fi
         Print_Error \
