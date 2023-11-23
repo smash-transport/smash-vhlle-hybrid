@@ -40,7 +40,7 @@ function __static__Ensure_Executable_Exists()
     if [[ "${executable}" = '' ]]; then
         exit_code=${HYBRID_fatal_variable_unset} Print_Fatal_And_Exit\
             'Software executable for ' --emph "${label}" ' run was not specified.'
-    elif ! hash "${executable}"; then 
+    elif [[ "${executable}" != / ]]; then 
         if [[ ! -f "${executable}" ]]; then
             exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
                 'The executable file for the ' --emph "${label}" ' run was not found.'
@@ -51,12 +51,12 @@ function __static__Ensure_Executable_Exists()
     # It is important to perform this check with 'type' and not with 'hash' because 'hash' with
     # paths always succeed -> https://stackoverflow.com/a/42362142/14967071
     # This will be entered if the user gives something stupid as '~' as executable.
-    elif ! type "${executable}" &> /dev/null; then
+    elif ! type -P "${executable}" &> /dev/null; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
             'The command ' --emph "${executable}" ' specified for the '\
             --emph "${label}" ' run was not located by the shell.'\
             'Please check your ' --emph 'PATH' ' environment variable and make sure'\
-            'that '--emph "type \"${executable}\"" ' succeeds in your terminal.'
+            'that '--emph "type -P \"${executable}\"" ' succeeds in your terminal.'
     fi
 }
 
