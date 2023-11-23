@@ -61,9 +61,7 @@ function Unit_Test__codebase-formatting()
             Print_Error -l -- ' - ' \
                 --emph "$(realpath --relative-base="${HYBRIDT_repository_top_level_path}" "${file}")"
         done
-        Print_Info \
-            '\nTo format all bash files correctly run:\n' \
-            --emph "shfmt -w -ln bash -i 4 -bn -ci -sr -fn \"${HYBRIDT_repository_top_level_path}\""
+        Print_Info '\nRun ' --emph 'Hybrid-handler format' ' to correctly format the codebase.'
     fi
     if ((${#files_with_too_long_lines[@]} + ${#files_with_wrong_formatting[@]} > 0)); then
         return 1

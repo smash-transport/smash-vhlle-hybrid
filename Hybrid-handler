@@ -94,10 +94,13 @@ function Act_And_Exit_If_User_Ran_Auxiliary_Modes()
         *help)
             Give_Required_Help
             ;;&
+        format)
+            Format_Codebase
+            ;;&
         version)
             Print_Software_Version
             ;;&
-        *help | version)
+        *help | format | version)
             exit ${HYBRID_success_exit_code}
             ;;
     esac

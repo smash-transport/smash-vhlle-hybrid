@@ -21,6 +21,9 @@ function Parse_Execution_Mode()
         version | --version)
             HYBRID_execution_mode='version'
             ;;
+        format | --format)
+            HYBRID_execution_mode='format'
+            ;;
         do)
             HYBRID_execution_mode='do'
             ;;

@@ -25,6 +25,7 @@ function __static__Source_Codebase_Files()
         'command_line_parsers/sub_parser.bash'
         'configuration_parser.bash'
         'dispatch_functions.bash'
+        'formatter.bash'
         'global_variables.bash'
         'Hydro_functionality.bash'
         'IC_functionality.bash'
