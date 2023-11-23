@@ -71,14 +71,14 @@ function Unit_Test__Hydro-create-input-file()
     rm "${HYBRID_software_output_directory[Hydro]}"/*
     ln -s ~ "${HYBRID_software_output_directory[Hydro]}/eos"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
-    if [[ $? -eq 1 ]]; then
+    if [[ $? -ne 0 ]]; then
         Print_Error 'Preparation failed to replace existing symlink.'
         return 1
     fi
     rm -r "${HYBRID_software_output_directory[Hydro]}"/*
     ln -s "${HYBRIDT_folder_to_run_tests}/eos" "${HYBRID_software_output_directory[Hydro]}/eos"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
-    if [[ $? -eq 1 ]]; then
+    if [[ $? -ne 0 ]]; then
         Print_Error 'Preparation failed although the correct symlink exists.'
         return 1
     fi
