@@ -34,6 +34,8 @@ function Prepare_Software_Input_File_Afterburner()
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
                 'The input file for the afterburner ' --emph "${HYBRID_software_output_directory[Sampler]}/sampling0"\
                 ' already exists.'
+        # Here the config.yaml file that SMASH produces in the output folder is used to determine
+        # the initial number of particles
         elif [[ ! -f "${HYBRID_software_output_directory[IC]}/config.yaml" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
                 'Initial condition configuration file ' --emph "${HYBRID_software_output_directory[IC]}/config.yaml"\
