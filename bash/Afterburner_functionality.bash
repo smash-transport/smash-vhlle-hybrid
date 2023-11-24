@@ -23,7 +23,7 @@ function Prepare_Software_Input_File_Afterburner()
         Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File\
             'YAML' "${HYBRID_software_configuration_file[Afterburner]}" "${HYBRID_software_new_input_keys[Afterburner]}"
     fi
-    
+
     if [[ ! -f "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar" ]]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
             'Sampler output file ' --emph "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
@@ -34,12 +34,13 @@ function Prepare_Software_Input_File_Afterburner()
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
                 'The input file for the afterburner ' --emph "${HYBRID_software_output_directory[Sampler]}/sampling0"\
                 ' already exists.'
-        # Here the config.yaml file that SMASH produces in the output folder is used to determine
-        # the initial number of particles
+        # Here the config.yaml file is expected to be produced by SMASH in the output folder
+        # during the IC run. It is used to determine the initial number of particles.
         elif [[ ! -f "${HYBRID_software_output_directory[IC]}/config.yaml" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
                 'Initial condition configuration file ' --emph "${HYBRID_software_output_directory[IC]}/config.yaml"\
-                ' does not exist which is needed to check number of initial nucleons.'
+                '\ndoes not exist, but is needed to check number of initial nucleons.' \
+                'This file is expected to be produced by the IC software run.'
         elif [[ ! -f "${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
                 'Initial condition file ' --emph "${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar"\
@@ -52,7 +53,7 @@ function Prepare_Software_Input_File_Afterburner()
             '--smash_config' "${HYBRID_software_output_directory[IC]}/config.yaml"
     else
         ln -s "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
-              "${HYBRID_software_output_directory[Afterburner]}/sampling0" 
+              "${HYBRID_software_output_directory[Afterburner]}/sampling0"
     fi
 }
 
