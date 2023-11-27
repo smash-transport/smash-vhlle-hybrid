@@ -24,11 +24,7 @@ function Prepare_Software_Input_File_Afterburner()
             'YAML' "${HYBRID_software_configuration_file[Afterburner]}" "${HYBRID_software_new_input_keys[Afterburner]}"
     fi
     local -r target_link_name="${HYBRID_software_output_directory[Afterburner]}/sampling0"
-    if [[ ! -f "${HYBRID_software_input_file[Afterburner]}" ]]; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-            'Afterburner input file ' --emph "${HYBRID_software_input_file[Afterburner]}"\
-            ' does not exist.'
-    fi
+    
     if [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
         if [[ -f "${target_link_name}" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
@@ -49,8 +45,15 @@ function Prepare_Software_Input_File_Afterburner()
             '--output_file' "${target_link_name}"\
             '--smash_config' "${HYBRID_software_output_directory[IC]}/config.yaml"
     else
-        ln -s "${HYBRID_software_input_file[Afterburner]}" \
-              "${target_link_name}" 
+        # Create symbolic link to IC file, which is assumed to exist here (its existence is checked later).
+        # If the file exists we will just use it; if it exists as a broken link we overwrite it with 'ln -f'.
+        if [[ ! -f "${target_link_name}" || -L "${target_link_name}" ]]; then
+            ln -s -f "${HYBRID_software_input_file[Afterburner]}" "${target_link_name}"
+        elif [[ ! "${target_link_name}" -ef "${HYBRID_software_input_file[Afterburner]}" ]]; then
+            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+                'File ' --emph "${target_link_name}" ' exists but it is not the Hydro input file '\
+                --emph "${HYBRID_software_input_file[Afterburner]}" ' to be used.'
+        fi
     fi
 }
 
@@ -66,10 +69,12 @@ function Ensure_All_Needed_Input_Exists_Afterburner()
             ' does not exist.'
     fi
     # sampling0 could be either a symlink or an actual file, therefore the check for existence is necessary
-    if [[ ! -e "${HYBRID_software_output_directory[Afterburner]}/sampling0" ]]; then
+    if [[ ! -e "${HYBRID_software_input_file[Afterburner]}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-            'The input file ' --emph "${HYBRID_software_output_directory[Afterburner]}/sampling0"\
-            ' was not found.'
+        'The input file ' --emph "${HYBRID_software_input_file[Afterburner]}" ' was not found.'
+    elif [[ ! -e "${HYBRID_software_output_directory[Afterburner]}/sampling0" ]]; then
+        Print_Internal_And_Exit \
+            'Something went wrong when creating the Afterburner symbolic link.'
     fi
 }
 

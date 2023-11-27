@@ -109,9 +109,12 @@ function Ensure_All_Needed_Input_Exists_Hydro()
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
             'The configuration file ' --emph "${HYBRID_software_configuration_file[Hydro]}" ' was not found.'
     fi
-    if [[ ! -e "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" ]]; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-        'IC output file ' --emph "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat" ' does not exist.'
+    if [[ ! -e "${HYBRID_software_input_file[Hydro]}" ]]; then
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+        'The input file ' --emph "${HYBRID_software_input_file[Hydro]}" ' was not found.'
+    elif [[ ! -e "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" ]]; then
+        Print_Internal_And_Exit \
+            'Something went wrong when creating the Afterburner symbolic link.'
     fi
 }
 

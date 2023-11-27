@@ -34,7 +34,7 @@ function Define_Further_Global_Variables()
      declare -rgA HYBRID_software_default_input_filename=(
         [IC]=''
         [Hydro]="SMASH_IC.dat"
-        [Sampler]="freezeout.dat"
+        [Sampler]="freezeout.dat" # Not used at the moment for how the sampler works 
         [Spectators]="SMASH_IC.oscar"
         [Afterburner]="particle_lists.oscar"
     )
@@ -101,7 +101,9 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
     )
     declare -gA HYBRID_software_user_custom_input_file=(
+        [IC]=''
         [Hydro]=''
+        [Sampler]=''
         [Spectators]=''
         [Afterburner]=''
     )

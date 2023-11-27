@@ -52,7 +52,7 @@ function Unit_Test__Hydro-create-input-file()
         return 1
     fi
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro &> /dev/null
-    if [[ $? -eq 0 ]]; then
+    if [[ $? -ne 110 ]]; then
         Print_Error 'Preparation of input with existent config succeeded.'
         return 1
     fi
@@ -120,13 +120,13 @@ function Unit_Test__Hydro-check-all-input()
     fi
     touch "${HYBRID_software_configuration_file[Hydro]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
-    if [[ $? -eq 0 ]]; then
+    if [[$? -eq 0 ]]; then
         Print_Error 'Ensuring existence of not-existing link to IC file succeeded.'
         return 1
     fi
     ln -s 'not-existing-target' "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
-    if [[ $? -eq 0 ]]; then
+    if [[ $? -eq 0  ]]; then
         Print_Error 'Ensuring existence of broken link to IC file succeeded.'
         return 1
     fi
@@ -165,8 +165,6 @@ function Unit_Test__Hydro-test-run-software()
     terminal_output_result=$(< "${hydro_terminal_output}")
     correct_result="-params ${Hydro_config_file_path} -ISinput ${IC_output_file_path} -outputDir ${HYBRID_software_output_directory[Hydro]}"
     if [[ "${terminal_output_result}" != "${correct_result}" ]]; then
-        echo "${terminal_output_result}"
-        echo "${correct_result}"
         Print_Error 'The terminal output has not the expected content.'
         return 1
     fi

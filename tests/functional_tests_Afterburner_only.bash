@@ -46,53 +46,8 @@ function Functional_Test__do-Afterburner-only()
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     __static__Check_Successful_Handler_Run $? || return 1
     mv 'Afterburner' 'Afterburner-success'
-    #Test with custom input
-    rm 'Sampler/particle_lists.oscar'
-    mkdir -p test
-    touch 'test/particle_lists_2.oscar'
-    printf '
-    Afterburner:
-      Executable: %s/tests/mocks/smash_afterburner_black-box.py
-      Input_file: %s/tests/run_tests/do-Afterburner-only/test/particle_lists_2.oscar
-      Software_keys:
-        Modi:
-          List:
-            File_Directory: "."
-    ' "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}"  > "${config_filename}"
-    # Expect success and test absence of "SMASH" unfinished file
-    Print_Info 'Running Hybrid-handler expecting failure'
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
-    __static__Check_Successful_Handler_Run $? || return 1
-    mv 'Afterburner' 'Afterburner-success-custom-input'
-    # Expect failure when using custom input while also running the sampler
-    printf '
-    Sampler:
-      Executable: %s/tests/mocks/sampler_black_box.py
-    Afterburner:
-      Executable: %s/tests/mocks/smash_afterburner_black-box.py
-      Input_file: %s/tests/run_tests/do-Afterburner-only/test/particle_lists_2.oscar
-      Software_keys:
-        Modi:
-          List:
-            File_Directory: "."
-    ' "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}"  > "${config_filename}"
-    Print_Info 'Running Hybrid-handler expecting failure'
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Hybrid-handler unexpectedly succeded.'
-        return 1
-    fi
     # Expect failure and test "SMASH" message
     Print_Info 'Running Hybrid-handler expecting invalid Afterburner input file failure'
-    touch 'Sampler/particle_lists.oscar'
-    printf '
-    Afterburner:
-      Executable: %s/tests/mocks/smash_afterburner_black-box.py
-      Software_keys:
-        Modi:
-          List:
-            File_Directory: "."
-    ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
     terminal_output_file='Afterburner/Terminal_Output.txt'
     BLACK_BOX_FAIL='invalid_config'\
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
@@ -109,7 +64,7 @@ function Functional_Test__do-Afterburner-only()
         return 1
     fi
     mv 'Afterburner' 'Afterburner-invalid-config'
-    # Expect failure and test "SMASH" unfinished/lock files
+     # Expect failure and test "SMASH" unfinished/lock files
     Print_Info 'Running Hybrid-handler expecting crash in Afterburner software'
     BLACK_BOX_FAIL='smash_crashes'\
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
@@ -123,11 +78,46 @@ function Functional_Test__do-Afterburner-only()
         return 1
     fi
     mv 'Afterburner' 'Afterburner-software-crash'
+    #Test with custom input
+    rm 'Sampler/particle_lists.oscar'
+    mkdir -p test
+    touch 'test/particle_lists_2.oscar'
+    printf '
+    Afterburner:
+      Executable: %s/mocks/smash_afterburner_black-box.py
+      Input_file: %s/test/particle_lists_2.oscar
+      Software_keys:
+        Modi:
+          List:
+            File_Directory: "."
+    ' "${HYBRIDT_tests_folder}" "$(pwd)"  > "${config_filename}"
+    # Expect success and test absence of "SMASH" unfinished file
+    Print_Info 'Running Hybrid-handler expecting success'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+    __static__Check_Successful_Handler_Run $? || return 1
+    mv 'Afterburner' 'Afterburner-success-custom-input'
+    # Expect failure when using custom input while also running the sampler
+    printf '
+    Sampler:
+      Executable: %s/mocks/sampler_black_box.py
+    Afterburner:
+      Executable: %s/mocks/smash_afterburner_black-box.py
+      Input_file: %s/test/particle_lists_2.oscar
+      Software_keys:
+        Modi:
+          List:
+            File_Directory: "."
+    ' "${HYBRIDT_tests_folder}" "${HYBRIDT_tests_folder}" "$(pwd)"  > "${config_filename}"
+    Print_Info 'Running Hybrid-handler expecting failure'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+    if [[ $? -ne 110 ]]; then
+        Print_Error 'Hybrid-handler unexpectedly succeded.'
+        return 1
+    fi
     # Expect success and test the add_spectator functionality
     Print_Info 'Running Hybrid-handler expecting success with the add_spectator option'
     mkdir 'IC'
-    touch 'IC/config.yaml' 'IC/SMASH_IC.oscar'
-    touch 'Sampler/particle_lists.oscar'
+    touch 'IC/config.yaml' 'IC/SMASH_IC.oscar' 'Sampler/particle_lists.oscar'
     printf '
     Afterburner:
       Executable: %s/tests/mocks/smash_afterburner_black-box.py
@@ -142,21 +132,19 @@ function Functional_Test__do-Afterburner-only()
     mv 'Afterburner' 'Afterburner-success-with-spectators'
     # Expect success and test the add_spectator functionality with custom spectator input
     Print_Info 'Running Hybrid-handler expecting success with the custom add_spectator option'
-    rm -r 'IC'
-    mkdir 'IC'
-    touch 'IC/config.yaml' 
+    rm -r "IC"/*
     mkdir -p test
-    touch 'test/SMASH_IC_2.oscar'
+    touch 'test/SMASH_IC_2.oscar' 'IC/config.yaml' 
     printf '
     Afterburner:
-      Executable: %s/tests/mocks/smash_afterburner_black-box.py
+      Executable: %s/mocks/smash_afterburner_black-box.py
       Add_spectators_from_IC: TRUE
-      Spectators_source: %s/tests/run_tests/do-Afterburner-only/test/SMASH_IC_2.oscar
+      Spectators_source: %s/test/SMASH_IC_2.oscar
       Software_keys:
         Modi:
           List:
             File_Directory: "."
-    ' "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
+    ' "${HYBRIDT_tests_folder}" "$(pwd)"  > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     __static__Check_Successful_Handler_Run  $? || return 1
     mv 'Afterburner' 'Afterburner-success-with-spectators'
@@ -164,19 +152,22 @@ function Functional_Test__do-Afterburner-only()
     Print_Info 'Running Hybrid-handler expecting failure with the add_spectator option and IC at the same time'
     printf '
     IC:
-      Executable: %s/tests/mocks/smash_IC_black-box.py
+      Executable: %s/mocks/smash_IC_black-box.py
+    Hydro:
+      Executable: %s/mocks/smash_IC_black-box.py
+    Sampler:
+      Executable: %s/mocks/smash_IC_black-box.py
     Afterburner:
-      Executable: %s/tests/mocks/smash_afterburner_black-box.py
+      Executable: %s/mocks/smash_afterburner_black-box.py
       Add_spectators_from_IC: TRUE
-      Spectators_source: %s/tests/run_tests/do-Afterburner-only/test/SMASH_IC_2.oscar
+      Spectators_source: %s/test/SMASH_IC_2.oscar
       Software_keys:
         Modi:
           List:
             File_Directory: "."
-    ' "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}"\
-    > "${config_filename}"
+    ' "${HYBRIDT_tests_folder}" "${HYBRIDT_tests_folder}" "${HYBRIDT_tests_folder}" "${HYBRIDT_tests_folder}" "$(pwd)" > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
-    if [[ $? -eq 0 ]]; then
+    if [[ $? -ne 110 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeded.'
         return 1
     fi

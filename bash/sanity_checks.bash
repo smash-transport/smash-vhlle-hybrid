@@ -22,31 +22,24 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             HYBRID_software_configuration_file[${key}]="${HYBRID_software_output_directory[${key}]}/${base_file}"
             # Set here input data file of software if it was not set by user
             if [[ ${key} =~ ^(Hydro|Afterburner)$ ]]; then
-                local filename="${HYBRID_software_user_custom_input_file[${key}]}"
+                local filename relative_key
+                filename="${HYBRID_software_user_custom_input_file[${key}]}"
+                case "${key}" in
+                    Hydro )
+                        relative_key='IC'
+                        ;;
+                    Afterburner )
+                        relative_key='Sampler'
+                        ;;
+                esac
                 if [[ "${filename}" = '' ]]; then
-                    case "${key}" in
-                        Hydro )
-                            filename="${HYBRID_software_output_directory[IC]}/${HYBRID_software_default_input_filename[Hydro]}"
-                            ;;
-                        Afterburner )
-                            filename="${HYBRID_software_output_directory[Sampler]}/${HYBRID_software_default_input_filename[Afterburner]}"  
-                            ;;
-                    esac
+                    filename="${HYBRID_software_output_directory[${relative_key}]}/${HYBRID_software_default_input_filename[${key}]}"
                 else
-                    case "${key}" in
-                        Hydro )
-                            if  Element_In_Array_Equals_To "IC" "${HYBRID_given_software_sections[@]}"; then
-                                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                                'Requesting custom Hydro input although executing IC with default output name.'
-                            fi
-                            ;;
-                        Afterburner )
-                            if  Element_In_Array_Equals_To "Sampler" "${HYBRID_given_software_sections[@]}"; then
-                                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                                'Requesting custom Afterburner input although executing Sampler with default output name.'
-                            fi  
-                            ;;
-                    esac
+                    if  Element_In_Array_Equals_To "${relative_key}" "${HYBRID_given_software_sections[@]}"; then
+                        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                            'Requesting custom ' --emph "${key}" ' input file although executing ' \
+                            --emph "${relative_key}" ' with default output name.'
+                    fi
                 fi
                 HYBRID_software_input_file[${key}]="${filename}"
             fi
@@ -56,8 +49,9 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
         if [[ "${HYBRID_optional_feature[Spectators_source]}" != '' ]]; then
             HYBRID_software_input_file['Spectators']="${HYBRID_optional_feature[Spectators_source]}"
             if  Element_In_Array_Equals_To "IC" "${HYBRID_given_software_sections[@]}"; then
-                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                'Requesting custom Spectator input although executing IC with default output name.'
+                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                    'Requesting custom ' --emph 'Spectators' ' input file although executing ' \
+                    --emph 'IC' ' with default output name.'
             fi  
         else
             HYBRID_software_input_file['Spectators']="${HYBRID_software_output_directory[IC]}/${HYBRID_software_default_input_filename[Spectators]}"    

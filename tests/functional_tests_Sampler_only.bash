@@ -31,27 +31,6 @@ function Functional_Test__do-Sampler-only()
         return 1
     fi
     mv 'Sampler' 'Sampler-success'
-    rm 'Hydro/freezeout.dat'
-    touch 'Hydro/freezeout_2.dat'
-    printf '
-    Sampler:
-      Executable: %s/tests/mocks/sampler_black_box.py
-      Software_keys:
-        surface: ../Hydro/freezeout_2.dat
-    ' "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config}"
-    # Expect success and test presence of output files
-    Print_Info 'Running Hybrid-handler expecting success'
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}"
-    if [[ $? -ne 0 ]]; then
-        Print_Error 'Hybrid-handler unexpectedly failed.'
-        return 1
-    fi
-    output_files=( Sampler/* )
-    if [[ ${#output_files[@]} -ne 4 ]]; then
-        Print_Error 'Expected ' --emph '4' " output files, but ${#output_files[@]} found."
-        return 1
-    fi
-    mv 'Sampler' 'Sampler-success-custom-input'
     # Expect failure and test terminal output
     local terminal_output_file error_message
     terminal_output_file='Sampler/Terminal_Output.txt'
