@@ -77,7 +77,7 @@ function __static__Ensure_Executable_Exists()
     if [[ "${executable}" = '' ]]; then
         exit_code=${HYBRID_fatal_variable_unset} Print_Fatal_And_Exit\
             'Software executable for ' --emph "${label}" ' run was not specified.'
-    elif [[ "${executable}" != / ]]; then 
+    elif [[ "${executable}" = / ]]; then 
         if [[ ! -f "${executable}" ]]; then
             exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
                 'The executable file for the ' --emph "${label}" ' run was not found.' 
