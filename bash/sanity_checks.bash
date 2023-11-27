@@ -80,7 +80,7 @@ function __static__Ensure_Executable_Exists()
     elif [[ "${executable}" != / ]]; then 
         if [[ ! -f "${executable}" ]]; then
             exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-                'The executable file for the ' --emph "${label}" ' run was not found.'
+                'The executable file for the ' --emph "${label}" ' run was not found.' 
         elif [[ ! -x "${executable}" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
                 'The executable file for the ' --emph "${label}" ' run is not executable.'

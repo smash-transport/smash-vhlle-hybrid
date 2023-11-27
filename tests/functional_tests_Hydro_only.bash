@@ -52,12 +52,12 @@ function Functional_Test__do-Hydro-only()
         return 1
     fi
     mv 'Hydro' 'Hydro-invalid-input'
-    #Expect sucess with custom input file name
+    #Expect success with custom input file name
     printf '
     Hydro:
-      Executable: %s/mocks/vhlle_black-box.py
+      Executable: %s/vhlle_black-box.py
       Input_file: %s/test/input
-    ' "${HYBRIDT_tests_folder}" "$(pwd)"   > "${config_filename}"
+    ' "$(pwd)" "$(pwd)"   > "${config_filename}"
     # Run the hydro stage and check if freezeout is successfully generated
     rm 'IC/SMASH_IC.dat'
     mkdir -p test
@@ -69,11 +69,11 @@ function Functional_Test__do-Hydro-only()
         return 1
     fi
     output_files=( Hydro/* )
-    if [[ ${#output_files[@]} -ne 4 ]]; then
-        Print_Error 'Expected ' --emph '4' " output files, but ${#output_files[@]} found."
+    if [[ ${#output_files[@]} -ne 5 ]]; then
+        Print_Error 'Expected ' --emph '5' " output files, but ${#output_files[@]} found."
         return 1
     fi
-    mv 'Hydro' 'Hydro-succes-custom-input'
+    mv 'Hydro' 'Hydro-success-custom-input'
     # Expect failure when an invalid config was supplied
     Print_Info 'Running Hybrid-handler expecting invalid config argument'
     terminal_output_file='Hydro/Terminal_Output.txt'
@@ -109,15 +109,15 @@ function Functional_Test__do-Hydro-only()
     #Expect failure  with custom input file name while also using IC
     printf '
     IC:
-        Executable: %s/mocks/smash_IC_black-box.py
+      Executable: echo
     Hydro:
-      Executable: %s/mocks/vhlle_black-box.py
+      Executable: %s/vhlle_black-box.py
       Input_file: %s/test/input
-    ' "${HYBRIDT_tests_folder}"  "${HYBRIDT_tests_folder}" "$(pwd)"  > "${config_filename}"
+    '  "$(pwd)" "$(pwd)"  > "${config_filename}"
     Print_Info 'Running Hybrid-handler expecting failure'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -ne  110 ]]; then
-        Print_Error 'Hybrid-handler unexpectedly succeded.'
+        Print_Error 'Hybrid-handler unexpectedly succeeded.'
         return 1
     fi
 }

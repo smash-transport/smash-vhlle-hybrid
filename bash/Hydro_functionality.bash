@@ -25,7 +25,6 @@ function Prepare_Software_Input_File_Hydro()
     fi
     # Create symbolic link to IC file, which is assumed to exist here (its existence is checked later).
     # If the file exists we will just use it; if it exists as a broken link we overwrite it with 'ln -f'.
-<<<<<<< HEAD
     if [[ "${HYBRID_software_user_custom_input_file[Hydro]}" = '' ]]; then
         if [[ ! -e "${HYBRID_software_output_directory[Hydro]}/${HYBRID_software_default_input_file[Hydro]}" ]]; then
             if [[ ! -f "${HYBRID_software_input_file[Hydro]}" ]]; then
@@ -87,16 +86,6 @@ function Prepare_Software_Input_File_Hydro()
     else
         ln -s "${eos_folder}" "${link_to_eos_folder}"
     fi
-=======
-    local -r target_link_name="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
-    if [[ ! -f "${target_link_name}" || -L "${target_link_name}" ]]; then
-        ln -s -f "${HYBRID_software_input_file[Hydro]}" "${target_link_name}"
-    elif [[ ! "${target_link_name}" -ef "${HYBRID_software_input_file[Hydro]}" ]]; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-            'File ' --emph "${target_link_name}" ' exists but it is not the Hydro input file '\
-            --emph "${HYBRID_software_input_file[Hydro]}" ' to be used.'
-fi
->>>>>>> f60577c (Move custom input logic to sanity checks; fail when custom input is used along input stage)
 }
 
 function Ensure_All_Needed_Input_Exists_Hydro()

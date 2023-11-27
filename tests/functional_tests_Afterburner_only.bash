@@ -168,7 +168,7 @@ function Functional_Test__do-Afterburner-only()
     ' "${HYBRIDT_tests_folder}" "${HYBRIDT_tests_folder}" "${HYBRIDT_tests_folder}" "${HYBRIDT_tests_folder}" "$(pwd)" > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -ne 110 ]]; then
-        Print_Error 'Hybrid-handler unexpectedly succeded.'
+        Print_Error 'Hybrid-handler unexpectedly succeeded.'
         return 1
     fi
 }
