@@ -99,7 +99,7 @@ function Functional_Test__do-Afterburner-only()
     # Expect failure when using custom input while also running the sampler
     printf '
     Sampler:
-      Executable: %s/mocks/sampler_black_box.py
+      Executable: echo
     Afterburner:
       Executable: %s/mocks/smash_afterburner_black-box.py
       Input_file: %s/test/particle_lists_2.oscar
@@ -107,7 +107,7 @@ function Functional_Test__do-Afterburner-only()
         Modi:
           List:
             File_Directory: "."
-    ' "${HYBRIDT_tests_folder}" "${HYBRIDT_tests_folder}" "$(pwd)"  > "${config_filename}"
+    '  "${HYBRIDT_tests_folder}" "$(pwd)"  > "${config_filename}"
     Print_Info 'Running Hybrid-handler expecting failure'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -ne 110 ]]; then
@@ -152,11 +152,11 @@ function Functional_Test__do-Afterburner-only()
     Print_Info 'Running Hybrid-handler expecting failure with the add_spectator option and IC at the same time'
     printf '
     IC:
-      Executable: %s/mocks/smash_IC_black-box.py
+      Executable: echo
     Hydro:
-      Executable: %s/mocks/smash_IC_black-box.py
+      Executable: echo
     Sampler:
-      Executable: %s/mocks/smash_IC_black-box.py
+      Executable: echo
     Afterburner:
       Executable: %s/mocks/smash_afterburner_black-box.py
       Add_spectators_from_IC: TRUE
@@ -165,7 +165,7 @@ function Functional_Test__do-Afterburner-only()
         Modi:
           List:
             File_Directory: "."
-    ' "${HYBRIDT_tests_folder}" "${HYBRIDT_tests_folder}" "${HYBRIDT_tests_folder}" "${HYBRIDT_tests_folder}" "$(pwd)" > "${config_filename}"
+    '  "${HYBRIDT_tests_folder}" "$(pwd)" > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -ne 110 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded.'
