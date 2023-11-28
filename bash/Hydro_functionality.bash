@@ -25,38 +25,15 @@ function Prepare_Software_Input_File_Hydro()
     fi
     # Create symbolic link to IC file, which is assumed to exist here (its existence is checked later).
     # If the file exists we will just use it; if it exists as a broken link we overwrite it with 'ln -f'.
-    if [[ "${HYBRID_software_user_custom_input_file[Hydro]}" = '' ]]; then
-        if [[ ! -e "${HYBRID_software_output_directory[Hydro]}/${HYBRID_software_default_input_file[Hydro]}" ]]; then
-            if [[ ! -f "${HYBRID_software_input_file[Hydro]}" ]]; then
-                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                    'Input to Hydro' --emph "${HYBRID_software_input_file[Hydro]}"\
-                    ' does not exist.'
-            fi
-            ln -s -f "${HYBRID_software_input_file[Hydro]}"\
-                    "${HYBRID_software_output_directory[Hydro]}/${HYBRID_software_default_input_file[Hydro]}"
-        else
-            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                'The input file for Hydro ' --emph \
-                "${HYBRID_software_output_directory[Hydro]}/${HYBRID_software_default_input_file[Hydro]}"\
-                ' already exists.'
-        fi
-    else
-        if [[ ! -f "${HYBRID_software_user_custom_input_file[Hydro]}" ]]; then
-                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                    'Input to Hydro' --emph "${HYBRID_software_user_custom_input_file[Hydro]}"\
-                    ' does not exist.'
-        fi
-        if [[ ! -e "${HYBRID_software_output_directory[Hydro]}/${HYBRID_software_default_input_file[Hydro]}" ]]; then
-            ln -s -f "${HYBRID_software_user_custom_input_file[Hydro]}"\
-                      "${HYBRID_software_output_directory[Hydro]}/${HYBRID_software_default_input_file[Hydro]}"
-        else
-            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                'The input file for Hydro ' --emph \
-                "${HYBRID_software_output_directory[Hydro]}/${base_file}"\
-                ' already exists.'
-        fi
+    local -r target_link_name="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+    if [[ ! -f "${target_link_name}" || -L "${target_link_name}" ]]; then
+        ln -s -f "${HYBRID_software_input_file[Hydro]}" "${target_link_name}"
+    elif [[ ! "${target_link_name}" -ef "${HYBRID_software_input_file[Hydro]}" ]]; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
+            'File ' --emph "${target_link_name}" ' exists but it is not the Hydro input file '\
+            --emph "${HYBRID_software_input_file[Hydro]}" ' to be used.'
     fi
-    # Create a symbolic link to the eos folder, which is assumed to exist in the hydro software
+     # Create a symbolic link to the eos folder, which is assumed to exist in the hydro software
     # folder. The user-specified software executable is guaranteed to be either a command name
     # or a global path and in both cases 'type -P' is expected to succeed and print a global path.
     local eos_folder
@@ -99,11 +76,12 @@ function Ensure_All_Needed_Input_Exists_Hydro()
             'The configuration file ' --emph "${HYBRID_software_configuration_file[Hydro]}" ' was not found.'
     fi
     if [[ ! -e "${HYBRID_software_input_file[Hydro]}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-        'The input file ' --emph "${HYBRID_software_input_file[Hydro]}" ' was not found.'
+         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+        'The input file ' --emph "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"\
+            ' was not found.'
     elif [[ ! -e "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" ]]; then
         Print_Internal_And_Exit \
-            'Something went wrong when creating the Afterburner symbolic link.'
+            'Something went wrong when creating the Hydro symbolic link.'
     fi
 }
 

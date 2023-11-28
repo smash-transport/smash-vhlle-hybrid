@@ -65,21 +65,7 @@ function Define_Further_Global_Variables()
         [Add_spectators_from_IC]='HYBRID_optional_feature[Add_spectators_from_IC]'
         [Spectators_source]='HYBRID_optional_feature[Spectators_source]'
     )
-    declare -rgA HYBRID_software_default_input_file=(
-        [IC]=''
-        [Hydro]="SMASH_IC.dat"
-        [Sampler]="freezeout.dat"
-        [Spectators]="SMASH_IC.oscar"
-        [Afterburner_without_spectators]="particle_lists.oscar"
-        [Afterburner]="sampling0"
-    )
-    declare -rgA HYBRID_relative_key=(
-        [Hydro]="IC"
-        [Sampler]="Hydro"
-        [Spectators]="IC"
-        [Afterburner]="Afterburner"
-    )
-    declare -rgA HYBRID_software_input_filename=(
+    declare -rgA HYBRID_software_configuration_filename=(
         [IC]='IC_config.yaml'
         [Hydro]='hydro_config.txt'
         [Sampler]='sampler_config.txt'

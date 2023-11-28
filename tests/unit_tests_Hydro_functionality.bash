@@ -53,7 +53,7 @@ function Unit_Test__Hydro-create-input-file()
     fi
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro &> /dev/null
     if [[ $? -ne 110 ]]; then
-        Print_Error 'Preparation of input with existent config succeeded.'
+        Print_Error 'Preparation of input with existent did not fail with exit code 110 as expected.'
         return 1
     fi
     rm -r "${HYBRID_software_output_directory[Hydro]}"/*
@@ -120,7 +120,7 @@ function Unit_Test__Hydro-check-all-input()
     fi
     touch "${HYBRID_software_configuration_file[Hydro]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
-    if [[$? -eq 0 ]]; then
+    if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of not-existing link to IC file succeeded.'
         return 1
     fi

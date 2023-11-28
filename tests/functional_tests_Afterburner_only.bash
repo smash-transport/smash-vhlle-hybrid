@@ -168,7 +168,7 @@ function Functional_Test__do-Afterburner-only()
     '  "${HYBRIDT_tests_folder}" "$(pwd)" > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -ne 110 ]]; then
-        Print_Error 'Hybrid-handler unexpectedly succeeded.'
+        Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
         return 1
     fi
 }

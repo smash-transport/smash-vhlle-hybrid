@@ -17,9 +17,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
         if Element_In_Array_Equals_To "${key}" "${HYBRID_given_software_sections[@]}"; then
             __static__Ensure_Executable_Exists "${key}"
             printf -v HYBRID_software_configuration_file[${key}] \
-               "${HYBRID_software_output_directory[${key}]}/${HYBRID_software_input_filename[${key}]}"
-            base_file=$(basename "${HYBRID_software_base_config_file[${key}]}")
-            HYBRID_software_configuration_file[${key}]="${HYBRID_software_output_directory[${key}]}/${base_file}"
+               "${HYBRID_software_output_directory[${key}]}/${HYBRID_software_configuration_filename[${key}]}"
             # Set here input data file of software if it was not set by user
             if [[ ${key} =~ ^(Hydro|Afterburner)$ ]]; then
                 local filename relative_key

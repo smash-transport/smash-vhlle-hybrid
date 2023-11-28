@@ -117,7 +117,7 @@ function Functional_Test__do-Hydro-only()
     Print_Info 'Running Hybrid-handler expecting failure'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -ne  110 ]]; then
-        Print_Error 'Hybrid-handler unexpectedly succeeded.'
+        Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
         return 1
     fi
 }
