@@ -34,8 +34,6 @@ function Unit_Test__Hydro-create-input-file()
     ln -s "$(which ls)" dummy_exec
     HYBRID_software_executable[Hydro]="${HYBRIDT_folder_to_run_tests}/dummy_exec"
     mkdir 'eos'
-    mkdir -p "${HYBRID_software_output_directory[IC]}"
-    touch "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
     if [[ ! -f "${HYBRID_software_configuration_file[Hydro]}" ]]; then
         Print_Error 'The config was not properly created in the output folder.'
@@ -126,7 +124,7 @@ function Unit_Test__Hydro-check-all-input()
     fi
     ln -s 'not-existing-target' "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
-    if [[ $? -eq 0  ]]; then
+    if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of broken link to IC file succeeded.'
         return 1
     fi

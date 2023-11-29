@@ -33,7 +33,7 @@ function Prepare_Software_Input_File_Hydro()
             'File ' --emph "${target_link_name}" ' exists but it is not the Hydro input file '\
             --emph "${HYBRID_software_input_file[Hydro]}" ' to be used.'
     fi
-     # Create a symbolic link to the eos folder, which is assumed to exist in the hydro software
+    # Create a symbolic link to the eos folder, which is assumed to exist in the hydro software
     # folder. The user-specified software executable is guaranteed to be either a command name
     # or a global path and in both cases 'type -P' is expected to succeed and print a global path.
     local eos_folder
@@ -50,7 +50,7 @@ function Prepare_Software_Input_File_Hydro()
                     '\npointing to a different eos folder. Unlink and link again!\n'
                 unlink "${HYBRID_software_output_directory[Hydro]}/eos"
                 ln -s "${eos_folder}" "${link_to_eos_folder}"
-            else 
+            else
                 exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
                     'A ' --emph 'eos' ' folder called already exists at ' --emph "${HYBRID_software_output_directory[Hydro]}"\
                     '.' 'Please remove it and run the hybrid handler again.'

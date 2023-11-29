@@ -34,9 +34,15 @@ function Define_Further_Global_Variables()
      declare -rgA HYBRID_software_default_input_filename=(
         [IC]=''
         [Hydro]="SMASH_IC.dat"
-        [Sampler]="freezeout.dat" # Not used at the moment for how the sampler works 
+        [Sampler]="freezeout.dat" # Not used at the moment for how the sampler works
         [Spectators]="SMASH_IC.oscar"
         [Afterburner]="particle_lists.oscar"
+    )
+    declare -rgA HYBRID_software_configuration_filename=(
+        [IC]='IC_config.yaml'
+        [Hydro]='hydro_config.txt'
+        [Sampler]='sampler_config.txt'
+        [Afterburner]='afterburner_config.yaml'
     )
     # The following associative arrays declare maps between valid keys in the handler config
     # file and bash variables in which the input information will be stored once parsed.
@@ -64,12 +70,6 @@ function Define_Further_Global_Variables()
         [Software_keys]='HYBRID_software_new_input_keys[Afterburner]'
         [Add_spectators_from_IC]='HYBRID_optional_feature[Add_spectators_from_IC]'
         [Spectators_source]='HYBRID_optional_feature[Spectators_source]'
-    )
-    declare -rgA HYBRID_software_configuration_filename=(
-        [IC]='IC_config.yaml'
-        [Hydro]='hydro_config.txt'
-        [Sampler]='sampler_config.txt'
-        [Afterburner]='afterburner_config.yaml'
     )
     # Variables to be set (and possibly made readonly) from command line
     HYBRID_execution_mode='help'

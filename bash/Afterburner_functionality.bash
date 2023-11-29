@@ -70,9 +70,9 @@ function Ensure_All_Needed_Input_Exists_Afterburner()
     fi
     # sampling0 could be either a symlink or an actual file, therefore the check for existence is necessary.
     if [[ ! -e "${HYBRID_software_output_directory[Afterburner]}/sampling0" ]]; then
-    exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-        'The input file ' --emph "${HYBRID_software_output_directory[Afterburner]}/sampling0"\
-            ' was not found.'
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+            'The input file ' --emph "${HYBRID_software_output_directory[Afterburner]}/sampling0"\
+                ' was not found.'
     elif [[ ! -e "${HYBRID_software_output_directory[Afterburner]}/sampling0" ]]; then
         Print_Internal_And_Exit \
             'Something went wrong when creating the Afterburner symbolic link.'

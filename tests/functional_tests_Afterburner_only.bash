@@ -64,7 +64,7 @@ function Functional_Test__do-Afterburner-only()
         return 1
     fi
     mv 'Afterburner' 'Afterburner-invalid-config'
-     # Expect failure and test "SMASH" unfinished/lock files
+    # Expect failure and test "SMASH" unfinished/lock files
     Print_Info 'Running Hybrid-handler expecting crash in Afterburner software'
     BLACK_BOX_FAIL='smash_crashes'\
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
@@ -111,7 +111,7 @@ function Functional_Test__do-Afterburner-only()
     Print_Info 'Running Hybrid-handler expecting failure'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -ne 110 ]]; then
-        Print_Error 'Hybrid-handler unexpectedly succeded.'
+        Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
         return 1
     fi
     # Expect success and test the add_spectator functionality
@@ -134,7 +134,7 @@ function Functional_Test__do-Afterburner-only()
     Print_Info 'Running Hybrid-handler expecting success with the custom add_spectator option'
     rm -r "IC"/*
     mkdir -p test
-    touch 'test/SMASH_IC_2.oscar' 'IC/config.yaml' 
+    touch 'test/SMASH_IC_2.oscar' 'IC/config.yaml'
     printf '
     Afterburner:
       Executable: %s/mocks/smash_afterburner_black-box.py

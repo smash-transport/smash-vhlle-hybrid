@@ -31,7 +31,9 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
                         ;;
                 esac
                 if [[ "${filename}" = '' ]]; then
-                    filename="${HYBRID_software_output_directory[${relative_key}]}/${HYBRID_software_default_input_filename[${key}]}"
+                    printf -v filename '%s/%s' \
+                        "${HYBRID_software_output_directory[${relative_key}]}" \
+                        "${HYBRID_software_default_input_filename[${key}]}"
                 else
                     if  Element_In_Array_Equals_To "${relative_key}" "${HYBRID_given_software_sections[@]}"; then
                         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
@@ -50,12 +52,17 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
                 exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
                     'Requesting custom ' --emph 'Spectators' ' input file although executing ' \
                     --emph 'IC' ' with default output name.'
-            fi  
+            fi
         else
-            HYBRID_software_input_file['Spectators']="${HYBRID_software_output_directory[IC]}/${HYBRID_software_default_input_filename[Spectators]}"    
+            printf -v HYBRID_software_input_file[Spectators] '%s/%s' \
+                "${HYBRID_software_output_directory[IC]}" \
+                "${HYBRID_software_default_input_filename[Spectators]}"
         fi
     fi
-    readonly HYBRID_software_output_directory HYBRID_software_configuration_file  HYBRID_software_input_file 
+    readonly \
+        HYBRID_software_output_directory \
+        HYBRID_software_configuration_file \
+        HYBRID_software_input_file
 }
 
 function Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts()
@@ -65,7 +72,7 @@ function Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts()
             exit_code=${HYBRID_fatal_file_not_found} Print_Internal_And_Exit\
                 'The python script ' --emph "${external_file}" ' was not found.'
         fi
-    done 
+    done
 }
 
 function __static__Ensure_Executable_Exists()
@@ -75,13 +82,15 @@ function __static__Ensure_Executable_Exists()
     if [[ "${executable}" = '' ]]; then
         exit_code=${HYBRID_fatal_variable_unset} Print_Fatal_And_Exit\
             'Software executable for ' --emph "${label}" ' run was not specified.'
-    elif [[ "${executable}" = / ]]; then 
+    elif [[ "${executable}" = / ]]; then
         if [[ ! -f "${executable}" ]]; then
             exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-                'The executable file for the ' --emph "${label}" ' run was not found.' 
+                'The executable file ' --emph "${executable}" \
+                '\nfor the ' --emph "${label}" ' run was not found.'
         elif [[ ! -x "${executable}" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                'The executable file for the ' --emph "${label}" ' run is not executable.'
+                'The executable file ' --emph "${executable}" \
+                '\nfor the ' --emph "${label}" ' run is not executable.'
         fi
     # It is important to perform this check with 'type' and not with 'hash' because 'hash' with
     # paths always succeed -> https://stackoverflow.com/a/42362142/14967071
