@@ -11,7 +11,11 @@ function Functional_Test__do-everything()
 {
     shopt -s nullglob
     local -r config_filename='Handler_config.yaml'\
-             mocks_folder="${HYBRIDT_repository_top_level_path}/tests/mocks"
+             mocks_folder="${HYBRIDT_tests_folder}/mocks"
+    # Make a symlink to the python mock such that the eos folder doesn't have to be created in the mock folder
+    ln -s "${mocks_folder}/vhlle_black-box.py" "vhlle_black-box.py"
+    mkdir 'eos'
+    # Prepare handler file
     printf '
     IC:
       Executable: %s/smash_IC_black-box.py
@@ -26,7 +30,7 @@ function Functional_Test__do-everything()
         Modi:
           List:
             File_Directory: "."
-    ' "${mocks_folder}" "${mocks_folder}" "${mocks_folder}" "${mocks_folder}" > "${config_filename}"
+    ' "${mocks_folder}" "$(pwd)" "${mocks_folder}" "${mocks_folder}" > "${config_filename}"
     # Expect success and test absence of "SMASH" unfinished file
     Print_Info 'Running full workflow with Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
