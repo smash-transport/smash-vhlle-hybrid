@@ -23,7 +23,6 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
     HYBRID_output_directory="${HYBRIDT_folder_to_run_tests}/test_dir_Hydro"
     HYBRID_software_base_config_file[Hydro]='vhlle_config_cool'
     HYBRID_given_software_sections=('Hydro' )
-    HYBRID_software_output_directory[IC]="${HYBRID_output_directory}/IC"
     HYBRID_software_executable[Hydro]="$(which echo)"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 }
@@ -32,6 +31,9 @@ function Unit_Test__Hydro-create-input-file()
 {
     local -r ic_file="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     touch "${HYBRID_software_base_config_file[Hydro]}"
+    ln -s "$(which ls)" dummy_exec
+    HYBRID_software_executable[Hydro]="${HYBRIDT_folder_to_run_tests}/dummy_exec"
+    mkdir 'eos'
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
     if [[ ! -f "${HYBRID_software_configuration_file[Hydro]}" ]]; then
         Print_Error 'The config was not properly created in the output folder.'
@@ -48,8 +50,43 @@ function Unit_Test__Hydro-create-input-file()
         return 1
     fi
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro &> /dev/null
+    if [[ $? -ne 110 ]]; then
+        Print_Error 'Preparation of input with existent did not fail with exit code 110 as expected.'
+        return 1
+    fi
+    rm -r "${HYBRID_software_output_directory[Hydro]}"/*
+    mkdir "${HYBRID_software_output_directory[Hydro]}/eos"
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Preparation of input with existent config succeeded.'
+        Print_Error 'Preparation succeeded even though the eos folder already exists.'
+        return 1
+    fi
+    rm -r "${HYBRID_software_output_directory[Hydro]}"/*
+    touch "${HYBRID_software_output_directory[Hydro]}/eos"
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Preparation succeeded even though a file called eos already exists.'
+        return 1
+    fi
+    rm "${HYBRID_software_output_directory[Hydro]}"/*
+    ln -s ~ "${HYBRID_software_output_directory[Hydro]}/eos"
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Preparation failed to replace existing symlink.'
+        return 1
+    fi
+    rm -r "${HYBRID_software_output_directory[Hydro]}"/*
+    ln -s "${HYBRIDT_folder_to_run_tests}/eos" "${HYBRID_software_output_directory[Hydro]}/eos"
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Preparation failed although the correct symlink exists.'
+        return 1
+    fi
+    rm -r 'eos'
+    rm "${HYBRID_software_output_directory[Hydro]}"/*
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Preparation succeeded even though the eos folder does not exist.'
         return 1
     fi
 }

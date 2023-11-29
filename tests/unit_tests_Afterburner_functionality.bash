@@ -7,7 +7,7 @@
 #
 #===================================================
 
-function Make_Test_Preliminary_Operations__Afterburner-create-input-file()
+__static__Do_Preliminary_Setup_Operations()
 {
     local file_to_be_sourced list_of_files
     list_of_files=(
@@ -24,6 +24,12 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file()
     HYBRID_software_base_config_file[Afterburner]='my_cool_conf.yaml'
     HYBRID_given_software_sections=( 'Afterburner' )
     HYBRID_software_executable[Afterburner]=$(which echo) # Use command as fake executable
+}
+
+function Make_Test_Preliminary_Operations__Afterburner-create-input-file()
+{
+    __static__Do_Preliminary_Setup_Operations
+    HYBRID_optional_feature[Add_spectators_from_IC]='FALSE'
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
     Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts
 }
@@ -45,14 +51,8 @@ function Unit_Test__Afterburner-create-input-file()
         return 1
     fi
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Preparation of input with existent config succeeded.'
-        return 1
-    fi
-    rm -r "${HYBRID_output_directory}/"*
-    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Preparation of input succeeded even though the particle_list.oscar does not exist.'
+    if [[ $? -ne 110 ]]; then
+        Print_Error 'Preparation of input with existent config did not fail as expected.'
         return 1
     fi
 }
@@ -65,12 +65,14 @@ function Clean_Tests_Environment_For_Following_Test__Afterburner-create-input-fi
 
 function Make_Test_Preliminary_Operations__Afterburner-create-input-file-with-spectators()
 {
-    Make_Test_Preliminary_Operations__Afterburner-create-input-file
+   __static__Do_Preliminary_Setup_Operations
+    HYBRID_optional_feature[Add_spectators_from_IC]='TRUE'
+    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
+    Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts
 }
 
 function Unit_Test__Afterburner-create-input-file-with-spectators()
 {
-    HYBRID_optional_feature[Add_spectators_from_IC]='TRUE'
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"\
              "${HYBRID_software_output_directory[IC]}"\
              "${HYBRID_software_output_directory[Afterburner]}"
@@ -80,21 +82,27 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
         plist_Final="${HYBRID_software_output_directory[Afterburner]}/sampling0"
     touch "${HYBRID_software_base_config_file[Afterburner]}" "${plist_Sampler}" "${plist_Final}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Preparation succeeded even though the final particle list already exists.'
+    if [[ $? -ne 110 ]]; then
+        Print_Error \
+            'Files preparation did not fail with exit code 110' \
+            'even though the final particle list already exists.'
         return 1
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/"*
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Preparation succeeded even though the config.yaml of the IC does not exist.'
+    if [[ $? -ne 110 ]]; then
+        Print_Error \
+            'Files preparation did not fail with exit code 110' \
+            'even though the config.yaml of the IC does not exist.'
         return 1
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/"*
     touch "${HYBRID_software_output_directory[IC]}/config.yaml"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Preparation succeeded even though the SMASH_IC.oscar does not exist.'
+    if [[ $? -ne 110 ]]; then
+        Print_Error \
+            'Files preparation did not fail with exit code 110' \
+            'even though the SMASH_IC.oscar does not exist.'
         return 1
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/"*
@@ -123,7 +131,7 @@ function Unit_Test__Afterburner-check-all-input()
         Print_Error 'Ensuring existence of not-existing output directory succeeded.'
         return 1
     fi
-    mkdir -p "${HYBRID_software_output_directory[Afterburner]}"
+    mkdir -p "${HYBRID_software_output_directory[Afterburner]}" "${HYBRID_software_output_directory[Sampler]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of not-existing config file succeeded.'
@@ -138,11 +146,12 @@ function Unit_Test__Afterburner-check-all-input()
     touch "${HYBRID_software_output_directory[Afterburner]}/sampling0"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner
     if [[ $? -ne 0 ]]; then
-        Print_Error 'Ensuring existence of existing folder/file unexpectedly failed.'
+        Print_Error \
+            'Ensuring existence of existing folder/file unexpectedly failed,'\
+            ' although all files were provided.'
         return 1
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/sampling0"
-    mkdir "${HYBRID_software_output_directory[Sampler]}"
     touch "${HYBRID_software_output_directory[Sampler]}/original_sampling0"
     ln -s "${HYBRID_software_output_directory[Sampler]}/original_sampling0"\
           "${HYBRID_software_output_directory[Afterburner]}/sampling0"

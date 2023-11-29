@@ -59,7 +59,7 @@ function Functional_Test__do-Sampler-only()
     printf '
     Sampler:
       Executable: %s/tests/mocks/sampler_black_box.py
-      Input_file: %s
+      Config_file: %s
     ' "${HYBRIDT_repository_top_level_path}"\
       "${invalid_sampler_config}" > "${hybrid_handler_config}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}"
