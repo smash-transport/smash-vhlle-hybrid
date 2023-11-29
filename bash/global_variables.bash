@@ -31,35 +31,45 @@ function Define_Further_Global_Variables()
     declare -rgA HYBRID_external_python_scripts=(
         [Add_spectators_from_IC]="${HYBRID_python_folder}/add_spectators.py"
     )
+     declare -rgA HYBRID_software_default_input_filename=(
+        [IC]=''
+        [Hydro]="SMASH_IC.dat"
+        [Sampler]="freezeout.dat" # Not used at the moment for how the sampler works
+        [Spectators]="SMASH_IC.oscar"
+        [Afterburner]="particle_lists.oscar"
+    )
+    declare -rgA HYBRID_software_configuration_filename=(
+        [IC]='IC_config.yaml'
+        [Hydro]='hydro_config.txt'
+        [Sampler]='sampler_config.txt'
+        [Afterburner]='afterburner_config.yaml'
+    )
     # The following associative arrays declare maps between valid keys in the handler config
     # file and bash variables in which the input information will be stored once parsed.
     declare -rgA HYBRID_hybrid_handler_valid_keys=()
     declare -rgA HYBRID_ic_valid_keys=(
         [Executable]='HYBRID_software_executable[IC]'
-        [Input_file]='HYBRID_software_base_config_file[IC]'
+        [Config_file]='HYBRID_software_base_config_file[IC]'
         [Software_keys]='HYBRID_software_new_input_keys[IC]'
     )
     declare -rgA HYBRID_hydro_valid_keys=(
         [Executable]='HYBRID_software_executable[Hydro]'
-        [Input_file]='HYBRID_software_base_config_file[Hydro]'
+        [Config_file]='HYBRID_software_base_config_file[Hydro]'
+        [Input_file]='HYBRID_software_user_custom_input_file[Hydro]'
         [Software_keys]='HYBRID_software_new_input_keys[Hydro]'
     )
     declare -rgA HYBRID_sampler_valid_keys=(
         [Executable]='HYBRID_software_executable[Sampler]'
-        [Input_file]='HYBRID_software_base_config_file[Sampler]'
+        [Config_file]='HYBRID_software_base_config_file[Sampler]'
         [Software_keys]='HYBRID_software_new_input_keys[Sampler]'
     )
     declare -rgA HYBRID_afterburner_valid_keys=(
         [Executable]='HYBRID_software_executable[Afterburner]'
-        [Input_file]='HYBRID_software_base_config_file[Afterburner]'
+        [Config_file]='HYBRID_software_base_config_file[Afterburner]'
+        [Input_file]='HYBRID_software_user_custom_input_file[Afterburner]'
         [Software_keys]='HYBRID_software_new_input_keys[Afterburner]'
         [Add_spectators_from_IC]='HYBRID_optional_feature[Add_spectators_from_IC]'
-    )
-    declare -rgA HYBRID_software_input_filename=(
-        [IC]='IC_config.yaml'
-        [Hydro]='hydro_config.txt'
-        [Sampler]='sampler_config.txt'
-        [Afterburner]='afterburner_config.yaml'
+        [Spectators_source]='HYBRID_optional_feature[Spectators_source]'
     )
     # Variables to be set (and possibly made readonly) from command line
     HYBRID_execution_mode='help'
@@ -71,6 +81,13 @@ function Define_Further_Global_Variables()
         [IC]=''
         [Hydro]=''
         [Sampler]=''
+        [Afterburner]=''
+    )
+    declare -gA HYBRID_software_user_custom_input_file=(
+        [IC]=''
+        [Hydro]=''
+        [Sampler]=''
+        [Spectators]=''
         [Afterburner]=''
     )
     declare -gA HYBRID_software_base_config_file=(
@@ -87,6 +104,7 @@ function Define_Further_Global_Variables()
     )
     declare -gA HYBRID_optional_feature=(
         [Add_spectators_from_IC]='FALSE'
+        [Spectators_source]=''
     )
     # Variables to be set (and possibly made readonly) after all sanity checks on input succeeded
     declare -gA HYBRID_software_output_directory=(
@@ -99,6 +117,11 @@ function Define_Further_Global_Variables()
         [IC]=''
         [Hydro]=''
         [Sampler]=''
+        [Afterburner]=''
+    )
+    declare -gA HYBRID_software_input_file=(
+        [Hydro]=''
+        [Spectators]=''
         [Afterburner]=''
     )
 }
