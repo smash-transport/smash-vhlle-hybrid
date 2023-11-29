@@ -22,6 +22,7 @@ Modi:
         Target:
             Particles: {2212: 79, 2112: 118} #Gold197
 
+        Sqrtsnn: 200.0
         Fermi_Motion: frozen
         Impact:
             Max: 5.2
