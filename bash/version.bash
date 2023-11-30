@@ -13,16 +13,16 @@ function Print_Software_Version()
     # First handle cases where git is not available, or codebase downloaded as archive and not cloned
     # NOTE: Git introduced -C option in version 1.8.5
     if ! hash git &> /dev/null \
-                               || __static__Is_Git_Version_Older_Than '1.8.3' \
-                                                   || ! git -C "${HYBRID_top_level_path}" rev-parse --is-inside-work-tree &> /dev/null; then
+        || __static__Is_Git_Version_Older_Than '1.8.3' \
+        || ! git -C "${HYBRID_top_level_path}" rev-parse --is-inside-work-tree &> /dev/null; then
         __static__Print_Pretty_Version_Line "${HYBRID_codebase_version}"
         return 0
     fi
     local git_tag_short git_tag_long tag_date
     if ! git_tag_long=$(git -C "${HYBRID_top_level_path}" describe --tags 2> /dev/null); then
         Print_Warning 'It was not possible to obtain the version in use!' \
-                      'This probably (but not necessarily) means that you are' \
-                      'behind any release in the Hybrid-handler history.\n'
+            'This probably (but not necessarily) means that you are' \
+            'behind any release in the Hybrid-handler history.\n'
         __static__Print_Pretty_Version_Line "${HYBRID_codebase_version}"
         return 0
     fi
@@ -37,11 +37,11 @@ function Print_Software_Version()
             git_tag_long=$(git -C "${HYBRID_top_level_path}" describe --tags --dirty --broken 2> /dev/null)
         fi
         Print_Warning 'You are not using an official release of the Hybrid-handler.' \
-                      'Unless you have a reason not to do so, it would be better' \
-                      'to checkout a stable release. The last stable release behind' \
-                      'the commit you are using is: ' --emph "${git_tag_short}" \
-                      ' (' --emph "${tag_date}" ')\n' 'The repository state is ' \
-                      --emph "${git_tag_long}" '' '(see git-describe documentation for more information).'
+            'Unless you have a reason not to do so, it would be better' \
+            'to checkout a stable release. The last stable release behind' \
+            'the commit you are using is: ' --emph "${git_tag_short}" \
+            ' (' --emph "${tag_date}" ')\n' 'The repository state is ' \
+            --emph "${git_tag_long}" '' '(see git-describe documentation for more information).'
     else
         __static__Print_Pretty_Version_Line "${git_tag_short}" "${tag_date}"
     fi

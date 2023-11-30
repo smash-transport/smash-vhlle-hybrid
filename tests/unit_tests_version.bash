@@ -18,11 +18,11 @@ function Unit_Test__version()
     local std_output expected_output
     # Unsetting PATH in the subshell so that 'git' will not be found
     std_output=$(
-                 PATH=''
-                          Call_Codebase_Function Print_Software_Version
+        PATH=''
+        Call_Codebase_Function Print_Software_Version
     )
     if [[ $? -ne 0 ]] \
-                      || [[ $(Strip_ANSI_Color_Codes_From_String "${std_output}") != "This is ${HYBRID_codebase_version}" ]]; then
+        || [[ $(Strip_ANSI_Color_Codes_From_String "${std_output}") != "This is ${HYBRID_codebase_version}" ]]; then
         Print_Error "Version printing without git available failed."
         return 1
     fi

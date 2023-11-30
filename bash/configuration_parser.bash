@@ -38,7 +38,7 @@ function __static__Abort_If_Sections_Are_Violating_Any_Requirement()
 {
     local input_section_labels label index valid_software_label software_sections_indices
     # Here word splitting separates keys into array entries, hence we assume keys do not contain spaces!
-    input_section_labels=($( yq 'keys | .[]' "${HYBRID_configuration_file}"))
+    input_section_labels=($(yq 'keys | .[]' "${HYBRID_configuration_file}"))
     software_sections_indices=()
     for label in "${input_section_labels[@]}"; do
         if Element_In_Array_Equals_To "${label}" "${HYBRID_valid_auxiliary_configuration_sections[@]}"; then
@@ -70,7 +70,7 @@ function __static__Abort_If_Sections_Are_Violating_Any_Requirement()
         fi
         local gaps_between_indices
         gaps_between_indices=$(awk 'NR>1{print $1-x}{x=$1}' \
-                                <(printf '%d\n' "${software_sections_indices[@]}") | sort -u)
+            <(printf '%d\n' "${software_sections_indices[@]}") | sort -u)
         if [[ "${gaps_between_indices}" != '1' ]]; then
             exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
                 'Missing software section(s) in the handler configuration file.'
@@ -116,7 +116,7 @@ function __static__Validate_Keys_Of_Section()
     local invalid_keys yaml_section
     if Has_YAML_String_Given_Key "${yaml_config}" "${section_label}"; then
         yaml_section="$(Read_From_YAML_String_Given_Key "${yaml_config}" "${section_label}")"
-        invalid_keys=($( __static__Get_Top_Level_Invalid_Keys_In_Given_YAML_string "${yaml_section}"))
+        invalid_keys=($(__static__Get_Top_Level_Invalid_Keys_In_Given_YAML_string "${yaml_section}"))
         if [[ ${#invalid_keys[@]} -ne 0 ]]; then
             invalid_report+=("  ${section_label}" "${invalid_keys[@]/#/    }")
         fi
@@ -128,7 +128,7 @@ function __static__Get_Top_Level_Invalid_Keys_In_Given_YAML_string()
 {
     Ensure_That_Given_Variables_Are_Set valid_keys
     local input_keys key invalid_keys
-    input_keys=($( yq 'keys | .[]' <<< "$1"))
+    input_keys=($(yq 'keys | .[]' <<< "$1"))
     invalid_keys=()
     for key in "${input_keys[@]}"; do
         if ! Element_In_Array_Equals_To "${key}" "${valid_keys[@]}"; then

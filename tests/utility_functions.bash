@@ -43,6 +43,6 @@ function Define_Available_Tests_For()
     HYBRIDT_tests_to_be_run=(
         # Here word splitting can split names, no space allowed in function name!
         $(grep -hE "${grep_regex}" "${files_to_be_sourced[@]}" \
-                                                               | sed -E 's/'"${sed_regex}"'/\1/')
+            | sed -E 's/'"${sed_regex}"'/\1/')
     )
 }

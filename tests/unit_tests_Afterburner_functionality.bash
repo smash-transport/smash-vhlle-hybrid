@@ -82,7 +82,7 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
         plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar" \
         plist_Final="${HYBRID_software_output_directory[Afterburner]}/sampling0"
     touch "${HYBRID_software_base_config_file[Afterburner]}" "${plist_Sampler}" "${plist_Final}"
-    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
     if [[ $? -ne 110 ]]; then
         Print_Error \
             'Files preparation did not fail with exit code 110' \
@@ -90,7 +90,7 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
         return 1
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/"*
-    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
     if [[ $? -ne 110 ]]; then
         Print_Error \
             'Files preparation did not fail with exit code 110' \
@@ -99,7 +99,7 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/"*
     touch "${HYBRID_software_output_directory[IC]}/config.yaml"
-    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
     if [[ $? -ne 110 ]]; then
         Print_Error \
             'Files preparation did not fail with exit code 110' \
@@ -155,7 +155,7 @@ function Unit_Test__Afterburner-check-all-input()
     rm "${HYBRID_software_output_directory[Afterburner]}/sampling0"
     touch "${HYBRID_software_output_directory[Sampler]}/original_sampling0"
     ln -s "${HYBRID_software_output_directory[Sampler]}/original_sampling0" \
-          "${HYBRID_software_output_directory[Afterburner]}/sampling0"
+        "${HYBRID_software_output_directory[Afterburner]}/sampling0"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner &> /dev/null
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of existing file unexpectedly failed.'

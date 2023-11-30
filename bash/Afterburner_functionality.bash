@@ -36,7 +36,7 @@ function Prepare_Software_Input_File_Afterburner()
                 'Initial condition configuration file ' --emph "${HYBRID_software_output_directory[IC]}/config.yaml" \
                 '\ndoes not exist, but is needed to check number of initial nucleons.' \
                 'This file is expected to be produced by the IC software run.'
-        elif [[ ! -f "${HYBRID_software_input_file[Spectators]}"  ]]; then
+        elif [[ ! -f "${HYBRID_software_input_file[Spectators]}" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
                 'Spectator file ' --emph "${HYBRID_software_input_file[Spectators]}" \
                 ' does not exist.'
@@ -72,7 +72,7 @@ function Ensure_All_Needed_Input_Exists_Afterburner()
     if [[ ! -e "${HYBRID_software_output_directory[Afterburner]}/sampling0" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
             'The input file ' --emph "${HYBRID_software_output_directory[Afterburner]}/sampling0" \
-                ' was not found.'
+            ' was not found.'
     elif [[ ! -e "${HYBRID_software_output_directory[Afterburner]}/sampling0" ]]; then
         Print_Internal_And_Exit \
             'Something went wrong when creating the Afterburner symbolic link.'

@@ -14,7 +14,7 @@ function Unit_Test__codebase-formatting()
         formatter_found='TRUE'
     else
         Print_Error 'Command ' --emph 'beautysh' \
-                    ' not available, unable to fully check codebase formatting.'
+            ' not available, unable to fully check codebase formatting.'
     fi
     local -r max_length=120
     local list_of_source_files files_with_too_long_lines files_with_wrong_formatting file
@@ -35,7 +35,7 @@ function Unit_Test__codebase-formatting()
         # Quoting shfmt manual: "If a given path is a directory, all shell
         # scripts found under that directory will be used."
         files_with_wrong_formatting=(
-            $(shfmt -l -ln bash -i 4 -bn -ci -sr -kp -fn "${HYBRIDT_repository_top_level_path}")
+            $(shfmt -l -ln bash -i 4 -bn -ci -sr -fn "${HYBRIDT_repository_top_level_path}")
         )
     fi
     if [[ ${#files_with_too_long_lines[@]} -gt 0 ]]; then
@@ -60,7 +60,7 @@ function Unit_Test__codebase-formatting()
         done
         Print_Info \
             '\nTo format all bash files correctly run:\n' \
-            --emph "shfmt -w -ln bash -i 4 -bn -ci -sr -kp -fn \"${HYBRIDT_repository_top_level_path}\""
+            --emph "shfmt -w -ln bash -i 4 -bn -ci -sr -fn \"${HYBRIDT_repository_top_level_path}\""
     fi
     if ((${#files_with_too_long_lines[@]} + ${#files_with_wrong_formatting[@]} > 0)); then
         return 1

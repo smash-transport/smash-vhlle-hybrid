@@ -35,7 +35,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
                         "${HYBRID_software_output_directory[${relative_key}]}" \
                         "${HYBRID_software_default_input_filename[${key}]}"
                 else
-                    if  Element_In_Array_Equals_To "${relative_key}" "${HYBRID_given_software_sections[@]}"; then
+                    if Element_In_Array_Equals_To "${relative_key}" "${HYBRID_given_software_sections[@]}"; then
                         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
                             'Requesting custom ' --emph "${key}" ' input file although executing ' \
                             --emph "${relative_key}" ' with default output name.'
@@ -45,10 +45,10 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             fi
         fi
     done
-    if  [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
+    if [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
         if [[ "${HYBRID_optional_feature[Spectators_source]}" != '' ]]; then
             HYBRID_software_input_file['Spectators']="${HYBRID_optional_feature[Spectators_source]}"
-            if  Element_In_Array_Equals_To "IC" "${HYBRID_given_software_sections[@]}"; then
+            if Element_In_Array_Equals_To "IC" "${HYBRID_given_software_sections[@]}"; then
                 exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
                     'Requesting custom ' --emph 'Spectators' ' input file although executing ' \
                     --emph 'IC' ' with default output name.'

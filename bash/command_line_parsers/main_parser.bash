@@ -26,8 +26,8 @@ function Parse_Execution_Mode()
             ;;
         *)
             exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit \
-                  'Specified mode ' --emph "$1" ' not valid! Run ' \
-                  --emph 'Hybrid-handler help' ' to get further information.'
+                'Specified mode ' --emph "$1" ' not valid! Run ' \
+                --emph 'Hybrid-handler help' ' to get further information.'
             ;;
     esac
     shift
@@ -36,7 +36,7 @@ function Parse_Execution_Mode()
     # Ignore any command line option in some specific cases
     if [[ ${HYBRID_execution_mode} =~ ^(help|version)$ ]]; then
         HYBRID_command_line_options_to_parse=()
-    elif  Element_In_Array_Equals_To '--help' "${HYBRID_command_line_options_to_parse[@]}"; then
+    elif Element_In_Array_Equals_To '--help' "${HYBRID_command_line_options_to_parse[@]}"; then
         HYBRID_execution_mode+='-help'
         HYBRID_command_line_options_to_parse=()
     fi

@@ -76,7 +76,7 @@ function Ensure_All_Needed_Input_Exists_Hydro()
             'The configuration file ' --emph "${HYBRID_software_configuration_file[Hydro]}" ' was not found.'
     fi
     if [[ ! -e "${HYBRID_software_input_file[Hydro]}" ]]; then
-         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
             'The input file ' --emph "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" \
             ' was not found.'
     elif [[ ! -e "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" ]]; then
@@ -93,7 +93,7 @@ function Run_Software_Hydro()
         ic_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" \
         hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt"
     "${HYBRID_software_executable[Hydro]}" "-params" "${hydro_config_file_path}" \
-         "-ISinput" "${ic_output_file_path}" "-outputDir" "${HYBRID_software_output_directory[Hydro]}" >> "${hydro_terminal_output}"
+        "-ISinput" "${ic_output_file_path}" "-outputDir" "${HYBRID_software_output_directory[Hydro]}" >> "${hydro_terminal_output}"
 }
 
 Make_Functions_Defined_In_This_File_Readonly

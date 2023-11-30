@@ -143,12 +143,12 @@ function Announce_Running_Test()
 {
     local test_name padded_name
     test_name=$1
-                  shift
+    shift
     if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
         printf -v padded_name "%-60s" "__${test_name}$(printf '\e[94m')_"
         padded_name="${padded_name// /.}"
         printf '           %+2s/%-2s\e[96m%s' \
-               ${HYBRIDT_tests_run} ${#HYBRIDT_tests_to_be_run[@]} "${padded_name//_/ }"
+            ${HYBRIDT_tests_run} ${#HYBRIDT_tests_to_be_run[@]} "${padded_name//_/ }"
     fi
 }
 
@@ -175,14 +175,14 @@ function Print_Tests_Report()
 {
     if [[ ${HYBRIDT_report_level} -ge 1 ]]; then
         local indentation left_margin test_name_string_length \
-            index   separator_length passed_string failed_string
+            index separator_length passed_string failed_string
         indentation='           '
         left_margin='   '
         test_name_string_length=$(printf '%s\n' "${HYBRIDT_tests_to_be_run[@]}" | wc -L)
         if [[ ${test_name_string_length} -lt 25 ]]; then # Minimum length
             test_name_string_length=25
         fi
-        if ((test_name_string_length % 2 == 1)); then   # Aesthetics
+        if ((test_name_string_length % 2 == 1)); then # Aesthetics
             ((test_name_string_length += 1))
         fi
         separator_length=$((test_name_string_length + 3 + 2 * ${#left_margin}))
@@ -226,7 +226,7 @@ function Delete_Tests_Files_If_No_Test_Failed_And_User_Wishes_So()
                 label='symlink'
             elif [[ -f "${global_path}" ]]; then
                 label='file'
-            elif [[ ! -e "${global_path}"  ]]; then
+            elif [[ ! -e "${global_path}" ]]; then
                 continue
             else
                 Print_Internal_And_Exit 'Error in ' --emph "${FUNCNAME}" '.' \

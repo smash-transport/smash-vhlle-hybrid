@@ -80,7 +80,7 @@ function Unit_Test__system-requirements()
     printf '\n'
     (
         unset -v 'TERM'
-                       Call_Codebase_Function_In_Subshell Check_System_Requirements_And_Make_Report
+        Call_Codebase_Function_In_Subshell Check_System_Requirements_And_Make_Report
     )
     if [[ $? -ne 0 ]]; then
         Print_Error "Check system requirements making report of bad system failed."

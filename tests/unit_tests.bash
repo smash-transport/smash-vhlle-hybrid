@@ -27,7 +27,7 @@ function Make_Test_Preliminary_Operations()
 
 function Run_Test()
 {
-    Unit_Test__$1 &>> "${HYBRIDT_log_file}" 9>&1  # The fd 9 is used by the logger
+    Unit_Test__$1 &>> "${HYBRIDT_log_file}" 9>&1 # The fd 9 is used by the logger
 }
 
 function Clean_Tests_Environment_For_Following_Test()
@@ -57,7 +57,7 @@ function __static__Call_Codebase_Function_As_Desired()
     #       codebase function runs an exit command.
     local return_code=0
     if [[ ${1-} = 'IN_SUBSHELL' ]]; then
-        ( Call_Function_If_Existing_Or_Exit "${@:2}" ) || return_code=$?
+        (Call_Function_If_Existing_Or_Exit "${@:2}") || return_code=$?
     else
         Call_Function_If_Existing_Or_Exit "$@" || return_code=$?
     fi

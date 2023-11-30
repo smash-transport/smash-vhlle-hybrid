@@ -53,7 +53,7 @@ function Functional_Test__do-Hydro-only()
     Hydro:
       Executable: %s/vhlle_black-box.py
       Input_file: %s/test/input
-    ' "$(pwd)" "$(pwd)"   > "${config_filename}"
+    ' "$(pwd)" "$(pwd)" > "${config_filename}"
     # Run the hydro stage and check if freezeout is successfully generated
     rm 'IC/SMASH_IC.dat'
     mkdir -p test
@@ -105,10 +105,10 @@ function Functional_Test__do-Hydro-only()
     Hydro:
       Executable: %s/vhlle_black-box.py
       Input_file: %s/test/input
-    '  "$(pwd)" "$(pwd)"  > "${config_filename}"
+    ' "$(pwd)" "$(pwd)" > "${config_filename}"
     Print_Info 'Running Hybrid-handler expecting failure'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
-    if [[ $? -ne 110  ]]; then
+    if [[ $? -ne 110 ]]; then
         Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
         return 1
     fi

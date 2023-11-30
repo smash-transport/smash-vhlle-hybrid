@@ -37,23 +37,23 @@ function Prepare_Software_Input_File_Sampler()
     Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
         'TXT' "${HYBRID_software_configuration_file[Sampler]}" \
         "$(printf "%s: %s\n" \
-                  'surface' "${freezeout_path}" \
-                  'spectra_dir' "${output_directory}")"
+            'surface' "${freezeout_path}" \
+            'spectra_dir' "${output_directory}")"
     # The following symbolic link is not needed by the sampler, as the sampler only refers to information
     # specified in its input file. However, we want to have all input for a software in the output folder
     # for future easier reproducibility (and we do so for all software handled in the codebase).
-    if [[ "$( dirname "${freezeout_path}")" != "${HYBRID_software_output_directory[Sampler]}"  ]]; then
+    if [[ "$(dirname "${freezeout_path}")" != "${HYBRID_software_output_directory[Sampler]}" ]]; then
         ln -s "${freezeout_path}" \
-              "${HYBRID_software_output_directory[Sampler]}/freezeout.dat"
+            "${HYBRID_software_output_directory[Sampler]}/freezeout.dat"
     fi
 }
 
 function Ensure_All_Needed_Input_Exists_Sampler()
 {
     if [[ ! -d "${HYBRID_software_output_directory[Sampler]}" ]]; then
-         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
-             'Folder ' --emph "${HYBRID_software_output_directory[Sampler]}" \
-             ' does not exist.'
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
+            'Folder ' --emph "${HYBRID_software_output_directory[Sampler]}" \
+            ' does not exist.'
     fi
     if [[ ! -f "${HYBRID_software_configuration_file[Sampler]}" ]]; then
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
@@ -73,8 +73,8 @@ function Run_Software_Sampler()
     local -r sampler_config_file_path="${HYBRID_software_configuration_file[Sampler]}"
     local sampler_terminal_output="${HYBRID_software_output_directory[Sampler]}/Terminal_Output.txt"
     cd "${HYBRID_software_output_directory[Sampler]}"
-    "${HYBRID_software_executable[Sampler]}" 'events'  '1' \
-            "${sampler_config_file_path}" >> "${sampler_terminal_output}"
+    "${HYBRID_software_executable[Sampler]}" 'events' '1' \
+        "${sampler_config_file_path}" >> "${sampler_terminal_output}"
 }
 
 function __static__Get_Path_Field_From_Sampler_Config_As_Global_Path()
@@ -83,7 +83,7 @@ function __static__Get_Path_Field_From_Sampler_Config_As_Global_Path()
     field="$1"
     # We assume here that the configuration file is fine as it was validated before
     value=$(awk -v name="${field}" '$1 == name {print $2; exit}' \
-                      "${HYBRID_software_configuration_file[Sampler]}")
+        "${HYBRID_software_configuration_file[Sampler]}")
     cd "${HYBRID_software_output_directory[Sampler]}"
     # If realpath succeeds, it prints the path that is the result of the function
     if ! realpath "${value}" 2> /dev/null; then
@@ -94,7 +94,7 @@ function __static__Get_Path_Field_From_Sampler_Config_As_Global_Path()
 }
 
 function __static__Is_Sampler_Config_Valid()
-                                             {
+{
     local -r config_file="${HYBRID_software_configuration_file[Sampler]}"
     # Remove empty lines from configuration file
     if ! sed -i '/^[[:space:]]*$/d' "${config_file}"; then
@@ -155,21 +155,21 @@ function __static__Is_Sampler_Config_Valid()
             rescatter | weakContribution | shear)
                 if [[ ! "${value}" =~ ^[01]$ ]]; then
                     Print_Error 'Key ' --emph "${key}" ' must be either ' \
-                                --emph '0' ' or ' --emph '1' '.'
+                        --emph '0' ' or ' --emph '1' '.'
                     return 1
                 fi
                 ;;
             number_of_events | Nbins)
                 if [[ ! "${value}" =~ ^[1-9][0-9]*$ ]]; then
                     Print_Error 'Found not-integer value ' --emph "${value}" \
-                                ' for ' --emph "${key}" ' key.'
+                        ' for ' --emph "${key}" ' key.'
                     return 1
                 fi
                 ;;
             *)
                 if [[ ! "${value}" =~ ^[+-]?[0-9]+(\.[0-9]*)?$ ]]; then
                     Print_Error 'Found invalid value ' --emph "${value}" \
-                                ' for ' --emph "${key}" ' key.'
+                        ' for ' --emph "${key}" ' key.'
                     return 1
                 fi
                 ;;
@@ -178,7 +178,7 @@ function __static__Is_Sampler_Config_Valid()
     # Check that all required keys were found
     if [[ ${keys_to_be_found} -gt 0 ]]; then
         Print_Error 'Either ' --emph 'surface' ' or ' --emph 'spectra_dir' \
-                    ' key is missing in sampler configuration file.'
+            ' key is missing in sampler configuration file.'
         return 1
     fi
 }

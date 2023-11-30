@@ -142,7 +142,7 @@ function Unit_Test__utility-remove-comments-in-existing-file()
     printf $'Some\n #comment\ntext\n#comment\namong\n#comment\ncomments\n' > "${file_containing_three_commented_lines}"
     number_of_lines=$(wc -l < "${file_containing_three_commented_lines}")
     Call_Codebase_Function_In_Subshell Remove_Comments_In_File "${file_containing_three_commented_lines}"
-    if (($( wc -l < "${file_containing_three_commented_lines}") != number_of_lines - 3)); then
+    if (($(wc -l < "${file_containing_three_commented_lines}") != number_of_lines - 3)); then
         Print_Error 'Removing comments in ' --emph "${file_containing_three_commented_lines}" ' file failed.'
         return 1
     fi

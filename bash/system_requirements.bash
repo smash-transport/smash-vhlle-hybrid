@@ -19,11 +19,11 @@ function __static__Declare_System_Requirements()
     if ! declare -p HYBRID_version_regex &> /dev/null; then
         readonly HYBRID_version_regex='[0-9](.[0-9]+)*'
         declare -rgA HYBRID_versions_requirements=(
-             [awk]='4.1'
-             [bash]='4.4'
-             [sed]='4.2.1'
-             [tput]='5.7'
-             [yq]='4.18.1'
+            [awk]='4.1'
+            [bash]='4.4'
+            [sed]='4.2.1'
+            [tput]='5.7'
+            [yq]='4.18.1'
         )
         declare -rga HYBRID_programs_just_required=(
             cat
@@ -72,8 +72,8 @@ function Check_System_Requirements_And_Make_Report()
 {
     __static__Declare_System_Requirements
     local system_report=()
-    local -r single_field_length=18  # This variable is used to prepare the report correctly formatted
-    declare -A system_information    # Same use of this variable as in 'Check_System_Requirements' function
+    local -r single_field_length=18 # This variable is used to prepare the report correctly formatted
+    declare -A system_information   # Same use of this variable as in 'Check_System_Requirements' function
     __static__Analyze_System_Properties
     __static__Print_Report_Title
     __static__Print_Report_Of_Programs_With_Minimum_version
@@ -137,7 +137,7 @@ function __static__Analyze_System_Properties()
         # Handling of function exit code must be done in this form because of errexit mode;
         # the subshell is needed because the function exits when the variable is unset or empty
         return_code=0
-        ( Ensure_That_Given_Variables_Are_Set_And_Not_Empty "${name}" &> /dev/null ) || return_code=$?
+        (Ensure_That_Given_Variables_Are_Set_And_Not_Empty "${name}" &> /dev/null) || return_code=$?
         if [[ ${return_code} -eq 0 ]]; then
             system_information["${name}"]='OK'
         else
@@ -157,8 +157,8 @@ function __static__Exit_If_Some_GNU_Requirement_Is_Missing()
         is_gnu=$(__static__Get_Field_In_System_Information_String "GNU-${program}" 1)
         if [[ ${is_gnu} = '---' ]]; then
             Print_Error --emph "${program}" ' either not found or non-GNU version in use.' \
-                        'Please, ensure that ' --emph "${program}" ' is installed and in use.'
-            ((errors++))   || true
+                'Please, ensure that ' --emph "${program}" ' is installed and in use.'
+            ((errors++)) || true
         fi
     done
     if [[ ${errors} -ne 0 ]]; then
@@ -174,22 +174,22 @@ function __static__Exit_If_Minimum_Versions_Are_Not_Available()
         min_version=${HYBRID_versions_requirements["${program}"]}
         program_found=$(__static__Get_Field_In_System_Information_String "${program}" 0)
         version_found=$(__static__Get_Field_In_System_Information_String "${program}" 1)
-        version_ok=$(   __static__Get_Field_In_System_Information_String "${program}" 2)
+        version_ok=$(__static__Get_Field_In_System_Information_String "${program}" 2)
         if [[ "${program_found}" = '---' ]]; then
             Print_Error --emph "${program}" ' command not found! Minimum version ' \
-                        --emph "${min_version}" ' is required.'
-            ((errors++))   || true
+                --emph "${min_version}" ' is required.'
+            ((errors++)) || true
             continue
         fi
         if [[ ${version_found} = '---' ]]; then
             Print_Warning 'Unable to find version of ' --emph "${program}" ', skipping version check!' \
-                          'Please ensure that current version is at least ' --emph "${min_version}" '.'
+                'Please ensure that current version is at least ' --emph "${min_version}" '.'
             continue
         fi
         if [[ "${version_ok}" = '---' ]]; then
             Print_Error --emph "${program}" ' version ' --emph "${version_found}" \
-                        ' found, but version ' --emph "${min_version}" ' is required.'
-            ((errors++))   || true
+                ' found, but version ' --emph "${min_version}" ' is required.'
+            ((errors++)) || true
         fi
     done
     if [[ ${errors} -ne 0 ]]; then
@@ -204,8 +204,8 @@ function __static__Exit_If_Some_Needed_Environment_Variable_Is_Missing()
         Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[${name}]"
         if [[ ${system_information[${name}]} = '---' ]]; then
             Print_Error --emph "${name}" ' environment variable either unset or empty.' \
-                        'Please, ensure that ' --emph "${name}" ' is properly set.'
-            ((errors++))   || true
+                'Please, ensure that ' --emph "${name}" ' is properly set.'
+            ((errors++)) || true
         fi
     done
     if [[ ${errors} -ne 0 ]]; then
@@ -279,7 +279,7 @@ function __static__Print_Formatted_Binary_Report()
     # here. Although in some cases this might fail, we refresh and use COLUMNS variable
     # here (see https://stackoverflow.com/a/48016366/14967071 for more information).
     shopt -s checkwinsize # Do not assume it is on (as it usually is)
-    ( : )  # Refresh LINES and COLUMNS, this happens when a child process exits
+    (:)                   # Refresh LINES and COLUMNS, this happens when a child process exits
     local -r num_cols=$((${COLUMNS-100} / 2 / single_field_length))
     local index printf_descriptor
     printf_descriptor="%${single_field_length}s" # At least one column
@@ -322,14 +322,14 @@ function __static__Try_Find_Version()
             ;;
         tput)
             found_version=$(tput -V | grep -oE "${HYBRID_version_regex}")
-            found_version=(${found_version//./ })   # Use word split to separate version numbers
+            found_version=(${found_version//./ })                     # Use word split to separate version numbers
             found_version="${found_version[0]-}.${found_version[1]-}" # Use empty variables if 'tput -V' failed
             ;;
         yq)
             # Versions before v4.30.3 do not have the 'v' prefix
             found_version=$(yq --version \
-                                         | grep -oE "version [v]?${HYBRID_version_regex}" \
-                                                                           | grep -oE "${HYBRID_version_regex}")
+                | grep -oE "version [v]?${HYBRID_version_regex}" \
+                | grep -oE "${HYBRID_version_regex}")
             ;;
         *)
             Print_Internal_And_Exit 'Version finding for ' --emph "$1" ' to be added!'
@@ -395,8 +395,8 @@ function __static__Get_Larger_Version()
             shorter_version=v2 dots_of_shorter_version=dots_of_v2 dots_of_longer_version=dots_of_v1
     fi
     while [[ ${#dots_of_shorter_version} -ne ${#dots_of_longer_version} ]]; do
-        shorter_version+='.0'         # Add zeroes to shorter string
-        dots_of_shorter_version+='.'  # Add dot to keep counting accurate
+        shorter_version+='.0'        # Add zeroes to shorter string
+        dots_of_shorter_version+='.' # Add dot to keep counting accurate
     done
     # If versions are equal, we're done
     if [[ "${v2}" = "${v1}" ]]; then
@@ -412,10 +412,10 @@ function __static__Get_Larger_Version()
         if [[ "${v1_array[index]}" -eq "${v2_array[index]}" ]]; then
             continue
         elif [[ "${v1_array[index]}" -lt "${v2_array[index]}" ]]; then
-            printf "$2"  # Print input version, unchanged
+            printf "$2" # Print input version, unchanged
             return
         else
-            printf "$1"  # Print input version, unchanged
+            printf "$1" # Print input version, unchanged
             return
         fi
     done
@@ -432,7 +432,7 @@ function __static__Print_Requirement_Version_Report_Line()
         text_color='\e[38;5;38m' \
         default='\e[0m'
     local line found version_found version_ok tmp_array program=$1
-    tmp_array=(${system_information[${program}]//|/ })   # Unquoted to let word splitting act
+    tmp_array=(${system_information[${program}]//|/ }) # Unquoted to let word splitting act
     found=${tmp_array[0]}
     version_found=${tmp_array[1]}
     version_ok=${tmp_array[2]}
@@ -443,7 +443,7 @@ function __static__Print_Requirement_Version_Report_Line()
         line+="${green}    "
     fi
     line+=$(printf "found  ${text_color}Required version: ${emph_color}%6s${default}" \
-                   "${HYBRID_versions_requirements[${program}]}")
+        "${HYBRID_versions_requirements[${program}]}")
     if [[ ${found} != '---' ]]; then
         line+="  ${text_color}System version:${default} "
         if [[ ${version_found} =~ ^(---|\?)$ ]]; then
@@ -487,7 +487,7 @@ function __static__Get_Single_Tick_Cross_Requirement_Report()
 function __static__Get_Field_In_System_Information_String()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[$1]"
-    local tmp_array=(${system_information[$1]//|/ })   # Unquoted to let word splitting act
+    local tmp_array=(${system_information[$1]//|/ }) # Unquoted to let word splitting act
     printf '%s' "${tmp_array[$2]}"
 }
 

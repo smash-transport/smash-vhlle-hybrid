@@ -46,9 +46,9 @@ function Unit_Test__Sampler-create-input-file()
     # Ensure that paths in Sampler config were replaced by global paths
     local surface_path spectra_dir_path
     surface_path=$(awk '$1 == "surface" {print $2; exit}' \
-                       "${HYBRID_software_configuration_file[Sampler]}")
+        "${HYBRID_software_configuration_file[Sampler]}")
     spectra_dir_path=$(awk '$1 == "spectra_dir" {print $2; exit}' \
-                           "${HYBRID_software_configuration_file[Sampler]}")
+        "${HYBRID_software_configuration_file[Sampler]}")
     if [[ "${surface_path}" != /* || "${spectra_dir_path}" != /* ]]; then
         Print_Error 'Freezeout and/or output directory path in Sampler config is not a global path.'
         return 1
@@ -98,8 +98,8 @@ function Unit_Test__Sampler-check-all-input()
         return 1
     fi
     printf '%s\n' \
-           "surface $(which ls)" \
-           "spectra_dir ${HOME}" > "${HYBRID_software_configuration_file[Sampler]}"
+        "surface $(which ls)" \
+        "spectra_dir ${HOME}" > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Sampler
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of all input files unexpectedly failed.'

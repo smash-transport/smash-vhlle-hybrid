@@ -26,7 +26,7 @@ function Make_Test_Preliminary_Operations()
 function Run_Test()
 {
     local test_name=$1
-    Functional_Test__$1 &>> "${HYBRIDT_log_file}" 9>&1  # The fd 9 is used by the logger
+    Functional_Test__$1 &>> "${HYBRIDT_log_file}" 9>&1 # The fd 9 is used by the logger
 }
 
 function Clean_Tests_Environment_For_Following_Test()
@@ -37,5 +37,5 @@ function Clean_Tests_Environment_For_Following_Test()
 
 function Run_Hybrid_Handler_With_Given_Options_In_Subshell()
 {
-    ("${HYBRIDT_repository_top_level_path}/Hybrid-handler" "$@" )
+    ("${HYBRIDT_repository_top_level_path}/Hybrid-handler" "$@")
 }

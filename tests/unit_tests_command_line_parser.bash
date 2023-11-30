@@ -27,8 +27,8 @@ function __static__Test_Parsing_Of_Execution_Mode_In_Subshell_Expecting_Success(
         first_option="${HYBRID_command_line_options_to_parse[0]-}"
     Call_Codebase_Function Parse_Execution_Mode
     if [[ $? -ne 0 ]] \
-                      || [[ "${HYBRID_execution_mode}" != "${expected_option}" ]] \
-                                                                || [[ ${#HYBRID_command_line_options_to_parse[@]} -ne "${expected_size}" ]]; then
+        || [[ "${HYBRID_execution_mode}" != "${expected_option}" ]] \
+        || [[ ${#HYBRID_command_line_options_to_parse[@]} -ne "${expected_size}" ]]; then
         Print_Error 'Parsing of valid execution mode ' --emph "${first_option}" ' failed.'
         return 1
     fi
@@ -76,7 +76,7 @@ function __static__Test_CLO_Parsing_Missing_Value()
     Call_Codebase_Function_In_Subshell Parse_Command_Line_Options &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Parsing of CLO ' --emph "${HYBRID_command_line_options_to_parse[0]}" \
-                    ' with missing value succeeded.'
+            ' with missing value succeeded.'
         return 1
     fi
 }
