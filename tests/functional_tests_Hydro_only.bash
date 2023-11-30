@@ -28,11 +28,7 @@ function Functional_Test__do-Hydro-only()
         Print_Error 'Hybrid-handler unexpectedly failed.'
         return 1
     fi
-    output_files=( Hydro/* )
-    if [[ ${#output_files[@]} -ne 5 ]]; then
-        Print_Error 'Expected ' --emph '5' " output files, but ${#output_files[@]} found."
-        return 1
-    fi
+    Check_If_Software_Produced_Expected_Output 'Hydro' "$(pwd)/Hydro"
     mv 'Hydro' 'Hydro-success'
     # Expect failure when giving an invalid IC output
     Print_Info 'Running Hybrid-handler expecting invalid IC argument'
@@ -68,11 +64,7 @@ function Functional_Test__do-Hydro-only()
         Print_Error 'Hybrid-handler unexpectedly failed.'
         return 1
     fi
-    output_files=( Hydro/* )
-    if [[ ${#output_files[@]} -ne 5 ]]; then
-        Print_Error 'Expected ' --emph '5' " output files, but ${#output_files[@]} found."
-        return 1
-    fi
+    Check_If_Software_Produced_Expected_Output 'Hydro' "$(pwd)/Hydro"
     mv 'Hydro' 'Hydro-success-custom-input'
     # Expect failure when an invalid config was supplied
     Print_Info 'Running Hybrid-handler expecting invalid config argument'

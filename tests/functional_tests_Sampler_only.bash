@@ -16,7 +16,7 @@ function Functional_Test__do-Sampler-only()
     touch 'Hydro/freezeout.dat'
     printf '
     Sampler:
-      Executable: %s/tests/mocks/sampler_black_box.py
+      Executable: %s/tests/mocks/sampler_black-box.py
     ' "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config}"
     # Expect success and test presence of output files
     Print_Info 'Running Hybrid-handler expecting success'
@@ -25,11 +25,7 @@ function Functional_Test__do-Sampler-only()
         Print_Error 'Hybrid-handler unexpectedly failed.'
         return 1
     fi
-    output_files=( Sampler/* )
-    if [[ ${#output_files[@]} -ne 4 ]]; then
-        Print_Error 'Expected ' --emph '4' " output files, but ${#output_files[@]} found."
-        return 1
-    fi
+    Check_If_Software_Produced_Expected_Output 'Sampler' "$(pwd)/Sampler"
     mv 'Sampler' 'Sampler-success'
     # Expect failure and test terminal output
     local terminal_output_file error_message
@@ -58,11 +54,11 @@ function Functional_Test__do-Sampler-only()
     touch "${invalid_sampler_config}"
     printf '
     Sampler:
-      Executable: %s/tests/mocks/sampler_black_box.py
+      Executable: %s/tests/mocks/sampler_black-box.py
       Config_file: %s
     ' "${HYBRIDT_repository_top_level_path}"\
       "${invalid_sampler_config}" > "${hybrid_handler_config}"
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}" &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded with invalid config for Sampler.'
         return 1

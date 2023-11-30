@@ -85,12 +85,12 @@ function __static__Ensure_Executable_Exists()
     elif [[ "${executable}" = / ]]; then
         if [[ ! -f "${executable}" ]]; then
             exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
-                'The executable file ' --emph "${executable}" \
-                '\nfor the ' --emph "${label}" ' run was not found.'
+                'The executable file for the ' --emph "${label}" ' run was not found.'\
+                'Not existing path: ' --emph "${file_path}"
         elif [[ ! -x "${executable}" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit\
-                'The executable file ' --emph "${executable}" \
-                '\nfor the ' --emph "${label}" ' run is not executable.'
+                'The executable file for the ' --emph "${label}" ' run is not executable.'\
+                'File path: ' --emph "${file_path}"
         fi
     # It is important to perform this check with 'type' and not with 'hash' because 'hash' with
     # paths always succeed -> https://stackoverflow.com/a/42362142/14967071

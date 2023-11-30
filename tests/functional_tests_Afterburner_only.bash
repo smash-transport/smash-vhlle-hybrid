@@ -7,23 +7,14 @@
 #
 #===================================================
 
-# NOTE: These functional tests just require code to run and finish with zero exit code.
-
 function __static__Check_Successful_Handler_Run()
 {
     if [[ $1 -ne 0 ]]; then
-        Print_Error 'Hybrid-handler unexpectedly failed.'
+        exit_code=${HYBRID_failure_exit_code} Print_Fatal_And_Exit\
+            'Hybrid-handler unexpectedly failed.'
         return 1
     fi
-    unfinished_files=( Afterburner/*.unfinished )
-    output_files=( Afterburner/* )
-    if [[ ${#unfinished_files[@]} -lt 0 ]]; then
-        Print_Error 'Some unexpected ' --emph '.unfinished' ' output file remained.'
-        return 1
-    elif [[ ${#output_files[@]} -ne 6 ]]; then
-        Print_Error 'Expected ' --emph '6' " output files, but ${#output_files[@]} found."
-        return 1
-    fi
+    Check_If_Software_Produced_Expected_Output  'Afterburner' "$(pwd)/Afterburner"
 }
 
 function Functional_Test__do-Afterburner-only()
@@ -44,7 +35,7 @@ function Functional_Test__do-Afterburner-only()
     # Expect success and test absence of "SMASH" unfinished file
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
-    __static__Check_Successful_Handler_Run $? || return 1
+    __static__Check_Successful_Handler_Run $?
     mv 'Afterburner' 'Afterburner-success'
     # Expect failure and test "SMASH" message
     Print_Info 'Running Hybrid-handler expecting invalid Afterburner input file failure'
@@ -128,7 +119,7 @@ function Functional_Test__do-Afterburner-only()
             File_Directory: "."
     ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
-    __static__Check_Successful_Handler_Run  $? || return 1
+    __static__Check_Successful_Handler_Run  $?
     mv 'Afterburner' 'Afterburner-success-with-spectators'
     # Expect success and test the add_spectator functionality with custom spectator input
     Print_Info 'Running Hybrid-handler expecting success with the custom add_spectator option'
