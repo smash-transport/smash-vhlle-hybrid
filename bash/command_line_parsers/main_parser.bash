@@ -15,23 +15,24 @@ function Parse_Execution_Mode()
     #Locally set function arguments to take advantage of shift
     set -- "${HYBRID_command_line_options_to_parse[@]}"
     case "$1" in
-        help | --help )
+        help | --help)
             HYBRID_execution_mode='help'
             ;;
-        version | --version )
+        version | --version)
             HYBRID_execution_mode='version'
             ;;
-        do )
+        do)
             HYBRID_execution_mode='do'
             ;;
-        * )
+        *)
             exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit \
-                  'Specified mode ' --emph "$1" ' not valid! Run '\
+                  'Specified mode ' --emph "$1" ' not valid! Run ' \
                   --emph 'Hybrid-handler help' ' to get further information.'
+            ;;
     esac
     shift
     # Update the global array with remaining options to be parsed
-    HYBRID_command_line_options_to_parse=( "$@" )
+    HYBRID_command_line_options_to_parse=("$@")
     # Ignore any command line option in some specific cases
     if [[ ${HYBRID_execution_mode} =~ ^(help|version)$ ]]; then
         HYBRID_command_line_options_to_parse=()
@@ -49,7 +50,7 @@ function Parse_Command_Line_Options()
     set -- "${HYBRID_command_line_options_to_parse[@]}"
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            -o | --output-directory )
+            -o | --output-directory)
                 if [[ ${2-} =~ ^(-|$) ]]; then
                     Print_Option_Specification_Error_And_Exit "$1"
                 else
@@ -61,7 +62,7 @@ function Parse_Command_Line_Options()
                 fi
                 shift 2
                 ;;
-            -c | --configuration-file )
+            -c | --configuration-file)
                 if [[ ${2-} =~ ^(-|$) ]]; then
                     Print_Option_Specification_Error_And_Exit "$1"
                 else
@@ -69,14 +70,13 @@ function Parse_Command_Line_Options()
                 fi
                 shift 2
                 ;;
-            * )
+            *)
                 exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit \
-                    'Invalid option ' --emph "$1" ' specified in ' --emph "${HYBRID_execution_mode}"\
+                    'Invalid option ' --emph "$1" ' specified in ' --emph "${HYBRID_execution_mode}" \
                     ' execution mode!' 'Use the ' --emph '--help' ' option to get further information.'
                 ;;
         esac
     done
 }
-
 
 Make_Functions_Defined_In_This_File_Readonly

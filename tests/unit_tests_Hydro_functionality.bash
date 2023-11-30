@@ -22,7 +22,7 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
     Define_Further_Global_Variables
     HYBRID_output_directory="${HYBRIDT_folder_to_run_tests}/test_dir_Hydro"
     HYBRID_software_base_config_file[Hydro]='vhlle_config_cool'
-    HYBRID_given_software_sections=('Hydro' )
+    HYBRID_given_software_sections=('Hydro')
     HYBRID_software_executable[Hydro]="$(which echo)"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 }

@@ -22,7 +22,7 @@ function Make_Test_Preliminary_Operations__IC-create-input-file()
     Define_Further_Global_Variables
     HYBRID_output_directory="${HYBRIDT_folder_to_run_tests}/test_dir_IC"
     HYBRID_software_base_config_file[IC]='my_cool_conf.yaml'
-    HYBRID_given_software_sections=( 'IC' )
+    HYBRID_given_software_sections=('IC')
     HYBRID_software_executable[IC]=$(which echo) # Use command as fake executable
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 }

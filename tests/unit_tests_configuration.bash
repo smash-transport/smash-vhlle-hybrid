@@ -178,8 +178,8 @@ function __static__Test_Section_Parsing_In_Subshell()
     input_file=$4
     new_keys=$5
     Call_Codebase_Function Validate_And_Parse_Configuration_File
-    if [[ "${#HYBRID_given_software_sections[@]}" -ne 1 ]] ||\
-       [[ "${HYBRID_given_software_sections[0]}" != "${section}" ]]; then
+    if [[ "${#HYBRID_given_software_sections[@]}" -ne 1 ]] \
+                                                           || [[ "${HYBRID_given_software_sections[0]}" != "${section}" ]]; then
         Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (section storing).'
     fi
     if [[ ${HYBRID_software_executable[${section}]} != "${executable}" ]]; then

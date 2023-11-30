@@ -31,7 +31,7 @@ function Functional_Test__do-Sampler-only()
     local terminal_output_file error_message
     terminal_output_file='Sampler/Terminal_Output.txt'
     Print_Info 'Running Hybrid-handler expecting crash in Sampler'
-    BLACK_BOX_FAIL='true'\
+    BLACK_BOX_FAIL='true' \
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}"
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded with Sampler crashing.'
@@ -40,7 +40,7 @@ function Functional_Test__do-Sampler-only()
         Print_Error 'File ' --emph "${terminal_output_file}" ' not found.'
         return 1
     fi
-    error_message="$(<"${terminal_output_file}")"
+    error_message="$(< "${terminal_output_file}")"
     if [[ "${error_message}" != 'Sampler black-box crashed!' ]]; then
         Print_Error 'Sampler crashed with unexpected terminal output.'
         return 1
@@ -56,8 +56,8 @@ function Functional_Test__do-Sampler-only()
     Sampler:
       Executable: %s/tests/mocks/sampler_black-box.py
       Config_file: %s
-    ' "${HYBRIDT_repository_top_level_path}"\
-      "${invalid_sampler_config}" > "${hybrid_handler_config}"
+    ' "${HYBRIDT_repository_top_level_path}" \
+        "${invalid_sampler_config}" > "${hybrid_handler_config}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}" &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded with invalid config for Sampler.'

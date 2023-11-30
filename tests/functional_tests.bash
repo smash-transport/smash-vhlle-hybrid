@@ -37,5 +37,5 @@ function Clean_Tests_Environment_For_Following_Test()
 
 function Run_Hybrid_Handler_With_Given_Options_In_Subshell()
 {
-   ( "${HYBRIDT_repository_top_level_path}/Hybrid-handler" "$@" )
+    ("${HYBRIDT_repository_top_level_path}/Hybrid-handler" "$@" )
 }

@@ -17,8 +17,8 @@ function Prepare_Software_Input_File_Hydro()
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
             'Base configuration file ' --emph "${HYBRID_software_base_config_file[Hydro]}" ' was not found.'
     fi
-    cp "${HYBRID_software_base_config_file[Hydro]}"\
-       "${HYBRID_software_configuration_file[Hydro]}" || exit ${HYBRID_fatal_builtin}
+    cp "${HYBRID_software_base_config_file[Hydro]}" \
+        "${HYBRID_software_configuration_file[Hydro]}" || exit ${HYBRID_fatal_builtin}
     if [[ "${HYBRID_software_new_input_keys[Hydro]}" != '' ]]; then
         Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
             'TXT' "${HYBRID_software_configuration_file[Hydro]}" "${HYBRID_software_new_input_keys[Hydro]}"
@@ -30,7 +30,7 @@ function Prepare_Software_Input_File_Hydro()
         ln -s -f "${HYBRID_software_input_file[Hydro]}" "${target_link_name}"
     elif [[ ! "${target_link_name}" -ef "${HYBRID_software_input_file[Hydro]}" ]]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            'File ' --emph "${target_link_name}" ' exists but it is not the Hydro input file '\
+            'File ' --emph "${target_link_name}" ' exists but it is not the Hydro input file ' \
             --emph "${HYBRID_software_input_file[Hydro]}" ' to be used.'
     fi
     # Create a symbolic link to the eos folder, which is assumed to exist in the hydro software
@@ -46,19 +46,19 @@ function Prepare_Software_Input_File_Hydro()
     if [[ -d "${link_to_eos_folder}" ]]; then
         if [[ ! "${link_to_eos_folder}" -ef "${eos_folder}" ]]; then
             if [[ -L "${link_to_eos_folder}" ]]; then
-                Print_Warning 'Found a symlink ' --emph "${HYBRID_software_output_directory[Hydro]}/eos"\
+                Print_Warning 'Found a symlink ' --emph "${HYBRID_software_output_directory[Hydro]}/eos" \
                     '\npointing to a different eos folder. Unlink and link again!\n'
                 unlink "${HYBRID_software_output_directory[Hydro]}/eos"
                 ln -s "${eos_folder}" "${link_to_eos_folder}"
             else
                 exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                    'A ' --emph 'eos' ' folder called already exists at ' --emph "${HYBRID_software_output_directory[Hydro]}"\
+                    'A ' --emph 'eos' ' folder called already exists at ' --emph "${HYBRID_software_output_directory[Hydro]}" \
                     '.' 'Please remove it and run the hybrid handler again.'
             fi
         fi
     elif [[ -e "${link_to_eos_folder}" ]]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            'A ' --emph 'eos' ' file already exists at ' --emph "${HYBRID_software_output_directory[Hydro]}"\
+            'A ' --emph 'eos' ' file already exists at ' --emph "${HYBRID_software_output_directory[Hydro]}" \
             '.' 'Please remove it and run the hybrid handler again.'
     else
         ln -s "${eos_folder}" "${link_to_eos_folder}"
@@ -77,7 +77,7 @@ function Ensure_All_Needed_Input_Exists_Hydro()
     fi
     if [[ ! -e "${HYBRID_software_input_file[Hydro]}" ]]; then
          exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
-        'The input file ' --emph "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"\
+            'The input file ' --emph "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" \
             ' was not found.'
     elif [[ ! -e "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" ]]; then
         Print_Internal_And_Exit \
@@ -89,12 +89,11 @@ function Run_Software_Hydro()
 {
     cd "${HYBRID_software_output_directory[Hydro]}"
     local -r \
-        hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}"\
-        ic_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"\
+        hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}" \
+        ic_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" \
         hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt"
-    "${HYBRID_software_executable[Hydro]}" "-params" "${hydro_config_file_path}"\
+    "${HYBRID_software_executable[Hydro]}" "-params" "${hydro_config_file_path}" \
          "-ISinput" "${ic_output_file_path}" "-outputDir" "${HYBRID_software_output_directory[Hydro]}" >> "${hydro_terminal_output}"
 }
-
 
 Make_Functions_Defined_In_This_File_Readonly

@@ -17,16 +17,16 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
         if Element_In_Array_Equals_To "${key}" "${HYBRID_given_software_sections[@]}"; then
             __static__Ensure_Executable_Exists "${key}"
             printf -v HYBRID_software_configuration_file[${key}] \
-               "${HYBRID_software_output_directory[${key}]}/${HYBRID_software_configuration_filename[${key}]}"
+                "${HYBRID_software_output_directory[${key}]}/${HYBRID_software_configuration_filename[${key}]}"
             # Set here input data file of software if it was not set by user
             if [[ ${key} =~ ^(Hydro|Afterburner)$ ]]; then
                 local filename relative_key
                 filename="${HYBRID_software_user_custom_input_file[${key}]}"
                 case "${key}" in
-                    Hydro )
+                    Hydro)
                         relative_key='IC'
                         ;;
-                    Afterburner )
+                    Afterburner)
                         relative_key='Sampler'
                         ;;
                 esac
@@ -45,7 +45,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             fi
         fi
     done
-    if  [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]];then
+    if  [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
         if [[ "${HYBRID_optional_feature[Spectators_source]}" != '' ]]; then
             HYBRID_software_input_file['Spectators']="${HYBRID_optional_feature[Spectators_source]}"
             if  Element_In_Array_Equals_To "IC" "${HYBRID_given_software_sections[@]}"; then
@@ -85,11 +85,11 @@ function __static__Ensure_Executable_Exists()
     elif [[ "${executable}" = / ]]; then
         if [[ ! -f "${executable}" ]]; then
             exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
-                'The executable file for the ' --emph "${label}" ' run was not found.'\
+                'The executable file for the ' --emph "${label}" ' run was not found.' \
                 'Not existing path: ' --emph "${file_path}"
         elif [[ ! -x "${executable}" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                'The executable file for the ' --emph "${label}" ' run is not executable.'\
+                'The executable file for the ' --emph "${label}" ' run is not executable.' \
                 'File path: ' --emph "${file_path}"
         fi
     # It is important to perform this check with 'type' and not with 'hash' because 'hash' with
@@ -97,12 +97,11 @@ function __static__Ensure_Executable_Exists()
     # This will be entered if the user gives something stupid as '~' as executable.
     elif ! type -P "${executable}" &> /dev/null; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            'The command ' --emph "${executable}" ' specified for the '\
-            --emph "${label}" ' run was not located by the shell.'\
-            'Please check your ' --emph 'PATH' ' environment variable and make sure'\
+            'The command ' --emph "${executable}" ' specified for the ' \
+            --emph "${label}" ' run was not located by the shell.' \
+            'Please check your ' --emph 'PATH' ' environment variable and make sure' \
             'that '--emph "type -P \"${executable}\"" ' succeeds in your terminal.'
     fi
 }
-
 
 Make_Functions_Defined_In_This_File_Readonly

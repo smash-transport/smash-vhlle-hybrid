@@ -10,15 +10,15 @@
 function Define_Available_Tests_For()
 {
     case "$1" in
-        unit_tests )
+        unit_tests)
             local -r files_prefix='unit_tests_'
             local -r functions_prefix='Unit_Test__'
             ;;
-        functional_tests )
+        functional_tests)
             local -r files_prefix='functional_tests_'
             local -r functions_prefix='Functional_Test__'
             ;;
-        * )
+        *)
             Print_Internal_And_Exit 'Wrong call to ' --emph "${FUNCNAME}" ' function.'
             ;;
     esac
@@ -38,11 +38,11 @@ function Define_Available_Tests_For()
         source "${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
     done
     # Available tests are based on functions in this file whose names begins with "${functions_prefix}"
-    local -r grep_regex='^function[[:space:]]+'"${functions_prefix}"'[-[:alnum:]_:]+\(\)[[:space:]]*$'\
-             sed_regex='^function[[:space:]]+'"${functions_prefix}"'([^(]+)\(\)[[:space:]]*$'
+    local -r grep_regex='^function[[:space:]]+'"${functions_prefix}"'[-[:alnum:]_:]+\(\)[[:space:]]*$' \
+        sed_regex='^function[[:space:]]+'"${functions_prefix}"'([^(]+)\(\)[[:space:]]*$'
     HYBRIDT_tests_to_be_run=(
         # Here word splitting can split names, no space allowed in function name!
-        $(grep -hE "${grep_regex}" "${files_to_be_sourced[@]}" |\
-           sed -E 's/'"${sed_regex}"'/\1/')
+        $(grep -hE "${grep_regex}" "${files_to_be_sourced[@]}" \
+                                                               | sed -E 's/'"${sed_regex}"'/\1/')
     )
 }

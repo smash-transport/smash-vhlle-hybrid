@@ -17,7 +17,10 @@ function Functional_Test__version()
     if ! hash git &> /dev/null; then
         Print_Warning 'Command ' --emph 'git' ' not available, part of test cannot be run.'
     else
-        git_describe=$(cd "${HYBRIDT_repository_top_level_path}"; git describe --abbrev=0)
+        git_describe=$(
+                       cd "${HYBRIDT_repository_top_level_path}"
+                                                                  git describe --abbrev=0
+        )
         printf "${version_output}\n"
         if [[ $(grep -c "${git_describe}" <<< "${version_output}") -gt 0 ]]; then
             return 0
