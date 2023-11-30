@@ -164,7 +164,10 @@ function Unit_Test__Hydro-test-run-software()
         return 1
     fi
     terminal_output_result=$(< "${hydro_terminal_output}")
-    correct_result="-params ${Hydro_config_file_path} -ISinput ${IC_output_file_path} -outputDir ${HYBRID_software_output_directory[Hydro]}"
+    printf -v correct_result '%s' \
+        "-params ${Hydro_config_file_path} " \
+        "-ISinput ${IC_output_file_path} " \
+        "-outputDir ${HYBRID_software_output_directory[Hydro]}"
     if [[ "${terminal_output_result}" != "${correct_result}" ]]; then
         Print_Error 'The terminal output has not the expected content.'
         return 1

@@ -52,7 +52,8 @@ function Prepare_Software_Input_File_Hydro()
                 ln -s "${eos_folder}" "${link_to_eos_folder}"
             else
                 exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                    'A ' --emph 'eos' ' folder called already exists at ' --emph "${HYBRID_software_output_directory[Hydro]}" \
+                    'A ' --emph 'eos' ' folder called already exists at ' \
+                    --emph "${HYBRID_software_output_directory[Hydro]}" \
                     '.' 'Please remove it and run the hybrid handler again.'
             fi
         fi
@@ -92,8 +93,10 @@ function Run_Software_Hydro()
         hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}" \
         ic_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" \
         hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt"
-    "${HYBRID_software_executable[Hydro]}" "-params" "${hydro_config_file_path}" \
-        "-ISinput" "${ic_output_file_path}" "-outputDir" "${HYBRID_software_output_directory[Hydro]}" >> "${hydro_terminal_output}"
+    "${HYBRID_software_executable[Hydro]}" \
+        "-params" "${hydro_config_file_path}" \
+        "-ISinput" "${ic_output_file_path}" \
+        "-outputDir" "${HYBRID_software_output_directory[Hydro]}" >> "${hydro_terminal_output}"
 }
 
 Make_Functions_Defined_In_This_File_Readonly

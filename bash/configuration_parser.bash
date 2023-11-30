@@ -60,7 +60,8 @@ function __static__Abort_If_Sections_Are_Violating_Any_Requirement()
         exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
             'No software section was specified in the handler configuration file.'
     elif [[ ${#software_sections_indices[@]} -gt 1 ]]; then
-        if [[ $(sort -u <(printf '%d\n' "${software_sections_indices[@]}") | wc -l) -ne ${#software_sections_indices[@]} ]]; then
+        local -r number_of_distinct_sections=$(sort -u <(printf '%d\n' "${software_sections_indices[@]}") | wc -l)
+        if [[ ${number_of_distinct_sections} -ne ${#software_sections_indices[@]} ]]; then
             exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
                 'The same software section in the handler configuration file cannot be repeated.'
         fi
