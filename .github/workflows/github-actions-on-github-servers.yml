@@ -47,6 +47,9 @@ jobs:
     # install needed non-standard packages
     - name: Install Python dependencies
       run: python -m pip install --upgrade pip numpy pyyaml
+    # install the formatter used in the codebase
+    - name: Install bash formatter (shfmt)
+      run: sudo apt-get install -y shfmt
     # now everything should be ready to setup bash and run codebase tests
     - name: code_check
     # we set some environment variables which depend on the specific matrix element
