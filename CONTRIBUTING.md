@@ -67,7 +67,8 @@ The general advice is pretty trivial: **Be consistent with what you find**.
 The codebase is formatted using [`shfmt`](https://github.com/mvdan/sh#shfmt).
 Any developer should be aware that, because of the nature of the Bash scripting language, it is probably impossible to have a perfect formatter, which ensure rules in all details (as e.g. `clang-format` does for C++).
 Therefore, it is crucial for the developer to stay consistent with the existing style and, more importantly, to take some minutes to read the following lists.
-In particular, be aware the the formatter will not enforce many of the rules explained below.
+In particular, be aware the the formatter will not enforce the rules explained below.
+
 Before opening a PR, make sure all tests pass.
 One of them will try to check formatting and complain if something has to be adjusted.
 The main script has a `format` execution mode which formats the full codebase.
@@ -75,16 +76,14 @@ This is meant for developers only and therefore does not appear in the helper de
 
 ### Some aspects about the codebase
 
-* Indentation is done _exclusively with spaces_ and **no** <kbd>Tab</kbd> should be used.
-* Lines of code are split around 100 characters and should never be longer than 120 (hard limit).
-* Bash functions use both the `function` keyword and parenthesis and the enclosing braces are put on separate lines.
+* Lines of code are split around 100 characters and should never be longer than 120 (hard limit, tests will fail if longer lines exist).
+* Bash functions use **both** the `function` keyword **and** parenthesis (with the enclosing braces are put on separate lines).
   ```bash
   function Example_Function()
   {
     # Body of the function
   }
   ```
-* Loops and conditional clauses are started on a single line, i.e. the `do` and `then` keywords are **NOT** put on a separate line.
 * Local variables are typed with all small letters and words separated by underscores, e.g. `local_variable_name`.
 * Global variables in the codebase are prefixed by `HYBRID_` and this is meant for better readability, e.g. `HYBRID_global_variable`.
 * Analogously, global variables in tests are prefixed by `HYBRIDT_`.
@@ -95,6 +94,11 @@ This is meant for developers only and therefore does not appear in the helper de
 * Single quotes are used if there is no need of using double or different quotes.
 * All functions declared in each separate file are marked in the end of the file as `readonly`.
 * Files are sourced all together by sourcing a single dedicated file (cf. *bash/source_codebase_files.bash* file).
+
+#### Other conventions in use that the formatter enforces
+
+* Indentation is done _exclusively with spaces_ and **no** <kbd>Tab</kbd> should be used.
+* Loops and conditional clauses are started on a single line, i.e. the `do` and `then` keywords are **NOT** put on a separate line.
 
 ### Some aspects specific to tests
 
