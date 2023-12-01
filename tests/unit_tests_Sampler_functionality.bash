@@ -9,7 +9,7 @@
 
 function Make_Test_Preliminary_Operations__Sampler-create-input-file()
 {
-   local file_to_be_sourced list_of_files
+    local file_to_be_sourced list_of_files
     list_of_files=(
         'Sampler_functionality.bash'
         'global_variables.bash'
@@ -46,9 +46,9 @@ function Unit_Test__Sampler-create-input-file()
     # Ensure that paths in Sampler config were replaced by global paths
     local surface_path spectra_dir_path
     surface_path=$(awk '$1 == "surface" {print $2; exit}' \
-                       "${HYBRID_software_configuration_file[Sampler]}")
+        "${HYBRID_software_configuration_file[Sampler]}")
     spectra_dir_path=$(awk '$1 == "spectra_dir" {print $2; exit}' \
-                           "${HYBRID_software_configuration_file[Sampler]}")
+        "${HYBRID_software_configuration_file[Sampler]}")
     if [[ "${surface_path}" != /* || "${spectra_dir_path}" != /* ]]; then
         Print_Error 'Freezeout and/or output directory path in Sampler config is not a global path.'
         return 1
@@ -97,9 +97,9 @@ function Unit_Test__Sampler-check-all-input()
         Print_Error 'Ensuring existence of not-existing freezeout surface file succeeded.'
         return 1
     fi
-    printf '%s\n'\
-           "surface $(which ls)"\
-           "spectra_dir ${HOME}" > "${HYBRID_software_configuration_file[Sampler]}"
+    printf '%s\n' \
+        "surface $(which ls)" \
+        "spectra_dir ${HOME}" > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Sampler
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of all input files unexpectedly failed.'
@@ -180,13 +180,13 @@ function Unit_Test__Sampler-validate-config-file()
     # Config file with incorrect value type for other keys
     local wrong_key_value
     for wrong_key_value in \
-      'number_of_events 3.14'\
-      'rescatter 3..14'\
-      'weakContribution false'\
-      'shear true'\
-      'ecrit +-1'\
-      'Nbins -100'\
-      'q_max 1.6'; do
+        'number_of_events 3.14' \
+        'rescatter 3..14' \
+        'weakContribution false' \
+        'shear true' \
+        'ecrit +-1' \
+        'Nbins -100' \
+        'q_max 1.6'; do
         printf '%s\n' "${wrong_key_value}" > "${HYBRID_software_configuration_file[Sampler]}"
         Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
         if [[ $? -eq 0 ]]; then
@@ -218,8 +218,8 @@ function Make_Test_Preliminary_Operations__Sampler-test-run-software()
 function Unit_Test__Sampler-test-run-software()
 {
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
-    local -r sampler_terminal_output="${HYBRID_software_output_directory[Sampler]}/Terminal_Output.txt"\
-             sampler_config_file_path="${HYBRID_software_configuration_file[Sampler]}"
+    local -r sampler_terminal_output="${HYBRID_software_output_directory[Sampler]}/Terminal_Output.txt" \
+        sampler_config_file_path="${HYBRID_software_configuration_file[Sampler]}"
     local terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_Sampler
     if [[ ! -f "${sampler_terminal_output}" ]]; then

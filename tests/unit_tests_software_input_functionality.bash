@@ -9,8 +9,8 @@
 
 function Make_Test_Preliminary_Operations__replace-in-software-input-YAML()
 {
-    source "${HYBRIDT_repository_top_level_path}"/bash/software_input_functionality.bash\
-    || exit "${HYBRID_fatal_builtin}"
+    source "${HYBRIDT_repository_top_level_path}"/bash/software_input_functionality.bash \
+        || exit "${HYBRID_fatal_builtin}"
 }
 
 function Unit_Test__replace-in-software-input-YAML()
@@ -70,10 +70,11 @@ Foo: BarBar'
     # so it is important here to have no leading empty lines, otherwise
     # this test would succeed/fail depending on yq version available!
     if [[ "$(< "${base_input_file}")" != "${expected_result}" ]]; then
-        Print_Error "YAML replacement failed!"\
-                    '---- OBTAINED: ----' "$(< "${base_input_file}")"\
-                    '---- EXPECTED: ----' "${expected_result}"\
-                    '-------------------'
+        Print_Error \
+            "YAML replacement failed!" \
+            '---- OBTAINED: ----' "$(< "${base_input_file}")" \
+            '---- EXPECTED: ----' "${expected_result}" \
+            '-------------------'
         return 1
     fi
     rm "${base_input_file}"
@@ -144,10 +145,11 @@ function Unit_Test__replace-in-software-input-TXT()
     expected_result=${expected_result%?} # Get rid of trailing endline
     Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_Txt_File
     if [[ "$(< "${base_input_file}")" != "${expected_result}" ]]; then
-        Print_Error "YAML replacement failed!"\
-                    "---- OBTAINED: ----\n$(< "${base_input_file}")"\
-                    "---- EXPECTED: ----\n${expected_result}"\
-                    '-------------------'
+        Print_Error \
+            "YAML replacement failed!" \
+            "---- OBTAINED: ----\n$(< "${base_input_file}")" \
+            "---- EXPECTED: ----\n${expected_result}" \
+            '-------------------'
         return 1
     fi
     #---------------------------------------------------------------------------
@@ -157,10 +159,11 @@ function Unit_Test__replace-in-software-input-TXT()
     expected_result=${expected_result%?} # Get rid of trailing endline
     Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_Txt_File
     if [[ "$(< "${base_input_file}")" != "${expected_result}" ]]; then
-        Print_Error "YAML replacement failed!"\
-                    "---- OBTAINED: ----\n$(< "${base_input_file}")"\
-                    "---- EXPECTED: ----\n${expected_result}"\
-                    '-------------------'
+        Print_Error \
+            "YAML replacement failed!" \
+            "---- OBTAINED: ----\n$(< "${base_input_file}")" \
+            "---- EXPECTED: ----\n${expected_result}" \
+            '-------------------'
         return 1
     fi
     #---------------------------------------------------------------------------
@@ -170,10 +173,11 @@ function Unit_Test__replace-in-software-input-TXT()
     expected_result=${expected_result%?} # Get rid of trailing endline
     Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_Txt_File
     if [[ "$(< "${base_input_file}")" != "${expected_result}" ]]; then
-        Print_Error "YAML replacement failed!"\
-                    "---- OBTAINED: ----\n$(< "${base_input_file}")"\
-                    "---- EXPECTED: ----\n${expected_result}"\
-                    '-------------------'
+        Print_Error \
+            "YAML replacement failed!" \
+            "---- OBTAINED: ----\n$(< "${base_input_file}")" \
+            "---- EXPECTED: ----\n${expected_result}" \
+            '-------------------'
         return 1
     fi
     rm "${base_input_file}"

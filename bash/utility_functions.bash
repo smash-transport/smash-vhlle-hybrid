@@ -34,7 +34,8 @@ function Has_YAML_String_Given_Key()
     if [[ $# -lt 2 ]]; then
         Print_Internal_And_Exit 'Function ' --emph "${FUNCNAME}" ' called with less than 2 arguments.'
     fi
-    yaml_string=$1; shift
+    yaml_string=$1
+    shift
     if ! yq <<< "${yaml_string}" &> /dev/null; then
         Print_Internal_And_Exit 'Function ' --emph "${FUNCNAME}" ' called with invalid YAML string.'
     fi
@@ -58,7 +59,8 @@ function Read_From_YAML_String_Given_Key()
     elif ! Has_YAML_String_Given_Key "$@"; then
         Print_Internal_And_Exit 'Function ' --emph "${FUNCNAME}" ' called with YAML string not containing given key.'
     fi
-    yaml_string=$1; shift
+    yaml_string=$1
+    shift
     key="$(printf '.%s' "$@")"
     yq "${key}" <<< "${yaml_string}"
 }
@@ -74,7 +76,8 @@ function Print_YAML_String_Without_Given_Key()
     elif ! Has_YAML_String_Given_Key "$@"; then
         Print_Internal_And_Exit 'Function ' --emph "${FUNCNAME}" ' called with YAML string not containing given key.'
     fi
-    yaml_string=$1; shift
+    yaml_string=$1
+    shift
     key="$(printf '.%s' "$@")"
     yq 'del('"${key}"')' <<< "${yaml_string}"
 }
@@ -83,9 +86,9 @@ function Print_Line_of_Equals()
 {
     local length indentation prefix postfix
     length="$1"
-    indentation="${2-}"  # Input arg. or empty string
-    prefix="${3-}"       # Input arg. or empty string
-    postfix="${4-\n}"    # Input arg. or endline
+    indentation="${2-}" # Input arg. or empty string
+    prefix="${3-}"      # Input arg. or empty string
+    postfix="${4-\n}"   # Input arg. or endline
     printf "${prefix}${indentation}"
     for ((i = 0; i < ${length}; i++)); do
         printf '='
@@ -95,8 +98,8 @@ function Print_Line_of_Equals()
 
 function Print_Centered_Line()
 {
-    local input_string output_total_width indentation padding_character\
-          postfix real_length padding_utility
+    local input_string output_total_width indentation padding_character \
+        postfix real_length padding_utility
     input_string="$1"
     output_total_width="${2:-$(tput cols)}" # Input arg. or full width of terminal
     indentation="${3-}"                     # Input arg. or empty string
@@ -104,7 +107,7 @@ function Print_Centered_Line()
     postfix="${5-\n}"                       # Input arg. or endline
     # Determine length of input at net of formatting codes (color, face)
     real_length=$(printf '%s' "${input_string}" | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,3})*)?[mGK]//g" | wc -c)
-    if (( output_total_width - 2 - real_length < 0 )); then
+    if ((output_total_width - 2 - real_length < 0)); then
         Print_Fatal_And_Exit 'Error in ' --emph "${FUNCNAME}" ': specify larger total width!'
     fi
     # In the following we build a very long string of padding characters that
@@ -112,17 +115,17 @@ function Print_Centered_Line()
     # here 500 characters. The * in a string format descriptor of printf means
     # that the number to be used there is passed to printf as argument.
     padding_utility="$(printf '%0.1s' "${padding_character}"{1..500})"
-    printf "${indentation}%0.*s %s %0.*s${postfix}"\
-           "$(( (output_total_width - 2 - real_length)/2 ))"\
-           "${padding_utility}"\
-           "${input_string}"\
-           "$(( (output_total_width - 2 - real_length)/2 ))"\
-           "${padding_utility}"
+    printf "${indentation}%0.*s %s %0.*s${postfix}" \
+        "$(((output_total_width - 2 - real_length) / 2))" \
+        "${padding_utility}" \
+        "${input_string}" \
+        "$(((output_total_width - 2 - real_length) / 2))" \
+        "${padding_utility}"
 }
 
 function Print_Option_Specification_Error_And_Exit()
 {
-    exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit\
+    exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit \
         'The value of the option ' --emph "$1" ' was not correctly specified (either forgotten or invalid)!'
 }
 
@@ -142,7 +145,7 @@ function Remove_Comments_In_File()
     filename=$1
     comment_character=${2:-#}
     if [[ ! -f "${filename}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
             'File ' --emph "${filename}" ' not found.'
     elif [[ ${#comment_character} -ne 1 ]]; then
         Print_Internal_And_Exit 'Comment character ' --emph "${comment_character}" ' invalid!'
@@ -164,8 +167,8 @@ function Call_Function_If_Existing_Or_Exit()
     if [[ "$(type -t ${name_of_the_function})" = 'function' ]]; then
         ${name_of_the_function} "$@"
     else
-        exit_code=${HYBRID_fatal_missing_feature} Print_Internal_And_Exit\
-            '\nFunction ' --emph "${name_of_the_function}" ' not found!'\
+        exit_code=${HYBRID_fatal_missing_feature} Print_Internal_And_Exit \
+            '\nFunction ' --emph "${name_of_the_function}" ' not found!' \
             'Please provide an implementation following the in-code documentation.'
     fi
 }
@@ -189,14 +192,15 @@ function Call_Function_If_Existing_Or_No_Op()
 #       if this function is used to test existence of an entry of an array, then
 #       'declare -p array[0]' would fail even if array[0] existed, while the test
 #       [[ -v array[0] ]] would succeed. Hence we treat this case separately.
-function Ensure_That_Given_Variables_Are_Set() {
+function Ensure_That_Given_Variables_Are_Set()
+{
     local variable_name
     for variable_name in "$@"; do
-        if ! declare -p "${variable_name}" &>/dev/null; then
-            if [[ ${variable_name} =~ \]$  &&  -v ${variable_name} ]]; then
+        if ! declare -p "${variable_name}" &> /dev/null; then
+            if [[ ${variable_name} =~ \]$ && -v ${variable_name} ]]; then
                 continue
             fi
-            Print_Internal_And_Exit\
+            Print_Internal_And_Exit \
                 'Variable ' --emph "${variable_name}" ' not set in function ' --emph "${FUNCNAME[1]}" '.'
         fi
     done
@@ -208,25 +212,26 @@ function Ensure_That_Given_Variables_Are_Set() {
 #       variable is 1 (as accessing an array without index returns the first entry).
 #       Hence, for 'foo=""', ${#foo[@]} would return 1 and a non zero length is not
 #       synonym of a non-empty variable.
-function Ensure_That_Given_Variables_Are_Set_And_Not_Empty() {
+function Ensure_That_Given_Variables_Are_Set_And_Not_Empty()
+{
     local variable_name
     for variable_name in "$@"; do
         # The following can be done using the "${ref@A}" bash-5 expansion which
         # would return the variable declared attributes (e.g. 'a' for arrays).
-        if [[ $(declare -p "${variable_name}" 2>/dev/null ) =~ ^declare\ -[aA] ]]; then
+        if [[ $(declare -p "${variable_name}" 2> /dev/null) =~ ^declare\ -[aA] ]]; then
             declare -n ref=${variable_name}
             if [[ ${#ref[@]} -ne 0 ]]; then
                 continue
             fi
         else
-            set +u  # Here variable_name might be unset! Do not exit if so
+            set +u # Here variable_name might be unset! Do not exit if so
             if [[ "${!variable_name}" != '' ]]; then
                 set -u
                 continue
             fi
             set -u
         fi
-        Print_Internal_And_Exit\
+        Print_Internal_And_Exit \
             'Variable ' --emph "${variable_name}" ' unset or empty in function ' --emph "${FUNCNAME[1]}" '.'
     done
 }
@@ -249,17 +254,16 @@ function Make_Functions_Defined_In_This_File_Readonly()
     # NOTE: The file from which this function is called is ${BASH_SOURCE[1]}
     local declared_functions
     declared_functions=( # Here word splitting can split names, no space allowed in function name!
-        $(grep -E '^[[:space:]]*function[[:space:]]+[-[:alnum:]_:]+\(\)[[:space:]]*$' "${BASH_SOURCE[1]}" |\
-           sed -E 's/^[[:space:]]*function[[:space:]]+([^(]+)\(\)[[:space:]]*$/\1/')
+        $(grep -E '^[[:space:]]*function[[:space:]]+[-[:alnum:]_:]+\(\)[[:space:]]*$' "${BASH_SOURCE[1]}" \
+            | sed -E 's/^[[:space:]]*function[[:space:]]+([^(]+)\(\)[[:space:]]*$/\1/')
     )
     if [[ ${#declared_functions[@]} -eq 0 ]]; then
-        Print_Internal_And_Exit\
-            'Function ' --emph "${FUNCNAME}" ' called, but no function found in file\n file '\
+        Print_Internal_And_Exit \
+            'Function ' --emph "${FUNCNAME}" ' called, but no function found in file\n file ' \
             --emph "${BASH_SOURCE[1]}" '.'
     else
         readonly -f "${declared_functions[@]}"
     fi
 }
-
 
 Make_Functions_Defined_In_This_File_Readonly

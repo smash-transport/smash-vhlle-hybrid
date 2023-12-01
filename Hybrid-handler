@@ -58,7 +58,7 @@ function Define_Repository_Global_Path()
     #       symbolic links. Note that we require 'readlink' to exist as this was introduced in
     #       OpenBSD and GNU around 2000, see comments to https://unix.stackexchange.com/a/136527/370049.
     if ! hash readlink &> /dev/null; then
-        exit_code=${HYBRID_fatal_builtin} Print_Fatal_And_Exit\
+        exit_code=${HYBRID_fatal_builtin} Print_Fatal_And_Exit \
             "No 'readlink' command found. Please install it and run the Hybrid-handler again."
     fi
     local source directory
@@ -80,7 +80,7 @@ function Define_Repository_Global_Path()
 
 function Store_Command_Line_Options_Into_Global_Variable()
 {
-    HYBRID_command_line_options_to_parse=( "$@" )
+    HYBRID_command_line_options_to_parse=("$@")
 }
 
 function Source_Codebase_Files()
@@ -91,13 +91,16 @@ function Source_Codebase_Files()
 function Act_And_Exit_If_User_Ran_Auxiliary_Modes()
 {
     case "${HYBRID_execution_mode}" in
-        *help )
+        *help)
             Give_Required_Help
             ;;&
-        version )
+        format)
+            Format_Codebase
+            ;;&
+        version)
             Print_Software_Version
             ;;&
-        *help | version )
+        *help | format | version)
             exit ${HYBRID_success_exit_code}
             ;;
     esac
@@ -106,7 +109,7 @@ function Act_And_Exit_If_User_Ran_Auxiliary_Modes()
 function Make_Needed_Operations_Depending_On_Execution_Mode()
 {
     case "${HYBRID_execution_mode}" in
-        do )
+        do)
             local software_section
             Validate_And_Parse_Configuration_File
             Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
@@ -116,7 +119,7 @@ function Make_Needed_Operations_Depending_On_Execution_Mode()
                 Run_Software "${software_section}"
             done
             ;;
-        * )
+        *)
             Print_Internal_And_Exit "Unexpected execution mode at top-level."
             ;;
     esac

@@ -33,7 +33,7 @@ function Functional_Test__do-Hydro-only()
     # Expect failure when giving an invalid IC output
     Print_Info 'Running Hybrid-handler expecting invalid IC argument'
     terminal_output_file='Hydro/Terminal_Output.txt'
-    BLACK_BOX_FAIL='invalid_input'\
+    BLACK_BOX_FAIL='invalid_input' \
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded with invalid IC input for Hydro.'
@@ -53,7 +53,7 @@ function Functional_Test__do-Hydro-only()
     Hydro:
       Executable: %s/vhlle_black-box.py
       Input_file: %s/test/input
-    ' "$(pwd)" "$(pwd)"   > "${config_filename}"
+    ' "$(pwd)" "$(pwd)" > "${config_filename}"
     # Run the hydro stage and check if freezeout is successfully generated
     rm 'IC/SMASH_IC.dat'
     mkdir -p test
@@ -69,7 +69,7 @@ function Functional_Test__do-Hydro-only()
     # Expect failure when an invalid config was supplied
     Print_Info 'Running Hybrid-handler expecting invalid config argument'
     terminal_output_file='Hydro/Terminal_Output.txt'
-    BLACK_BOX_FAIL='invalid_config'\
+    BLACK_BOX_FAIL='invalid_config' \
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded with invalid config for Hydro.'
@@ -86,7 +86,7 @@ function Functional_Test__do-Hydro-only()
     mv 'Hydro' 'Hydro-invalid-config'
     # Expect failure and test terminal output in the case of a crash of vHLLE
     Print_Info 'Running Hybrid-handler expecting crash in Hydro'
-    BLACK_BOX_FAIL='crash'\
+    BLACK_BOX_FAIL='crash' \
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded with Hydro crashing.'
@@ -105,10 +105,10 @@ function Functional_Test__do-Hydro-only()
     Hydro:
       Executable: %s/vhlle_black-box.py
       Input_file: %s/test/input
-    '  "$(pwd)" "$(pwd)"  > "${config_filename}"
+    ' "$(pwd)" "$(pwd)" > "${config_filename}"
     Print_Info 'Running Hybrid-handler expecting failure'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
-    if [[ $? -ne  110 ]]; then
+    if [[ $? -ne 110 ]]; then
         Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
         return 1
     fi

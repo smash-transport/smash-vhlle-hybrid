@@ -31,7 +31,7 @@ function Define_Further_Global_Variables()
     declare -rgA HYBRID_external_python_scripts=(
         [Add_spectators_from_IC]="${HYBRID_python_folder}/add_spectators.py"
     )
-     declare -rgA HYBRID_software_default_input_filename=(
+    declare -rgA HYBRID_software_default_input_filename=(
         [IC]=''
         [Hydro]="SMASH_IC.dat"
         [Sampler]="freezeout.dat" # Not used at the moment for how the sampler works
@@ -125,6 +125,5 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
     )
 }
-
 
 Make_Functions_Defined_In_This_File_Readonly

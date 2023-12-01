@@ -63,32 +63,48 @@ Finally, a short remark about `extglob` option. To motivate why we decided to en
 ## Bash notation in the codebase
 
 The general advice is pretty trivial: **Be consistent with what you find**.
-Here a list of some aspects worth mentioning about the codebase:
-* indentation is done _exclusively with spaces_ and **no** <kbd>Tab</kbd> should be used;
-* lines of code are split around 100 characters and should never be longer than 120;
-* bash functions use both the `function` keyword and parenthesis and the enclosing braces are put on separate lines,
+
+The codebase is formatted using [`shfmt`](https://github.com/mvdan/sh#shfmt).
+Any developer should be aware that, because of the nature of the Bash scripting language, it is probably impossible to have a perfect formatter, which ensure rules in all details (as e.g. `clang-format` does for C++).
+Therefore, it is crucial for the developer to stay consistent with the existing style and, more importantly, to take some minutes to read the following lists.
+In particular, be aware the the formatter will not enforce the rules explained below.
+
+Before opening a PR, make sure all tests pass.
+One of them will try to check formatting and complain if something has to be adjusted.
+The main script has a `format` execution mode which formats the full codebase.
+This is meant for developers only and therefore does not appear in the helper description.
+
+### Some aspects about the codebase
+
+* Lines of code are split around 100 characters and should never be longer than 120 (hard limit, tests will fail if longer lines exist).
+* Bash functions use **both** the `function` keyword **and** parenthesis (with the enclosing braces are put on separate lines).
   ```bash
   function Example_Function()
   {
     # Body of the function
   }
   ```
-* loops and conditional clauses are started on a single line, i.e. the `do` and `then` keywords are **NOT** put on a separate line;
-* local variables are typed with all small letters and words separated by underscores, e.g. `local_variable_name`;
-* global variables in the codebase are prefixed by `HYBRID_` and this is meant for better readability, e.g. `HYBRID_global_variable`;
-* analogously, global variables in tests are prefixed by `HYBRIDT_`;
-* variables are always expanded using braces, i.e. you should use `${variable}` instead of `$variable`;
-* function names are made of underscore-separated words with initials capitalized, e.g. `Function_Name_With_Words`;
-* functions that are and should be used only in the file where declared are prefixed by `__static__`;
-* quotes are correctly used, i.e. everything that _might_ break if unquoted is quoted;
-* single quotes are used if there is no need of using double or different quotes;
-* all functions declared in each separate file are marked in the end of the file as `readonly`;
-* files are sourced all together by sourcing a single dedicated file (cf. *bash/source_codebase_files.bash* file).
+* Local variables are typed with all small letters and words separated by underscores, e.g. `local_variable_name`.
+* Global variables in the codebase are prefixed by `HYBRID_` and this is meant for better readability, e.g. `HYBRID_global_variable`.
+* Analogously, global variables in tests are prefixed by `HYBRIDT_`.
+* Variables are always expanded using braces, i.e. you should use `${variable}` instead of `$variable`.
+* Function names are made of underscore-separated words with initials capitalized, e.g. `Function_Name_With_Words`.
+* Functions that are and should be used only in the file where declared are prefixed by `__static__`.
+* Quotes are correctly used, i.e. everything that _might_ break if unquoted is quoted.
+* Single quotes are used if there is no need of using double or different quotes.
+* All functions declared in each separate file are marked in the end of the file as `readonly`.
+* Files are sourced all together by sourcing a single dedicated file (cf. *bash/source_codebase_files.bash* file).
 
-Here, instead, a list of aspects specific to tests that should be kept in mind:
-* unit tests must be put in files whose names begin with `unit_tests_` and have the `.bash` extension (this convention allows the runner to source them all automatically) in the ***tests*** folder;
-* unit tests are automatically recognized by the tests runner as functions having the `Unit_Test__` prefix (and the remaining part of the function will be the unit test name);
-* operations to be done before or after a unit test can be put in the `Make_Test_Preliminary_Operations__[test-name]` and `Clean_Tests_Environment_For_Following_Test__[test-name]` functions, respectively (here `[test-name]` must match the string used in the unit test function name);
-* codebase functions to be invoked in unit tests should be called through the `Call_Codebase_Function` and `Call_Codebase_Function_In_Subshell` interface functions (passing the name of the function to be invoked as first argument and the arguments to be forward afterwards);
-* functional tests work analogously to unit tests, with the only differences that they have to be put in files with a `functional_tests_` prefix and implemented in bash functions starting by `Functional_Test__`;
-* in functional tests you'll probably want to run the hybrid handler with some options and this can be easily achieved by using the `Run_Hybrid_Handler_With_Given_Options_In_Subshell` function.
+#### Other conventions in use that the formatter enforces
+
+* Indentation is done _exclusively with spaces_ and **no** <kbd>Tab</kbd> should be used.
+* Loops and conditional clauses are started on a single line, i.e. the `do` and `then` keywords are **NOT** put on a separate line.
+
+### Some aspects specific to tests
+
+* Unit tests must be put in files whose names begin with `unit_tests_` and have the `.bash` extension (this convention allows the runner to source them all automatically) in the ***tests*** folder.
+* Unit tests are automatically recognized by the tests runner as functions having the `Unit_Test__` prefix (and the remaining part of the function will be the unit test name). **No space must occur before the `function` keyword.**
+* Operations to be done before or after a unit test can be put in the `Make_Test_Preliminary_Operations__[test-name]` and `Clean_Tests_Environment_For_Following_Test__[test-name]` functions, respectively (here `[test-name]` must match the string used in the unit test function name).
+* Codebase functions to be invoked in unit tests should be called through the `Call_Codebase_Function` and `Call_Codebase_Function_In_Subshell` interface functions (passing the name of the function to be invoked as first argument and the arguments to be forward afterwards).
+* Functional tests work analogously to unit tests, with the only differences that they have to be put in files with a `functional_tests_` prefix and implemented in bash functions starting by `Functional_Test__`.
+* In functional tests you'll probably want to run the hybrid handler with some options and this can be easily achieved by using the `Run_Hybrid_Handler_With_Given_Options_In_Subshell` function.

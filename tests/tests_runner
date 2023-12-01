@@ -63,14 +63,14 @@ function Enable_Global_Needed_Shell_Options()
     #       the codebase functions, see 'Call_Codebase_Function[_In_Subshell]'.
 }
 
-function Define_Tests_Global_Variables ()
+function Define_Tests_Global_Variables()
 {
     readonly HYBRIDT_repository_top_level_path=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../" &> /dev/null && pwd)
     readonly HYBRIDT_command=${HYBRIDT_repository_top_level_path}/Hybrid-handler
     readonly HYBRIDT_tests_folder=${HYBRIDT_repository_top_level_path}/tests
     readonly HYBRIDT_folder_to_run_tests=${HYBRIDT_tests_folder}/run_tests
     readonly HYBRIDT_log_file=${HYBRIDT_folder_to_run_tests}/$(basename ${BASH_SOURCE[0]}).log
-    readonly HYBRIDT_auxiliary_files_and_folders=( "${HYBRIDT_folder_to_run_tests}" "${HYBRIDT_log_file}" )
+    readonly HYBRIDT_auxiliary_files_and_folders=("${HYBRIDT_folder_to_run_tests}" "${HYBRIDT_log_file}")
     HYBRIDT_clean_test_folder='TRUE'
     HYBRIDT_report_level=3 # Report level: 0 = binary, 1 = summary, 2 = short, 3 = detailed
     HYBRIDT_tests_run=0
@@ -83,7 +83,7 @@ function Define_Tests_Global_Variables ()
 function Source_Needed_Files()
 {
     source "${HYBRIDT_repository_top_level_path}/bash/error_codes.bash" || exit 1
-    source "${HYBRIDT_repository_top_level_path}/bash/logger.bash"\
+    source "${HYBRIDT_repository_top_level_path}/bash/logger.bash" \
         --fd 9 --default-exit-code ${HYBRID_internal_exit_code} || exit ${HYBRID_fatal_builtin}
     local -r files_to_be_sourced=(
         "${HYBRIDT_repository_top_level_path}/bash/utility_functions.bash"
@@ -110,8 +110,8 @@ function Prepare_Test_Environment()
     postfix=$(date +'%Y-%m-%d_%H%M%S')
     if [[ -d "${HYBRIDT_folder_to_run_tests}" ]]; then
         Print_Warning 'Found ' --emph "${HYBRIDT_folder_to_run_tests}" ', renaming it!\n'
-        mv "${HYBRIDT_folder_to_run_tests}"\
-           "${HYBRIDT_folder_to_run_tests}_${postfix}" || exit ${HYBRID_fatal_builtin}
+        mv "${HYBRIDT_folder_to_run_tests}" \
+            "${HYBRIDT_folder_to_run_tests}_${postfix}" || exit ${HYBRID_fatal_builtin}
     fi
     mkdir "${HYBRIDT_folder_to_run_tests}" || exit ${HYBRID_fatal_builtin}
 }
@@ -123,7 +123,7 @@ function Run_Tests()
     fi
     local test_name
     for test_name in "${HYBRIDT_tests_to_be_run[@]}"; do
-        (( HYBRIDT_tests_run++ ))
+        ((HYBRIDT_tests_run++))
         # Run in sub-shell to have the same starting environment
         (
             # Make sure each test is run from the same folder (no matter from where tests are run)
@@ -142,12 +142,13 @@ function Run_Tests()
 function Announce_Running_Test()
 {
     local test_name padded_name
-    test_name=$1; shift
+    test_name=$1
+    shift
     if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
         printf -v padded_name "%-60s" "__${test_name}$(printf '\e[94m')_"
         padded_name="${padded_name// /.}"
-        printf '           %+2s/%-2s\e[96m%s'\
-               ${HYBRIDT_tests_run} ${#HYBRIDT_tests_to_be_run[@]} "${padded_name//_/ }"
+        printf '           %+2s/%-2s\e[96m%s' \
+            ${HYBRIDT_tests_run} ${#HYBRIDT_tests_to_be_run[@]} "${padded_name//_/ }"
     fi
 }
 
@@ -157,13 +158,13 @@ function Inspect_Test_Outcome()
     test_exit_code=$1
     test_name=$2
     if [[ ${test_exit_code} -eq 0 ]]; then
-        (( HYBRIDT_tests_passed++ ))
+        ((HYBRIDT_tests_passed++))
         if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
             printf "  \e[92mpassed\e[0m\n"
         fi
     else
-        (( HYBRIDT_tests_failed++ ))
-        HYBRIDT_which_tests_failed+=( "${test_name}" )
+        ((HYBRIDT_tests_failed++))
+        HYBRIDT_which_tests_failed+=("${test_name}")
         if [[ ${HYBRIDT_report_level} -eq 3 ]]; then
             printf "  \e[91mfailed\e[0m\n"
         fi
@@ -173,18 +174,18 @@ function Inspect_Test_Outcome()
 function Print_Tests_Report()
 {
     if [[ ${HYBRIDT_report_level} -ge 1 ]]; then
-        local indentation left_margin test_name_string_length\
-              index separator_length passed_string failed_string
+        local indentation left_margin test_name_string_length \
+            index separator_length passed_string failed_string
         indentation='           '
         left_margin='   '
         test_name_string_length=$(printf '%s\n' "${HYBRIDT_tests_to_be_run[@]}" | wc -L)
         if [[ ${test_name_string_length} -lt 25 ]]; then # Minimum length
             test_name_string_length=25
         fi
-        if (( test_name_string_length % 2 == 1 )); then # Aesthetics
-            (( test_name_string_length+=1 ))
+        if ((test_name_string_length % 2 == 1)); then # Aesthetics
+            ((test_name_string_length += 1))
         fi
-        separator_length=$(( test_name_string_length + 3 + 2 * ${#left_margin} ))
+        separator_length=$((test_name_string_length + 3 + 2 * ${#left_margin}))
         passed_string="$(printf "Run %d test(s): %2d passed" ${HYBRIDT_tests_run} ${HYBRIDT_tests_passed})"
         failed_string="$(printf "    ${HYBRIDT_tests_run//?/ }          %2d failed" ${HYBRIDT_tests_failed})"
         Print_Line_of_Equals "${separator_length}" "${indentation}" '\n\e[96m' '\e[0m\n'
@@ -194,8 +195,7 @@ function Print_Tests_Report()
     fi
     if [[ ${HYBRIDT_report_level} -ge 2 ]]; then
         local name percentage
-        percentage=$(awk\
-                     '{
+        percentage=$(awk '{
                         if($2!=0) {printf "%.0f%%", 100*$1/$2} else {printf "-- %"}
                       }' <<< "${HYBRIDT_tests_passed} ${HYBRIDT_tests_run}")
         Print_Centered_Line "${percentage} of tests passed!" ${separator_length} "${indentation}"
@@ -226,10 +226,10 @@ function Delete_Tests_Files_If_No_Test_Failed_And_User_Wishes_So()
                 label='symlink'
             elif [[ -f "${global_path}" ]]; then
                 label='file'
-            elif [[ ! -e  "${global_path}" ]]; then
+            elif [[ ! -e "${global_path}" ]]; then
                 continue
             else
-                Print_Internal_And_Exit 'Error in ' --emph "${FUNCNAME}" '.'\
+                Print_Internal_And_Exit 'Error in ' --emph "${FUNCNAME}" '.' \
                     --emph "${global_path}" ' seems to neither be a file nor a directory, leaving it!'
             fi
             Print_Info "Removing ${label} " --emph "${global_path}" '.'

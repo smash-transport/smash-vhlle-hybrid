@@ -178,8 +178,8 @@ function __static__Test_Section_Parsing_In_Subshell()
     input_file=$4
     new_keys=$5
     Call_Codebase_Function Validate_And_Parse_Configuration_File
-    if [[ "${#HYBRID_given_software_sections[@]}" -ne 1 ]] ||\
-       [[ "${HYBRID_given_software_sections[0]}" != "${section}" ]]; then
+    if [[ "${#HYBRID_given_software_sections[@]}" -ne 1 ]] \
+        || [[ "${HYBRID_given_software_sections[0]}" != "${section}" ]]; then
         Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (section storing).'
     fi
     if [[ ${HYBRID_software_executable[${section}]} != "${executable}" ]]; then
@@ -212,7 +212,7 @@ function Unit_Test__configuration-parse-IC-section()
         General:
           Randomseed: 12345
     ' > "${HYBRID_configuration_file}"
-    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell\
+    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
         'IC' 'foo' 'bar' '' $'General:\n  Randomseed: 12345'
     if [[ $? -ne 0 ]]; then
         return 1
@@ -238,7 +238,7 @@ function Unit_Test__configuration-parse-Hydro-section()
       Software_keys:
         etaS: 0.12345
     ' > "${HYBRID_configuration_file}"
-    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell\
+    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
         'Hydro' 'foo' 'bar' 'ket' 'etaS: 0.12345'
     if [[ $? -ne 0 ]]; then
         return 1
@@ -263,7 +263,7 @@ function Unit_Test__configuration-parse-Sampler-section()
       Software_keys:
         shear: 1.2345
     ' > "${HYBRID_configuration_file}"
-    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell\
+    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
         'Sampler' 'foo' 'bar' '' 'shear: 1.2345'
     if [[ $? -ne 0 ]]; then
         return 1
@@ -290,7 +290,7 @@ function Unit_Test__configuration-parse-Afterburner-section()
         General:
           End_Time: 42000
     ' > "${HYBRID_configuration_file}"
-    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell\
+    Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
         'Afterburner' 'foo' 'bar' 'ket' $'General:\n  End_Time: 42000'
     if [[ $? -ne 0 ]]; then
         return 1

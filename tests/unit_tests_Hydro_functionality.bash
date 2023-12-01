@@ -22,7 +22,7 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
     Define_Further_Global_Variables
     HYBRID_output_directory="${HYBRIDT_folder_to_run_tests}/test_dir_Hydro"
     HYBRID_software_base_config_file[Hydro]='vhlle_config_cool'
-    HYBRID_given_software_sections=('Hydro' )
+    HYBRID_given_software_sections=('Hydro')
     HYBRID_software_executable[Hydro]="$(which echo)"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 }
@@ -109,8 +109,9 @@ function Unit_Test__Hydro-check-all-input()
         Print_Error 'Ensuring existence of not-existing output directory succeeded.'
         return 1
     fi
-    mkdir -p "${HYBRID_software_output_directory[Hydro]}"\
-             "${HYBRID_software_output_directory[IC]}"
+    mkdir -p \
+        "${HYBRID_software_output_directory[Hydro]}" \
+        "${HYBRID_software_output_directory[IC]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of not-existing config file succeeded.'
@@ -129,8 +130,9 @@ function Unit_Test__Hydro-check-all-input()
         return 1
     fi
     touch "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
-    ln -s -f "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"\
-             "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+    ln -s -f \
+        "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat" \
+        "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of existing folder/file failed.'
@@ -151,9 +153,10 @@ function Make_Test_Preliminary_Operations__Hydro-test-run-software()
 function Unit_Test__Hydro-test-run-software()
 {
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
-    local -r hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt"\
-             Hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}"\
-             IC_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+    local -r \
+        hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt" \
+        Hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}" \
+        IC_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     local terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_Hydro
     if [[ ! -f "${hydro_terminal_output}" ]]; then
@@ -161,7 +164,10 @@ function Unit_Test__Hydro-test-run-software()
         return 1
     fi
     terminal_output_result=$(< "${hydro_terminal_output}")
-    correct_result="-params ${Hydro_config_file_path} -ISinput ${IC_output_file_path} -outputDir ${HYBRID_software_output_directory[Hydro]}"
+    printf -v correct_result '%s' \
+        "-params ${Hydro_config_file_path} " \
+        "-ISinput ${IC_output_file_path} " \
+        "-outputDir ${HYBRID_software_output_directory[Hydro]}"
     if [[ "${terminal_output_result}" != "${correct_result}" ]]; then
         Print_Error 'The terminal output has not the expected content.'
         return 1

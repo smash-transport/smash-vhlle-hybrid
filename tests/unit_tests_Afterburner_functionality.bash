@@ -22,7 +22,7 @@ __static__Do_Preliminary_Setup_Operations()
     Define_Further_Global_Variables
     HYBRID_output_directory="${HYBRIDT_folder_to_run_tests}/test_dir_Afterburner"
     HYBRID_software_base_config_file[Afterburner]='my_cool_conf.yaml'
-    HYBRID_given_software_sections=( 'Afterburner' )
+    HYBRID_given_software_sections=('Afterburner')
     HYBRID_software_executable[Afterburner]=$(which echo) # Use command as fake executable
 }
 
@@ -38,8 +38,8 @@ function Unit_Test__Afterburner-create-input-file()
 {
     touch "${HYBRID_software_base_config_file[Afterburner]}"
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
-    local -r\
-        plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
+    local -r \
+        plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar" \
         plist_Final="${HYBRID_software_output_directory[Afterburner]}/sampling0"
     touch "${plist_Sampler}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner
@@ -65,7 +65,7 @@ function Clean_Tests_Environment_For_Following_Test__Afterburner-create-input-fi
 
 function Make_Test_Preliminary_Operations__Afterburner-create-input-file-with-spectators()
 {
-   __static__Do_Preliminary_Setup_Operations
+    __static__Do_Preliminary_Setup_Operations
     HYBRID_optional_feature[Add_spectators_from_IC]='TRUE'
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
     Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts
@@ -73,15 +73,16 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file-with-sp
 
 function Unit_Test__Afterburner-create-input-file-with-spectators()
 {
-    mkdir -p "${HYBRID_software_output_directory[Sampler]}"\
-             "${HYBRID_software_output_directory[IC]}"\
-             "${HYBRID_software_output_directory[Afterburner]}"
-    local -r\
-        plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"\
-        plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar"\
+    mkdir -p \
+        "${HYBRID_software_output_directory[Sampler]}" \
+        "${HYBRID_software_output_directory[IC]}" \
+        "${HYBRID_software_output_directory[Afterburner]}"
+    local -r \
+        plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar" \
+        plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar" \
         plist_Final="${HYBRID_software_output_directory[Afterburner]}/sampling0"
     touch "${HYBRID_software_base_config_file[Afterburner]}" "${plist_Sampler}" "${plist_Final}"
-    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
     if [[ $? -ne 110 ]]; then
         Print_Error \
             'Files preparation did not fail with exit code 110' \
@@ -89,7 +90,7 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
         return 1
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/"*
-    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
     if [[ $? -ne 110 ]]; then
         Print_Error \
             'Files preparation did not fail with exit code 110' \
@@ -98,7 +99,7 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/"*
     touch "${HYBRID_software_output_directory[IC]}/config.yaml"
-    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner  &> /dev/null
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
     if [[ $? -ne 110 ]]; then
         Print_Error \
             'Files preparation did not fail with exit code 110' \
@@ -147,14 +148,14 @@ function Unit_Test__Afterburner-check-all-input()
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner
     if [[ $? -ne 0 ]]; then
         Print_Error \
-            'Ensuring existence of existing folder/file unexpectedly failed,'\
+            'Ensuring existence of existing folder/file unexpectedly failed,' \
             ' although all files were provided.'
         return 1
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/sampling0"
     touch "${HYBRID_software_output_directory[Sampler]}/original_sampling0"
-    ln -s "${HYBRID_software_output_directory[Sampler]}/original_sampling0"\
-          "${HYBRID_software_output_directory[Afterburner]}/sampling0"
+    ln -s "${HYBRID_software_output_directory[Sampler]}/original_sampling0" \
+        "${HYBRID_software_output_directory[Afterburner]}/sampling0"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner &> /dev/null
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of existing file unexpectedly failed.'
@@ -189,9 +190,9 @@ function Unit_Test__Afterburner-test-run-software()
         return 1
     fi
     terminal_output_result=$(< "${afterburner_terminal_output}")
-    printf -v correct_result '%s'\
-       "-i ${HYBRID_software_configuration_file[Afterburner]} "\
-       "-o ${HYBRID_software_output_directory[Afterburner]} -n"
+    printf -v correct_result '%s' \
+        "-i ${HYBRID_software_configuration_file[Afterburner]} " \
+        "-o ${HYBRID_software_output_directory[Afterburner]} -n"
     if [[ "${terminal_output_result}" != "${correct_result}" ]]; then
         Print_Error 'The terminal output has not the expected content.'
         return 1

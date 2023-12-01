@@ -34,7 +34,10 @@ jobs:
           bash_version: "bash-4.4"
     steps:
     # this is an action provided by GitHub to checkout the repository
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+    - uses: actions/setup-go@v4
+      with:
+        cache: false
     # taken from https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
     - name: Set up Python 3.x
       uses: actions/setup-python@v4
@@ -57,10 +60,15 @@ jobs:
       # we recall that in YAML the pipe symbol "|" means that the following lines, including newlines, are interpreted literally
       run: |
         # we save in a variable the path of the starting directory
-        export main_dir=${PWD}
+        export main_dir="${PWD}"
+        # we install the formatter
+        export PATH="${PATH}:$(go env GOPATH)/bin"
+        go install mvdan.cc/sh/v3/cmd/shfmt@latest
+        printf "\n$(pwd)\nInstalled shfmt at $(which shfmt): $(shfmt --version)\n\n"
         # if we are not using the default bash version, we download and compile the desired one
         if [ ${BASH_TESTED_VERSION} != "default" ]; then
-            printf "Download and compile bash-${BASH_TESTED_VERSION}...\n"
+            cd ${HOME}
+            printf "Download and compile bash-${BASH_TESTED_VERSION} into ${HOME}...\n"
             wget -nv https://ftp.gnu.org/gnu/bash/${BASH_TESTED_VERSION}.tar.gz
             tar xf ${BASH_TESTED_VERSION}.tar.gz
             output_file=configure_make.log
@@ -80,7 +88,7 @@ jobs:
         # we set the TERM environment variable (used by utilities exploited in the tests)
         export TERM="xterm"
         # now we enter into the tests directory and execute the tests with maximum detail (-r 3)
-        cd $main_dir/tests
+        cd ${main_dir}/tests
         ${BASH_EXE} tests_runner unit -r 3 -k ||\
         { printf "\nDetailed output of unit tests for debugging purposes:\n"; cat run_tests/tests_runner.log; exit 1; }
         rm -rf run_tests

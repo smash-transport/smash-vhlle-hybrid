@@ -27,22 +27,22 @@ function __static__Inhibit_Commands_Version()
 {
     function awk()
     {
-        __static__Fake_Command_Version\
+        __static__Fake_Command_Version \
             '--version' "${gnu} Awk ${awk_version}, API: 3.0 (${gnu} MPFR 4.1.0, ${gnu} MP 6.2.1)" "$@"
     }
     function sed()
     {
-        __static__Fake_Command_Version\
+        __static__Fake_Command_Version \
             '--version' "sed (${gnu} sed) ${sed_version} Packaged by Debian" "$@"
     }
     function tput()
     {
-        __static__Fake_Command_Version\
+        __static__Fake_Command_Version \
             '-V' "ncurses ${tput_version}" "$@"
     }
     function yq()
     {
-       __static__Fake_Command_Version\
+        __static__Fake_Command_Version \
             '--version' "yq (https://github.com/mikefarah/yq/) version v${yq_version}" "$@"
     }
 }
@@ -78,7 +78,10 @@ function Unit_Test__system-requirements()
         return 1
     fi
     printf '\n'
-    ( unset -v 'TERM'; Call_Codebase_Function_In_Subshell Check_System_Requirements_And_Make_Report )
+    (
+        unset -v 'TERM'
+        Call_Codebase_Function_In_Subshell Check_System_Requirements_And_Make_Report
+    )
     if [[ $? -ne 0 ]]; then
         Print_Error "Check system requirements making report of bad system failed."
         return 1
