@@ -29,10 +29,10 @@ function Make_Test_Preliminary_Operations__Sampler-create-input-file()
 function Unit_Test__Sampler-create-input-file()
 {
     HYBRID_software_base_config_file[Sampler]='fake_sampler_config'
-    printf '%s\n' \
-        'surface          ../Hydro/freezeout.dat' \
-        'spectra_dir      .' \
-        > "${HYBRID_software_base_config_file[Sampler]}"
+    printf '
+        surface          %s/freezeout.dat
+        spectra_dir      . 
+        ' "${HYBRID_software_output_directory[Hydro]}" > "${HYBRID_software_base_config_file[Sampler]}"
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Sampler
