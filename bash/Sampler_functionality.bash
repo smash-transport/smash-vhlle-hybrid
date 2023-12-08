@@ -84,13 +84,24 @@ function __static__Get_Path_Field_From_Sampler_Config_As_Global_Path()
     # We assume here that the configuration file is fine as it was validated before
     value=$(awk -v name="${field}" '$1 == name {print $2; exit}' \
         "${HYBRID_software_configuration_file[Sampler]}")
-    cd "${HYBRID_software_output_directory[Sampler]}"
-    # If realpath succeeds, it prints the path that is the result of the function
-    if ! realpath "${value}" 2> /dev/null; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
-            'Unable to transform relative path ' --emph "${value}" ' into global one.'
+    if [[ "${value}" = '=DEFAULT=' ]]; then
+        case "${field}" in
+            surface)
+                printf "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+                ;;
+            spectra_dir)
+                printf "${HYBRID_software_output_directory[Sampler]}"
+                ;;
+        esac
+    else
+        cd "${HYBRID_software_output_directory[Sampler]}"
+        # If realpath succeeds, it prints the path that is the result of the function
+        if ! realpath "${value}" 2> /dev/null; then
+            exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
+                'Unable to transform relative path ' --emph "${value}" ' into global one.'
+        fi
+        cd - > /dev/null
     fi
-    cd - > /dev/null
 }
 
 function __static__Is_Sampler_Config_Valid()
@@ -134,6 +145,12 @@ function __static__Is_Sampler_Config_Valid()
             return 1
         fi
         case "${key}" in
+            surface | spectra_dir)
+                if [[ "${value}" = '=DEFAULT=' ]]; then 
+                    ((keys_to_be_found--))
+                    continue
+                fi
+                ;;&
             surface)
                 cd "${HYBRID_software_output_directory[Sampler]}"
                 if [[ ! -f "${value}" ]]; then

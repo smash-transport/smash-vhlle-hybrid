@@ -28,11 +28,11 @@ function Make_Test_Preliminary_Operations__Sampler-create-input-file()
 
 function Unit_Test__Sampler-create-input-file()
 {
-    HYBRID_software_base_config_file[Sampler]='fake_sampler_config'
-    printf '
-        surface          %s/freezeout.dat
-        spectra_dir      . 
-        ' "${HYBRID_software_output_directory[Hydro]}" > "${HYBRID_software_base_config_file[Sampler]}"
+    # HYBRID_software_base_config_file[Sampler]='fake_sampler_config'
+    # printf '
+    #     surface          %s/freezeout.dat
+    #     spectra_dir      . 
+    #     ' "${HYBRID_software_output_directory[Hydro]}" > "${HYBRID_software_base_config_file[Sampler]}"
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Sampler
@@ -63,7 +63,7 @@ function Unit_Test__Sampler-create-input-file()
 
 function Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file()
 {
-    rm "${HYBRID_software_base_config_file[Sampler]}"
+    # rm "${HYBRID_software_base_config_file[Sampler]}"
     rm -r "${HYBRID_output_directory}"
 }
 
@@ -198,6 +198,8 @@ function Unit_Test__Sampler-validate-config-file()
     cp "${HYBRID_software_base_config_file[Sampler]}" "${HYBRID_software_configuration_file[Sampler]}"
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+    pwd 
+    ls 
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid
     if [[ $? -ne 0 ]]; then
         Print_Error 'Shipped sampler configuration unexpectedly detected as incorrect.'
