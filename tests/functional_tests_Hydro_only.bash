@@ -11,8 +11,8 @@ function Functional_Test__do-Hydro-only()
 {
     shopt -s nullglob
     local -r config_filename='vhlle_hydro_config'
-    local output_files terminal_output_file failure_message
     local -r run_id='Handler_run_id'
+    local output_files terminal_output_file failure_message
     # Make a symlink to the python mock such that the eos folder doesn't have to be created in the mock folder
     ln -s "${HYBRIDT_repository_top_level_path}/tests/mocks/vhlle_black-box.py" "vhlle_black-box.py"
     mkdir 'eos'

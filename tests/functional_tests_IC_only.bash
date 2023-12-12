@@ -11,11 +11,14 @@ function Functional_Test__do-IC-only()
 {
     shopt -s nullglob
     local -r config_filename='IC_config.yaml'
+    local -r run_id='Handler_run_id'
     local unfinished_files output_files terminal_output_file failure_message
     printf '
+    Hybrid_handler:  
+      Run_ID: %s
     IC:
       Executable: %s/tests/mocks/smash_IC_black-box.py
-    ' "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
+    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
     # Expect success and test absence of "SMASH" unfinished file
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
@@ -27,7 +30,7 @@ function Functional_Test__do-IC-only()
     mv 'IC' 'IC-success'
     # Expect failure and test "SMASH" message
     Print_Info 'Running Hybrid-handler expecting invalid IC input file failure'
-    terminal_output_file='IC/Terminal_Output.txt'
+    terminal_output_file="IC/${run_id}/Terminal_Output.txt"
     BLACK_BOX_FAIL='invalid_config' \
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -eq 0 ]]; then
@@ -51,7 +54,7 @@ function Functional_Test__do-IC-only()
         Print_Error 'Hybrid-handler unexpectedly succeeded with IC software crashing.'
         return 1
     fi
-    unfinished_files=(IC/*.{unfinished,lock})
+    unfinished_files=(IC/*/*.{unfinished,lock})
     if [[ ${#unfinished_files[@]} -ne 3 ]]; then
         Print_Error 'Expected ' --emph '3' " unfinished/lock files, but ${#unfinished_files[@]} found."
         return 1
