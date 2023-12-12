@@ -12,16 +12,19 @@ function Functional_Test__do-Hydro-only()
     shopt -s nullglob
     local -r config_filename='vhlle_hydro_config'
     local output_files terminal_output_file failure_message
+    local -r run_id='Handler_run_id'
     # Make a symlink to the python mock such that the eos folder doesn't have to be created in the mock folder
     ln -s "${HYBRIDT_repository_top_level_path}/tests/mocks/vhlle_black-box.py" "vhlle_black-box.py"
     mkdir 'eos'
     printf '
+    Hybrid_handler:  
+      Run_ID: %s
     Hydro:
       Executable: %s/vhlle_black-box.py
-    ' "$(pwd)" > "${config_filename}"
+    ' "${run_id}" "$(pwd)" > "${config_filename}"
     # Run the hydro stage and check if freezeout is successfully generated
-    mkdir -p 'IC'
-    touch 'IC/SMASH_IC.dat'
+    mkdir -p "IC/${run_id}"
+    touch "IC/${run_id}/SMASH_IC.dat"
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -ne 0 ]]; then
@@ -32,7 +35,7 @@ function Functional_Test__do-Hydro-only()
     mv 'Hydro' 'Hydro-success'
     # Expect failure when giving an invalid IC output
     Print_Info 'Running Hybrid-handler expecting invalid IC argument'
-    terminal_output_file='Hydro/Terminal_Output.txt'
+    terminal_output_file="Hydro/${run_id}/Terminal_Output.txt"
     BLACK_BOX_FAIL='invalid_input' \
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -eq 0 ]]; then
@@ -50,12 +53,14 @@ function Functional_Test__do-Hydro-only()
     mv 'Hydro' 'Hydro-invalid-input'
     #Expect success with custom input file name
     printf '
+    Hybrid_handler:  
+      Run_ID: %s
     Hydro:
       Executable: %s/vhlle_black-box.py
       Input_file: %s/test/input
-    ' "$(pwd)" "$(pwd)" > "${config_filename}"
+    ' "${run_id}" "$(pwd)" "$(pwd)" > "${config_filename}"
     # Run the hydro stage and check if freezeout is successfully generated
-    rm 'IC/SMASH_IC.dat'
+    rm "IC/${run_id}/SMASH_IC.dat"
     mkdir -p test
     touch 'test/input'
     Print_Info 'Running Hybrid-handler expecting success'
@@ -68,7 +73,7 @@ function Functional_Test__do-Hydro-only()
     mv 'Hydro' 'Hydro-success-custom-input'
     # Expect failure when an invalid config was supplied
     Print_Info 'Running Hybrid-handler expecting invalid config argument'
-    terminal_output_file='Hydro/Terminal_Output.txt'
+    terminal_output_file="Hydro/${run_id}/Terminal_Output.txt"
     BLACK_BOX_FAIL='invalid_config' \
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -eq 0 ]]; then
@@ -100,12 +105,14 @@ function Functional_Test__do-Hydro-only()
     mv 'Hydro' 'Hydro-crash'
     #Expect failure  with custom input file name while also using IC
     printf '
+    Hybrid_handler:  
+      Run_ID: %s
     IC:
       Executable: echo
     Hydro:
       Executable: %s/vhlle_black-box.py
       Input_file: %s/test/input
-    ' "$(pwd)" "$(pwd)" > "${config_filename}"
+    ' "${run_id}" "$(pwd)" "$(pwd)" > "${config_filename}"
     Print_Info 'Running Hybrid-handler expecting failure'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -ne 110 ]]; then
