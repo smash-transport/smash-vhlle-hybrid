@@ -25,8 +25,9 @@ function Check_If_Software_Produced_Expected_Output()
             Print_Internal_And_Exit 'Invalid case branch entered in ' --emph "${FUNCNAME}."
             ;;
     esac
-    unfinished_files=("${folder}"/*.{unfinished,lock})
-    output_files=("${folder}"/*)
+    # It is expected that in the case of the functional tests, only one folder appears after each block
+    unfinished_files=("${folder}"/*/*.{unfinished,lock})
+    output_files=("${folder}"/*/*)
     if [[ ${#unfinished_files[@]} -gt 0 ]]; then
         exit_code=${HYBRID_failure_exit_code} Print_Fatal_And_Exit \
             'Some unexpected ' --emph '.{unfinished,lock}' ' output file remained' \
