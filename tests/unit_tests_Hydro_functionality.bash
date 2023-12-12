@@ -70,7 +70,8 @@ function Unit_Test__Hydro-create-input-file()
     fi
     rm "${HYBRID_software_output_directory[Hydro]}"/*
     ln -s ~ "${HYBRID_software_output_directory[Hydro]}/eos"
-    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
+    # Suppress logging to file descriptor 9 to suppress the warning
+    Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro 9> /dev/null
     if [[ $? -ne 0 ]]; then
         Print_Error 'Preparation failed to replace existing symlink.'
         return 1

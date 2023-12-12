@@ -146,7 +146,7 @@ function __static__Is_Sampler_Config_Valid()
         fi
         case "${key}" in
             surface | spectra_dir)
-                if [[ "${value}" = '=DEFAULT=' ]]; then 
+                if [[ "${value}" = '=DEFAULT=' ]]; then
                     ((keys_to_be_found--))
                     continue
                 fi
