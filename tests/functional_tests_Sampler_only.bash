@@ -11,13 +11,16 @@ function Functional_Test__do-Sampler-only()
 {
     shopt -s nullglob
     local -r hybrid_handler_config='hybrid_config'
+    local -r run_id='Handler_run_id'
     local output_files
-    mkdir -p 'Hydro'
-    touch 'Hydro/freezeout.dat'
+    mkdir -p "Hydro/${run_id}"
+    touch "Hydro/${run_id}/freezeout.dat"
     printf '
+    Hybrid_handler:  
+      Run_ID: %s
     Sampler:
       Executable: %s/tests/mocks/sampler_black-box.py
-    ' "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config}"
+    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config}"
     # Expect success and test presence of output files
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}"
@@ -29,7 +32,7 @@ function Functional_Test__do-Sampler-only()
     mv 'Sampler' 'Sampler-success'
     # Expect failure and test terminal output
     local terminal_output_file error_message
-    terminal_output_file='Sampler/Terminal_Output.txt'
+    terminal_output_file="Sampler/${run_id}/Terminal_Output.txt"
     Print_Info 'Running Hybrid-handler expecting crash in Sampler'
     BLACK_BOX_FAIL='true' \
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}"
@@ -49,7 +52,7 @@ function Functional_Test__do-Sampler-only()
     # Expect Hybrid-handler to crash before calling the Sampler because of invalid config file
     Print_Info 'Running Hybrid-handler expecting invalid config error'
     BLACK_BOX_FAIL='false'
-    mkdir -p Sampler
+    mkdir -p "Sampler/${run_id}"
     local -r invalid_sampler_config="invalid_hadron_sampler"
     touch "${invalid_sampler_config}"
     printf '
