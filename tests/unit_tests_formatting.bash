@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -63,7 +63,8 @@ function Unit_Test__codebase-formatting()
         done
         Print_Info '\nRun ' --emph 'Hybrid-handler format' ' to correctly format the codebase.'
     fi
-    if ((${#files_with_too_long_lines[@]} + ${#files_with_wrong_formatting[@]} > 0)); then
+    if ((${#files_with_too_long_lines[@]} + ${#files_with_wrong_formatting[@]} > 0)) \
+        || [[ ${formatter_found} = 'FALSE' ]]; then
         return 1
     fi
 }
