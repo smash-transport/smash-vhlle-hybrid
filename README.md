@@ -22,7 +22,7 @@ If you are using the SMASH-vHLLE-hybrid, please cite [arXiv:2212.08724](https://
 | [Python](https://www.python.org) | 2.7  or higher |
 | [SMASH-analysis](https://github.com/smash-transport/smash-analysis)<sup>*</sup> | 1.7 or higher |
 
-<sup>*</sup><sub>Needed if automatic generation of particle spectra is desired.</sub>
+<sup><sup>*</sup> Needed if automatic generation of particle spectra is desired.</sup>
 
 Instructions on how to compile or install the software above can be found at the provided links either in the official documentation or in the corresponding README files.
 
@@ -110,6 +110,7 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
 
 * `Executable`<br>
   Path to the executable file of the software to be used.
+  This key is **required** for all specified stages.
 * `Config_file`<br>
   Path to the software specific configuration file.
   If not specified, the files shipped in the ***configs*** folder are used.
@@ -197,3 +198,25 @@ Afterburner:
     Add_spectators_from_IC: true
     Spectators_source: /path/to/spectators-file.oscar
 ```
+
+### An example of a complete hybrid handler configuration file
+
+Assuming to desire to run a simulation of the full model using all the default behavior of the hybrid handler, then the following configuration file can be used.
+
+```yaml
+IC:
+    Executable: /path/to/smash
+
+Hydro:
+    Executable: /path/to/vHLLE
+
+Sampler:
+    Executable: /path/to/Hadron-sampler
+
+Afterburner:
+    Executable: /path/to/smash
+```
+
+Omitting some stages is fine, as long as the omitted one(s) are contiguous from the beginning or from the end.
+If one or more stages are omitted at the beginning of the model, it is understood that these have been previously run, because the later stages will need input from the previous ones.
+In such a case, it will be needed to either explicitly provide the needed input file for the first stage in the run or specify the same `Run_ID` of the simulations already done.
