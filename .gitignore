@@ -1,4 +1,7 @@
 build*
 binaries
-.DS_Store
 python_scripts/*.pyc
+
+# OS specific auxiliary files
+.vscode
+.DS_Store
