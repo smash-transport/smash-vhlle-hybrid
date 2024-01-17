@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -51,7 +51,7 @@ function __static__Print_Do_Help_Message()
     printf '\e[38;5;38m  %s \e[38;5;85m%s \e[38;5;38m%s\e[0m\n' \
         'You can specify the following command line options to the' 'do' 'execution mode:'
     __static__Print_Command_Line_Option_Help \
-        '-o | --output-directory' "${HYBRID_output_directory}" \
+        '-o | --output-directory' '.' \
         "Directory where the run folder(s) will be created."
     __static__Print_Command_Line_Option_Help \
         '-c | --configuration-file' "${HYBRID_configuration_file}" \
