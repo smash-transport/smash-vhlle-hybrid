@@ -28,3 +28,172 @@ Instructions on how to compile or install the software above can be found at the
 
 The newer versions of ROOT require C++17 bindings or higher, so please make sure to compile SMASH, ROOT, and the sampler with the same compiler utilizing the same compiler flags, which can be adjusted in CMakeLists.txt of each submodule.
 It is also recommended to start from a clean build directory whenever changing the compiler or linking to external libraries that were compiled with different compiler flags.
+
+### Unix system requirements
+
+The hybrid-handler makes use of many tools which are usually installed on Unix systems.
+For some of them a minimum version is required and for the others their availability is enough.
+However, in some cases, the GNU version is required and on some Linux distribution or on Apple machines the default installation might not be suitable.
+To check out what is required and what is available on your system, simply run the `Hybrid-handler` executable without options: An overview of the main functionality as well as a system requirements overview will be produced.
+
+## The hybrid handler
+
+To run any of the different stages of the model, the `Hybrid-handler` executable should be used.
+Such an executable has different execution modes and each of these can be invoked with the `--help` option to get specific documentation of such a mode.
+Run `./Hybrid-handler do --help` for an example.
+Each run of the hybrid handler makes use of a configuration file and it is the user responsibility to provide one.
+Few further customizations are possible using command line options, which are documented in the helper of each execution mode.
+
+### The general behavior
+
+The main `do` execution mode of the handler runs stages of the model and it will create a given output tree at the specified output directory (by default this is the folder from where the handler is run, but it can customized using the `-o` or `--output-directory` command line option).
+Assuming all stages are run, this is what the user will obtain.
+```
+📂 Output-directory
+│
+├─ 📂 IC
+│   └─── 📂 Run_ID
+│          └─ # output files
+│
+├─ 📂 Hydro
+│   └─── 📂 Run_ID
+│          └─ # output files
+│
+├─ 📂 Sampler
+│   └─── 📂 Run_ID
+│          └─ # output files
+│
+└─ 📂 Afterburner
+    └─── 📂 Run_ID
+           └─ # output files
+```
+
+### The configuration file
+
+Using YAML syntax it is possible to customize in many different ways which and how different stages of the model are run.
+The file must be structured in sections (technically these are YAML maps at the top-level).
+Apart from a generic one, there exists one section for each stage of the model and the presence of any of this type of sections means that that stage of the model should be run.
+Many sanity checks are performed at start-up and in case you violate any rule, a descriptive self-explanatory error will be provided (e.g. the order of the stages matters, no stage can be repeated, and so on).
+If you are new to YAML, be reassured, our YAML usage is definitely basic.
+Each key has to be followed by a colon and each section content has to be indented in a consistent way.
+In the following documentation you will find examples, too, and they are probably enough to understand how to create your configuration file.
+
+#### The generic section
+
+There is a generic section that contains general information which is not specific to one stage only.
+This is called `Hybrid_handler` and it can contain the following key(s).
+
+* `Run_ID`<br>
+  This is the name used by the handler to create the folder for the actual run in the stage-dedicated directory.
+  If this key is not specified, a default name containing the date and time of the run is used (`Run_YYYY-MM-DD_hhmmss`).
+
+##### Example:
+
+```yaml
+Hybrid_handler:
+    Run_ID: Cool_stuff_1
+```
+
+#### The software sections
+
+Each stage of the model has a dedicated section.
+These are (with the corresponding software to be used):
+* `IC` for the initial conditions run (SMASH);
+* `Hydro` for the viscous hydrodynamics stage (vHLLE);
+* `Sampler` to perform particlization (Hadron sampler) and
+* `Afterburner` for the last stage (SMASH).
+
+As a general comment, whenever a path has to be specified, both an absolute and a relative one are accepted.
+However, **it is strongly encouraged to exclusively use absolute paths** as relative ones should be specified w.r.t. different folders (most of the times relatively to the stage output directory).
+
+#### Keys common to all software sections
+
+* `Executable`<br>
+  Path to the executable file of the software to be used.
+* `Config_file`<br>
+  Path to the software specific configuration file.
+  If not specified, the files shipped in the ***configs*** folder are used.
+* `Software_keys`<br>
+  The value of this key is a YAML map and should be used to change values of the software configuration file.
+  It is not possible to add or remove keys, but only change already existing ones.
+  If you need to add a key to the software default configuration file, you should create a custom one and specify it via the `Config_file` key.
+  Depending on your needs, you could also create a more complete configuration file and change the values of some keys in your run(s) via this key.
+
+#### The initial conditions section
+
+There is no specific key of the `IC` section and only the generic ones can be used.
+
+##### Example:
+
+```yaml
+IC:
+    Executable: /path/to/smash
+    Config_file: /path/to/IC_config.yaml
+    Software_keys:
+        General:
+            End_Time: 100
+```
+
+#### The hydrodynamics section
+
+* `Input_file`<br>
+  The hydrodynamics simulation needs an additional input file which contains the system initial conditions.
+  This is the main output of the previous stage and, therefore, if not specified, a *SMASH_IC.dat* file is expected to exist in the ***IC*** output sub-folder with the same `Run_ID`.
+  However, using this key, any file can be specified and used.
+
+##### Example:
+
+```yaml
+Hydro:
+    Executable: /path/to/vHLLE
+    Config_file: /path/to/vHLLE_config
+    Software_keys:
+        etaS: 0.42
+    Input_file: /path/to/IC_output.dat
+```
+
+#### The hadron sampler section
+
+Also the hadron sampler needs in input the freezeout surface file, which is produced at the previous hydrodynamics stage.
+This file cannot be specified via any key in the hybrid handler configuration file, because the hadron sampler must receive the path to this file in its own configuration file.
+If the user does not use a custom configuration file for the hadron sampler, the hybrid handler will use the default one, in which the path is set to `=DEFAULT=`.
+This will be resolved by the hybrid handler to the path of a *freezeout.dat* file in the ***Hydro*** output sub-folder with the same `Run_ID`,  which is expected to exist.
+A mechanism like this one is technically needed to be able by default to refer to the same run ID and pick up the correct file from the previous stage.
+As a side-effect, it is not possible for the user to name the freezeout surface file as _=DEFAULT=_, which anyways would not probably be a very clever choice. :sweat_smile:
+
+##### Example:
+
+```yaml
+Sampler:
+    Executable: /path/to/Hadron-sampler
+    Config_file: /path/to/Hadron-sampler_config
+    Software_keys:
+        surface: /path/to/custom/freezeout.dat
+```
+
+#### The afterburner section
+
+* `Input_file`<br>
+  As other stages, the afterburner run needs as well an additional input file which contains the initial particles list.
+  This is the main output of the previous sampler stage and, therefore, if not specified, a *particle_lists.oscar* file is expected to exist in the ***Sampler*** output sub-folder with the same `Run_ID`.
+  However, using this key, any file can be specified and used.
+* `Add_spectators_from_IC`<br>
+  Whether spectators from the initial conditions stage should be included or not in the afterburner run can be decided via this boolean key.
+  The default value is `false`.
+* `Spectators_source`<br>
+  If spectators from the initial conditions stage should be included in the afterburner run, a *SMASH_IC.oscar* file is expected to exist in the ***IC*** output sub-folder with the same `Run_ID`.
+  However, using this key any file path can be specified.
+  This key is ignored, unless `Add_spectators_from_IC` is not set to `true`.
+
+##### Example:
+
+```yaml
+Afterburner:
+    Executable: /path/to/smash
+    Config_file: /path/to/Afterburner_config.yaml
+    Software_keys:
+        General:
+            Delta_Time: 0.25
+    Add_spectators_from_IC: true
+    Spectators_source: /path/to/spectators-file.oscar
+```
