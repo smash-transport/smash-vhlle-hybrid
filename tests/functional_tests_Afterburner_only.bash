@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -112,7 +112,7 @@ function Functional_Test__do-Afterburner-only()
     printf '
     Afterburner:
       Executable: %s/tests/mocks/smash_afterburner_black-box.py
-      Add_spectators_from_IC: TRUE
+      Add_spectators_from_IC: true
       Software_keys:
         Modi:
           List:
@@ -129,7 +129,7 @@ function Functional_Test__do-Afterburner-only()
     printf '
     Afterburner:
       Executable: %s/mocks/smash_afterburner_black-box.py
-      Add_spectators_from_IC: TRUE
+      Add_spectators_from_IC: True
       Spectators_source: %s/test/SMASH_IC_2.oscar
       Software_keys:
         Modi:
