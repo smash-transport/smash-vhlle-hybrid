@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -45,7 +45,7 @@ function Define_Further_Global_Variables()
         [Afterburner]='afterburner_config.yaml'
     )
     # The following associative arrays declare maps between valid keys in the handler config
-    # file and bash variables in which the input information will be stored once parsed.
+    # file and bash variables in which the input information will be stored once parsed
     declare -rgA HYBRID_hybrid_handler_valid_keys=()
     declare -rgA HYBRID_ic_valid_keys=(
         [Executable]='HYBRID_software_executable[IC]'
@@ -70,6 +70,12 @@ function Define_Further_Global_Variables()
         [Software_keys]='HYBRID_software_new_input_keys[Afterburner]'
         [Add_spectators_from_IC]='HYBRID_optional_feature[Add_spectators_from_IC]'
         [Spectators_source]='HYBRID_optional_feature[Spectators_source]'
+    )
+    # This array declares a list of boolean keys. Here we do not keep track of sections
+    # as it would be strange to use the same key name in different sections once as
+    # boolean and once as something else.
+    declare -rg HYBRID_boolean_keys=(
+        'Add_spectators_from_IC'
     )
     # Variables to be set (and possibly made readonly) from command line
     HYBRID_execution_mode='help'
