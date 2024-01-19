@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -166,8 +166,24 @@ function __static__Parse_Key_And_Store_It()
     declare -n store_variable=$2
     if Has_YAML_String_Given_Key "${yaml_section}" "${key}"; then
         store_variable=$(Read_From_YAML_String_Given_Key "${yaml_section}" "${key}")
+        if Element_In_Array_Equals_To "${key}" "${HYBRID_boolean_keys[@]}"; then
+            __static__Validate_Boolean_Value "${key}" "$2"
+        fi
         yaml_section="$(Print_YAML_String_Without_Given_Key "${yaml_section}" "${key}")"
     fi
+}
+
+function __static__Validate_Boolean_Value()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty store_variable
+    local -r key=$1
+    if [[ ! "${store_variable^^}" =~ ^(TRUE|FALSE)$ ]]; then
+        exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
+            'Invalid value found at ' --emph "${key}: ${store_variable}" \
+            '.' 'The value is expected to be a YAML 1.2 boolean one (e.g. ' \
+            --emph 'true|false' ').'
+    fi
+    store_variable=${store_variable^^} # Ensure string is fully capitalized
 }
 
 function __static__YAML_section_must_be_empty()
