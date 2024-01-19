@@ -1,5 +1,5 @@
-surface          ../Hydro/freezeout.dat
-spectra_dir      .
+surface          =DEFAULT=
+spectra_dir      =DEFAULT=
 number_of_events 100
 weakContribution 0
 shear            1

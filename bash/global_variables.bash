@@ -45,8 +45,10 @@ function Define_Further_Global_Variables()
         [Afterburner]='afterburner_config.yaml'
     )
     # The following associative arrays declare maps between valid keys in the handler config
-    # file and bash variables in which the input information will be stored once parsed
-    declare -rgA HYBRID_hybrid_handler_valid_keys=()
+    # file and bash variables in which the input information will be stored once parsed.
+    declare -rgA HYBRID_hybrid_handler_valid_keys=(
+        [Run_ID]='HYBRID_run_id'
+    )
     declare -rgA HYBRID_ic_valid_keys=(
         [Executable]='HYBRID_software_executable[IC]'
         [Config_file]='HYBRID_software_base_config_file[IC]'
@@ -82,6 +84,7 @@ function Define_Further_Global_Variables()
     HYBRID_configuration_file='./config.yaml'
     HYBRID_output_directory="$(realpath .)"
     # Variables to be set (and possibly made readonly) from configuration/setup
+    HYBRID_run_id="Run_$(date +'%Y-%m-%d_%H%M%S')"
     HYBRID_given_software_sections=()
     declare -gA HYBRID_software_executable=(
         [IC]=''

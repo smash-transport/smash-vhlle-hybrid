@@ -13,7 +13,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
     for key in "${HYBRID_valid_software_configuration_sections[@]}"; do
         # The software output directories are always ALL set, even if not all software is run. This
         # is important as some software might rely on files in directories of other workflow blocks.
-        HYBRID_software_output_directory[${key}]="${HYBRID_output_directory}/${key}"
+        HYBRID_software_output_directory[${key}]="${HYBRID_output_directory}/${key}/${HYBRID_run_id}"
         if Element_In_Array_Equals_To "${key}" "${HYBRID_given_software_sections[@]}"; then
             __static__Ensure_Executable_Exists "${key}"
             printf -v HYBRID_software_configuration_file[${key}] \
