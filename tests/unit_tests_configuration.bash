@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -146,6 +146,51 @@ function Unit_Test__configuration-validate-all-keys()
         return 1
     fi
     rm "${HYBRID_configuration_file}"
+}
+
+#-------------------------------------------------------------------------------
+
+function Make_Test_Preliminary_Operations__configuration-validate-boolean-values()
+{
+    Make_Test_Preliminary_Operations__configuration-validate-existence
+}
+
+function Unit_Test__configuration-validate-boolean-values()
+{
+    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    local value counter=0
+    for value in y Y yes Yes YES n N no No NO on On ON off Off OFF 0 1; do
+        printf '
+        Afterburner:
+          Add_spectators_from_IC: %s
+        ' "${value}" > "${HYBRID_configuration_file}"
+        Call_Codebase_Function_In_Subshell Validate_And_Parse_Configuration_File &> /dev/null
+        if [[ $? -eq 0 ]]; then
+            Print_Error 'Validation of configuration file with invalid boolean values succeeded.'
+            ((counter++))
+        fi
+    done
+    if [[ ${counter} -ne 0 ]]; then
+        return ${counter}
+    else
+        counter=0
+    fi
+    for value in true True TRUE TrUe false False FALSE FalSe; do
+        HYBRID_optional_feature[Add_spectators_from_IC]='' # Unset boolean to test that it is set
+        printf '
+        Afterburner:
+          Add_spectators_from_IC: %s
+        ' "${value}" > "${HYBRID_configuration_file}"
+        Call_Codebase_Function Validate_And_Parse_Configuration_File
+        if [[ $? -ne 0 ]]; then
+            Print_Error 'Validation of configuration file with valid boolean values failed.'
+            ((counter++))
+        elif [[ ! "${HYBRID_optional_feature[Add_spectators_from_IC]}" =~ ^(TRUE|FALSE)$ ]]; then
+            Print_Error 'Value of boolean variable was not stored all capitalized.'
+            ((counter++))
+        fi
+    done
+    return ${counter}
 }
 
 #-------------------------------------------------------------------------------
