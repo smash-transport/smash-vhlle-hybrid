@@ -20,8 +20,9 @@ function __static__Check_Successful_Handler_Run()
 function Functional_Test__do-Afterburner-only()
 {
     shopt -s nullglob
-    local -r config_filename='Handler_config.yaml'
-    local -r run_id='Handler_run_id'
+    local -r \
+        config_filename='Handler_config.yaml' \
+        run_id='Afterburner_only'
     local unfinished_files output_files terminal_output_file failure_message
 
     mkdir -p "Sampler/${run_id}"
@@ -67,7 +68,7 @@ function Functional_Test__do-Afterburner-only()
         Print_Error 'Hybrid-handler unexpectedly succeeded with Afterburner software crashing.'
         return 1
     fi
-    unfinished_files=(Afterburner/*/*.{unfinished,lock})
+    unfinished_files=("Afterburner/${run_id}/"*.{unfinished,lock})
     if [[ ${#unfinished_files[@]} -ne 3 ]]; then
         Print_Error 'Expected ' --emph '3' " unfinished/lock files, but ${#unfinished_files[@]} found."
         return 1
@@ -114,7 +115,7 @@ function Functional_Test__do-Afterburner-only()
     # Expect success and test the add_spectator functionality
     Print_Info 'Running Hybrid-handler expecting success with the add_spectator option'
     mkdir -p "IC/${run_id}"
-    touch "IC/${run_id}/config.yaml" "IC/${run_id}/SMASH_IC.oscar" "Sampler/${run_id}/particle_lists.oscar"
+    touch "IC/${run_id}/"{config.yaml,SMASH_IC.oscar} "Sampler/${run_id}/particle_lists.oscar"
     printf '
     Hybrid_handler:  
       Run_ID: %s

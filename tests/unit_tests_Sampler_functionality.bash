@@ -58,7 +58,6 @@ function Unit_Test__Sampler-create-input-file()
 
 function Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file()
 {
-    # rm "${HYBRID_software_base_config_file[Sampler]}"
     rm -r "${HYBRID_output_directory}"
 }
 

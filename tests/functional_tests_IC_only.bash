@@ -10,8 +10,9 @@
 function Functional_Test__do-IC-only()
 {
     shopt -s nullglob
-    local -r config_filename='IC_config.yaml'
-    local -r run_id='Handler_run_id'
+    local -r \
+        config_filename='IC_config.yaml' \
+        run_id='IC_only'
     local unfinished_files output_files terminal_output_file failure_message
     printf '
     Hybrid_handler:  
@@ -54,7 +55,7 @@ function Functional_Test__do-IC-only()
         Print_Error 'Hybrid-handler unexpectedly succeeded with IC software crashing.'
         return 1
     fi
-    unfinished_files=(IC/*/*.{unfinished,lock})
+    unfinished_files=("IC/${run_id}/"*.{unfinished,lock})
     if [[ ${#unfinished_files[@]} -ne 3 ]]; then
         Print_Error 'Expected ' --emph '3' " unfinished/lock files, but ${#unfinished_files[@]} found."
         return 1

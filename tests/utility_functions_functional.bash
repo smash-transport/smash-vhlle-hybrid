@@ -25,7 +25,11 @@ function Check_If_Software_Produced_Expected_Output()
             Print_Internal_And_Exit 'Invalid case branch entered in ' --emph "${FUNCNAME}."
             ;;
     esac
-    # It is expected that in the case of the functional tests, only one folder appears after each block
+    local -r folder_content=("${folder}"/*)
+    if [[ ${#folder_content[@]} -ne 1 || ! -d ${folder_content[0]} ]]; then
+        exit_code=${HYBRID_failure_exit_code} Print_Fatal_And_Exit \
+            'Not exactly one ID folder found in ' --emph "${folder}" '.'
+    fi
     unfinished_files=("${folder}"/*/*.{unfinished,lock})
     output_files=("${folder}"/*/*)
     if [[ ${#unfinished_files[@]} -gt 0 ]]; then

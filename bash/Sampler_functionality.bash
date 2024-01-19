@@ -150,7 +150,7 @@ function __static__Is_Sampler_Config_Valid()
                     ((keys_to_be_found--))
                     continue
                 fi
-                ;;&
+                ;;& # Continue matching other cases below
             surface)
                 cd "${HYBRID_software_output_directory[Sampler]}"
                 if [[ ! -f "${value}" ]]; then

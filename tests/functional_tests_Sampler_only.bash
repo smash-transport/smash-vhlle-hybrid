@@ -10,8 +10,9 @@
 function Functional_Test__do-Sampler-only()
 {
     shopt -s nullglob
-    local -r hybrid_handler_config='hybrid_config'
-    local -r run_id='Handler_run_id'
+    local -r \
+        hybrid_handler_config='hybrid_config' \
+        run_id='Sampler_only'
     local output_files
     mkdir -p "Hydro/${run_id}"
     touch "Hydro/${run_id}/freezeout.dat"
