@@ -8,7 +8,7 @@ It consists of the following modules:
 - Cooper-Frye sampler to perform particlization of the elements on the freezeout hypersurface;
 - SMASH hadronic transport approach to perform the afterburner evolution.
 
-If you are using the SMASH-vHLLE-hybrid, please cite [arXiv:2212.08724](https://arxiv.org/abs/2112.08724). You may also consult this reference for further details about the hybrid approach.
+If you are using the SMASH-vHLLE-hybrid, please cite [Eur.Phys.J.A 58(2022)11,230](https://arxiv.org/abs/2112.08724). You may also consult this reference for further details about the hybrid approach.
 
 ## Prerequisites
 
@@ -72,7 +72,8 @@ Assuming all stages are run, this is what the user will obtain.
 
 Using YAML syntax it is possible to customize in many different ways which and how different stages of the model are run.
 The file must be structured in sections (technically these are YAML maps at the top-level).
-Apart from a generic one, there exists one section for each stage of the model and the presence of any of this type of sections means that that stage of the model should be run.
+Apart from a generic one, a section corresponding to each stage of the model exists.
+The presence of any section of this kind implies that the corresponding stage of the model should be run.
 Many sanity checks are performed at start-up and in case you violate any rule, a descriptive self-explanatory error will be provided (e.g. the order of the stages matters, no stage can be repeated, and so on).
 If you are new to YAML, be reassured, our YAML usage is definitely basic.
 Each key has to be followed by a colon and each section content has to be indented in a consistent way.
@@ -113,7 +114,7 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
   This key is **required** for all specified stages.
 * `Config_file`<br>
   Path to the software specific configuration file.
-  If not specified, the files shipped in the ***configs*** folder are used.
+  If not specified, the file shipped in the ***configs*** folder is used.
 * `Software_keys`<br>
   The value of this key is a YAML map and should be used to change values of the software configuration file.
   It is not possible to add or remove keys, but only change already existing ones.
@@ -138,7 +139,7 @@ IC:
 #### The hydrodynamics section
 
 * `Input_file`<br>
-  The hydrodynamics simulation needs an additional input file which contains the system initial conditions.
+  The hydrodynamics simulation needs an additional input file which contains the system's initial conditions.
   This is the main output of the previous stage and, therefore, if not specified, a *SMASH_IC.dat* file is expected to exist in the ***IC*** output sub-folder with the same `Run_ID`.
   However, using this key, any file can be specified and used.
 
@@ -156,9 +157,11 @@ Hydro:
 #### The hadron sampler section
 
 Also the hadron sampler needs in input the freezeout surface file, which is produced at the previous hydrodynamics stage.
-This file cannot be specified via any key in the hybrid handler configuration file, because the hadron sampler must receive the path to this file in its own configuration file.
-If the user does not use a custom configuration file for the hadron sampler, the hybrid handler will use the default one, in which the path is set to `=DEFAULT=`.
-This will be resolved by the hybrid handler to the path of a *freezeout.dat* file in the ***Hydro*** output sub-folder with the same `Run_ID`,  which is expected to exist.
+However, there is no dedicated `Input_file` key in the hadron sampler section of the hybrid handler configuration file, because the hadron sampler must receive the path to this file in its own configuration file already.
+Therefore, the user can set any path to the freezeout surface file by specifying it in the `Software_keys` subsection, as shown in the example below.
+
+By default, if the user does not use a custom configuration file for the hadron sampler and does not specify the path to the freezeout surface file via `Software_keys`, the hybrid handler will use the configuration file for the hadron sampler which is contained in the ***configs*** folder and in which the path to the freezeout surface is set to `=DEFAULT=`.
+This will be internally resolved by the hybrid handler to the path of a *freezeout.dat* file in the ***Hydro*** output sub-folder with the same `Run_ID`,  which is expected to exist.
 A mechanism like this one is technically needed to be able by default to refer to the same run ID and pick up the correct file from the previous stage.
 As a side-effect, it is not possible for the user to name the freezeout surface file as _=DEFAULT=_, which anyways would not probably be a very clever choice. :sweat_smile:
 
@@ -175,7 +178,7 @@ Sampler:
 #### The afterburner section
 
 * `Input_file`<br>
-  As other stages, the afterburner run needs as well an additional input file which contains the initial particles list.
+  As other stages, the afterburner run needs an additional input file as well, one which contains the sampled particles list.
   This is the main output of the previous sampler stage and, therefore, if not specified, a *particle_lists.oscar* file is expected to exist in the ***Sampler*** output sub-folder with the same `Run_ID`.
   However, using this key, any file can be specified and used.
 * `Add_spectators_from_IC`<br>
@@ -201,7 +204,7 @@ Afterburner:
 
 ### An example of a complete hybrid handler configuration file
 
-Assuming to desire to run a simulation of the full model using all the default behavior of the hybrid handler, then the following configuration file can be used.
+If you wish to run a simulation of the full model using the default behavior of all the stages of the hybrid handler, then the following configuration file can be used.
 
 ```yaml
 IC:
