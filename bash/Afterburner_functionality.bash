@@ -55,6 +55,7 @@ function Prepare_Software_Input_File_Afterburner()
                 --emph "${HYBRID_software_input_file[Afterburner]}" ' to be used.'
         fi
     fi
+    Copy_Hybrid_Handler_Config_Section
 }
 
 function Ensure_All_Needed_Input_Exists_Afterburner()

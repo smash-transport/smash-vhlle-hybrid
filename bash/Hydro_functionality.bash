@@ -64,6 +64,7 @@ function Prepare_Software_Input_File_Hydro()
     else
         ln -s "${eos_folder}" "${link_to_eos_folder}"
     fi
+    Copy_Hybrid_Handler_Config_Section
 }
 
 function Ensure_All_Needed_Input_Exists_Hydro()

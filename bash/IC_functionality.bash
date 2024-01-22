@@ -23,6 +23,7 @@ function Prepare_Software_Input_File_IC()
         Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
             'YAML' "${HYBRID_software_configuration_file[IC]}" "${HYBRID_software_new_input_keys[IC]}"
     fi
+    Copy_Hybrid_Handler_Config_Section
 }
 
 function Ensure_All_Needed_Input_Exists_IC()

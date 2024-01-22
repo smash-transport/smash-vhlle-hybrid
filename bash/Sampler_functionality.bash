@@ -46,6 +46,7 @@ function Prepare_Software_Input_File_Sampler()
         ln -s "${freezeout_path}" \
             "${HYBRID_software_output_directory[Sampler]}/freezeout.dat"
     fi
+    Copy_Hybrid_Handler_Config_Section
 }
 
 function Ensure_All_Needed_Input_Exists_Sampler()

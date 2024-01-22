@@ -44,6 +44,12 @@ function Define_Further_Global_Variables()
         [Sampler]='sampler_config.txt'
         [Afterburner]='afterburner_config.yaml'
     )
+    declare -rgA HYBRID_handler_config_section_filename=(
+        [IC]='Hybrid_handler_IC_config.yaml'
+        [Hydro]='Hybrid_handler_Hydro_config.yaml'
+        [Sampler]='Hybrid_handler_Sampler_config.yaml'
+        [Afterburner]='Hybrid_handler_Afterburner_config.yaml'
+    )
     # The following associative arrays declare maps between valid keys in the handler config
     # file and bash variables in which the input information will be stored once parsed.
     declare -rgA HYBRID_hybrid_handler_valid_keys=(
@@ -106,6 +112,12 @@ function Define_Further_Global_Variables()
         [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"
     )
     declare -gA HYBRID_software_new_input_keys=(
+        [IC]=''
+        [Hydro]=''
+        [Sampler]=''
+        [Afterburner]=''
+    )
+    declare -gA HYBRID_yaml_section=(
         [IC]=''
         [Hydro]=''
         [Sampler]=''
