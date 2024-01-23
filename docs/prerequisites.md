@@ -1,3 +1,0 @@
-# Simulation software
-
-# Other prerequisites

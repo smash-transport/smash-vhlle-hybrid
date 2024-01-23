@@ -19,11 +19,13 @@ repo_name: 'Repository'
 
 nav:
   - Home: index.md
-  - Getting started: prerequisites.md
   - User Guide:
+    - user/index.md
+    - Getting started: user/prerequisites.md
     - The hybrid handler: user/overview.md
+    - Handler configuration file: user/configuration-file.md
   - Developer Guide:
-    - Building the documentation: developer/documentation.md
+    - developer/index.md
     - Overview: developer/overview.md
 
 markdown_extensions:
@@ -52,6 +54,11 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  # Customize tables of contents
+  - toc:
+      permalink: true
+      permalink_title: "Link to this section"
+      toc_depth: 4
 
 
 theme:
@@ -61,8 +68,9 @@ theme:
   features:
     - content.code.copy
     - header.autohide
-    - navigation.tabs
+    - navigation.indexes
     - navigation.sections
+    - navigation.tabs
     - navigation.top
     - toc.follow
   icon:
@@ -92,6 +100,9 @@ extra:
       name: SMASH transport organization
   version:
     provider: mike
+
+extra_css:
+  - stylesheets/extra.css
 
 extra_javascript:
   - javascripts/mathjax.js
