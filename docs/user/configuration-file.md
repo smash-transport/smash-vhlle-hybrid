@@ -39,17 +39,22 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
 
 ## Keys common to all software sections
 
-* `Executable`<br>
-  Path to the executable file of the software to be used.
-  This key is **required** for all specified stages.
-* `Config_file`<br>
-  Path to the software specific configuration file.
-  If not specified, the file shipped in the ***configs*** folder is used.
-* `Software_keys`<br>
-  The value of this key is a YAML map and should be used to change values of the software configuration file.
-  It is not possible to add or remove keys, but only change already existing ones.
-  If you need to add a key to the software default configuration file, you should create a custom one and specify it via the `Config_file` key.
-  Depending on your needs, you could also create a more complete configuration file and change the values of some keys in your run(s) via this key.
+???+ config-key "`Executable`"
+
+    Path to the executable file of the software to be used.
+    This key is **required** for all specified stages.
+
+???+ config-key "`Config_file`"
+
+    Path to the software specific configuration file.
+    If not specified, the file shipped in the ***configs*** folder is used.
+
+???+ config-key "`Software_keys`"
+
+    The value of this key is a YAML map and should be used to change values of the software configuration file.
+    It is not possible to add or remove keys, but only change already existing ones.
+    If you need to add a key to the software default configuration file, you should create a custom one and specify it via the `Config_file` key.
+    Depending on your needs, you could also create a more complete configuration file and change the values of some keys in your run(s) via this key.
 
 ## The initial conditions section
 
@@ -66,10 +71,11 @@ IC:
 
 ## The hydrodynamics section
 
-* `Input_file`<br>
-  The hydrodynamics simulation needs an additional input file which contains the system's initial conditions.
-  This is the main output of the previous stage and, therefore, if not specified, a *SMASH_IC.dat* file is expected to exist in the ***IC*** output sub-folder with the same `Run_ID`.
-  However, using this key, any file can be specified and used.
+???+ config-key "`Input_file`"
+
+    The hydrodynamics simulation needs an additional input file which contains the system's initial conditions.
+    This is the main output of the previous stage and, therefore, if not specified, a :material-file: *SMASH_IC.dat* file is expected to exist in the :file_folder: ***IC*** output sub-folder with the same `Run_ID`.
+    However, using this key, any file can be specified and used.
 
 ```yaml title="Example"
 Hydro:
@@ -83,13 +89,13 @@ Hydro:
 ## The hadron sampler section
 
 Also the hadron sampler needs in input the freezeout surface file, which is produced at the previous hydrodynamics stage.
-However, there is no dedicated key in the hybrid handler configuration file, because the hadron sampler must receive the path to this file in its own configuration file already.
+However, there is no dedicated `Input_file` key in the hadron sampler section of the hybrid handler configuration file, because the hadron sampler must receive the path to this file in its own configuration file already.
 Therefore, the user can set any path to the freezeout surface file by specifying it in the `Software_keys` subsection, as shown in the example below.
 
-By default, if the user does not use a custom configuration file for the hadron sampler and does not specify the path to the freezeout surface file via `Software_keys`, the hybrid handler will use the configuration file for the hadron sampler which is contained in the ***configs*** folder and in which the path to the freezeout surface is set to `=DEFAULT=`.
-This will be internally resolved by the hybrid handler to the path of a *freezeout.dat* file in the ***Hydro*** output sub-folder with the same `Run_ID`,  which is expected to exist.
+By default, if the user does not use a custom configuration file for the hadron sampler and does not specify the path to the freezeout surface file via `Software_keys`, the hybrid handler will use the configuration file for the hadron sampler which is contained in the :file_folder: ***configs*** folder and in which the path to the freezeout surface is set to `=DEFAULT=`.
+This will be internally resolved by the hybrid handler to the path of a :material-file: *freezeout.dat* file in the :file_folder: ***Hydro*** output sub-folder with the same `Run_ID`,  which is expected to exist.
 A mechanism like this one is technically needed to be able by default to refer to the same run ID and pick up the correct file from the previous stage.
-As a side-effect, it is not possible for the user to name the freezeout surface file as _=DEFAULT=_, which anyways would not probably be a very clever choice. :sweat_smile:
+As a side-effect, it is not possible for the user to name the freezeout surface file as `=DEFAULT=`, which anyways would not probably be a very clever choice. :sweat_smile:
 
 ```yaml title="Example"
 Sampler:
@@ -101,17 +107,22 @@ Sampler:
 
 ## The afterburner section
 
-* `Input_file`<br>
-  As other stages, the afterburner run needs an additional input file as well, one which contains the sampled particles list.
-  This is the main output of the previous sampler stage and, therefore, if not specified, a *particle_lists.oscar* file is expected to exist in the ***Sampler*** output sub-folder with the same `Run_ID`.
-  However, using this key, any file can be specified and used.
-* `Add_spectators_from_IC`<br>
-  Whether spectators from the initial conditions stage should be included or not in the afterburner run can be decided via this boolean key.
-  The default value is `false`.
-* `Spectators_source`<br>
-  If spectators from the initial conditions stage should be included in the afterburner run, a *SMASH_IC.oscar* file is expected to exist in the ***IC*** output sub-folder with the same `Run_ID`.
-  However, using this key any file path can be specified.
-  This key is ignored, unless `Add_spectators_from_IC` is not set to `true`.
+???+ config-key "`Input_file`"
+
+    As other stages, the afterburner run needs an additional input file as well, one which contains the sampled particles list.
+    This is the main output of the previous sampler stage and, therefore, if not specified, a *particle_lists.oscar* file is expected to exist in the ***Sampler*** output sub-folder with the same `Run_ID`.
+    However, using this key, any file can be specified and used.
+
+???+ config-key "`Add_spectators_from_IC`"
+
+    Whether spectators from the initial conditions stage should be included or not in the afterburner run can be decided via this boolean key.
+    The default value is `false`.
+
+???+ config-key "`Spectators_source`"
+
+    If spectators from the initial conditions stage should be included in the afterburner run, a :material-file: *SMASH_IC.oscar* file is expected to exist in the :file_folder: ***IC*** output sub-folder with the same `Run_ID`.
+    However, using this key any file path can be specified.
+    This key is ignored, unless `Add_spectators_from_IC` is not set to `true`.
 
 ```yaml title="Example"
 Afterburner:
@@ -142,6 +153,8 @@ Afterburner:
     Executable: /path/to/smash
 ```
 
-Omitting some stages is fine, as long as the omitted one(s) are contiguous from the beginning or from the end.
-If one or more stages are omitted at the beginning of the model, it is understood that these have been previously run, because the later stages will need input from the previous ones.
-In such a case, it will be needed to either explicitly provide the needed input file for the first stage in the run or specify the same `Run_ID` of the simulations already done.
+??? question "What if I want to omit some stages?"
+
+    Omitting some stages is fine, as long as the omitted one(s) are contiguous from the beginning or from the end.
+    If one or more stages are omitted at the beginning of the model, it is understood that these have been previously run, because the later stages will need input from the previous ones.
+    In such a case, it will be needed to either explicitly provide the needed input file for the first stage in the run or specify the same `Run_ID` of the simulations already done.
