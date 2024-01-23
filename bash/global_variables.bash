@@ -117,12 +117,6 @@ function Define_Further_Global_Variables()
         [Sampler]=''
         [Afterburner]=''
     )
-    declare -gA HYBRID_yaml_section=(
-        [IC]=''
-        [Hydro]=''
-        [Sampler]=''
-        [Afterburner]=''
-    )
     declare -gA HYBRID_optional_feature=(
         [Add_spectators_from_IC]='FALSE'
         [Spectators_source]=''

@@ -39,7 +39,8 @@ function Ensure_All_Needed_Input_Exists_IC()
 
 function Run_Software_IC()
 {
-    Copy_Hybrid_Handler_Config_Section "IC" "${HYBRID_software_output_directory[IC]}"
+    Copy_Hybrid_Handler_Config_Section "IC" "${HYBRID_software_output_directory[IC]}" \
+        "$(dirname "${HYBRID_software_executable[IC]}")"
     cd "${HYBRID_software_output_directory[IC]}"
     local ic_terminal_output="${HYBRID_software_output_directory[IC]}/Terminal_Output.txt"
     "${HYBRID_software_executable[IC]}" \
