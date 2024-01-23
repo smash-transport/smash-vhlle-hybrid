@@ -101,7 +101,11 @@ function __static__Replace_Keys_Into_Txt_File()
 
 function Copy_Hybrid_Handler_Config_Section()
 {
-    
+    section=$1
+    folder=$2
+    printf "%s" "${HYBRID_yaml_section["${section}"]}" > "${folder}"/"${HYBRID_handler_config_section_filename["${section}"]}"
+    #touch "${folder}"/"${HYBRID_handler_config_section_filename["${section}"]}"
+    #"${folder}"/"${HYBRID_handler_config_section_filename["${section}"]}" << ${HYBRID_yaml_section["${section}"]}
 }
 
 Make_Functions_Defined_In_This_File_Readonly

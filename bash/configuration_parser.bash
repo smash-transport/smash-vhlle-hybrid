@@ -147,7 +147,7 @@ function __static__Parse_Section()
     local yaml_section valid_key
     if Has_YAML_String_Given_Key "${yaml_config}" "${section_label}"; then
         yaml_section="$(Read_From_YAML_String_Given_Key "${yaml_config}" "${section_label}")"
-        HYBRID_yaml_section["${section_label}"] <<< "${yaml_section}"
+        HYBRID_yaml_section["${section_label}"]="${yaml_section}"
         if [[ ${section_label} != 'Hybrid_handler' ]]; then
             HYBRID_given_software_sections+=("${section_label}")
         fi

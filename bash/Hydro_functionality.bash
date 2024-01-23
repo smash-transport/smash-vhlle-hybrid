@@ -64,7 +64,6 @@ function Prepare_Software_Input_File_Hydro()
     else
         ln -s "${eos_folder}" "${link_to_eos_folder}"
     fi
-    Copy_Hybrid_Handler_Config_Section
 }
 
 function Ensure_All_Needed_Input_Exists_Hydro()
@@ -89,6 +88,7 @@ function Ensure_All_Needed_Input_Exists_Hydro()
 
 function Run_Software_Hydro()
 {
+    Copy_Hybrid_Handler_Config_Section "Hydro" "${HYBRID_software_output_directory[Hydro]}"
     cd "${HYBRID_software_output_directory[Hydro]}"
     local -r \
         hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}" \

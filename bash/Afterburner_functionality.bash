@@ -55,7 +55,6 @@ function Prepare_Software_Input_File_Afterburner()
                 --emph "${HYBRID_software_input_file[Afterburner]}" ' to be used.'
         fi
     fi
-    Copy_Hybrid_Handler_Config_Section
 }
 
 function Ensure_All_Needed_Input_Exists_Afterburner()
@@ -82,6 +81,7 @@ function Ensure_All_Needed_Input_Exists_Afterburner()
 
 function Run_Software_Afterburner()
 {
+    Copy_Hybrid_Handler_Config_Section "Afterburner" "${HYBRID_software_output_directory[Afterburner]}"
     cd "${HYBRID_software_output_directory[Afterburner]}"
     local -r afterburner_terminal_output="${HYBRID_software_output_directory[Afterburner]}/Terminal_Output.txt"
     "${HYBRID_software_executable[Afterburner]}" \

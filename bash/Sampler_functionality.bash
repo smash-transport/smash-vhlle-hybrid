@@ -46,7 +46,6 @@ function Prepare_Software_Input_File_Sampler()
         ln -s "${freezeout_path}" \
             "${HYBRID_software_output_directory[Sampler]}/freezeout.dat"
     fi
-    Copy_Hybrid_Handler_Config_Section
 }
 
 function Ensure_All_Needed_Input_Exists_Sampler()
@@ -71,6 +70,7 @@ function Ensure_All_Needed_Input_Exists_Sampler()
 
 function Run_Software_Sampler()
 {
+    Copy_Hybrid_Handler_Config_Section "Sampler" "${HYBRID_software_output_directory[Sampler]}"
     local -r sampler_config_file_path="${HYBRID_software_configuration_file[Sampler]}"
     local sampler_terminal_output="${HYBRID_software_output_directory[Sampler]}/Terminal_Output.txt"
     cd "${HYBRID_software_output_directory[Sampler]}"
