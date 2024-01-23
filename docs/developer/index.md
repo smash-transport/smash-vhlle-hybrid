@@ -17,7 +17,7 @@ You can refer to the corresponding installation pages for further information (1
 { .annotate }
 
 1.  :fontawesome-solid-book: [MkDocs](https://www.mkdocs.org/user-guide/installation/)&emsp;
-    :simple-materialformkdocs: [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/getting-started/#installation)&emsp; [mike](https://github.com/jimporter/mike#installation)
+    :simple-materialformkdocs: [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/getting-started/#installation)&emsp; :material-bike-fast: [mike](https://github.com/jimporter/mike#installation)
 
 ## Serving, building and deploying
 
