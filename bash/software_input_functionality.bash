@@ -104,12 +104,12 @@ function Copy_Hybrid_Handler_Config_Section()
     section=$1
     folder=$2
     executable_folder=$3
-    git_describe_executable=$(git -C "${executable_folder}" describe --long  --always --all)
+    git_describe_executable=$(git -C "${executable_folder}" describe --long --always --all)
     line_git_describe_executable='# Git describe of executable folder: '"${git_describe_executable}"
-    git_describe_handler=$(git -C "${HYBRID_top_level_path}" describe --long  --always --all)
+    git_describe_handler=$(git -C "${HYBRID_top_level_path}" describe --long --always --all)
     line_git_describe_handler='# Git describe of handler folder: '"${git_describe_handler}"
-    section_config=$(yq eval 'with_entries(select(.key | test("(Hybrid_handler|'"${section}"'|)")))'\
-         "${HYBRID_configuration_file}")
+    section_config=$(yq eval 'with_entries(select(.key | test("(Hybrid_handler|'"${section}"')")))' \
+        "${HYBRID_configuration_file}")
     printf "%s\n%s\n%s" "${line_git_describe_executable}" "${line_git_describe_handler}" \
         "${section_config}" > "${folder}"/"${HYBRID_handler_config_section_filename["${section}"]}"
 }

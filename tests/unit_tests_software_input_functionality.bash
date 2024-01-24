@@ -182,3 +182,46 @@ function Unit_Test__replace-in-software-input-TXT()
     fi
     rm "${base_input_file}"
 }
+
+function Make_Test_Preliminary_Operations__copy-hybrid-handler-config-section()
+{
+    local file_to_be_sourced list_of_files
+    list_of_files=(
+        'global_variables.bash'
+        'software_input_functionality.bash'
+        'sanity_checks.bash'
+    )
+    for file_to_be_sourced in "${list_of_files[@]}"; do
+        source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
+    done
+    Define_Further_Global_Variables
+}
+
+function Unit_Test__copy-hybrid-handler-config-section()
+{
+    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    printf 'Hybrid_handler:\n    Test: test\nIC:\n' > "${HYBRID_configuration_file}"
+    printf '    Executable: ex\n    Config_file: conf\n' >> "${HYBRID_configuration_file}"
+    printf 'Hydro:\n    Executable: exh\n    Config_file: confh\n' >> "${HYBRID_configuration_file}"
+    Call_Codebase_Function_In_Subshell Copy_Hybrid_Handler_Config_Section 'IC' \
+        "${HYBRIDT_folder_to_run_tests}" "${HYBRIDT_folder_to_run_tests}" &> /dev/null
+    executable_folder=${HYBRIDT_folder_to_run_tests}
+    printf -v line1 '# Git describe of executable folder: %s\n' \
+        "$(git -C "${executable_folder}" describe --long --always --all)"
+    printf -v line2 "# Git describe of handler folder: %s\n" \
+        "$(git -C "${executable_folder}" describe --long --always --all)"
+    printf -v section1 'Hybrid_handler:\n  Test: test\n'
+    printf -v section2 'IC:\n  Executable: ex\n  Config_file: conf'
+    printf -v expected_result '%s%s%s%s' \
+        "${line1}" "${line2}" "${section1}" "${section2}"
+    echo "$(< "${HYBRID_handler_config_section_filename[IC]}")"
+    echo "leololeo\n\n"
+    echo "${expected_result}"
+    if [[ "$(< "${HYBRID_handler_config_section_filename[IC]}")" != "${expected_result}" ]]; then
+        Print_Error \
+            "Copying of relevant handler config section failed!" \
+            '-------------------'
+        return 1
+    fi
+    rm "${HYBRID_handler_config_section_filename[IC]}"
+}
