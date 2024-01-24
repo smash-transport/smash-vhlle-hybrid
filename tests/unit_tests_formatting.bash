@@ -13,7 +13,7 @@ function Unit_Test__codebase-formatting()
     if hash shfmt &> /dev/null; then
         formatter_found='TRUE'
     else
-        Print_Error 'Command ' --emph 'beautysh' \
+        Print_Error 'Command ' --emph 'shfmt' \
             ' not available, unable to fully check codebase formatting.'
     fi
     local -r max_length=120
@@ -29,9 +29,7 @@ function Unit_Test__codebase-formatting()
             continue
         fi
     done
-    if [[ ${formatter_found} = 'FALSE' ]]; then
-        continue
-    else
+    if [[ ${formatter_found} = 'TRUE' ]]; then
         # Quoting shfmt manual:
         # "If a given path is a directory, all shell scripts found under that directory will be used."
         files_with_wrong_formatting=(
