@@ -8,10 +8,7 @@
 | [vHLLE](https://github.com/yukarpenko/vhlle) | - |
 | [vHLLE parameters](https://github.com/yukarpenko/vhlle_params) | - |
 | [Hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | 1.0 or higher |
-| [Python](https://www.python.org) | 2.7  or higher |
-| [SMASH-analysis](https://github.com/smash-transport/smash-analysis)[^1] | 1.7 or higher |
-
-[^1]: `SMASH-analysis` is needed only if automatic generation of particle spectra is desired.
+| [Python](https://www.python.org) | 3.0  or higher |
 
 Instructions on how to compile or install the software above can be found at the provided links either in the official documentation or in the corresponding README files.
 
