@@ -154,6 +154,7 @@ function Make_Test_Preliminary_Operations__Hydro-test-run-software()
 function Unit_Test__Hydro-test-run-software()
 {
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
+    touch ${HYBRID_configuration_file}
     local -r \
         hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt" \
         Hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}" \

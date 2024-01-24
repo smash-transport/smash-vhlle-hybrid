@@ -13,13 +13,13 @@ function Check_If_Software_Produced_Expected_Output()
     local expected_output_files
     case "${block}" in
         IC | Hydro)
-            expected_output_files=5
+            expected_output_files=6
             ;;
         Sampler)
-            expected_output_files=4
+            expected_output_files=5
             ;;
         Afterburner)
-            expected_output_files=6
+            expected_output_files=7
             ;;
         *)
             Print_Internal_And_Exit 'Invalid case branch entered in ' --emph "${FUNCNAME}."

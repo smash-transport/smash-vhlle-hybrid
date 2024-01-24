@@ -11,7 +11,7 @@ function Functional_Test__do-Sampler-only()
 {
     shopt -s nullglob
     local -r \
-        hybrid_handler_config='hybrid_config' \
+        hybrid_handler_config="${HYBRIDT_tests_folder}/hybrid_config" \
         run_id='Sampler_only'
     local output_files
     mkdir -p "Hydro/${run_id}"
