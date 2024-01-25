@@ -110,16 +110,24 @@ function Copy_Hybrid_Handler_Config_Section()
             'The config copy ' --emph "${output_file}" \
             ' already exists.'
     fi
+    local executable_metadata handler_metadata try_extract_section
+    # NOTE: Using command substitution $(...) directly in printf arguments invalidates the error on
+    #       exit behavior and let the script continue even if functions have non-zero exit code.
+    #       Therefore we temporary store the resulting string in local variables.
+    executable_metadata=$(__static__Get_Repository_State "${executable_folder}")
+    handler_metadata=$(__static__Get_Repository_State "${HYBRID_top_level_path}")
+    try_extract_section="$(__static__Extract_Sections_From_Configuration_File "${section}")"
     printf '%s\n\n' \
-        "# Git describe of executable folder: $(__static__Get_Repository_State "${executable_folder}")" \
-        "# Git describe of handler folder: $(__static__Get_Repository_State "${HYBRID_top_level_path}")" \
-        "$(__static__Extract_Sections_From_Configuration_File "${section}")" > "${output_file}"
+        "# Git describe of executable folder: ${executable_metadata}" \
+        "# Git describe of handler folder: ${handler_metadata}" \
+        "${try_extract_section}" > "${output_file}"
 }
 
 function __static__Extract_Sections_From_Configuration_File()
 {
-    printf '%s' "$(yq eval 'with_entries(select(.key | test("(Hybrid_handler|'"${1}"')")))' \
-        "${HYBRID_configuration_file}")"
+    if ! yq 'with_entries(select(.key | test("(Hybrid_handler|'"${1}"')")))' "${HYBRID_configuration_file}"; then
+        Print_Internal_And_Exit 'Failure extracting sections from configuration file for reproducibility.'
+    fi
 }
 
 function __static__Get_Repository_State()
