@@ -71,7 +71,7 @@ In particular, be aware the the formatter will not enforce the rules explained b
 
 Before opening a PR, make sure all tests pass.
 One of them will try to check formatting and complain if something has to be adjusted.
-The main script has a `format` execution mode which formats the full codebase.
+The main script has a `format` execution mode which formats the full codebase and runs the formatting unit test.
 This is meant for developers only and therefore does not appear in the helper description.
 
 ### Some aspects about the codebase

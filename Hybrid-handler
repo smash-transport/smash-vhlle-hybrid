@@ -96,6 +96,7 @@ function Act_And_Exit_If_User_Ran_Auxiliary_Modes()
             ;;&
         format)
             Format_Codebase
+            Run_Formatting_Unit_Test
             ;;&
         version)
             Print_Software_Version
