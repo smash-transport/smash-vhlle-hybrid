@@ -99,28 +99,12 @@ function __static__Replace_Keys_Into_Txt_File()
     awk -i inplace 'BEGIN{FS=":"}{printf("%-20s%s\n", $1, $2)}' "${base_input_file}"
 }
 
-function __static__Extract_Sections_From_Configuration_File()
-{
-    printf '%s' "$(yq eval 'with_entries(select(.key | test("(Hybrid_handler|'"${1}"')")))' \
-        "${HYBRID_configuration_file}")"
-}
-
-function __static__Get_Repository_State()
-{
-    git_call=$(git -C "${1}" describe --long --always --all)
-    if [[ $git_call == *"fatal"* ]]; then
-        printf 'Not a Git repository'
-    else
-        printf "%s" ${git_call}
-    fi
-}
-
 function Copy_Hybrid_Handler_Config_Section()
 {
     local -r \
         section=$1 \
-        output_file="$2/${HYBRID_handler_config_section_filename[$1]}"
-    executable_folder=$3
+        output_file="$2/${HYBRID_handler_config_section_filename[$1]}" \
+        executable_folder=$3
     if [[ -f "${output_file}" ]]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             'The config copy ' --emph "${output_file}" \
@@ -130,6 +114,23 @@ function Copy_Hybrid_Handler_Config_Section()
         "# Git describe of executable folder: $(__static__Get_Repository_State "${executable_folder}")" \
         "# Git describe of handler folder: $(__static__Get_Repository_State "${HYBRID_top_level_path}")" \
         "$(__static__Extract_Sections_From_Configuration_File "${section}")" > "${output_file}"
+}
+
+function __static__Extract_Sections_From_Configuration_File()
+{
+    printf '%s' "$(yq eval 'with_entries(select(.key | test("(Hybrid_handler|'"${1}"')")))' \
+        "${HYBRID_configuration_file}")"
+}
+
+function __static__Get_Repository_State()
+{
+    local code=0
+    git_call=$(git -C "${1}" describe --long --always --all 2> /dev/null) || code=$?
+    if [[ ${code} -ne 0 ]]; then
+        printf 'Not a Git repository'
+    else
+        printf "%s" ${git_call}
+    fi
 }
 
 Make_Functions_Defined_In_This_File_Readonly
