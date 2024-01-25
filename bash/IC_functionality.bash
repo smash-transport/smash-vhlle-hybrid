@@ -37,10 +37,14 @@ function Ensure_All_Needed_Input_Exists_IC()
     fi
 }
 
-function Run_Software_IC()
+function Ensure_Run_Reproducibility_IC()
 {
     Copy_Hybrid_Handler_Config_Section "IC" "${HYBRID_software_output_directory[IC]}" \
-        "$(dirname "${HYBRID_software_executable[IC]}")"
+        "$(dirname "$(realpath "${HYBRID_software_executable[IC]}")")"
+}
+
+function Run_Software_IC()
+{
     cd "${HYBRID_software_output_directory[IC]}"
     local ic_terminal_output="${HYBRID_software_output_directory[IC]}/Terminal_Output.txt"
     "${HYBRID_software_executable[IC]}" \

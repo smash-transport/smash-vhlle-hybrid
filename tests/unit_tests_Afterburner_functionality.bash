@@ -182,7 +182,6 @@ function Make_Test_Preliminary_Operations__Afterburner-test-run-software()
 function Unit_Test__Afterburner-test-run-software()
 {
     mkdir -p "${HYBRID_software_output_directory[Afterburner]}"
-    touch ${HYBRID_configuration_file}
     local -r afterburner_terminal_output="${HYBRID_software_output_directory[Afterburner]}/Terminal_Output.txt"
     local terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_Afterburner

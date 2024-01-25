@@ -86,10 +86,14 @@ function Ensure_All_Needed_Input_Exists_Hydro()
     fi
 }
 
-function Run_Software_Hydro()
+function Ensure_Run_Reproducibility_Hydro()
 {
     Copy_Hybrid_Handler_Config_Section "Hydro" "${HYBRID_software_output_directory[Hydro]}" \
-        "$(dirname "${HYBRID_software_executable[Hydro]}")"
+        "$(dirname "$(realpath "${HYBRID_software_executable[Hydro]}")")"
+}
+
+function Run_Software_Hydro()
+{
     cd "${HYBRID_software_output_directory[Hydro]}"
     local -r \
         hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}" \

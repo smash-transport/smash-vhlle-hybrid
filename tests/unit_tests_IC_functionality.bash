@@ -93,7 +93,6 @@ function Make_Test_Preliminary_Operations__IC-test-run-software()
 function Unit_Test__IC-test-run-software()
 {
     local -r ic_terminal_output="${HYBRID_software_output_directory[IC]}/Terminal_Output.txt"
-    touch ${HYBRID_configuration_file}
     mkdir -p "${HYBRID_software_output_directory[IC]}"
     local terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_IC

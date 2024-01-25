@@ -79,10 +79,14 @@ function Ensure_All_Needed_Input_Exists_Afterburner()
     fi
 }
 
-function Run_Software_Afterburner()
+function Ensure_Run_Reproducibility_Afterburner()
 {
     Copy_Hybrid_Handler_Config_Section "Afterburner" "${HYBRID_software_output_directory[Afterburner]}" \
-        "$(dirname "${HYBRID_software_executable[Afterburner]}")"
+        "$(dirname "$(realpath "${HYBRID_software_executable[Afterburner]}")")"
+}
+
+function Run_Software_Afterburner()
+{
     cd "${HYBRID_software_output_directory[Afterburner]}"
     local -r afterburner_terminal_output="${HYBRID_software_output_directory[Afterburner]}/Terminal_Output.txt"
     "${HYBRID_software_executable[Afterburner]}" \
