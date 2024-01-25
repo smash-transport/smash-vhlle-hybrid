@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -18,7 +18,7 @@ function Functional_Test__do-Hydro-only()
     ln -s "${HYBRIDT_repository_top_level_path}/tests/mocks/vhlle_black-box.py" "vhlle_black-box.py"
     mkdir 'eos'
     printf '
-    Hybrid_handler:  
+    Hybrid_handler:
       Run_ID: %s
     Hydro:
       Executable: %s/vhlle_black-box.py
@@ -54,7 +54,7 @@ function Functional_Test__do-Hydro-only()
     mv 'Hydro' 'Hydro-invalid-input'
     #Expect success with custom input file name
     printf '
-    Hybrid_handler:  
+    Hybrid_handler:
       Run_ID: %s
     Hydro:
       Executable: %s/vhlle_black-box.py
@@ -106,7 +106,7 @@ function Functional_Test__do-Hydro-only()
     mv 'Hydro' 'Hydro-crash'
     #Expect failure  with custom input file name while also using IC
     printf '
-    Hybrid_handler:  
+    Hybrid_handler:
       Run_ID: %s
     IC:
       Executable: echo

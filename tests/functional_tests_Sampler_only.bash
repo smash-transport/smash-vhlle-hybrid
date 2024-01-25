@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -11,13 +11,13 @@ function Functional_Test__do-Sampler-only()
 {
     shopt -s nullglob
     local -r \
-        hybrid_handler_config="hybrid_config" \
+        hybrid_handler_config='hybrid_config' \
         run_id='Sampler_only'
     local output_files
     mkdir -p "Hydro/${run_id}"
     touch "Hydro/${run_id}/freezeout.dat"
     printf '
-    Hybrid_handler:  
+    Hybrid_handler:
       Run_ID: %s
     Sampler:
       Executable: %s/tests/mocks/sampler_black-box.py

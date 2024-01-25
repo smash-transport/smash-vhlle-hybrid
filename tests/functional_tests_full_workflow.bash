@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -21,7 +21,7 @@ function __static__Test_Full_Workflow()
 {
     shopt -s nullglob
     local -r \
-        config_filename="Handler_config.yaml" \
+        config_filename='Handler_config.yaml' \
         mocks_folder="${HYBRIDT_tests_folder}/mocks"
     __static__Prepare_Full_Handler_Configuration_File "$1"
     __static__Create_Auxiliaries_For_Hydro

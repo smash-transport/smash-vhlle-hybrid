@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -88,7 +88,8 @@ function Ensure_All_Needed_Input_Exists_Hydro()
 
 function Ensure_Run_Reproducibility_Hydro()
 {
-    Copy_Hybrid_Handler_Config_Section "Hydro" "${HYBRID_software_output_directory[Hydro]}" \
+    Copy_Hybrid_Handler_Config_Section 'Hydro' \
+        "${HYBRID_software_output_directory[Hydro]}" \
         "$(dirname "$(realpath "${HYBRID_software_executable[Hydro]}")")"
 }
 

@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -101,7 +101,7 @@ function __static__Replace_Keys_Into_Txt_File()
 
 function __static__Extract_Sections_From_Configuration_File()
 {
-    printf "%s" "$(yq eval 'with_entries(select(.key | test("(Hybrid_handler|'"${1}"')")))' \
+    printf '%s' "$(yq eval 'with_entries(select(.key | test("(Hybrid_handler|'"${1}"')")))' \
         "${HYBRID_configuration_file}")"
 }
 
@@ -126,9 +126,9 @@ function Copy_Hybrid_Handler_Config_Section()
             'The config copy ' --emph "${output_file}" \
             ' already exists.'
     fi
-    printf '%b' \
-        "# Git describe of executable folder: $(__static__Get_Repository_State "${executable_folder}")\n\n" \
-        "# Git describe of handler folder: $(__static__Get_Repository_State "${HYBRID_top_level_path}")\n\n" \
+    printf '%s\n\n' \
+        "# Git describe of executable folder: $(__static__Get_Repository_State "${executable_folder}")" \
+        "# Git describe of handler folder: $(__static__Get_Repository_State "${HYBRID_top_level_path}")" \
         "$(__static__Extract_Sections_From_Configuration_File "${section}")" > "${output_file}"
 }
 

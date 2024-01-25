@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -81,7 +81,8 @@ function Ensure_All_Needed_Input_Exists_Afterburner()
 
 function Ensure_Run_Reproducibility_Afterburner()
 {
-    Copy_Hybrid_Handler_Config_Section "Afterburner" "${HYBRID_software_output_directory[Afterburner]}" \
+    Copy_Hybrid_Handler_Config_Section 'Afterburner' \
+        "${HYBRID_software_output_directory[Afterburner]}" \
         "$(dirname "$(realpath "${HYBRID_software_executable[Afterburner]}")")"
 }
 

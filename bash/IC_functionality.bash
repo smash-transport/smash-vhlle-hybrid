@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -39,7 +39,8 @@ function Ensure_All_Needed_Input_Exists_IC()
 
 function Ensure_Run_Reproducibility_IC()
 {
-    Copy_Hybrid_Handler_Config_Section "IC" "${HYBRID_software_output_directory[IC]}" \
+    Copy_Hybrid_Handler_Config_Section 'IC' \
+        "${HYBRID_software_output_directory[IC]}" \
         "$(dirname "$(realpath "${HYBRID_software_executable[IC]}")")"
 }
 
