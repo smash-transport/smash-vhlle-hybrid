@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -84,6 +84,13 @@ function Ensure_All_Needed_Input_Exists_Hydro()
         Print_Internal_And_Exit \
             'Something went wrong when creating the Hydro symbolic link.'
     fi
+}
+
+function Ensure_Run_Reproducibility_Hydro()
+{
+    Copy_Hybrid_Handler_Config_Section 'Hydro' \
+        "${HYBRID_software_output_directory[Hydro]}" \
+        "$(dirname "$(realpath "${HYBRID_software_executable[Hydro]}")")"
 }
 
 function Run_Software_Hydro()

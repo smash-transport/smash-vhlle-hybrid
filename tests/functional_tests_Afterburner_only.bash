@@ -28,7 +28,7 @@ function Functional_Test__do-Afterburner-only()
     mkdir -p "Sampler/${run_id}"
     touch "Sampler/${run_id}/particle_lists.oscar"
     printf '
-    Hybrid_handler:  
+    Hybrid_handler:
       Run_ID: %s
     Afterburner:
       Executable: %s/tests/mocks/smash_afterburner_black-box.py
@@ -94,7 +94,7 @@ function Functional_Test__do-Afterburner-only()
     mv 'Afterburner' 'Afterburner-success-custom-input'
     # Expect failure when using custom input while also running the sampler
     printf '
-    Hybrid_handler:  
+    Hybrid_handler:
       Run_ID: %s
     Sampler:
       Executable: echo
@@ -117,7 +117,7 @@ function Functional_Test__do-Afterburner-only()
     mkdir -p "IC/${run_id}"
     touch "IC/${run_id}/"{config.yaml,SMASH_IC.oscar} "Sampler/${run_id}/particle_lists.oscar"
     printf '
-    Hybrid_handler:  
+    Hybrid_handler:
       Run_ID: %s
     Afterburner:
       Executable: %s/tests/mocks/smash_afterburner_black-box.py
@@ -136,7 +136,7 @@ function Functional_Test__do-Afterburner-only()
     mkdir -p test "IC/${run_id}"
     touch 'test/SMASH_IC_2.oscar' "IC/${run_id}/config.yaml"
     printf '
-    Hybrid_handler:  
+    Hybrid_handler:
       Run_ID: %s
     Afterburner:
       Executable: %s/mocks/smash_afterburner_black-box.py

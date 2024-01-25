@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -77,6 +77,13 @@ function Ensure_All_Needed_Input_Exists_Afterburner()
         Print_Internal_And_Exit \
             'Something went wrong when creating the Afterburner symbolic link.'
     fi
+}
+
+function Ensure_Run_Reproducibility_Afterburner()
+{
+    Copy_Hybrid_Handler_Config_Section 'Afterburner' \
+        "${HYBRID_software_output_directory[Afterburner]}" \
+        "$(dirname "$(realpath "${HYBRID_software_executable[Afterburner]}")")"
 }
 
 function Run_Software_Afterburner()

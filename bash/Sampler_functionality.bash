@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -66,6 +66,13 @@ function Ensure_All_Needed_Input_Exists_Sampler()
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             "Sampler configuration file validation failed when ensuring existence of all input."
     fi
+}
+
+function Ensure_Run_Reproducibility_Sampler()
+{
+    Copy_Hybrid_Handler_Config_Section 'Sampler' \
+        "${HYBRID_software_output_directory[Sampler]}" \
+        "$(dirname "$(realpath "${HYBRID_software_executable[Sampler]}")")"
 }
 
 function Run_Software_Sampler()

@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -35,6 +35,13 @@ function Ensure_All_Needed_Input_Exists_IC()
         exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
             'The configuration file ' --emph "${HYBRID_software_configuration_file[IC]}" ' was not found.'
     fi
+}
+
+function Ensure_Run_Reproducibility_IC()
+{
+    Copy_Hybrid_Handler_Config_Section 'IC' \
+        "${HYBRID_software_output_directory[IC]}" \
+        "$(dirname "$(realpath "${HYBRID_software_executable[IC]}")")"
 }
 
 function Run_Software_IC()

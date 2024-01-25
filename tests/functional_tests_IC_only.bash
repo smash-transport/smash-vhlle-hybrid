@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -15,7 +15,7 @@ function Functional_Test__do-IC-only()
         run_id='IC_only'
     local unfinished_files output_files terminal_output_file failure_message
     printf '
-    Hybrid_handler:  
+    Hybrid_handler:
       Run_ID: %s
     IC:
       Executable: %s/tests/mocks/smash_IC_black-box.py
