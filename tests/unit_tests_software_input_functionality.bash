@@ -200,22 +200,23 @@ function Make_Test_Preliminary_Operations__copy-hybrid-handler-config-section()
 function Unit_Test__copy-hybrid-handler-config-section()
 {
     HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
-    printf '
-    Hybrid_handler:
-        Run_ID: test
-    IC:
-        Executable: ex
-        Config_file: conf
-    Hydro:
-        Executable: exh
-        Config_file: confh
-    ' > "${HYBRID_configuration_file}"
+    # Avoid empty lines in the beginning in this test as yq behavior
+    # might change with different versions (here we compare strings)
+    printf '%s\n' \
+        'Hybrid_handler:' \
+        '  Run_ID: test' \
+        'IC:' \
+        '  Executable: ex' \
+        '  Config_file: conf' \
+        'Hydro:' \
+        '  Executable: exh' \
+        '  Config_file: confh' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell Copy_Hybrid_Handler_Config_Section 'IC' \
         "${HYBRIDT_folder_to_run_tests}" "${HYBRIDT_folder_to_run_tests}" &> /dev/null
     local -r description="$(git -C "${HYBRIDT_folder_to_run_tests}" describe --long --always --all)"
     printf -v expected_result '%b' \
         "# Git describe of executable folder: ${description}\n\n" \
-        "# Git describe of handler folder: ${description}\n\n\n" \
+        "# Git describe of handler folder: ${description}\n\n" \
         'Hybrid_handler:\n' \
         '  Run_ID: test\n' \
         'IC:\n' \
