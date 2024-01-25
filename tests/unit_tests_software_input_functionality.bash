@@ -211,24 +211,32 @@ function Unit_Test__copy-hybrid-handler-config-section()
         'Hydro:' \
         '  Executable: exh' \
         '  Config_file: confh' > "${HYBRID_configuration_file}"
-    Call_Codebase_Function_In_Subshell Copy_Hybrid_Handler_Config_Section 'IC' \
-        "${HYBRIDT_folder_to_run_tests}" "${HYBRIDT_folder_to_run_tests}" &> /dev/null
-    local -r description="$(git -C "${HYBRIDT_folder_to_run_tests}" describe --long --always --all)"
-    printf -v expected_result '%b' \
-        "# Git describe of executable folder: ${description}\n\n" \
-        "# Git describe of handler folder: ${description}\n\n" \
-        'Hybrid_handler:\n' \
-        '  Run_ID: test\n' \
-        'IC:\n' \
-        '  Executable: ex\n' \
-        '  Config_file: conf' # No trailing endline as "$(< ...)" strips them
-    if [[ "$(< "${HYBRID_handler_config_section_filename[IC]}")" != "${expected_result}" ]]; then
-        Print_Error \
-            "Copying of relevant handler config sections failed!" \
-            "---- OBTAINED: ----\n$(< "${HYBRID_handler_config_section_filename[IC]}")" \
-            "---- EXPECTED: ----\n${expected_result}" \
-            '-------------------'
-        return 1
-    fi
-    rm "${HYBRID_handler_config_section_filename[IC]}"
+    local -r git_description="$(git -C "${HYBRIDT_folder_to_run_tests}" describe --long --always --all)"
+    local folder description
+    for folder in "${HYBRIDT_folder_to_run_tests}" ~; do
+        Call_Codebase_Function_In_Subshell Copy_Hybrid_Handler_Config_Section 'IC' \
+            "${HYBRIDT_folder_to_run_tests}" "${folder}" #&> /dev/null
+        if [[ "${folder}" = "${HYBRIDT_folder_to_run_tests}" ]]; then
+            description="${git_description}"
+        else
+            description='Not a Git repository'
+        fi
+        printf -v expected_result '%b' \
+            "# Git describe of executable folder: ${description}\n\n" \
+            "# Git describe of handler folder: ${git_description}\n\n" \
+            'Hybrid_handler:\n' \
+            '  Run_ID: test\n' \
+            'IC:\n' \
+            '  Executable: ex\n' \
+            '  Config_file: conf' # No trailing endline as "$(< ...)" strips them
+        if [[ "$(< "${HYBRID_handler_config_section_filename[IC]}")" != "${expected_result}" ]]; then
+            Print_Error \
+                "Copying of relevant handler config sections failed!" \
+                "---- OBTAINED: ----\n$(< "${HYBRID_handler_config_section_filename[IC]}")" \
+                "---- EXPECTED: ----\n${expected_result}" \
+                '-------------------'
+            return 1
+        fi
+        rm "${HYBRID_handler_config_section_filename[IC]}"
+    done
 }
