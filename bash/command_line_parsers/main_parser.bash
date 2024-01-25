@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -69,7 +69,7 @@ function Parse_Command_Line_Options()
                 if [[ ${2-} =~ ^(-|$) ]]; then
                     Print_Option_Specification_Error_And_Exit "$1"
                 else
-                    readonly HYBRID_configuration_file=$2
+                    readonly HYBRID_configuration_file="$(realpath "$2")"
                 fi
                 shift 2
                 ;;

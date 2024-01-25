@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -111,6 +111,6 @@ function Unit_Test__parse-command-line-options()
     fi
     HYBRID_command_line_options_to_parse=(-o "${HOME}")
     __static__Test_Single_CLO_Parsing_In_Subshell HYBRID_output_directory "${HOME}" || return 1
-    HYBRID_command_line_options_to_parse=(-c /path/to/file)
-    __static__Test_Single_CLO_Parsing_In_Subshell HYBRID_configuration_file '/path/to/file' || return 1
+    HYBRID_command_line_options_to_parse=(-c "${HOME}") # Here it does not matter we use a folder instead of a file
+    __static__Test_Single_CLO_Parsing_In_Subshell HYBRID_configuration_file "${HOME}" || return 1
 }
