@@ -106,7 +106,7 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
     )
     declare -gA HYBRID_software_base_config_file=(
-        [IC]="${HYBRID_default_configurations_folder}/smash_initial_conditions_AuAu.yaml"
+        [IC]="${HYBRID_default_configurations_folder}/smash_initial_conditions.yaml"
         [Hydro]="${HYBRID_default_configurations_folder}/vhlle_hydro"
         [Sampler]="${HYBRID_default_configurations_folder}/hadron_sampler"
         [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"

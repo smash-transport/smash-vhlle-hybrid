@@ -7,7 +7,7 @@ General:
     Delta_Time:    0.1
     End_Time:      10000.0    # make sure runtime is long enough for back-propagation
     Randomseed:    -1
-    Nevents:       2000
+    Nevents:       1000
 
 Output:
     Particles:
@@ -15,6 +15,6 @@ Output:
 
 Modi:
     List:
-        File_Directory: "../build/"
+        File_Directory: "."
         File_Prefix: "sampling"
         Shift_Id: 0
