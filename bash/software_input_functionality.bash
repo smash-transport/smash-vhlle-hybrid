@@ -101,7 +101,8 @@ function __static__Replace_Keys_Into_Txt_File()
 
 function __static__Extract_Sections_From_Configuration_File()
 {
-    printf "%s" "$(yq eval 'with_entries(select(.key | test("(Hybrid_handler|'"${1}"')")))' "${HYBRID_configuration_file}")"
+    printf "%s" "$(yq eval 'with_entries(select(.key | test("(Hybrid_handler|'"${1}"')")))' \
+        "${HYBRID_configuration_file}")"
 }
 
 function __static__Get_Repository_State()
