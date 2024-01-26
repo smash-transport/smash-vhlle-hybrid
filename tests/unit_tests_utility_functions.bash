@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -291,4 +291,20 @@ function Unit_Test__utility-strip-ANSI-codes()
     input=$(printf '\e[1;38;5;202mComplex bold-color text\e[0m')
     expected_output='Complex bold-color text'
     __static__Test_ANSI_Code_Removal || return 1
+}
+
+function Unit_Test__utility-files-existence()
+{
+    Call_Codebase_Function Ensure_Given_Files_Do_Not_Exist 'aaa' 'not-existing' 'xcafblskdfa'
+    Call_Codebase_Function Ensure_Given_Files_Exist "${BASH_SOURCE[0]}"
+    Call_Codebase_Function_In_Subshell Ensure_Given_Files_Do_Not_Exist "${BASH_SOURCE[@]}" &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Function to ensure non existent files unexpectedly succeed.'
+        return 1
+    fi
+    Call_Codebase_Function_In_Subshell Ensure_Given_Files_Exist 'not-existing' &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Function to ensure existent files unexpectedly succeed.'
+        return 1
+    fi
 }

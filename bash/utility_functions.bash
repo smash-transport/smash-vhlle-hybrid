@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -158,6 +158,58 @@ function Strip_ANSI_Color_Codes_From_String()
 {
     # Adjusted from https://stackoverflow.com/a/18000433/14967071
     sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,3})*)?[mGK]//g" <<< "$1"
+}
+
+function Ensure_Given_Files_Do_Not_Exist()
+{
+    __static__Check_File_With '-f' "$@"
+}
+
+function Ensure_Given_Files_Exist()
+{
+    __static__Check_File_With '! -f' "$@"
+}
+
+function __static__Check_File_With()
+{
+    local -r test_to_use=$1
+    shift
+    local filename list_of_files negations string
+    list_of_files=()
+    string='The following file'
+    case "${test_to_use}" in
+        -f )
+            negations=('' 'NOT ')
+            ;;
+        "! -f" )
+            negations=('NOT ' '')
+            ;;
+        *)
+            Print_Internal_And_Exit 'Wrong call of ' --emph "${FUNCNAME}" ' function.'
+            ;;
+    esac
+    for filename in "$@"; do
+        if [ ${test_to_use} "${filename}" ]; then
+            list_of_files+=( "${filename}" )
+        fi
+    done
+    case ${#list_of_files[@]} in
+        0)
+            return
+            ;;
+        1)
+            string+=" was ${negations[0]}found but is expected ${negations[1]}to exist:"
+            ;;
+        *)
+            string+="s were ${negations[0]}found but are expected ${negations[1]}to exist:"
+            ;;
+    esac
+    Print_Error "${string}"
+    for filename in "${list_of_files[@]}"; do
+        Print_Error -l -- ' - '  --emph "${filename}"
+    done
+    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+        '\nUnable to continue.'
 }
 
 function Call_Function_If_Existing_Or_Exit()
