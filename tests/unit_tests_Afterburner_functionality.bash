@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -11,6 +11,7 @@ __static__Do_Preliminary_Setup_Operations()
 {
     local file_to_be_sourced list_of_files
     list_of_files=(
+        'common_functionality.bash'
         'Afterburner_functionality.bash'
         'global_variables.bash'
         'software_input_functionality.bash'
@@ -144,12 +145,14 @@ function Unit_Test__Afterburner-check-all-input()
         Print_Error 'Ensuring existence of auxiliary input data file succeeded.'
         return 1
     fi
-    touch "${HYBRID_software_output_directory[Afterburner]}/sampling0"
+    touch \
+        "${HYBRID_software_output_directory[Afterburner]}/sampling0" \
+        "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner
     if [[ $? -ne 0 ]]; then
         Print_Error \
             'Ensuring existence of existing folder/file unexpectedly failed,' \
-            ' although all files were provided.'
+            'although all files were provided.'
         return 1
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/sampling0"

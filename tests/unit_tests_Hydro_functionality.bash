@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -11,6 +11,7 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
 {
     local file_to_be_sourced list_of_files
     list_of_files=(
+        'common_functionality.bash'
         'Hydro_functionality.bash'
         'global_variables.bash'
         'software_input_functionality.bash'

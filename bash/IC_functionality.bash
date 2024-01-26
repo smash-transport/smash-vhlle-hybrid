@@ -9,32 +9,17 @@
 
 function Prepare_Software_Input_File_IC()
 {
-    mkdir -p "${HYBRID_software_output_directory[IC]}" || exit ${HYBRID_fatal_builtin}
-    if [[ -f "${HYBRID_software_configuration_file[IC]}" ]]; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            'Configuration file ' --emph "${HYBRID_software_configuration_file[IC]}" ' is already existing.'
-    elif [[ ! -f "${HYBRID_software_base_config_file[IC]}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
-            'Base configuration file ' --emph "${HYBRID_software_base_config_file[IC]}" ' was not found.'
-    fi
-    cp "${HYBRID_software_base_config_file[IC]}" \
-        "${HYBRID_software_configuration_file[IC]}" || exit ${HYBRID_fatal_builtin}
-    if [[ "${HYBRID_software_new_input_keys[IC]}" != '' ]]; then
-        Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
-            'YAML' "${HYBRID_software_configuration_file[IC]}" "${HYBRID_software_new_input_keys[IC]}"
-    fi
+    Create_Output_Directory_For 'IC'
+    Ensure_Given_Files_Do_Not_Exist "${HYBRID_software_configuration_file[IC]}"
+    Ensure_Given_Files_Exist "${HYBRID_software_base_config_file[IC]}"
+    Copy_Base_Configuration_To_Output_Folder_For 'IC'
+    Replace_Keys_In_Configuration_File_If_Needed_For 'IC'
 }
 
 function Ensure_All_Needed_Input_Exists_IC()
 {
-    if [[ ! -d "${HYBRID_software_output_directory[IC]}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
-            'Folder ' --emph "${HYBRID_software_output_directory[IC]}" ' does not exist.'
-    fi
-    if [[ ! -f "${HYBRID_software_configuration_file[IC]}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
-            'The configuration file ' --emph "${HYBRID_software_configuration_file[IC]}" ' was not found.'
-    fi
+    Ensure_Given_Folders_Exist "${HYBRID_software_output_directory[IC]}"
+    Ensure_Given_Files_Exist "${HYBRID_software_configuration_file[IC]}"
 }
 
 function Ensure_Run_Reproducibility_IC()
