@@ -170,25 +170,39 @@ function Ensure_Given_Files_Exist()
     __static__Check_File_With '! -f' "$@"
 }
 
+function Ensure_Given_Folders_Exist()
+{
+    __static__Check_File_With '! -d' "$@"
+}
+
 function __static__Check_File_With()
 {
     local -r test_to_use=$1
     shift
     local filename list_of_files negations string
     list_of_files=()
-    string='The following file'
+    string='The following'
     case "${test_to_use}" in
         -f )
             negations=('' 'NOT ')
+            string+=' file'
             ;;
         "! -f" )
             negations=('NOT ' '')
+            string+=' file'
+            ;;
+        "! -d" )
+            negations=('NOT ' '')
+            string+=' folder'
             ;;
         *)
             Print_Internal_And_Exit 'Wrong call of ' --emph "${FUNCNAME}" ' function.'
             ;;
     esac
     for filename in "$@"; do
+        # NOTE: In the following if-clause the [ test command is used and not the [[
+        #       keyword because then it is possible to use the operator stored in the
+        #       test_to_use variable (keywords are parsed before expanding arguments).
         if [ ${test_to_use} "${filename}" ]; then
             list_of_files+=( "${filename}" )
         fi

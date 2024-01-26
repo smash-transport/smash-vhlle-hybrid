@@ -296,15 +296,21 @@ function Unit_Test__utility-strip-ANSI-codes()
 function Unit_Test__utility-files-existence()
 {
     Call_Codebase_Function Ensure_Given_Files_Do_Not_Exist 'aaa' 'not-existing' 'xcafblskdfa'
-    Call_Codebase_Function Ensure_Given_Files_Exist "${BASH_SOURCE[0]}"
     Call_Codebase_Function_In_Subshell Ensure_Given_Files_Do_Not_Exist "${BASH_SOURCE[@]}" &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Function to ensure non existent files unexpectedly succeed.'
         return 1
     fi
-    Call_Codebase_Function_In_Subshell Ensure_Given_Files_Exist 'not-existing' &> /dev/null
+    Call_Codebase_Function Ensure_Given_Files_Exist "${BASH_SOURCE[0]}"
+    Call_Codebase_Function_In_Subshell Ensure_Given_Files_Exist 'not-existing-file' &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Function to ensure existent files unexpectedly succeed.'
+        return 1
+    fi
+    Call_Codebase_Function Ensure_Given_Folders_Exist "${HOME}"
+    Call_Codebase_Function_In_Subshell Ensure_Given_Folders_Exist 'not-existing-folder' &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Function to ensure existent folders unexpectedly succeed.'
         return 1
     fi
 }
