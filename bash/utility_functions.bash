@@ -160,51 +160,81 @@ function Strip_ANSI_Color_Codes_From_String()
     sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,3})*)?[mGK]//g" <<< "$1"
 }
 
+# NOTE: In the following functions that check existence of files or folders,
+#       symbolic links are accepted and the entity of what they resolve to is
+#       what is tested. Links resolution is done using 'realpath -m' before
+#       testing the entity (the option -m accepts non existing paths).
+#
+# NOTE: The arguments passed to these functions are interpreted as file/folder
+#       names, but if an argument is '--', then the arguments before can be
+#       used as add-on messages to be printed in case of error (one per line).
 function Ensure_Given_Files_Do_Not_Exist()
 {
-    __static__Check_File_With '-f' "$@"
+    __static__Check_File_With '-f' 'FATAL' "$@"
 }
 
 function Ensure_Given_Files_Exist()
 {
-    __static__Check_File_With '! -f' "$@"
+    __static__Check_File_With '! -f' 'FATAL' "$@"
 }
 
 function Ensure_Given_Folders_Exist()
 {
-    __static__Check_File_With '! -d' "$@"
+    __static__Check_File_With '! -d' 'FATAL' "$@"
+}
+
+function Internally_Ensure_Given_Files_Exist()
+{
+    __static__Check_File_With '! -f' 'INTERNAL' "$@"
 }
 
 function __static__Check_File_With()
 {
-    local -r test_to_use=$1
-    shift
-    local filename list_of_files negations string
+    local -r test_to_use=$1 error=$2
+    shift 2
+    local add_on_message list_of_files negations string filename
+    add_on_message=()
+    if Element_In_Array_Equals_To '--' "$@"; then
+        for string in "$@"; do
+            if [[ "${string}" = '--' ]]; then
+                shift
+                break
+            fi
+            add_on_message+=("$1")
+            shift
+        done
+    fi
     list_of_files=()
     string='The following'
     case "${test_to_use}" in
-        -f )
+        -f)
             negations=('' 'NOT ')
             string+=' file'
             ;;
-        "! -f" )
+        "! -f")
             negations=('NOT ' '')
             string+=' file'
             ;;
-        "! -d" )
+        "! -d")
             negations=('NOT ' '')
             string+=' folder'
             ;;
         *)
-            Print_Internal_And_Exit 'Wrong call of ' --emph "${FUNCNAME}" ' function.'
+            Print_Internal_And_Exit 'Wrong test passed to ' --emph "${FUNCNAME}" ' function.'
+            ;;
+    esac
+    case "${error}" in
+        FATAL | INTERNAL) ;;
+        *)
+            Print_Internal_And_Exit 'Wrong error passed to ' --emph "${FUNCNAME}" ' function.'
             ;;
     esac
     for filename in "$@"; do
         # NOTE: In the following if-clause the [ test command is used and not the [[
         #       keyword because then it is possible to use the operator stored in the
         #       test_to_use variable (keywords are parsed before expanding arguments).
-        if [ ${test_to_use} "${filename}" ]; then
-            list_of_files+=( "${filename}" )
+        if [ ${test_to_use} "$(realpath -m "${filename}")" ]; then
+            list_of_files+=("${filename}")
         fi
     done
     case ${#list_of_files[@]} in
@@ -220,10 +250,17 @@ function __static__Check_File_With()
     esac
     Print_Error "${string}"
     for filename in "${list_of_files[@]}"; do
-        Print_Error -l -- ' - '  --emph "${filename}"
+        Print_Error -l -- ' - ' --emph "${filename}"
     done
-    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-        '\nUnable to continue.'
+    if [[ "${#add_on_message[@]}" -ne 0 ]]; then
+        Print_Error -l -- "${add_on_message[@]}"
+    fi
+    if [[ "${error}" = 'INTERNAL' ]]; then
+        Print_Internal_And_Exit 'This should not have happened.'
+    else
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+            '\nUnable to continue.'
+    fi
 }
 
 function Call_Function_If_Existing_Or_Exit()

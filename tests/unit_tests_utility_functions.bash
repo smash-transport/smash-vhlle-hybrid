@@ -301,7 +301,8 @@ function Unit_Test__utility-files-existence()
         Print_Error 'Function to ensure non existent files unexpectedly succeed.'
         return 1
     fi
-    Call_Codebase_Function Ensure_Given_Files_Exist "${BASH_SOURCE[0]}"
+    ln -s "${BASH_SOURCE[0]}" link_test
+    Call_Codebase_Function Ensure_Given_Files_Exist 'link_test'
     Call_Codebase_Function_In_Subshell Ensure_Given_Files_Exist 'not-existing-file' &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Function to ensure existent files unexpectedly succeed.'
@@ -313,4 +314,10 @@ function Unit_Test__utility-files-existence()
         Print_Error 'Function to ensure existent folders unexpectedly succeed.'
         return 1
     fi
+    Call_Codebase_Function_In_Subshell Ensure_Given_Folders_Exist 'Add-on' 'test' '--' 'link_test' &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Function to ensure existent folders unexpectedly succeed on a file.'
+        return 1
+    fi
+    rm 'link_test'
 }
