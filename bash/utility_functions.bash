@@ -170,22 +170,22 @@ function Strip_ANSI_Color_Codes_From_String()
 #       used as add-on messages to be printed in case of error (one per line).
 function Ensure_Given_Files_Do_Not_Exist()
 {
-    __static__Check_File_With '-f' 'FATAL' "$@"
+    __static__Check_Given_Files_With '-f' 'FATAL' "$@"
 }
 
 function Ensure_Given_Files_Exist()
 {
-    __static__Check_File_With '! -f' 'FATAL' "$@"
+    __static__Check_Given_Files_With '! -f' 'FATAL' "$@"
 }
 
 function Ensure_Given_Folders_Exist()
 {
-    __static__Check_File_With '! -d' 'FATAL' "$@"
+    __static__Check_Given_Files_With '! -d' 'FATAL' "$@"
 }
 
 function Internally_Ensure_Given_Files_Exist()
 {
-    __static__Check_File_With '! -f' 'INTERNAL' "$@"
+    __static__Check_Given_Files_With '! -f' 'INTERNAL' "$@"
 }
 
 # Since the few functions above differ in small aspects, it is possible to have
@@ -197,7 +197,7 @@ function Internally_Ensure_Given_Files_Exist()
 # NOTE: If among the names of the files the argument '--' is used, then
 #       this is ignored and the arguments before are an add on message to
 #       be printed in case of error (one argument per line).
-function __static__Check_File_With()
+function __static__Check_Given_Files_With()
 {
     local -r test_to_use=$1 error=$2
     shift 2
