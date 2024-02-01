@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -23,8 +23,10 @@ function __static__Source_Codebase_Files()
         'command_line_parsers/helper.bash'
         'command_line_parsers/main_parser.bash'
         'command_line_parsers/sub_parser.bash'
+        'common_functionality.bash'
         'configuration_parser.bash'
         'dispatch_functions.bash'
+        'execution_mode_do.bash'
         'formatter.bash'
         'global_variables.bash'
         'Hydro_functionality.bash'

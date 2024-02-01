@@ -9,63 +9,23 @@
 
 function Prepare_Software_Input_File_Sampler()
 {
-    mkdir -p "${HYBRID_software_output_directory[Sampler]}" || exit ${HYBRID_fatal_builtin}
-    if [[ -f "${HYBRID_software_configuration_file[Sampler]}" ]]; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            'Configuration file ' --emph "${HYBRID_software_configuration_file[Sampler]}" \
-            ' is already existing.'
-    elif [[ ! -f "${HYBRID_software_base_config_file[Sampler]}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
-            'Base configuration file ' --emph "${HYBRID_software_base_config_file[Sampler]}" \
-            ' was not found.'
-    fi
-    cp "${HYBRID_software_base_config_file[Sampler]}" \
-        "${HYBRID_software_configuration_file[Sampler]}" || exit ${HYBRID_fatal_builtin}
-    if [[ "${HYBRID_software_new_input_keys[Sampler]}" != '' ]]; then
-        Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
-            'TXT' "${HYBRID_software_configuration_file[Sampler]}" \
-            "${HYBRID_software_new_input_keys[Sampler]}"
-    fi
-    if ! __static__Is_Sampler_Config_Valid; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            "Sampler configuration file invalid."
-    fi
-    # Replace potentially relative paths in Sampler config with absolute paths
-    local freezeout_path output_directory
-    freezeout_path=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface')
-    output_directory=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'spectra_dir')
-    Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
-        'TXT' "${HYBRID_software_configuration_file[Sampler]}" \
-        "$(printf "%s: %s\n" \
-            'surface' "${freezeout_path}" \
-            'spectra_dir' "${output_directory}")"
-    # The following symbolic link is not needed by the sampler, as the sampler only refers to information
-    # specified in its input file. However, we want to have all input for a software in the output folder
-    # for future easier reproducibility (and we do so for all software handled in the codebase).
-    if [[ "$(dirname "${freezeout_path}")" != "${HYBRID_software_output_directory[Sampler]}" ]]; then
-        ln -s "${freezeout_path}" \
-            "${HYBRID_software_output_directory[Sampler]}/freezeout.dat"
-    fi
+    Create_Output_Directory_For 'Sampler'
+    Ensure_Given_Files_Do_Not_Exist "${HYBRID_software_configuration_file[Sampler]}"
+    Ensure_Given_Files_Exist "${HYBRID_software_base_config_file[Sampler]}"
+    Copy_Base_Configuration_To_Output_Folder_For 'Sampler'
+    Replace_Keys_In_Configuration_File_If_Needed_For 'Sampler'
+    __static__Validate_Sampler_Config_File
+    __static__Transform_Relative_Paths_In_Sampler_Config_File
+    __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File
 }
 
 function Ensure_All_Needed_Input_Exists_Sampler()
 {
-    if [[ ! -d "${HYBRID_software_output_directory[Sampler]}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
-            'Folder ' --emph "${HYBRID_software_output_directory[Sampler]}" \
-            ' does not exist.'
-    fi
-    if [[ ! -f "${HYBRID_software_configuration_file[Sampler]}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
-            'Configuration file ' --emph "${HYBRID_software_configuration_file[Sampler]}" \
-            ' was not found.'
-    fi
-    # This is already done preparing the input file, but it's logically belonging here, too.
+    Ensure_Given_Folders_Exist "${HYBRID_software_output_directory[Sampler]}"
+    Ensure_Given_Files_Exist "${HYBRID_software_configuration_file[Sampler]}"
+    # This is already done preparing the input file, but it's logically belonging here.
     # Therefore, we repeat the validation, as its cost is substantially negligible.
-    if ! __static__Is_Sampler_Config_Valid; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            "Sampler configuration file validation failed when ensuring existence of all input."
-    fi
+    __static__Validate_Sampler_Config_File
 }
 
 function Ensure_Run_Reproducibility_Sampler()
@@ -84,32 +44,42 @@ function Run_Software_Sampler()
         "${sampler_config_file_path}" >> "${sampler_terminal_output}"
 }
 
-function __static__Get_Path_Field_From_Sampler_Config_As_Global_Path()
+#===============================================================================
+
+function __static__Validate_Sampler_Config_File()
 {
-    local field value
-    field="$1"
-    # We assume here that the configuration file is fine as it was validated before
-    value=$(awk -v name="${field}" '$1 == name {print $2; exit}' \
-        "${HYBRID_software_configuration_file[Sampler]}")
-    if [[ "${value}" = '=DEFAULT=' ]]; then
-        case "${field}" in
-            surface)
-                printf "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
-                ;;
-            spectra_dir)
-                printf "${HYBRID_software_output_directory[Sampler]}"
-                ;;
-        esac
-    else
-        cd "${HYBRID_software_output_directory[Sampler]}"
-        # If realpath succeeds, it prints the path that is the result of the function
-        if ! realpath "${value}" 2> /dev/null; then
-            exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
-                'Unable to transform relative path ' --emph "${value}" ' into global one.'
-        fi
-        cd - > /dev/null
+    if ! __static__Is_Sampler_Config_Valid; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+            "The sampler configuration file is invalid."
     fi
 }
+
+function __static__Transform_Relative_Paths_In_Sampler_Config_File()
+{
+    local freezeout_path output_directory
+    freezeout_path=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface')
+    output_directory=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'spectra_dir')
+    Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
+        'TXT' "${HYBRID_software_configuration_file[Sampler]}" \
+        "$(printf "%s: %s\n" \
+            'surface' "${freezeout_path}" \
+            'spectra_dir' "${output_directory}")"
+}
+
+# The following symbolic link is not needed by the sampler, as the sampler only refers to information
+# specified in its input file. However, we want to have all input for a software in the output folder
+# for future easier reproducibility (and we do so for all software handled in the codebase).
+function __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File()
+{
+    local freezeout_path
+    freezeout_path=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface')
+    if [[ "$(dirname "${freezeout_path}")" != "${HYBRID_software_output_directory[Sampler]}" ]]; then
+        ln -s "${freezeout_path}" \
+            "${HYBRID_software_output_directory[Sampler]}/freezeout.dat"
+    fi
+}
+
+#===============================================================================
 
 function __static__Is_Sampler_Config_Valid()
 {
@@ -204,6 +174,33 @@ function __static__Is_Sampler_Config_Valid()
         Print_Error 'Either ' --emph 'surface' ' or ' --emph 'spectra_dir' \
             ' key is missing in sampler configuration file.'
         return 1
+    fi
+}
+
+function __static__Get_Path_Field_From_Sampler_Config_As_Global_Path()
+{
+    local field value
+    field="$1"
+    # We assume here that the configuration file is fine as it was validated before
+    value=$(awk -v name="${field}" '$1 == name {print $2; exit}' \
+        "${HYBRID_software_configuration_file[Sampler]}")
+    if [[ "${value}" = '=DEFAULT=' ]]; then
+        case "${field}" in
+            surface)
+                printf "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+                ;;
+            spectra_dir)
+                printf "${HYBRID_software_output_directory[Sampler]}"
+                ;;
+        esac
+    else
+        cd "${HYBRID_software_output_directory[Sampler]}" || exit ${HYBRID_fatal_builtin}
+        # If realpath succeeds, it prints the path that is the result of the function
+        if ! realpath "${value}" 2> /dev/null; then
+            exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
+                'Unable to transform relative path ' --emph "${value}" ' into global one.'
+        fi
+        cd - > /dev/null || exit ${HYBRID_fatal_builtin}
     fi
 }
 
