@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -26,12 +26,10 @@ function Unit_Test__version()
         Print_Error "Version printing without git available failed."
         return 1
     fi
-    if hash git &> /dev/null; then
-        # We want to capture here a logger message that goes to fd 9
-        std_output=$(Call_Codebase_Function Print_Software_Version 9>&1)
-        if [[ $? -ne 0 || $(grep -c "${HYBRID_codebase_version}" <<< "${std_output}") -eq 0 ]]; then
-            Print_Error "Version printing with git failed."
-            return 1
-        fi
+    # We want to capture here a logger message that goes to fd 9
+    std_output=$(Call_Codebase_Function Print_Software_Version 9>&1)
+    if [[ $? -ne 0 || $(grep -c "${HYBRID_codebase_version}" <<< "${std_output}") -eq 0 ]]; then
+        Print_Error "Version printing with git failed."
+        return 1
     fi
 }
