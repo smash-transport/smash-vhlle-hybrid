@@ -188,6 +188,15 @@ function Internally_Ensure_Given_Files_Exist()
     __static__Check_File_With '! -f' 'INTERNAL' "$@"
 }
 
+# Since the few functions above differ in small aspects, it is possible to have
+# a core common implementation. The following static function takes:
+#   $1     -> the test operator to be used in [[ ... ]] keyword
+#   $2     -> whether to print a fatal or an internal error
+#   ${@:3} -> the names of the files to be tested.
+#
+# NOTE: If among the names of the files the argument '--' is used, then
+#       this is ignored and the arguments before are an add on message to
+#       be printed in case of error (one argument per line).
 function __static__Check_File_With()
 {
     local -r test_to_use=$1 error=$2
