@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -30,6 +30,11 @@ function __static__Inhibit_Commands_Version()
         __static__Fake_Command_Version \
             '--version' "${gnu} Awk ${awk_version}, API: 3.0 (${gnu} MPFR 4.1.0, ${gnu} MP 6.2.1)" "$@"
     }
+    function git()
+    {
+        __static__Fake_Command_Version \
+            '--version' "git version ${git_version}" "$@"
+    }
     function sed()
     {
         __static__Fake_Command_Version \
@@ -50,9 +55,10 @@ function __static__Inhibit_Commands_Version()
 function Unit_Test__system-requirements()
 {
     __static__Inhibit_Commands_Version
-    local gnu {awk,sed,tput,yq}_version
+    local gnu {awk,git,sed,tput,yq}_version
     gnu='GNU'
     awk_version=4.1
+    git_version=2.0
     sed_version=4.2.1
     tput_version=5.9
     yq_version=4.18.1
@@ -68,6 +74,7 @@ function Unit_Test__system-requirements()
     fi
     gnu='BSD'
     awk_version=4.1.0
+    git_version=1.8.3
     sed_version=4.2.0
     tput_version=''
     yq_version=3.9.98

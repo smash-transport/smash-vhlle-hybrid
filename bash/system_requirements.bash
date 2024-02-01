@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -21,6 +21,7 @@ function __static__Declare_System_Requirements()
         declare -rgA HYBRID_versions_requirements=(
             [awk]='4.1'
             [bash]='4.4'
+            [git]='1.8.5'
             [sed]='4.2.1'
             [tput]='5.7'
             [yq]='4.18.1'
@@ -310,8 +311,10 @@ function __static__Try_Find_Version()
     fi
     local found_version
     case "$1" in
-        awk | sed)
+        awk | git | sed)
             found_version=$($1 --version)
+            ;;& # Continue matching other cases
+        awk | sed)
             found_version=$(__static__Get_First_Line_From_String "${found_version}")
             found_version=$(grep -oE "${HYBRID_version_regex}" <<< "${found_version}")
             found_version=$(__static__Get_First_Line_From_String "${found_version}")
@@ -319,6 +322,9 @@ function __static__Try_Find_Version()
         bash)
             found_version="${BASH_VERSINFO[@]:0:3}"
             found_version="${found_version// /.}"
+            ;;
+        git)
+            found_version=$(grep -oE "${HYBRID_version_regex}" <<< "${found_version}")
             ;;
         tput)
             found_version=$(tput -V | grep -oE "${HYBRID_version_regex}")
