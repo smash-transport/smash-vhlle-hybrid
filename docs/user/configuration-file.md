@@ -152,6 +152,9 @@ Sampler:
 Afterburner:
     Executable: /path/to/smash
 ```
+**Note:** Such a configuration file will execute all the modules in production mode, involving a fine hydrodynamic grid and a large statistic of sampled events. 
+It is therefore better suited to be executed at a computer cluster. To test your set-up locally, we suggest using config_TEST.yaml, for more read the section [Predefined configuration files](predef-configs.md).
+
 
 ??? question "What if I want to omit some stages?"
 
