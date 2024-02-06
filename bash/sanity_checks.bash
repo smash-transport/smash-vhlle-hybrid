@@ -16,49 +16,11 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
         HYBRID_software_output_directory[${key}]="${HYBRID_output_directory}/${key}/${HYBRID_run_id}"
         if Element_In_Array_Equals_To "${key}" "${HYBRID_given_software_sections[@]}"; then
             __static__Ensure_Executable_Exists "${key}"
-            printf -v HYBRID_software_configuration_file[${key}] \
-                "${HYBRID_software_output_directory[${key}]}/${HYBRID_software_configuration_filename[${key}]}"
-            # Set here input data file of software if it was not set by user
-            if [[ ${key} =~ ^(Hydro|Afterburner)$ ]]; then
-                local filename relative_key
-                filename="${HYBRID_software_user_custom_input_file[${key}]}"
-                case "${key}" in
-                    Hydro)
-                        relative_key='IC'
-                        ;;
-                    Afterburner)
-                        relative_key='Sampler'
-                        ;;
-                esac
-                if [[ "${filename}" = '' ]]; then
-                    printf -v filename '%s/%s' \
-                        "${HYBRID_software_output_directory[${relative_key}]}" \
-                        "${HYBRID_software_default_input_filename[${key}]}"
-                else
-                    if Element_In_Array_Equals_To "${relative_key}" "${HYBRID_given_software_sections[@]}"; then
-                        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                            'Requesting custom ' --emph "${key}" ' input file although executing ' \
-                            --emph "${relative_key}" ' with default output name.'
-                    fi
-                fi
-                HYBRID_software_input_file[${key}]="${filename}"
-            fi
+            __static__Set_Software_Configuration_File "${key}"
+            __static__Set_Software_Input_Data_File_If_Not_Set_By_User "${key}"
         fi
     done
-    if [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
-        if [[ "${HYBRID_optional_feature[Spectators_source]}" != '' ]]; then
-            HYBRID_software_input_file['Spectators']="${HYBRID_optional_feature[Spectators_source]}"
-            if Element_In_Array_Equals_To "IC" "${HYBRID_given_software_sections[@]}"; then
-                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                    'Requesting custom ' --emph 'Spectators' ' input file although executing ' \
-                    --emph 'IC' ' with default output name.'
-            fi
-        else
-            printf -v HYBRID_software_input_file[Spectators] '%s/%s' \
-                "${HYBRID_software_output_directory[IC]}" \
-                "${HYBRID_software_default_input_filename[Spectators]}"
-        fi
-    fi
+    __static__Set_Software_Input_Data_File_If_Not_Set_By_User 'Spectators'
     readonly \
         HYBRID_software_output_directory \
         HYBRID_software_configuration_file \
@@ -101,6 +63,57 @@ function __static__Ensure_Executable_Exists()
             --emph "${label}" ' run was not located by the shell.' \
             'Please check your ' --emph 'PATH' ' environment variable and make sure' \
             'that ' --emph "type -P \"${executable}\"" ' succeeds in your terminal.'
+    fi
+}
+
+function __static__Set_Software_Configuration_File()
+{
+    local label=$1
+    printf -v HYBRID_software_configuration_file[${label}] \
+        "${HYBRID_software_output_directory[${label}]}/${HYBRID_software_configuration_filename[${label}]}"
+}
+
+function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
+{
+    local key=$1
+    if [[ ${key} =~ ^(Hydro|Afterburner)$ ]]; then
+        local filename relative_key
+        filename="${HYBRID_software_user_custom_input_file[${key}]}"
+        case "${key}" in
+            Hydro)
+                relative_key='IC'
+                ;;
+            Afterburner)
+                relative_key='Sampler'
+                ;;
+        esac
+        if [[ "${filename}" = '' ]]; then
+            printf -v filename '%s/%s' \
+                "${HYBRID_software_output_directory[${relative_key}]}" \
+                "${HYBRID_software_default_input_filename[${key}]}"
+        else
+            if Element_In_Array_Equals_To "${relative_key}" "${HYBRID_given_software_sections[@]}"; then
+                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                    'Requesting custom ' --emph "${key}" ' input file although executing ' \
+                    --emph "${relative_key}" ' with default output name.'
+            fi
+        fi
+        HYBRID_software_input_file[${key}]="${filename}"
+    elif [[ "${key}" = 'Spectators' ]]; then
+        if [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
+            if [[ "${HYBRID_optional_feature[Spectators_source]}" != '' ]]; then
+                HYBRID_software_input_file['Spectators']="${HYBRID_optional_feature[Spectators_source]}"
+                if Element_In_Array_Equals_To "IC" "${HYBRID_given_software_sections[@]}"; then
+                    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                        'Requesting custom ' --emph 'Spectators' ' input file although executing ' \
+                        --emph 'IC' ' with default output name.'
+                fi
+            else
+                printf -v HYBRID_software_input_file[Spectators] '%s/%s' \
+                    "${HYBRID_software_output_directory[IC]}" \
+                    "${HYBRID_software_default_input_filename[Spectators]}"
+            fi
+        fi
     fi
 }
 
