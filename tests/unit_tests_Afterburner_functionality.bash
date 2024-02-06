@@ -99,7 +99,8 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
         return 1
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/"*
-    touch "${HYBRID_software_output_directory[IC]}/config.yaml"
+    cp "${HYBRID_default_configurations_folder}/smash_initial_conditions.yaml" \
+        "${HYBRID_software_output_directory[IC]}/config.yaml"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
     if [[ $? -ne 110 ]]; then
         Print_Error \
