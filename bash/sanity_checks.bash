@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -100,7 +100,7 @@ function __static__Ensure_Executable_Exists()
             'The command ' --emph "${executable}" ' specified for the ' \
             --emph "${label}" ' run was not located by the shell.' \
             'Please check your ' --emph 'PATH' ' environment variable and make sure' \
-            'that '--emph "type -P \"${executable}\"" ' succeeds in your terminal.'
+            'that ' --emph "type -P \"${executable}\"" ' succeeds in your terminal.'
     fi
 }
 
