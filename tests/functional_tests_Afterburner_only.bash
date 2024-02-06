@@ -115,7 +115,8 @@ function Functional_Test__do-Afterburner-only()
     # Expect success and test the add_spectator functionality
     Print_Info 'Running Hybrid-handler expecting success with the add_spectator option'
     mkdir -p "IC/${run_id}"
-    touch "IC/${run_id}/"{config.yaml,SMASH_IC.oscar} "Sampler/${run_id}/particle_lists.oscar"
+    touch "IC/${run_id}/SMASH_IC.oscar" "Sampler/${run_id}/particle_lists.oscar"
+    cp "${HYBRIDT_repository_top_level_path}/configs/smash_initial_conditions.yaml" "IC/${run_id}/config.yaml"
     printf '
     Hybrid_handler:
       Run_ID: %s
@@ -133,8 +134,9 @@ function Functional_Test__do-Afterburner-only()
     # Expect success and test the add_spectator functionality with custom spectator input
     Print_Info 'Running Hybrid-handler expecting success with the custom add_spectator option'
     rm -r "IC"/*
-    mkdir -p test "IC/${run_id}"
-    touch 'test/SMASH_IC_2.oscar' "IC/${run_id}/config.yaml"
+    mkdir -p 'test' "IC/${run_id}"
+    touch 'test/SMASH_IC_2.oscar'
+    cp "${HYBRIDT_repository_top_level_path}/configs/smash_initial_conditions.yaml" "IC/${run_id}/config.yaml"
     printf '
     Hybrid_handler:
       Run_ID: %s
