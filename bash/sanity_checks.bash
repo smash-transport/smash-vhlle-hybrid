@@ -9,7 +9,7 @@
 
 function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables()
 {
-    local key base_file
+    local key
     for key in "${HYBRID_valid_software_configuration_sections[@]}"; do
         # The software output directories are always ALL set, even if not all software is run. This
         # is important as some software might rely on files in directories of other workflow blocks.
