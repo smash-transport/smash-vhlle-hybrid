@@ -265,7 +265,7 @@ function __static__Check_Given_Files_With()
         Print_Error -l -- "${add_on_message[@]}"
     fi
     if [[ "${error}" = 'INTERNAL' ]]; then
-        Print_Internal_And_Exit 'This should not have happened.'
+        Print_Internal_And_Exit '\nThis should not have happened.'
     else
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             '\nUnable to continue.'
