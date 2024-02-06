@@ -65,14 +65,14 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
         HYBRID_software_input_file
 }
 
-function Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts()
+function Perform_Internal_Sanity_Checks()
 {
-    for external_file in "${HYBRID_external_python_scripts[@]}"; do
-        if [[ ! -f "${external_file}" ]]; then
-            exit_code=${HYBRID_fatal_file_not_found} Print_Internal_And_Exit \
-                'The python script ' --emph "${external_file}" ' was not found.'
-        fi
-    done
+    Internally_Ensure_Given_Files_Exist \
+        'These Python scripts should be shipped within the hybrid handler codebase.' '--' \
+        "${HYBRID_external_python_scripts[@]}"
+    Internally_Ensure_Given_Files_Exist \
+        'These base configuration files should be shipped within the hybrid handler codebase.' '--' \
+        "${HYBRID_software_base_config_file[@]}"
 }
 
 function __static__Ensure_Executable_Exists()

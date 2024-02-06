@@ -32,7 +32,6 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file()
     __static__Do_Preliminary_Setup_Operations
     HYBRID_optional_feature[Add_spectators_from_IC]='FALSE'
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
-    Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts
 }
 
 function Unit_Test__Afterburner-create-input-file()
@@ -69,7 +68,6 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file-with-sp
     __static__Do_Preliminary_Setup_Operations
     HYBRID_optional_feature[Add_spectators_from_IC]='TRUE'
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
-    Perform_Sanity_Checks_On_Existence_Of_External_Python_Scripts
 }
 
 function Unit_Test__Afterburner-create-input-file-with-spectators()
