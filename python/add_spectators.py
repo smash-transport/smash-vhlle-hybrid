@@ -36,8 +36,8 @@ def get_initial_nucleons_from_config():
             N_initial_nucleons += target_particles[particle]
     except:
         print("The config file does not contain the necessary information about the projectile and target nuclei.")
-        sys.exit()
-        
+        sys.exit(1)
+
     return N_initial_nucleons
 
 
