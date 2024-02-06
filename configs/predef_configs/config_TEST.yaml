@@ -1,0 +1,32 @@
+IC:
+    Executable: /path/to/smash
+    Software_keys:
+        Modi:
+            Collider:
+                Projectile:
+                    Particles: {2212: 79, 2112: 118} #Gold197
+                Target:
+                    Particles: {2212: 79, 2112: 118} #Gold197
+                Sqrtsnn: 7.7
+
+Hydro:
+    Executable: /path/to/vHLLE
+    Software_keys:
+        etaS: 0.2
+        Rg: 1.4
+        Rgz: 1.2
+        nx: 81
+        ny: 81
+        nz: 151
+
+Sampler:
+    Executable: /path/to/hadron-sampler
+    Software_keys:
+        number_of_events: 50
+
+Afterburner:
+  Executable: /path/to/smash
+  Add_spectators_from_IC: TRUE
+  Software_keys:
+        General:
+            Nevents: 50

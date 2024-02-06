@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import shutil
 import sys
 import textwrap
 import time
@@ -49,9 +50,8 @@ def validate_output_folder():
         print(fatal_error + "Output directory would get overwritten. Select a different output directory, clean up, or tell SMASH to ignore existing files.")
         sys.exit(1)
     else:
-        # create config file
-        f = open(f_config, "w")
-        f.close()
+        # create config file copying input one to output folder
+        shutil.copy(args.i, f_config)
     return
 
 def run_smash(finalize):

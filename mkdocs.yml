@@ -24,6 +24,7 @@ nav:
     - Getting started: user/prerequisites.md
     - The hybrid handler: user/overview.md
     - Handler configuration file: user/configuration-file.md
+    - Predefined configuration files: user/predef-configs.md
   - Developer Guide:
     - developer/index.md
     - Overview: developer/overview.md
@@ -54,6 +55,8 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
   # Customize tables of contents
   - toc:
       permalink: true
