@@ -216,12 +216,13 @@ function Unit_Test__configuration-parse-general-section()
 
 function __static__Test_Section_Parsing_In_Subshell()
 (
-    local section executable input_file new_keys
+    local section executable input_file scan_params new_keys
     section=$1
     executable=$2
     config_file=$3
     input_file=$4
-    new_keys=$5
+    scan_params=$5
+    new_keys=$6
     Call_Codebase_Function Validate_And_Parse_Configuration_File
     if [[ "${#HYBRID_given_software_sections[@]}" -ne 1 ]] \
         || [[ "${HYBRID_given_software_sections[0]}" != "${section}" ]]; then
@@ -235,6 +236,9 @@ function __static__Test_Section_Parsing_In_Subshell()
     fi
     if [[ ${HYBRID_software_user_custom_input_file[${section}]} != "${input_file}" ]]; then
         Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (input file).'
+    fi
+    if [[ ${HYBRID_scan_parameters[${section}]} != "${scan_params}" ]]; then
+        Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (scan parameters).'
     fi
     if [[ ${HYBRID_software_new_input_keys[${section}]} != "${new_keys}" ]]; then
         Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (software keys).'
@@ -253,12 +257,14 @@ function Unit_Test__configuration-parse-IC-section()
     IC:
       Executable: foo
       Config_file: bar
+      Scan_parameters:
+        - General.Randomseed
       Software_keys:
         General:
           Randomseed: 12345
     ' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
-        'IC' 'foo' 'bar' '' $'General:\n  Randomseed: 12345'
+        'IC' 'foo' 'bar' '' '- General.Randomseed' $'General:\n  Randomseed: 12345'
     if [[ $? -ne 0 ]]; then
         return 1
     fi
@@ -280,11 +286,12 @@ function Unit_Test__configuration-parse-Hydro-section()
       Executable: foo
       Config_file: bar
       Input_file: ket
+      Scan_parameters: [etaS]
       Software_keys:
         etaS: 0.12345
     ' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
-        'Hydro' 'foo' 'bar' 'ket' 'etaS: 0.12345'
+        'Hydro' 'foo' 'bar' 'ket' '[etaS]' 'etaS: 0.12345'
     if [[ $? -ne 0 ]]; then
         return 1
     fi
@@ -305,11 +312,12 @@ function Unit_Test__configuration-parse-Sampler-section()
     Sampler:
       Executable: foo
       Config_file: bar
+      Scan_parameters: [shear]
       Software_keys:
         shear: 1.2345
     ' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
-        'Sampler' 'foo' 'bar' '' 'shear: 1.2345'
+        'Sampler' 'foo' 'bar' '' '[shear]' 'shear: 1.2345'
     if [[ $? -ne 0 ]]; then
         return 1
     fi
@@ -331,12 +339,18 @@ function Unit_Test__configuration-parse-Afterburner-section()
       Executable: foo
       Config_file: bar
       Input_file: ket
+      Scan_parameters:
+        - General.End_Time
+        - General.Randomseed
       Software_keys:
         General:
           End_Time: 42000
+          Randomseed: 42
     ' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
-        'Afterburner' 'foo' 'bar' 'ket' $'General:\n  End_Time: 42000'
+        'Afterburner' 'foo' 'bar' 'ket' \
+        $'- General.End_Time\n- General.Randomseed' \
+        $'General:\n  End_Time: 42000\n  Randomseed: 42'
     if [[ $? -ne 0 ]]; then
         return 1
     fi

@@ -65,23 +65,27 @@ function Define_Further_Global_Variables()
     declare -rgA HYBRID_ic_valid_keys=(
         [Executable]='HYBRID_software_executable[IC]'
         [Config_file]='HYBRID_software_base_config_file[IC]'
+        [Scan_parameters]='HYBRID_scan_parameters[IC]'
         [Software_keys]='HYBRID_software_new_input_keys[IC]'
     )
     declare -rgA HYBRID_hydro_valid_keys=(
         [Executable]='HYBRID_software_executable[Hydro]'
         [Config_file]='HYBRID_software_base_config_file[Hydro]'
         [Input_file]='HYBRID_software_user_custom_input_file[Hydro]'
+        [Scan_parameters]='HYBRID_scan_parameters[Hydro]'
         [Software_keys]='HYBRID_software_new_input_keys[Hydro]'
     )
     declare -rgA HYBRID_sampler_valid_keys=(
         [Executable]='HYBRID_software_executable[Sampler]'
         [Config_file]='HYBRID_software_base_config_file[Sampler]'
+        [Scan_parameters]='HYBRID_scan_parameters[Sampler]'
         [Software_keys]='HYBRID_software_new_input_keys[Sampler]'
     )
     declare -rgA HYBRID_afterburner_valid_keys=(
         [Executable]='HYBRID_software_executable[Afterburner]'
         [Config_file]='HYBRID_software_base_config_file[Afterburner]'
         [Input_file]='HYBRID_software_user_custom_input_file[Afterburner]'
+        [Scan_parameters]='HYBRID_scan_parameters[Afterburner]'
         [Software_keys]='HYBRID_software_new_input_keys[Afterburner]'
         [Add_spectators_from_IC]='HYBRID_optional_feature[Add_spectators_from_IC]'
         [Spectators_source]='HYBRID_optional_feature[Spectators_source]'
@@ -117,6 +121,12 @@ function Define_Further_Global_Variables()
         [Hydro]="${HYBRID_default_configurations_folder}/vhlle_hydro"
         [Sampler]="${HYBRID_default_configurations_folder}/hadron_sampler"
         [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"
+    )
+    declare -gA HYBRID_scan_parameters=(
+        [IC]=''
+        [Hydro]=''
+        [Sampler]=''
+        [Afterburner]=''
     )
     declare -gA HYBRID_software_new_input_keys=(
         [IC]=''
