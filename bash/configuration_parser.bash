@@ -12,10 +12,9 @@
 #       and deleting the key from the variable content.
 function Validate_And_Parse_Configuration_File()
 {
-    if [[ ! -f "${HYBRID_configuration_file}" ]]; then
-        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
-            'Handler configuration file ' --emph "${filename}" ' not found.'
-    fi
+    Ensure_Given_Files_Exist \
+        'A configuration file is needed to run the hybrid handler.' '--' \
+        "${HYBRID_configuration_file}"
     __static__Abort_If_Configuration_File_Is_Not_A_Valid_YAML_File
     __static__Abort_If_Sections_Are_Violating_Any_Requirement
     __static__Abort_If_Invalid_Keys_Were_Used
