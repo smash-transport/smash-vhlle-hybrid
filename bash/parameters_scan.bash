@@ -20,46 +20,73 @@ function Format_Scan_Parameters_Lists()
 
 function __static__Is_Given_Key_Value_A_Valid_Scan()
 {
-    local -r value="$1"
-    if [[ $(yq '. | type' <<< "${value}") != '!!map' ]]; then
-        Print_Error 'The given scan\n' --emph "${value}" '\nis not a YAML map.'
-        return 1
-    elif [[ $(yq '. | keys | .. style="flow"' <<< "${value}") != '[Scan]' ]]; then
-        Print_Error \
-            'The given scan\n' --emph "${value}" '\nis not a YAML map containing only the ' \
-            --emph 'Scan' ' key at top level.'
-        return 1
-    fi
-    local -r scan_keys=$(yq '.Scan | keys | .. style="flow"' <<< "${value}")
-    if ! __static__Are_Given_Scan_Keys_Allowed; then
-        Print_Error \
-            'The value\n' --emph "${value}" '\ndoes not define a valid scan.' \
-            'Refer to the documentation to see which are valid scan specifications.'
-        return 1
-    elif ! __static__Has_Valid_Scan_Correct_Values; then
-        Print_Error -l --\
-            'The given scan\n' --emph "${value}" '\nis allowed but its specification is invalid.'
+    local -r given_scan="$1"
+    __static__Check_If_Given_Scan_Is_A_YAML_Map || return 1
+    __static__Check_If_Given_Scan_Is_A_YAML_Map_With_Scan_Key_Only || return 1
+    # Now the scan keys can be safely extracted
+    local -r scan_keys=$(__static__Get_Scan_Keys)
+    __static__Check_If_Given_Scan_Keys_Are_Allowed || return 1
+    __static__Check_If_Keys_Of_Given_Scan_Have_Correct_Values || return 1
+}
+
+function __static__Check_If_Given_Scan_Is_A_YAML_Map()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan
+    if [[ $(yq '. | type' <<< "${given_scan}") != '!!map' ]]; then
+        Print_Error 'The given scan\n' --emph "${given_scan}" '\nis not a YAML map.'
         return 1
     fi
 }
 
-function __static__Are_Given_Scan_Keys_Allowed()
+function __static__Check_If_Given_Scan_Is_A_YAML_Map_With_Scan_Key_Only()
 {
-    Ensure_That_Given_Variables_Are_Set_And_Not_Empty scan_keys
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan
+    if [[ $(yq '. | keys | .. style="flow"' <<< "${given_scan}") != '[Scan]' ]]; then
+        Print_Error \
+            'The given scan\n' --emph "${given_scan}" '\nis not a YAML map containing only the ' \
+            --emph 'Scan' ' key at top level.'
+        return 1
+    fi
+}
+
+function __static__Get_Scan_Keys()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan
+    yq '.Scan | keys | .. style="flow"' <<< "${given_scan}"
+}
+
+function __static__Check_If_Given_Scan_Keys_Are_Allowed()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan scan_keys
     # Here we need to take into account that the Scan keys might be given by the
     # user in an arbitrary order and therefore we need to sort them before comparison
     local given_keys=$(yq '. | sort | .. style="flow"' <<< "${scan_keys}")
-    Element_In_Array_Equals_To "${given_keys}" "${HYBRID_valid_scan_specification_keys[@]}"
+    if ! Element_In_Array_Equals_To "${given_keys}" "${HYBRID_valid_scan_specification_keys[@]}"; then
+        Print_Error \
+            'The value\n' --emph "${given_scan}" '\ndoes not define a valid scan.' \
+            'Refer to the documentation to see which are valid scan specifications.'
+        return 1
+    fi
+}
+
+function __static__Check_If_Keys_Of_Given_Scan_Have_Correct_Values()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan scan_keys
+    if ! __static__Has_Valid_Scan_Correct_Values; then
+        Print_Error -l --\
+            'The given scan\n' --emph "${given_scan}" '\nis allowed but its specification is invalid.'
+        return 1
+    fi
 }
 
 function __static__Has_Valid_Scan_Correct_Values()
 {
-    Ensure_That_Given_Variables_Are_Set_And_Not_Empty value scan_keys
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan scan_keys
     case "${scan_keys}" in
         "[Values]" )
-            if [[ $(yq '.Scan.Values | type' <<< "${value}") != '!!seq' ]]; then
+            if [[ $(yq '.Scan.Values | type' <<< "${given_scan}") != '!!seq' ]]; then
                 Print_Error \
-                    'The value ' --emph "$(yq '.Scan.Values' <<< "${value}")" \
+                    'The value ' --emph "$(yq '.Scan.Values' <<< "${given_scan}")" \
                     ' of the ' --emph 'Values' ' key is not a list of parameter values.'
                 return 1
             fi
