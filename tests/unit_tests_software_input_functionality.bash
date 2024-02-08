@@ -240,3 +240,33 @@ function Unit_Test__copy-hybrid-handler-config-section()
         rm "${HYBRID_handler_config_section_filename[IC]}"
     done
 }
+
+function Unit_Test__add-section-terminal-output()
+{
+    local -r \
+        config_filename='IC_config.yaml' \
+        run_id='IC_only'
+    printf '
+    Hybrid_handler:
+      Run_ID: %s
+    IC:
+      Executable: %s/tests/mocks/smash_IC_black-box.py
+    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
+    mkdir -p "IC/${run_id}"
+    touch "IC/${run_id}/IC.log"
+    printf "first line" >> "IC/${run_id}/IC.log"
+    Print_Info 'Running Hybrid-handler expecting success'
+    ("${HYBRIDT_repository_top_level_path}/Hybrid-handler" 'do' '-c' "${config_filename}")
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Hybrid-handler unexpectedly failed.'
+        return 1
+    fi
+    local -r \
+        string_to_be_found="first line===== NEW RUN OUTPUT =====" \
+        string_to_search=$(head -n 5 "IC/${run_id}/IC.log" | tr -d '\n')
+
+    if ! [[ "$string_to_search" == "$string_to_be_found"*"=====" ]]; then
+        Print_Error 'Terminal output file not properly separated.'
+        return 1
+    fi
+}

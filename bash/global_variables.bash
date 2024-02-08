@@ -128,6 +128,12 @@ function Define_Further_Global_Variables()
         [Sampler]=''
         [Afterburner]=''
     )
+    declare -gA HYBRID_terminal_output=(
+        [IC]='IC.log'
+        [Hydro]='Hydro.log'
+        [Sampler]='Sampler.log'
+        [Afterburner]='Afterburner.log'
+    )
     declare -gA HYBRID_software_configuration_file=(
         [IC]=''
         [Hydro]=''

@@ -213,7 +213,7 @@ function Make_Test_Preliminary_Operations__Sampler-test-run-software()
 function Unit_Test__Sampler-test-run-software()
 {
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
-    local -r sampler_terminal_output="${HYBRID_software_output_directory[Sampler]}/Terminal_Output.txt" \
+    local -r sampler_terminal_output="${HYBRID_software_output_directory[Sampler]}/Sampler.log" \
         sampler_config_file_path="${HYBRID_software_configuration_file[Sampler]}"
     local terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_Sampler

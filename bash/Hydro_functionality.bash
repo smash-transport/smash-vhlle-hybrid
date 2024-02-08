@@ -16,6 +16,7 @@ function Prepare_Software_Input_File_Hydro()
     Replace_Keys_In_Configuration_File_If_Needed_For 'Hydro'
     __static__Create_Symbolic_Link_To_IC_File
     __static__Create_Symbolic_Link_To_EOS_Folder
+    Separate_Terminal_Output_For 'Hydro'
 }
 
 function Ensure_All_Needed_Input_Exists_Hydro()
@@ -39,12 +40,12 @@ function Run_Software_Hydro()
     cd "${HYBRID_software_output_directory[Hydro]}"
     local -r \
         hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}" \
-        ic_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" \
-        hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt"
+        ic_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     "${HYBRID_software_executable[Hydro]}" \
         "-params" "${hydro_config_file_path}" \
         "-ISinput" "${ic_output_file_path}" \
-        "-outputDir" "${HYBRID_software_output_directory[Hydro]}" >> "${hydro_terminal_output}"
+        "-outputDir" "${HYBRID_software_output_directory[Hydro]}" >> \
+        "${HYBRID_software_output_directory[Hydro]}/${HYBRID_terminal_output[Hydro]}" 2>&1
 }
 
 #===============================================================================

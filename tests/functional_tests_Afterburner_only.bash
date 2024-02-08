@@ -44,7 +44,7 @@ function Functional_Test__do-Afterburner-only()
     mv 'Afterburner' 'Afterburner-success'
     # Expect failure and test "SMASH" message
     Print_Info 'Running Hybrid-handler expecting invalid Afterburner input file failure'
-    terminal_output_file="Afterburner/${run_id}/Terminal_Output.txt"
+    terminal_output_file="Afterburner/${run_id}/Afterburner.log"
     BLACK_BOX_FAIL='invalid_config' \
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -eq 0 ]]; then

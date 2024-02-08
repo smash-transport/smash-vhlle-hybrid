@@ -31,7 +31,7 @@ function Functional_Test__do-IC-only()
     mv 'IC' 'IC-success'
     # Expect failure and test "SMASH" message
     Print_Info 'Running Hybrid-handler expecting invalid IC input file failure'
-    terminal_output_file="IC/${run_id}/Terminal_Output.txt"
+    terminal_output_file="IC/${run_id}/IC.log"
     BLACK_BOX_FAIL='invalid_config' \
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
     if [[ $? -eq 0 ]]; then

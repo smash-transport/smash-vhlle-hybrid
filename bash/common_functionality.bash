@@ -39,3 +39,12 @@ function Replace_Keys_In_Configuration_File_If_Needed_For()
             "${HYBRID_software_new_input_keys[$1]}"
     fi
 }
+
+function Separate_Terminal_Output_For()
+{
+    if [[ -e "${HYBRID_software_output_directory[$1]}/${HYBRID_terminal_output[$1]}" ]]; then
+        local timestamp=$(date +'%d-%m-%Y %H:%M:%S')
+        printf '\n\n\n===== NEW RUN OUTPUT =====\n===== %s =====\n\n\n' "${timestamp}" >> \
+            "${HYBRID_software_output_directory[$1]}/${HYBRID_terminal_output[$1]}"
+    fi
+}
