@@ -4,7 +4,7 @@
 
 | Software | Required version |
 | :------: | :--------------: |
-| [SMASH](https://github.com/smash-transport/smash) | 1.8 or higher |
+| [SMASH](https://github.com/smash-transport/smash) | 3.1 or higher |
 | [vHLLE](https://github.com/yukarpenko/vhlle) | - |
 | [vHLLE parameters](https://github.com/yukarpenko/vhlle_params) | - |
 | [Hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | 1.0 or higher |
