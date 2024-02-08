@@ -66,7 +66,7 @@ function Unit_Test__parameters-scan-YAML-scan-syntax()
         '{Scan: {Values: ["Hi", "Bye"]}}'
     )
     for value in "${values[@]}" ; do
-        Call_Codebase_Function __static__Is_Given_Key_Value_A_Valid_Scan "${value}" #&> /dev/null
+        Call_Codebase_Function __static__Is_Given_Key_Value_A_Valid_Scan "${value}" &> /dev/null
         if [[ $? -eq 0 ]]; then
             Print_Error 'Scan syntax validation for\n' --emph "${value}" '\nunexpectedly succeeded.'
             return 1
@@ -150,7 +150,7 @@ function Unit_Test__parameters-scan-global-validation()
         [Sampler]='shear: 1.'
         [Afterburner]=''
     )
-    Call_Codebase_Function_In_Subshell Validate_Scan_Parameters #&> /dev/null
+    Call_Codebase_Function_In_Subshell Validate_Scan_Parameters &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Validation of scan parameters unexpectedly succeeded.'
         return 1
