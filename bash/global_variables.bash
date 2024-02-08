@@ -57,6 +57,12 @@ function Define_Further_Global_Variables()
         [Sampler]='Hybrid_handler_Sampler_config.yaml'
         [Afterburner]='Hybrid_handler_Afterburner_config.yaml'
     )
+    # This array specifies a set of YAML lists of keys that define a valid parameter scan.
+    # ATTENTION: The keys inside each YAML list must be alphabetically sorted to allow
+    #            the validation mechanism to work!
+    readonly HYBRID_valid_scan_specification_keys=(
+        '[Values]'
+    )
     # The following associative arrays declare maps between valid keys in the handler config
     # file and bash variables in which the input information will be stored once parsed.
     declare -rgA HYBRID_hybrid_handler_valid_keys=(

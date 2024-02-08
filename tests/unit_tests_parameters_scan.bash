@@ -44,3 +44,35 @@ function Unit_Test__parameters-scan-format-lists()
     done
     return ${counter}
 }
+
+function Make_Test_Preliminary_Operations__parameters-scan-YAML-scan-syntax()
+{
+    Make_Test_Preliminary_Operations__parameters-scan-format-lists
+}
+
+function Unit_Test__parameters-scan-YAML-scan-syntax()
+{
+    local value values
+    values=(
+        'scalar' '[a,b,c]' 'True' '42' # Not a map
+        '{Scan: XX, Wrong: YY}'        # Not a map with Scan only
+        # Wrong scans
+        '{Scan: {Wrong: XX}}'
+        '{Scan: {Values: String}}'
+        '{Scan: {Values: True}}'
+        '{Scan: {Values: 42}}'
+    )
+    for value in "${values[@]}" ; do
+        Call_Codebase_Function __static__Is_Given_Key_Value_A_Valid_Scan "${value}" &> /dev/null
+        if [[ $? -eq 0 ]]; then
+            Print_Error 'Scan syntax validation for\n' --emph "${value}" '\nunexpectedly succeeded.'
+            return 1
+        fi
+    done
+    value='{Scan: {Values: [a,b,c]}}'
+    Call_Codebase_Function __static__Is_Given_Key_Value_A_Valid_Scan "${value}"
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Scan syntax validation unexpectedly failed (' --emph "${value}" ').'
+        return 1
+    fi
+}
