@@ -119,3 +119,37 @@ function Unit_Test__parameters-scan-single-validation()
         "${HYBRID_software_new_input_keys[Afterburner]}" 'EXPECT_FAILURE' || return 1
 }
 
+function Make_Test_Preliminary_Operations__parameters-scan-global-validation()
+{
+    Make_Test_Preliminary_Operations__parameters-scan-format-lists
+}
+
+function Unit_Test__parameters-scan-global-validation()
+{
+    HYBRID_scan_parameters[IC]='[Modi.Collider.Sqrtsnn]'
+    HYBRID_scan_parameters[Hydro]='[etaS]'
+    HYBRID_software_new_input_keys[IC]=$'Modi:\n  Collider:\n    Sqrtsnn: {Scan: {Values: [4.3, 7.7]}}'
+    HYBRID_software_new_input_keys[Hydro]='etaS: {Scan: {Values: [0.13, 0.15, 0.17]}}'
+    Call_Codebase_Function_In_Subshell Validate_Scan_Parameters
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Validation of scan parameters unexpectedly failed.'
+        return 1
+    fi
+    HYBRID_scan_parameters=(
+        [IC]=''
+        [Hydro]=''
+        [Sampler]='[shear]'
+        [Afterburner]='[General.Randomseed]'
+    )
+    HYBRID_software_new_input_keys=(
+        [IC]=''
+        [Hydro]=''
+        [Sampler]='shear: 1.'
+        [Afterburner]=''
+    )
+    Call_Codebase_Function_In_Subshell Validate_Scan_Parameters #&> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Validation of scan parameters unexpectedly succeeded.'
+        return 1
+    fi
+}

@@ -18,6 +18,29 @@ function Format_Scan_Parameters_Lists()
     done
 }
 
+function Validate_Scan_Parameters()
+{
+    local key parameters parameter counter=0
+    for key in "${!HYBRID_scan_parameters[@]}"; do
+        if [[ "${HYBRID_scan_parameters["${key}"]}" = '' ]]; then
+            continue
+        else
+            readarray -t parameters < <(yq -r '.[]' <<< "${HYBRID_scan_parameters["${key}"]}")
+            for parameter in "${parameters[@]}"; do
+                if ! __static__Is_Parameter_To_Be_Scanned \
+                    "${parameter}" "${HYBRID_software_new_input_keys["${key}"]}"; then
+                    (( counter++ )) || true
+                fi
+            done
+        fi
+    done
+    if [[ ${counter} -ne 0 ]]; then
+        exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
+            '\nThe hybrid handler configuration file contains '\
+            --emph "${counter}" ' invalid scan specifications.'
+    fi
+}
+
 function __static__Is_Parameter_To_Be_Scanned()
 {
     local -r key="$1" yaml_section="$2"
