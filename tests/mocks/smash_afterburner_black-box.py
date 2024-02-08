@@ -59,8 +59,7 @@ def ensure_no_output_is_overwritten():
 def run_smash(finalize,SMASH_input_file_with_participants_and_spectators,sampler_dir):
     # create smash.lock file
     f = open(args.o+file_name_is_running, "w")
-    extension_pattern = r"\d+"  # Matches one or more digits at the end of the filename
-    regex=re.compile(SMASH_input_file_with_participants_and_spectators+extension_pattern)
+    regex=re.compile(SMASH_input_file_with_participants_and_spectators)
     # Get a list of files in the current directory
     files = os.listdir(sampler_dir)
     # Filter files that match the base name and have only integer extensions
@@ -134,13 +133,19 @@ def parse_command_line_config_options():
         print("File directory could not be parsed")
         sys.exit(1)
 
+    try:
+        file=data_config['Modi']['List']['Filename']
+    except:
+        print("Filename could not be parsed")
+        sys.exit(1)
+
     if not os.path.isdir(sampler_dir):
         print("Directory '{0}' not found".format(sampler_dir))
         sys.exit(1)
 
     if sampler_dir != "/":
         sampler_dir += "/"
-    return sampler_dir
+    return sampler_dir, file
 
 
 if __name__ == '__main__':
@@ -170,11 +175,11 @@ if __name__ == '__main__':
 
     # initialize the system
     check_config(config_is_valid)
-    sampler_dir=parse_command_line_config_options()
+    sampler_dir, file =parse_command_line_config_options()
     create_folders_structure()
     ensure_no_output_is_overwritten()
 
-    SMASH_input_file_with_participants_and_spectators = sampler_dir+"sampling"
+    SMASH_input_file_with_participants_and_spectators = sampler_dir+file
     SMASH_output_file_with_participants_and_spectators = args.o+name_particles_file+name_oscar
     SMASH_special_output_file_for_vHLLE_with_participants_only = args.o+name_particles_file+name_bin
 

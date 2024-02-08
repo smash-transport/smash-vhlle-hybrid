@@ -9,6 +9,7 @@
 
 function Prepare_Software_Input_File_Afterburner()
 {
+    Ensure_Consistency_Of_Afterburner_Input
     Create_Output_Directory_For 'Afterburner'
     Ensure_Given_Files_Do_Not_Exist "${HYBRID_software_configuration_file[Afterburner]}"
     Ensure_Given_Files_Exist "${HYBRID_software_base_config_file[Afterburner]}"
@@ -23,7 +24,7 @@ function Ensure_All_Needed_Input_Exists_Afterburner()
     Ensure_Given_Files_Exist \
         "${HYBRID_software_configuration_file[Afterburner]}" \
         "${HYBRID_software_input_file[Afterburner]}"
-    Internally_Ensure_Given_Files_Exist "${HYBRID_software_output_directory[Afterburner]}/sampling0"
+    Internally_Ensure_Given_Files_Exist "${HYBRID_software_output_directory[Afterburner]}/sampled_particles_list.oscar"
 }
 
 function Ensure_Run_Reproducibility_Afterburner()
@@ -48,7 +49,7 @@ function Run_Software_Afterburner()
 
 function __static__Create_Sampled_Particles_List_File_Or_Symbolic_Link_With_Or_Without_Spectators()
 {
-    local -r target_link_name="${HYBRID_software_output_directory[Afterburner]}/sampling0"
+    local -r target_link_name="${HYBRID_software_output_directory[Afterburner]}/sampled_particles_list.oscar"
     if [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
         Ensure_Given_Files_Do_Not_Exist "${target_link_name}"
         # Here the config.yaml file is expected to be produced by SMASH in the output folder

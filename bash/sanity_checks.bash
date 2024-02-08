@@ -117,4 +117,19 @@ function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
     fi
 }
 
+function Ensure_Consistency_Of_Afterburner_Input()
+{
+    local config_section_software_keys="$(yq eval 'select(.Afterburner.Software_keys != null \
+     and .Afterburner.Software_keys.Modi.List != null and .Afterburner.Software_keys.Modi.List.Filename != null) \
+     | .Afterburner.Software_keys.Modi.List.Filename' ${HYBRID_configuration_file})"
+    local config_section_input="$(yq eval 'select(.Afterburner.Input_file != null) \
+    .Afterburner.Input_file' ${HYBRID_configuration_file})"
+    if [[ "${config_section_software_keys}" != '' &&
+        "${config_section_software_keys}" != 'sampled_particles_list.oscar' &&
+        "${config_section_software_keys}" != "${config_section_input}" ]]; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+            'The Afterburner input particle list has to be modified via the Input_file key, not the Software_key!'
+    fi
+}
+
 Make_Functions_Defined_In_This_File_Readonly

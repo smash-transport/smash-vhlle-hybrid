@@ -16,5 +16,4 @@ Output:
 Modi:
     List:
         File_Directory: "."
-        File_Prefix: "sampling"
-        Shift_Id: 0
+        Filename: "sampled_particles_list.oscar"
