@@ -18,6 +18,28 @@ function Format_Scan_Parameters_Lists()
     done
 }
 
+function __static__Is_Parameter_To_Be_Scanned()
+{
+    local -r key="$1" yaml_section="$2"
+    # Here the key is assumed to be a period-separated list of keys to navigate the YAML
+    # tree. However the utility functions needs separate arguments and we let word-splitting
+    # help us, by that also assuming that there are no spaces in keys (a kind of design decision).
+    if ! Has_YAML_String_Given_Key "${yaml_section}" ${key//./ }; then
+        Print_Error \
+            'The ' --emph "${key}" ' parameter is asked to be scanned but its value' \
+            'was not specified in the corresponding ' --emph 'Software_keys' '.'
+        return 1
+    fi
+    local parameter_value
+    parameter_value=$(Read_From_YAML_String_Given_Key "${yaml_section}" ${key//./ })
+    if ! __static__Is_Given_Key_Value_A_Valid_Scan "${parameter_value}"; then
+        Print_Error -l --\
+            'The ' --emph "${key}" \
+            ' parameter is asked to be scanned but its value was not properly specified as a scan.'
+        return 1
+    fi
+}
+
 function __static__Is_Given_Key_Value_A_Valid_Scan()
 {
     local -r given_scan="$1"

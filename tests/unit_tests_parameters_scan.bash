@@ -76,3 +76,46 @@ function Unit_Test__parameters-scan-YAML-scan-syntax()
         return 1
     fi
 }
+
+function Make_Test_Preliminary_Operations__parameters-scan-single-validation()
+{
+    Make_Test_Preliminary_Operations__parameters-scan-format-lists
+}
+
+function __static__Test_Validation_Of_Parameter()
+{
+    local -r section=$1 key=$2 new_keys=$3 expect=$4
+    if [[ "${expect}" = 'EXPECT_SUCCESS' ]]; then
+        Call_Codebase_Function __static__Is_Parameter_To_Be_Scanned "${key}" "${new_keys}"
+        if [[ $? -ne 0 ]]; then
+            Print_Error 'Validation of ' --emph "${section}" ' parameter unexpectedly failed.'
+            return 1
+        fi
+    else
+        Call_Codebase_Function __static__Is_Parameter_To_Be_Scanned "${key}" "${new_keys}" &> /dev/null
+        if [[ $? -eq 0 ]]; then
+            Print_Error 'Validation of ' --emph "${section}" ' parameter unexpectedly succeeded.'
+            return 1
+        fi
+    fi
+}
+
+function Unit_Test__parameters-scan-single-validation()
+{
+    HYBRID_software_new_input_keys=(
+        [IC]=$'Modi:\n  Collider:\n    Sqrtsnn: {Scan: {Values: [4.3, 7.7]}}'
+        [Hydro]='etaS: {Scan: {Values: [0.13, 0.15, 0.17]}}'
+        [Sampler]='shear: 1.'
+        [Afterburner]=''
+    )
+    __static__Test_Validation_Of_Parameter \
+        'IC' 'Modi.Collider.Sqrtsnn' "${HYBRID_software_new_input_keys[IC]}" 'EXPECT_SUCCESS' || return 1
+    __static__Test_Validation_Of_Parameter \
+        'Hydro' 'etaS' "${HYBRID_software_new_input_keys[Hydro]}" 'EXPECT_SUCCESS' || return 1
+    __static__Test_Validation_Of_Parameter \
+        'Sampler' 'shear' "${HYBRID_software_new_input_keys[Sampler]}" 'EXPECT_FAILURE' || return 1
+    __static__Test_Validation_Of_Parameter \
+        'Afterburner ' 'General.Randomseed' \
+        "${HYBRID_software_new_input_keys[Afterburner]}" 'EXPECT_FAILURE' || return 1
+}
+
