@@ -135,6 +135,18 @@ function __static__Has_Valid_Scan_Correct_Values()
                     ' of the ' --emph 'Values' ' key is not a list of parameter values.'
                 return 1
             fi
+            local list_of_value_types
+            list_of_value_types=( $(yq '.Scan.Values[] | type' <<< "${given_scan}" | sort -u) )
+            if [[ ${#list_of_value_types[@]} -ne 1 ]]; then
+                Print_Error \
+                    'The parameter values have different YAML types: ' --emph "${list_of_value_types[*]//!!/}" '.'
+                return 1
+            elif [[ ! ${list_of_value_types[0]} =~ ^!!(bool|int|float)$ ]]; then
+                Print_Error \
+                    'Parameter scans with values of ' --emph "${list_of_value_types[0]//!!/}" \
+                    ' type are not allowed.' 'Valid parameter types are ' --emph 'bool int float' ', only.'
+                return 1
+            fi
             ;;
         *)
             Print_Internal_And_Exit \
