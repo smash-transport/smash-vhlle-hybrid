@@ -31,7 +31,7 @@ function __static__Source_Codebase_Files()
         'global_variables.bash'
         'Hydro_functionality.bash'
         'IC_functionality.bash'
-        'parameters_scan.bash'
+        'parameters_scan_validation.bash'
         'Sampler_functionality.bash'
         'sanity_checks.bash'
         'software_input_functionality.bash'
