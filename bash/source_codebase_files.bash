@@ -34,6 +34,7 @@ function __static__Source_Codebase_Files()
         'Sampler_functionality.bash'
         'sanity_checks.bash'
         'scan_validation.bash'
+        'scan_values_operations.bash'
         'software_input_functionality.bash'
         'system_requirements.bash'
         'version.bash'
