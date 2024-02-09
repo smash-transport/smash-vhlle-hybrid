@@ -332,11 +332,14 @@ function Ensure_That_Given_Variables_Are_Set_And_Not_Empty()
         # would return the variable declared attributes (e.g. 'a' for arrays).
         if [[ $(declare -p "${variable_name}" 2> /dev/null) =~ ^declare\ -[aA] ]]; then
             declare -n ref=${variable_name}
+            set +u # Here 'ref' might be unset for empty associative arrays! Do not exit if so
             if [[ ${#ref[@]} -ne 0 ]]; then
+                set -u
                 continue
             fi
+            set -u
         else
-            set +u # Here variable_name might be unset! Do not exit if so
+            set +u # Here 'variable_name' might be unset! Do not exit if so
             if [[ "${!variable_name}" != '' ]]; then
                 set -u
                 continue
