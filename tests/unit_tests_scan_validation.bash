@@ -7,7 +7,7 @@
 #
 #===================================================
 
-function Make_Test_Preliminary_Operations__parameters-scan-format-lists()
+function Make_Test_Preliminary_Operations__scan-format-lists()
 {
     local file_to_be_sourced list_of_files
     list_of_files=(
@@ -20,7 +20,7 @@ function Make_Test_Preliminary_Operations__parameters-scan-format-lists()
     Define_Further_Global_Variables
 }
 
-function Unit_Test__parameters-scan-format-lists()
+function Unit_Test__scan-format-lists()
 {
     HYBRID_scan_parameters=(
         [IC]=$'- General.Randomseed\n- General.End_Time'
@@ -45,12 +45,12 @@ function Unit_Test__parameters-scan-format-lists()
     return ${counter}
 }
 
-function Make_Test_Preliminary_Operations__parameters-scan-YAML-scan-syntax()
+function Make_Test_Preliminary_Operations__scan-YAML-scan-syntax()
 {
-    Make_Test_Preliminary_Operations__parameters-scan-format-lists
+    Make_Test_Preliminary_Operations__scan-format-lists
 }
 
-function Unit_Test__parameters-scan-YAML-scan-syntax()
+function Unit_Test__scan-YAML-scan-syntax()
 {
     local value values
     values=(
@@ -80,9 +80,9 @@ function Unit_Test__parameters-scan-YAML-scan-syntax()
     fi
 }
 
-function Make_Test_Preliminary_Operations__parameters-scan-single-validation()
+function Make_Test_Preliminary_Operations__scan-single-validation()
 {
-    Make_Test_Preliminary_Operations__parameters-scan-format-lists
+    Make_Test_Preliminary_Operations__scan-format-lists
 }
 
 function __static__Test_Validation_Of_Parameter()
@@ -103,7 +103,7 @@ function __static__Test_Validation_Of_Parameter()
     fi
 }
 
-function Unit_Test__parameters-scan-single-validation()
+function Unit_Test__scan-single-validation()
 {
     HYBRID_software_new_input_keys=(
         [IC]=$'Modi:\n  Collider:\n    Sqrtsnn: {Scan: {Values: [4.3, 7.7]}}'
@@ -122,12 +122,12 @@ function Unit_Test__parameters-scan-single-validation()
         "${HYBRID_software_new_input_keys[Afterburner]}" 'EXPECT_FAILURE' || return 1
 }
 
-function Make_Test_Preliminary_Operations__parameters-scan-global-validation()
+function Make_Test_Preliminary_Operations__scan-global-validation()
 {
-    Make_Test_Preliminary_Operations__parameters-scan-format-lists
+    Make_Test_Preliminary_Operations__scan-format-lists
 }
 
-function Unit_Test__parameters-scan-global-validation()
+function Unit_Test__scan-global-validation()
 {
     declare -A list_of_parameters_values
     HYBRID_scan_parameters[IC]='[Modi.Collider.Sqrtsnn]'

@@ -7,7 +7,7 @@
 #
 #===================================================
 
-function Make_Test_Preliminary_Operations__parameters-scan-create-list()
+function Make_Test_Preliminary_Operations__scan-create-list()
 {
     local file_to_be_sourced list_of_files
     list_of_files=(
@@ -20,7 +20,7 @@ function Make_Test_Preliminary_Operations__parameters-scan-create-list()
     Define_Further_Global_Variables
 }
 
-function Unit_Test__parameters-scan-create-list()
+function Unit_Test__scan-create-list()
 {
     declare -A list_of_parameters_values=(
         ['IC.Software_keys.Modi.Collider.Sqrtsnn']='{Values: [4.3, 7.7]}'
