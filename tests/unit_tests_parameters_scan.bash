@@ -12,7 +12,7 @@ function Make_Test_Preliminary_Operations__parameters-scan-format-lists()
     local file_to_be_sourced list_of_files
     list_of_files=(
         'global_variables.bash'
-        'parameters_scan_validation.bash'
+        'scan_validation.bash'
     )
     for file_to_be_sourced in "${list_of_files[@]}"; do
         source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
