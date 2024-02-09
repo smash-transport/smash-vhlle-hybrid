@@ -129,13 +129,22 @@ function Make_Test_Preliminary_Operations__parameters-scan-global-validation()
 
 function Unit_Test__parameters-scan-global-validation()
 {
+    declare -A list_of_parameters_values
     HYBRID_scan_parameters[IC]='[Modi.Collider.Sqrtsnn]'
     HYBRID_scan_parameters[Hydro]='[etaS]'
     HYBRID_software_new_input_keys[IC]=$'Modi:\n  Collider:\n    Sqrtsnn: {Scan: {Values: [4.3, 7.7]}}'
     HYBRID_software_new_input_keys[Hydro]='etaS: {Scan: {Values: [0.13, 0.15, 0.17]}}'
-    Call_Codebase_Function_In_Subshell Validate_Scan_Parameters
+    Call_Codebase_Function Validate_And_Store_Scan_Parameters
     if [[ $? -ne 0 ]]; then
         Print_Error 'Validation of scan parameters unexpectedly failed.'
+        return 1
+    elif ! Element_In_Array_Equals_To 'IC.Software_keys.Modi.Collider.Sqrtsnn' "${!list_of_parameters_values[@]}" ||\
+        ! Element_In_Array_Equals_To 'Hydro.Software_keys.etaS' "${!list_of_parameters_values[@]}"; then
+        Print_Error 'Storing of scanning information unexpectedly failed (missing/wrong keys).'
+        return 1
+    elif [[ "${list_of_parameters_values[IC.Software_keys.Modi.Collider.Sqrtsnn]}" != '{Values: [4.3, 7.7]}' ]] ||\
+        [[ "${list_of_parameters_values[Hydro.Software_keys.etaS]}" != '{Values: [0.13, 0.15, 0.17]}' ]]; then
+        Print_Error 'Storing of scanning information unexpectedly failed (wrong values).'
         return 1
     fi
     HYBRID_scan_parameters=(

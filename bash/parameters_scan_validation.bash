@@ -18,8 +18,13 @@ function Format_Scan_Parameters_Lists()
     done
 }
 
-function Validate_Scan_Parameters()
+# NOTE: In the following functions the parameter(s) to be scanned are stored as a period-separated
+#       list of keys to navigate the YAML tree. However, the utility functions are general and needs
+#       keys as separate arguments. Hence we let word-splitting help us when calling the function.
+#       By that it is also assumed that there are no spaces in keys (a kind of design decision).
+function Validate_And_Store_Scan_Parameters()
 {
+    Ensure_That_Given_Variables_Are_Set list_of_parameters_values
     local key parameters parameter counter=0
     for key in "${!HYBRID_scan_parameters[@]}"; do
         if [[ "${HYBRID_scan_parameters["${key}"]}" = '' ]]; then
@@ -30,6 +35,15 @@ function Validate_Scan_Parameters()
                 if ! __static__Is_Parameter_To_Be_Scanned \
                     "${parameter}" "${HYBRID_software_new_input_keys["${key}"]}"; then
                     (( counter++ )) || true
+                else
+                    parameter_value=$(
+                        Read_From_YAML_String_Given_Key \
+                            "${HYBRID_software_new_input_keys["${key}"]}" ${parameter//./ }
+                    )
+                    # Get rid of YAML top-level 'Scan' key
+                    list_of_parameters_values["${key}.Software_keys.${parameter}"]=$(
+                        yq '.Scan' <<< "${parameter_value}"
+                    )
                 fi
             done
         fi
@@ -44,9 +58,6 @@ function Validate_Scan_Parameters()
 function __static__Is_Parameter_To_Be_Scanned()
 {
     local -r key="$1" yaml_section="$2"
-    # Here the key is assumed to be a period-separated list of keys to navigate the YAML
-    # tree. However the utility functions needs separate arguments and we let word-splitting
-    # help us, by that also assuming that there are no spaces in keys (a kind of design decision).
     if ! Has_YAML_String_Given_Key "${yaml_section}" ${key//./ }; then
         Print_Error \
             'The ' --emph "${key}" ' parameter is asked to be scanned but its value' \
@@ -149,7 +160,7 @@ function __static__Has_Valid_Scan_Correct_Values()
             ;;
         *)
             Print_Internal_And_Exit \
-                'Unknown scan passed to values validation function' --emph "${FUNCNAME}" '.'
+                'Unknown scan passed to ' --emph "${FUNCNAME}" ' function.'
             ;;
     esac
 }
