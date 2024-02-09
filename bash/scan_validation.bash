@@ -34,7 +34,7 @@ function Validate_And_Store_Scan_Parameters()
             for parameter in "${parameters[@]}"; do
                 if ! __static__Is_Parameter_To_Be_Scanned \
                     "${parameter}" "${HYBRID_software_new_input_keys["${key}"]}"; then
-                    (( counter++ )) || true
+                    ((counter++)) || true
                 else
                     parameter_value=$(
                         Read_From_YAML_String_Given_Key \
@@ -50,7 +50,7 @@ function Validate_And_Store_Scan_Parameters()
     done
     if [[ ${counter} -ne 0 ]]; then
         exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
-            '\nThe hybrid handler configuration file contains '\
+            '\nThe hybrid handler configuration file contains ' \
             --emph "${counter}" ' invalid scan specifications.'
     fi
 }
@@ -67,8 +67,7 @@ function __static__Is_Parameter_To_Be_Scanned()
     local parameter_value
     parameter_value=$(Read_From_YAML_String_Given_Key "${yaml_section}" ${key//./ })
     if ! __static__Is_Given_Key_Value_A_Valid_Scan "${parameter_value}"; then
-        Print_Error -l --\
-            'The ' --emph "${key}" \
+        Print_Error -l -- 'The ' --emph "${key}" \
             ' parameter is asked to be scanned but its value was not properly specified as a scan.'
         return 1
     fi
@@ -128,8 +127,7 @@ function __static__Check_If_Keys_Of_Given_Scan_Have_Correct_Values()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan sorted_scan_keys
     if ! __static__Has_Valid_Scan_Correct_Values; then
-        Print_Error -l --\
-            'The given scan\n' --emph "${given_scan}" '\nis allowed but its specification is invalid.'
+        Print_Error -l -- 'The given scan\n' --emph "${given_scan}" '\nis allowed but its specification is invalid.'
         return 1
     fi
 }
@@ -138,7 +136,7 @@ function __static__Has_Valid_Scan_Correct_Values()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan sorted_scan_keys
     case "${sorted_scan_keys}" in
-        "[Values]" )
+        "[Values]")
             if [[ $(yq '.Scan.Values | type' <<< "${given_scan}") != '!!seq' ]]; then
                 Print_Error \
                     'The value ' --emph "$(yq '.Scan.Values' <<< "${given_scan}")" \
@@ -146,7 +144,7 @@ function __static__Has_Valid_Scan_Correct_Values()
                 return 1
             fi
             local list_of_value_types
-            list_of_value_types=( $(yq '.Scan.Values[] | type' <<< "${given_scan}" | sort -u) )
+            list_of_value_types=($(yq '.Scan.Values[] | type' <<< "${given_scan}" | sort -u))
             if [[ ${#list_of_value_types[@]} -ne 1 ]]; then
                 Print_Error \
                     'The parameter values have different YAML types: ' --emph "${list_of_value_types[*]//!!/}" '.'

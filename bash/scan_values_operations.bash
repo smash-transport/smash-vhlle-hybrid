@@ -35,7 +35,7 @@ function __static__Generate_And_Store_Parameter_List_Of_Values()
     local -r parameter=$1 scan_map="${list_of_parameters_values["$1"]}"
     local -r sorted_scan_keys="$(yq '. | keys | sort | .. style="flow"' <<< "${scan_map}")"
     case "${sorted_scan_keys}" in
-        "[Values]" )
+        "[Values]")
             list_of_parameters_values["${parameter}"]=$(
                 yq '.Values | .. style="flow"' <<< "${scan_map}"
             )

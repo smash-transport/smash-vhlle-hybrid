@@ -65,7 +65,7 @@ function Unit_Test__parameters-scan-YAML-scan-syntax()
         '{Scan: {Values: [42, 3.14]}}'
         '{Scan: {Values: ["Hi", "Bye"]}}'
     )
-    for value in "${values[@]}" ; do
+    for value in "${values[@]}"; do
         Call_Codebase_Function __static__Is_Given_Key_Value_A_Valid_Scan "${value}" &> /dev/null
         if [[ $? -eq 0 ]]; then
             Print_Error 'Scan syntax validation for\n' --emph "${value}" '\nunexpectedly succeeded.'
@@ -138,12 +138,12 @@ function Unit_Test__parameters-scan-global-validation()
     if [[ $? -ne 0 ]]; then
         Print_Error 'Validation of scan parameters unexpectedly failed.'
         return 1
-    elif ! Element_In_Array_Equals_To 'IC.Software_keys.Modi.Collider.Sqrtsnn' "${!list_of_parameters_values[@]}" ||\
-        ! Element_In_Array_Equals_To 'Hydro.Software_keys.etaS' "${!list_of_parameters_values[@]}"; then
+    elif ! Element_In_Array_Equals_To 'IC.Software_keys.Modi.Collider.Sqrtsnn' "${!list_of_parameters_values[@]}" \
+        || ! Element_In_Array_Equals_To 'Hydro.Software_keys.etaS' "${!list_of_parameters_values[@]}"; then
         Print_Error 'Storing of scanning information unexpectedly failed (missing/wrong keys).'
         return 1
-    elif [[ "${list_of_parameters_values[IC.Software_keys.Modi.Collider.Sqrtsnn]}" != '{Values: [4.3, 7.7]}' ]] ||\
-        [[ "${list_of_parameters_values[Hydro.Software_keys.etaS]}" != '{Values: [0.13, 0.15, 0.17]}' ]]; then
+    elif [[ "${list_of_parameters_values[IC.Software_keys.Modi.Collider.Sqrtsnn]}" != '{Values: [4.3, 7.7]}' ]] \
+        || [[ "${list_of_parameters_values[Hydro.Software_keys.etaS]}" != '{Values: [0.13, 0.15, 0.17]}' ]]; then
         Print_Error 'Storing of scanning information unexpectedly failed (wrong values).'
         return 1
     fi

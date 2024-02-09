@@ -27,8 +27,8 @@ function Unit_Test__parameters-scan-create-list()
         ['Hydro.Software_keys.etaS']='{Values: [0.13, 0.15, 0.17]}'
     )
     Call_Codebase_Function Create_List_Of_Parameters_Values
-    if [[ "${list_of_parameters_values[IC.Software_keys.Modi.Collider.Sqrtsnn]}" != '[4.3, 7.7]' ]] ||\
-        [[ "${list_of_parameters_values[Hydro.Software_keys.etaS]}" != '[0.13, 0.15, 0.17]' ]]; then
+    if [[ "${list_of_parameters_values[IC.Software_keys.Modi.Collider.Sqrtsnn]}" != '[4.3, 7.7]' ]] \
+        || [[ "${list_of_parameters_values[Hydro.Software_keys.etaS]}" != '[0.13, 0.15, 0.17]' ]]; then
         Print_Error 'Parameters values list was not correctly created.'
         return 1
     fi
