@@ -20,7 +20,10 @@ function Do_Needed_Operation_For_Parameter_Scan()
     # parameter values.
     declare -A list_of_parameters_values
     Format_Scan_Parameters_Lists
+    Print_Info 'Validating input scan parameters values'
     Validate_And_Store_Scan_Parameters
+    Print_Info 'Collecting parameters scan values'
     Create_List_Of_Parameters_Values
+    Print_Info 'Preparing scan configuration files:'
     Create_And_Populate_Scan_Folder
 }

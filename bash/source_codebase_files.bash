@@ -33,6 +33,7 @@ function __static__Source_Codebase_Files()
         'global_variables.bash'
         'Hydro_functionality.bash'
         'IC_functionality.bash'
+        'progress_bar.bash'
         'Sampler_functionality.bash'
         'sanity_checks.bash'
         'scan_files_operations.bash'

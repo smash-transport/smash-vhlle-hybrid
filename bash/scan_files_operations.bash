@@ -73,12 +73,15 @@ function __static__Create_Output_Files_In_Scan_Folder_And_Complete_Combinations_
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
         list_of_parameters_values parameters parameters_combinations
     local id filename
+    Print_Progress_Bar 0 ${#parameters_combinations[@]}
     for id in "${!parameters_combinations[@]}"; do
         filename="$(__static__Get_Output_Filename "${id}")"
         # Let word splitting split values in each parameters combination
         __static__Add_Line_To_Combinations_File "${id}" ${parameters_combinations[id]}
         __static__Create_Single_Output_File_In_Scan_Folder "${id}" ${parameters_combinations[id]}
+        Print_Progress_Bar $((id+1)) ${#parameters_combinations[@]}
     done
+    Print_Final_Progress_Bar $((id+1)) ${#parameters_combinations[@]}
 }
 
 function __static__Get_Output_Filename()
