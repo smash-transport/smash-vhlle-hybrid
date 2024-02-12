@@ -188,6 +188,11 @@ function Ensure_Given_Folders_Exist()
     __static__Check_Given_Files_With '! -d' 'FATAL' "$@"
 }
 
+function Internally_Ensure_Given_Files_Do_Not_Exist()
+{
+    __static__Check_Given_Files_With '-f' 'INTERNAL' "$@"
+}
+
 function Internally_Ensure_Given_Files_Exist()
 {
     __static__Check_Given_Files_With '! -f' 'INTERNAL' "$@"

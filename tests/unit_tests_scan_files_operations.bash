@@ -36,18 +36,37 @@ function Unit_Test__scan-create-single-file()
       Software_keys:
         etaS: {Scan: {Values: [0.13, 0.15, 0.17]}}
     ' > 'config.yaml'
+    cat > ref_scan_combinations.dat <<EOF
+# Parameter_1: IC.Software_keys.Modi.Collider.Sqrtsnn
+# Parameter_2: Hydro.Software_keys.etaS
+#
+#___Run  Parameter_1  Parameter_2
+      1          4.3         0.13
+      2          4.3         0.15
+      3          4.3         0.17
+      4          7.7         0.13
+      5          7.7         0.15
+      6          7.7         0.17
+EOF
     HYBRID_scan_directory='scan_test'
     Call_Codebase_Function Create_And_Populate_Scan_Folder
     cd "${HYBRID_scan_directory}"
     shopt -s nullglob
     local -r list_of_files=(*)
-    if [[ ${#list_of_files[@]} -ne 6 ]]; then
-        Print_Error 'Expected ' --emph '6' ' files to be created, but ' --emph "${#list_of_files[@]}" ' found.'
+    if [[ ${#list_of_files[@]} -ne 7 ]]; then
+        Print_Error 'Expected ' --emph '7' ' files to be created, but ' --emph "${#list_of_files[@]}" ' found.'
         return 1
     fi
     local file values sqrt_snn eta_s
     set -- "4.3 0.13" "4.3 0.15" "4.3 0.17" "7.7 0.13" "7.7 0.15" "7.7 0.17"
     for file in "${list_of_files[@]}"; do
+        if [[ "${file}" = "${HYBRID_scan_combinations_filename}" ]]; then
+            if ! diff -q "${file}" '../ref_scan_combinations.dat' &> /dev/null; then
+                Print_Error 'Scan combinations file expected different.'
+                return 1
+            fi
+            continue
+        fi
         if [[ ! "${file}" =~ ^${HYBRID_scan_directory}_[1-6]\.yaml$ ]]; then
             Print_Error 'Filename ' --emph "${file}" ' not matching expected name.'
             return 1

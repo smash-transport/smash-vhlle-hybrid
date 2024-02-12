@@ -63,6 +63,7 @@ function Define_Further_Global_Variables()
     readonly HYBRID_valid_scan_specification_keys=(
         '[Values]'
     )
+    readonly HYBRID_scan_combinations_filename='scan_combinations.dat'
     # The following associative arrays declare maps between valid keys in the handler config
     # file and bash variables in which the input information will be stored once parsed.
     declare -rgA HYBRID_hybrid_handler_valid_keys=(
