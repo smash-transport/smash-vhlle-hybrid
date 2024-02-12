@@ -20,6 +20,7 @@ function __static__Source_Codebase_Files()
     source "${HYBRID_top_level_path}/bash/utility_functions.bash" || exit ${HYBRID_fatal_builtin}
     list_of_files=(
         'Afterburner_functionality.bash'
+        'command_line_parsers/allowed_options.bash'
         'command_line_parsers/helper.bash'
         'command_line_parsers/main_parser.bash'
         'command_line_parsers/sub_parser.bash'
