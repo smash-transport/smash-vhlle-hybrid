@@ -25,6 +25,9 @@ function Format_Scan_Parameters_Lists()
 function Validate_And_Store_Scan_Parameters()
 {
     Ensure_That_Given_Variables_Are_Set list_of_parameters_values
+    # Manually set the array in order to check at the end if it stayed empty.
+    # NOTE: In 'set -u' mode this is needed, otherwise accessing the size would fail for empty arrays.
+    list_of_parameters_values=()
     local key parameters parameter counter=0
     for key in "${!HYBRID_scan_parameters[@]}"; do
         if [[ "${HYBRID_scan_parameters["${key}"]}" = '' ]]; then
@@ -52,6 +55,10 @@ function Validate_And_Store_Scan_Parameters()
         exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
             '\nThe hybrid handler configuration file contains ' \
             --emph "${counter}" ' invalid scan specifications.'
+    elif [[ ${#list_of_parameters_values[@]} -eq 0 ]]; then
+        exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
+            'The hybrid handler configuration file does not properly specify scan parameters.' \
+            'Make sure to specify the ' --emph 'Scan_parameters' ' key in the appropriate sections.'
     fi
 }
 

@@ -159,7 +159,13 @@ function Unit_Test__scan-global-validation()
         [Sampler]='shear: 1.'
         [Afterburner]=''
     )
-    Call_Codebase_Function_In_Subshell Validate_Scan_Parameters &> /dev/null
+    Call_Codebase_Function_In_Subshell Validate_And_Store_Scan_Parameters &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Validation of scan parameters unexpectedly succeeded.'
+        return 1
+    fi
+    HYBRID_scan_parameters=()
+    Call_Codebase_Function_In_Subshell Validate_And_Store_Scan_Parameters &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Validation of scan parameters unexpectedly succeeded.'
         return 1
