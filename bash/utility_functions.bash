@@ -178,6 +178,11 @@ function Ensure_Given_Files_Exist()
     __static__Check_Given_Files_With '! -f' 'FATAL' "$@"
 }
 
+function Ensure_Given_Folders_Do_Not_Exist()
+{
+    __static__Check_Given_Files_With '-d' 'FATAL' "$@"
+}
+
 function Ensure_Given_Folders_Exist()
 {
     __static__Check_Given_Files_With '! -d' 'FATAL' "$@"
@@ -223,6 +228,10 @@ function __static__Check_Given_Files_With()
         "! -f")
             negations=('NOT ' '')
             string+=' file'
+            ;;
+        -d)
+            negations=('' 'NOT ')
+            string+=' folder'
             ;;
         "! -d")
             negations=('NOT ' '')
