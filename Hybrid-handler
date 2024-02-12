@@ -110,12 +110,16 @@ function Act_And_Exit_If_User_Ran_Auxiliary_Modes()
 function Make_Needed_Operations_Depending_On_Execution_Mode()
 {
     case "${HYBRID_execution_mode}" in
-        do)
-            local software_section
+        do | prepare-scan)
             Perform_Internal_Sanity_Checks
             Validate_And_Parse_Configuration_File
             Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
+            ;;&
+        do)
             Do_Needed_Operations_For_Given_Software
+            ;;
+        prepare-scan)
+            Do_Needed_Operation_For_Parameter_Scan
             ;;
         *)
             Print_Internal_And_Exit "Unexpected execution mode at top-level."
