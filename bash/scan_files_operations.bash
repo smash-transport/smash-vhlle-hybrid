@@ -89,8 +89,8 @@ function __static__Get_Output_Filename()
     local -r \
         number_of_combinations=${#parameters_combinations[@]} \
         run_number=$(($1+1))
-    printf '%s_%0*d.yaml' \
-        "${HYBRID_scan_directory}/${HYBRID_scan_directory}" \
+    printf '%s_run_%0*d.yaml' \
+        "${HYBRID_scan_directory}/$(basename "${HYBRID_scan_directory}")" \
         "${#number_of_combinations}" \
         "${run_number}"
 }
