@@ -56,6 +56,36 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
     If you need to add a key to the software default configuration file, you should create a custom one and specify it via the `Config_file` key.
     Depending on your needs, you could also create a more complete configuration file and change the values of some keys in your run(s) via this key.
 
+???+ config-key "`Scan_parameters`"
+
+    **This key can only be specified in `prepare-scan` execution mode.**
+
+    List of software input keys whose value is meant to be scanned.
+    Each parameter has to be specified concatenating with a period all the keys as they would appear in the `Software_keys` map.
+    For example, if a software key reads
+    ```yaml
+    Software_keys:
+      foo:
+        bar:
+          baz: 42
+    ```
+    then it would be specified in the `Scan_parameters` list as `"foo.bar.baz"`.
+    Such a list is a YAML array and therefore it can be specified both in the compact and extended form.
+
+    === "Compact form"
+
+        ```yaml
+        Scan_parameters: ["foo.bar", "foo.baz"]
+        ```
+
+    === "Extended form"
+
+        ```yaml
+        Scan_parameters:
+         - "foo.bar"
+         - "foo.baz"
+        ```
+
 ## The initial conditions section
 
 There is no specific key of the `IC` section and only the generic ones can be used.

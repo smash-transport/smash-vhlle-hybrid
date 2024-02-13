@@ -21,11 +21,14 @@ nav:
   - Home: index.md
   - User Guide:
     - user/index.md
-    - Getting started: user/prerequisites.md
-    - The execution modes: user/execution_modes.md
-    - Handler configuration file: user/configuration_file.md
-    - Predefined configuration files: user/predefined_configs.md
-    - Parameters scan syntax: user/scans_syntax.md
+    - Getting started:
+       - Prerequisites: user/prerequisites.md
+       - Execution modes: user/execution_modes.md
+       - Handler configuration file: user/configuration_file.md
+       - Predefined configuration files: user/predefined_configs.md
+    - Parameters scan:
+       - Scan syntax: user/scans_syntax.md
+       - Types of scans: user/scans_types.md
   - Developer Guide:
     - developer/index.md
     - Overview: developer/overview.md
