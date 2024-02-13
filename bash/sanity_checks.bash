@@ -21,10 +21,21 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
         fi
     done
     __static__Set_Software_Input_Data_File_If_Not_Set_By_User 'Spectators'
+    __static__Set_Global_Variables_As_Readonly
+    __static__Perform_Logic_Checks_Depending_On_Execution_Mode
+}
+
+function __static__Set_Global_Variables_As_Readonly()
+{
     readonly \
         HYBRID_software_output_directory \
         HYBRID_software_configuration_file \
-        HYBRID_software_input_file
+        HYBRID_software_input_file \
+        HYBRID_software_executable \
+        HYBRID_software_user_custom_input_file \
+        HYBRID_software_base_config_file \
+        HYBRID_software_new_input_keys \
+        HYBRID_optional_feature
 }
 
 function Perform_Internal_Sanity_Checks()
@@ -35,6 +46,33 @@ function Perform_Internal_Sanity_Checks()
     Internally_Ensure_Given_Files_Exist \
         'These base configuration files should be shipped within the hybrid handler codebase.' '--' \
         "${HYBRID_software_base_config_file[@]}"
+}
+
+
+function Ensure_Consistency_Of_Afterburner_Input()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_input_file[Afterburner]'
+    if Has_YAML_String_Given_Key \
+        "$(< "${HYBRID_configuration_file}")" 'Afterburner' 'Software_keys' 'Modi' 'List' 'Filename'; then
+        local given_filename
+        given_filename=$(Read_From_YAML_String_Given_Key "$(< "${HYBRID_configuration_file}")" 'Afterburner' \
+            'Software_keys' 'Modi' 'List' 'Filename')
+        if [[ "${given_filename}" != "${HYBRID_software_input_file[Afterburner]}" ]]; then
+            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                'The Afterburner input particle list has to be modified via the ' \
+                --emph 'Input_file' ' key,' 'not the ' --emph 'Software_keys' \
+                ' specifying the input list filename!'
+        fi
+    fi
+    if Has_YAML_String_Given_Key \
+        "$(< "${HYBRID_configuration_file}")" 'Afterburner' 'Software_keys' 'Modi' 'List' 'Shift_ID' \
+        || Has_YAML_String_Given_Key \
+            "$(< "${HYBRID_configuration_file}")" 'Afterburner' 'Software_keys' 'Modi' 'List' 'File_Prefix'; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+            'The Afterburner input particle list has to be modified via the ' \
+            --emph 'Input_file' ' key,' 'not the ' --emph 'Software_keys' \
+            ' specifying the input list prefix and ID!'
+    fi
 }
 
 function __static__Ensure_Executable_Exists()
@@ -117,30 +155,22 @@ function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
     fi
 }
 
-function Ensure_Consistency_Of_Afterburner_Input()
+function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
 {
-    Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_input_file[Afterburner]'
-    if Has_YAML_String_Given_Key \
-        "$(< "${HYBRID_configuration_file}")" 'Afterburner' 'Software_keys' 'Modi' 'List' 'Filename'; then
-        local given_filename
-        given_filename=$(Read_From_YAML_String_Given_Key "$(< "${HYBRID_configuration_file}")" 'Afterburner' \
-            'Software_keys' 'Modi' 'List' 'Filename')
-        if [[ "${given_filename}" != "${HYBRID_software_input_file[Afterburner]}" ]]; then
-            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                'The Afterburner input particle list has to be modified via the ' \
-                --emph 'Input_file' ' key,' 'not the ' --emph 'Software_keys' \
-                ' specifying the input list filename!'
-        fi
-    fi
-    if Has_YAML_String_Given_Key \
-        "$(< "${HYBRID_configuration_file}")" 'Afterburner' 'Software_keys' 'Modi' 'List' 'Shift_ID' \
-        || Has_YAML_String_Given_Key \
-            "$(< "${HYBRID_configuration_file}")" 'Afterburner' 'Software_keys' 'Modi' 'List' 'File_Prefix'; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            'The Afterburner input particle list has to be modified via the ' \
-            --emph 'Input_file' ' key,' 'not the ' --emph 'Software_keys' \
-            ' specifying the input list prefix and ID!'
-    fi
+    case "${HYBRID_execution_mode}" in
+        do)
+            if [[ "${HYBRID_scan_parameters[*]}" != '' ]]; then
+                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                    'Configuration key ' --emph 'Scan_parameters' ' can ONLY be specified in '\
+                    --emph 'parameter-scan' ' execution mode.'
+            fi
+            ;;
+        prepare-scan)
+            ;;
+        *)
+            Print_Internal_And_Exit 'Unknown execution mode passed to ' --emph "${FUNCNAME}" ' function.'
+            ;;
+    esac
 }
 
 Make_Functions_Defined_In_This_File_Readonly

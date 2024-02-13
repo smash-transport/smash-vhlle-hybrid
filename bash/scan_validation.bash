@@ -16,6 +16,7 @@ function Format_Scan_Parameters_Lists()
     for key in "${!HYBRID_scan_parameters[@]}"; do
         HYBRID_scan_parameters["${key}"]=$(yq '.. style="flow"' <<< "${HYBRID_scan_parameters["${key}"]}")
     done
+    readonly HYBRID_scan_parameters
 }
 
 # NOTE: In the following functions the parameter(s) to be scanned are stored as a period-separated
