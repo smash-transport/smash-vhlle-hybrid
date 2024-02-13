@@ -28,7 +28,7 @@ Once cloned the repository, you can simply run the `Hybrid-handler` script[^1].
 
     Everything can be done using a handy script with different execution modes.
 
-    [:material-arrow-right-box:&nbsp; The hybrid handler main script](overview.md)
+    [:material-arrow-right-box:&nbsp; The hybrid handler main script](execution_modes.md)
 
 -   :screwdriver:{ .lg .middle } &nbsp; __Wanna run?__
 
@@ -36,7 +36,7 @@ Once cloned the repository, you can simply run the `Hybrid-handler` script[^1].
 
     Build your configuration file to use the hybrid handler according to your needs.
 
-    [:material-arrow-right-box:&nbsp; The configuration file](configuration-file.md)
+    [:material-arrow-right-box:&nbsp; The configuration file](configuration_file.md)
 
 -   :bulb:{ .lg .middle } &nbsp; __Let's try it out!__
 
@@ -44,7 +44,7 @@ Once cloned the repository, you can simply run the `Hybrid-handler` script[^1].
 
     If you want to make a test run or get inspired, predefined setups are available.
 
-    [:material-arrow-right-box:&nbsp; The predefined configuration files](predef-configs.md)
+    [:material-arrow-right-box:&nbsp; The predefined configuration files](predefined_configs.md)
 
 -   :material-barcode-scan:{ .lg .middle } &nbsp; __Changing parameters__
 
@@ -52,6 +52,6 @@ Once cloned the repository, you can simply run the `Hybrid-handler` script[^1].
 
     Preparing simulations scanning over one or more parameters is straightforward.
 
-    [:material-arrow-right-box:&nbsp; Specifying parameters scans](scans.md)
+    [:material-arrow-right-box:&nbsp; Specifying parameters scans](scans_syntax.md)
 
 </div>

@@ -158,7 +158,7 @@ Afterburner:
 !!! warning "This is going to be costly!"
     Such a configuration file will execute all the modules in production mode, involving a fine hydrodynamic grid and a large statistic of sampled events.
     It is therefore better suited to be executed on a computer cluster.
-    To test your setup locally, we suggest using the :material-file: *config_TEST.yaml* configuration file :material-arrow-right-box: [Predefined configuration files](predef-configs.md).
+    To test your setup locally, we suggest using the :material-file: *config_TEST.yaml* configuration file :material-arrow-right-box: [Predefined configuration files](predefined_configs.md).
 
 
 ??? question "What if I want to omit some stages?"
