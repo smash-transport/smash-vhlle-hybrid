@@ -10,19 +10,28 @@
 function Print_Progress_Bar
 {
     __static__Validate_Progress_Bar_Input "$@"
-    Print_Info -l -- "\e[K$(__static__Get_Progress_Bar $1 $2)\r\e[1A"
+    Print_Info -l -- "\e[K$(__static__Get_Progress_Bar "$@")\r\e[1A"
 }
 
 function Print_Final_Progress_Bar
 {
     __static__Validate_Progress_Bar_Input "$@"
-    Print_Info -l -- "\e[K$(__static__Get_Progress_Bar $1 $2)"
+    Print_Info -l -- "\e[K$(__static__Get_Progress_Bar "$@")"
 }
 
 function __static__Validate_Progress_Bar_Input()
 {
-    if [[ $# -lt 2 ]] || [[ ! $1 =~ ^[0-9]+(.[0-9]+)*$ ]] || [[ ! $2 =~ ^[0-9]+(.[0-9]+)*$ ]]; then
-        Print_Internal_And_Exit --emph "${FUNCNAME[1]}" ' wrongly called (' --emph "$1 $2" ').'
+    if [[ $# -lt 2 ]] ; then
+        Print_Internal_And_Exit \
+            --emph "${FUNCNAME[1]}" ' wrongly called: ' --emph 'Missing arguments' '.'
+    elif [[ ! $1 =~ ^[0-9]+(.[0-9]+)*$ ]] || [[ ! $2 =~ ^[0-9]+(.[0-9]+)*$ ]]; then
+        Print_Internal_And_Exit \
+            --emph "${FUNCNAME[1]}" ' wrongly called: ' --emph 'wrong first two arguments' '.'
+    elif [[ ${5-} != '' ]]; then
+        if [[ $5 -gt 100 ]] || [[ $5 -lt 1 ]]; then
+            Print_Internal_And_Exit \
+                --emph "${FUNCNAME[1]}" ' wrongly called: ' --emph "$5 not in [0,100]" '.'
+        fi
     fi
 }
 
@@ -33,10 +42,16 @@ function __static__Get_Progress_Bar()
         total=$2 \
         prefix="${3-}" \
         suffix="${4-}" \
+        width_percentage="${5:-33}" \
         bar="━" \
         half_bar_right="╸"
     local output="${prefix} " color
-    local -r percentage=$(awk '{printf "%.0f", 100*$1/$2}' <<< "${done} ${total}")
+    local -r \
+        width=$((COLUMNS * width_percentage / 100)) \
+        percentage=$(awk '{printf "%.0f", 100*$1/$2}' <<< "${done} ${total}")
+    if [[ ${width} -lt 1 ]]; then
+        Print_Internal_And_Exit 'Progress bar too short: ' --emph "width = ${width}"
+    fi
     if [[ ${percentage} -lt 30 ]]; then
         color='\e[91m'
     elif [[ ${percentage} -lt 40 ]]; then
@@ -55,13 +70,14 @@ function __static__Get_Progress_Bar()
         color='\e[92m'
     fi
     output+=$(printf "${color}")
-    for ((i = 0; i < ${percentage}; i++)); do
+    local -r width_done=$((width * percentage / 100))
+    for ((i = 0; i < ${width_done}; i++)); do
         output+="${bar}"
     done
     output+="${half_bar_right}\e[38;5;237m"
-    for ((i = ${percentage}; i < 100; i++)); do
+    for ((i = ${width_done}; i < width; i++)); do
         output+="${bar}"
     done
-    output+=$(printf '\e[96m %d%%\e[0m %s' ${percentage} "${suffix}")
+    output+=$(printf '\e[96m %3d%%\e[0m %s' ${percentage} "${suffix}")
     printf '%s' "${output}"
 }
