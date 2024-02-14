@@ -35,8 +35,8 @@ function __static__Get_All_Parameters_Combinations()
 {
     local values string_to_be_expanded
     for values in "$@"; do
-        values=$(sed -e 's/ //g' -e 's/[[]/\{/' -e 's/[]]/\}/' <<< "${values}")
-        string_to_be_expanded+="${values}_"
+        # Get rid of spaces and square brackets and prepare brace expansion
+        string_to_be_expanded+="{${values//[][ ]/}}_"
     done
     # NOTE: The following use of 'eval' is fine since the string that is expanded
     #       is guaranteed to be validated to contain only YAML int, bool or float.
