@@ -12,6 +12,7 @@ function Make_Test_Preliminary_Operations__scan-create-single-file()
     local file_to_be_sourced list_of_files
     list_of_files=(
         'global_variables.bash'
+        'progress_bar.bash'
         'scan_files_operations.bash'
     )
     for file_to_be_sourced in "${list_of_files[@]}"; do
@@ -49,7 +50,7 @@ function Unit_Test__scan-create-single-file()
       6          7.7         0.17
 EOF
     HYBRID_scan_directory='scan_test'
-    Call_Codebase_Function Create_And_Populate_Scan_Folder
+    Call_Codebase_Function Create_And_Populate_Scan_Folder &> /dev/null 9>&1 # Suppress progress bar, too
     cd "${HYBRID_scan_directory}"
     shopt -s nullglob
     local -r list_of_files=(*)
@@ -67,7 +68,7 @@ EOF
             fi
             continue
         fi
-        if [[ ! "${file}" =~ ^${HYBRID_scan_directory}_[1-6]\.yaml$ ]]; then
+        if [[ ! "${file}" =~ ^${HYBRID_scan_directory}_run_[1-6]\.yaml$ ]]; then
             Print_Error 'Filename ' --emph "${file}" ' not matching expected name.'
             return 1
         fi
