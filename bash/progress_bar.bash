@@ -58,9 +58,9 @@ function __static__Get_Progress_Bar()
     for ((i = 0; i < ${percentage}; i++)); do
         output+="${bar}"
     done
-    output+="${half_bar_right}"
+    output+="${half_bar_right}\e[38;5;237m"
     for ((i = ${percentage}; i < 100; i++)); do
-        output+="\e[38;5;237m${bar}"
+        output+="${bar}"
     done
     output+=$(printf '\e[96m %d%%\e[0m %s' ${percentage} "${suffix}")
     printf '%s' "${output}"
