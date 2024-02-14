@@ -161,12 +161,11 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
         do)
             if [[ "${HYBRID_scan_parameters[*]}" != '' ]]; then
                 exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                    'Configuration key ' --emph 'Scan_parameters' ' can ONLY be specified in '\
+                    'Configuration key ' --emph 'Scan_parameters' ' can ONLY be specified in ' \
                     --emph 'parameter-scan' ' execution mode.'
             fi
             ;;
-        prepare-scan)
-            ;;
+        prepare-scan) ;;
         *)
             Print_Internal_And_Exit 'Unknown execution mode passed to ' --emph "${FUNCNAME}" ' function.'
             ;;

@@ -32,16 +32,16 @@ function __static__Print_Main_Help_Message()
     #       that handler prerequisites are missing. Hence, possibly only bash should be used.
     declare -A section_headers auxiliary_modes_description execution_modes_description
     section_headers=(
-        [auxiliary_modes_description]='Auxiliary modes for help, information or setup'
-        [execution_modes_description]='Prepare needed files and folders and/or submit/run new simulation(s)'
+        ['auxiliary_modes_description']='Auxiliary modes for help, information or setup'
+        ['execution_modes_description']='Prepare needed files and folders and/or submit/run new simulation(s)'
     )
     auxiliary_modes_description=(
-        [help]='Display this help message'
-        [version]='Get information about the version in use'
+        ['help']='Display this help message'
+        ['version']='Get information about the version in use'
     )
     execution_modes_description=(
-        [do]='Do everything is necessary to run the workflow given in the configuration file'
-        [prepare-scan]='Prepare configurations files for the handler scanning in the given parameters'
+        ['do']='Do everything is necessary to run the workflow given in the configuration file'
+        ['prepare-scan']='Prepare configurations files for the handler scanning in the given parameters'
     )
     __static__Print_Handler_Header_And_Usage_Synopsis
     __static__Print_Modes_Description
@@ -135,7 +135,7 @@ function __static__Print_Given_Command_Line_Option_Help()
                 "Label of the scan used by the handler to produce output." \
                 "The new configuration files will be put in a sub-folder" \
                 "of the output directory named using the specified name" \
-                "and the configuration files themselves will contain the"\
+                "and the configuration files themselves will contain the" \
                 "scan name as part of their name."
             ;;
         *)

@@ -37,7 +37,7 @@ function Unit_Test__scan-create-single-file()
       Software_keys:
         etaS: {Scan: {Values: [0.13, 0.15, 0.17]}}
     ' > 'config.yaml'
-    cat > ref_scan_combinations.dat <<EOF
+    cat > ref_scan_combinations.dat << EOF
 # Parameter_1: IC.Software_keys.Modi.Collider.Sqrtsnn
 # Parameter_2: Hydro.Software_keys.etaS
 #
@@ -72,7 +72,7 @@ EOF
             Print_Error 'Filename ' --emph "${file}" ' not matching expected name.'
             return 1
         fi
-        values=( $1 ) # Use word splitting to split values
+        values=($1) # Use word splitting to split values
         shift
         sqrt_snn=$(Read_From_YAML_String_Given_Key "$(< "${file}")" 'IC' 'Software_keys' 'Modi' 'Collider' 'Sqrtsnn')
         if [[ "${sqrt_snn}" != "${values[0]}" ]]; then

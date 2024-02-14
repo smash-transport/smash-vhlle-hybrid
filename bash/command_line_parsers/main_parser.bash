@@ -106,7 +106,7 @@ function __static__Replace_Short_Options_With_Long_Ones()
         if Element_In_Array_Equals_To "${option}" "${!options_map[@]}"; then
             option=${options_map["${option}"]}
         fi
-        HYBRID_command_line_options_to_parse+=( "${option}" )
+        HYBRID_command_line_options_to_parse+=("${option}")
     done
 }
 
@@ -114,7 +114,7 @@ function __static__Validate_Command_Line_Options()
 {
     _HYBRID_Declare_Allowed_Command_Line_Options
     # Let word splitting split valid options
-    local -r valid_options=( ${HYBRID_allowed_command_line_options["${HYBRID_execution_mode}"]} )
+    local -r valid_options=(${HYBRID_allowed_command_line_options["${HYBRID_execution_mode}"]})
     local option
     for option in "${HYBRID_command_line_options_to_parse[@]}"; do
         if [[ ${option} =~ ^- ]]; then
@@ -126,6 +126,5 @@ function __static__Validate_Command_Line_Options()
         fi
     done
 }
-
 
 Make_Functions_Defined_In_This_File_Readonly

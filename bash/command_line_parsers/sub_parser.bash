@@ -13,7 +13,7 @@ function Parse_Specific_Mode_Options_prepare-scan()
     HYBRID_command_line_options_to_parse=()
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            --scan-name )
+            --scan-name)
                 if [[ ${2-} =~ ^(-|$) ]]; then
                     Print_Option_Specification_Error_And_Exit "$1"
                 else
@@ -21,8 +21,8 @@ function Parse_Specific_Mode_Options_prepare-scan()
                 fi
                 shift 2
                 ;;
-            * )
-                HYBRID_command_line_options_to_parse+=( "$1" )
+            *)
+                HYBRID_command_line_options_to_parse+=("$1")
                 shift
                 ;;
         esac

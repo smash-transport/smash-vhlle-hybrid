@@ -11,7 +11,7 @@ function Create_And_Populate_Scan_Folder()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty list_of_parameters_values
     local -r \
-        parameters=( "${!list_of_parameters_values[@]}" ) \
+        parameters=("${!list_of_parameters_values[@]}") \
         scan_combinations_file="${HYBRID_scan_directory}/${HYBRID_scan_combinations_filename}"
     local parameters_combinations
     readarray -t parameters_combinations < \
@@ -58,11 +58,11 @@ function __static__Create_Combinations_File_With_Metadata_Header_Block()
     local index
     {
         for index in "${!parameters[@]}"; do
-            printf '# Parameter_%d: %s\n' $((index+1)) "${parameters[index]}"
+            printf '# Parameter_%d: %s\n' $((index + 1)) "${parameters[index]}"
         done
         printf '#\n#___Run'
         for index in "${!parameters[@]}"; do
-            printf '  Parameter_%d' $((index+1))
+            printf '  Parameter_%d' $((index + 1))
         done
         printf '\n'
     } > "${scan_combinations_file}"
@@ -72,16 +72,19 @@ function __static__Create_Output_Files_In_Scan_Folder_And_Complete_Combinations_
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
         list_of_parameters_values parameters parameters_combinations
+    local -r number_of_files=${#parameters_combinations[@]}
     local id filename
-    Print_Progress_Bar 0 ${#parameters_combinations[@]}
+    Print_Progress_Bar 0 ${number_of_files}
     for id in "${!parameters_combinations[@]}"; do
         filename="$(__static__Get_Output_Filename "${id}")"
         # Let word splitting split values in each parameters combination
         __static__Add_Line_To_Combinations_File "${id}" ${parameters_combinations[id]}
         __static__Create_Single_Output_File_In_Scan_Folder "${id}" ${parameters_combinations[id]}
-        Print_Progress_Bar $((id+1)) ${#parameters_combinations[@]}
+        Print_Progress_Bar \
+            $((id + 1)) ${number_of_files} '' "$(printf '%5d' $((id + 1)))/${number_of_files} files"
     done
-    Print_Final_Progress_Bar $((id+1)) ${#parameters_combinations[@]}
+    Print_Final_Progress_Bar \
+        $((id + 1)) ${number_of_files} '' "$(printf '%5d' $((id + 1)))/${number_of_files} files"
 }
 
 function __static__Get_Output_Filename()
@@ -91,7 +94,7 @@ function __static__Get_Output_Filename()
     # amount of leading zeroes in order to make sorting easier for the user.
     local -r \
         number_of_combinations=${#parameters_combinations[@]} \
-        run_number=$(($1+1))
+        run_number=$(($1 + 1))
     printf '%s_run_%0*d.yaml' \
         "${HYBRID_scan_directory}/$(basename "${HYBRID_scan_directory}")" \
         "${#number_of_combinations}" \
@@ -104,7 +107,7 @@ function __static__Add_Line_To_Combinations_File()
     # These fields lengths are hard-coded for the moment and are meant to
     # properly align the column content to the header line description
     {
-        printf '%7d' $(($1+1))
+        printf '%7d' $(($1 + 1))
         shift
         printf '  %11s' "$@"
         printf '\n'
@@ -114,13 +117,13 @@ function __static__Add_Line_To_Combinations_File()
 function __static__Create_Single_Output_File_In_Scan_Folder()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty parameters filename
-    local -r run_number=$(($1+1))
+    local -r run_number=$(($1 + 1))
     shift
-    local -r set_of_values=( "$@" )
+    local -r set_of_values=("$@")
     Internally_Ensure_Given_Files_Do_Not_Exist "${filename}"
     __static__Add_Parameters_Comment_Line_To_New_Configuration_File
     local index yq_replacements
-    for ((index=0; index<${#parameters[@]}; index++)); do
+    for ((index = 0; index < ${#parameters[@]}; index++)); do
         yq_replacements+="( .${parameters[index]} ) = ${set_of_values[index]} |"
     done
     yq "${yq_replacements%?}" "${HYBRID_configuration_file}" >> "${filename}"
