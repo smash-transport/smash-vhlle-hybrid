@@ -159,11 +159,14 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
 {
     case "${HYBRID_execution_mode}" in
         do)
-            if [[ "${HYBRID_scan_parameters[*]}" != '' ]]; then
-                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                    'Configuration key ' --emph 'Scan_parameters' ' can ONLY be specified in ' \
-                    --emph 'parameter-scan' ' execution mode.'
-            fi
+            local key
+            for key in "${!HYBRID_scan_parameters[@]}"; do
+                if [[ "${HYBRID_scan_parameters["${key}"]}" != '' ]]; then
+                    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                        'Configuration key ' --emph 'Scan_parameters' ' can ONLY be specified in ' \
+                        --emph 'parameter-scan' ' execution mode.'
+                fi
+            done
             ;;
         prepare-scan) ;;
         help) ;; # This is the default mode which is set in tests -> do nothing, but catch it
