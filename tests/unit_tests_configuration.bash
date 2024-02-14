@@ -38,7 +38,7 @@ function Make_Test_Preliminary_Operations__configuration-validate-YAML()
 
 function Unit_Test__configuration-validate-YAML()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf 'Scalar\nKey: Value\n' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell Validate_And_Parse_Configuration_File &> /dev/null
     if [[ $? -eq 0 ]]; then
@@ -57,7 +57,7 @@ function Make_Test_Preliminary_Operations__configuration-validate-section-labels
 
 function Unit_Test__configuration-validate-section-labels()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf 'Invalid: Value\n' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell Validate_And_Parse_Configuration_File &> /dev/null
     if [[ $? -eq 0 ]]; then
@@ -100,7 +100,7 @@ function Make_Test_Preliminary_Operations__configuration-validate-all-keys()
 
 function Unit_Test__configuration-validate-all-keys()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf '
     Hybrid_handler:
       Try: 1
@@ -157,7 +157,7 @@ function Make_Test_Preliminary_Operations__configuration-validate-boolean-values
 
 function Unit_Test__configuration-validate-boolean-values()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     local value counter=0
     for value in y Y yes Yes YES n N no No NO on On ON off Off OFF 0 1; do
         printf '
@@ -202,7 +202,7 @@ function Make_Test_Preliminary_Operations__configuration-parse-general-section()
 
 function Unit_Test__configuration-parse-general-section()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf 'Hybrid_handler: {}\nIC:\n  Executable: foo\n' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell Validate_And_Parse_Configuration_File
     if [[ $? -ne 0 ]]; then
@@ -252,7 +252,7 @@ function Make_Test_Preliminary_Operations__configuration-parse-IC-section()
 
 function Unit_Test__configuration-parse-IC-section()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf '
     IC:
       Executable: foo
@@ -280,7 +280,7 @@ function Make_Test_Preliminary_Operations__configuration-parse-Hydro-section()
 
 function Unit_Test__configuration-parse-Hydro-section()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf '
     Hydro:
       Executable: foo
@@ -307,7 +307,7 @@ function Make_Test_Preliminary_Operations__configuration-parse-Sampler-section()
 
 function Unit_Test__configuration-parse-Sampler-section()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf '
     Sampler:
       Executable: foo
@@ -333,7 +333,7 @@ function Make_Test_Preliminary_Operations__configuration-parse-Afterburner-secti
 
 function Unit_Test__configuration-parse-Afterburner-section()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf '
     Afterburner:
       Executable: foo

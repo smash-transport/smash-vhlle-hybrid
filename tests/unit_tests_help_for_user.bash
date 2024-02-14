@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -9,7 +9,14 @@
 
 function Make_Test_Preliminary_Operations__give-requested-help()
 {
-    source "${HYBRIDT_repository_top_level_path}/bash/command_line_parsers/helper.bash" || exit ${HYBRID_fatal_builtin}
+    local file_to_be_sourced list_of_files
+    list_of_files=(
+        'command_line_parsers/allowed_options.bash'
+        'command_line_parsers/helper.bash'
+    )
+    for file_to_be_sourced in "${list_of_files[@]}"; do
+        source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
+    done
     HYBRID_configuration_file='./config.yaml'
     HYBRID_output_directory='.'
 }

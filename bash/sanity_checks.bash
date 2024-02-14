@@ -166,6 +166,7 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
             fi
             ;;
         prepare-scan) ;;
+        help) ;; # This is the default mode which is set in tests -> do nothing, but catch it
         *)
             Print_Internal_And_Exit 'Unknown execution mode passed to ' --emph "${FUNCNAME}" ' function.'
             ;;

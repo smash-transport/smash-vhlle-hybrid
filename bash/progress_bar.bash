@@ -21,7 +21,7 @@ function Print_Final_Progress_Bar
 
 function __static__Validate_Progress_Bar_Input()
 {
-    if [[ $# -lt 2 ]] ; then
+    if [[ $# -lt 2 ]]; then
         Print_Internal_And_Exit \
             --emph "${FUNCNAME[1]}" ' wrongly called: ' --emph 'Missing arguments' '.'
     elif [[ ! $1 =~ ^[0-9]+(.[0-9]+)*$ ]] || [[ ! $2 =~ ^[0-9]+(.[0-9]+)*$ ]]; then

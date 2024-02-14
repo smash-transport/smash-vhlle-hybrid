@@ -11,6 +11,7 @@ function Make_Test_Preliminary_Operations__parse-execution-mode()
 {
     local file_to_be_sourced list_of_files
     list_of_files=(
+        'command_line_parsers/allowed_options.bash'
         'command_line_parsers/main_parser.bash'
         'global_variables.bash'
     )
@@ -110,7 +111,9 @@ function Unit_Test__parse-command-line-options()
         return 1
     fi
     HYBRID_command_line_options_to_parse=(-o "${HOME}")
+    __static__Replace_Short_Options_With_Long_Ones
     __static__Test_Single_CLO_Parsing_In_Subshell HYBRID_output_directory "${HOME}" || return 1
     HYBRID_command_line_options_to_parse=(-c "${HOME}") # Here it does not matter we use a folder instead of a file
+    __static__Replace_Short_Options_With_Long_Ones
     __static__Test_Single_CLO_Parsing_In_Subshell HYBRID_configuration_file "${HOME}" || return 1
 }
