@@ -32,6 +32,7 @@ nav:
   - Developer Guide:
     - developer/index.md
     - Overview: developer/overview.md
+    - Parameters scan: developer/parameters_scan.md
 
 markdown_extensions:
   # More markdown functionality
@@ -51,14 +52,18 @@ markdown_extensions:
   # For LaTeX and maths
   - pymdownx.arithmatex:
       generic: true
-  # For code highlights and related aspects
+  # For code highlights and related aspects plus diagrams
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
   # Customize tables of contents
