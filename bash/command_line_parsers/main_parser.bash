@@ -57,6 +57,11 @@ function Parse_Execution_Mode()
 #       without the risk of accepting invalid options.
 function Parse_Command_Line_Options()
 {
+    if [[ ! ${HYBRID_execution_mode} =~ ^(do|prepare-scan)$ ]]; then
+        Print_Internal_And_Exit \
+            'Function ' --emph "${FUNCNAME}" ' should not be called in ' \
+            --emph "${HYBRID_execution_mode}" ' execution mode.'
+    fi
     __static__Validate_Command_Line_Options
     Call_Function_If_Existing_Or_No_Op Parse_Specific_Mode_Options_${HYBRID_execution_mode}
     set -- "${HYBRID_command_line_options_to_parse[@]}"
