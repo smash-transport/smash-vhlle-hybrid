@@ -56,6 +56,7 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
     If you need to add a key to the software default configuration file, you should create a custom one and specify it via the `Config_file` key.
     Depending on your needs, you could also create a more complete configuration file and change the values of some keys in your run(s) via this key.
 
+<i id="scan-parameters"></i>
 ???+ config-key "`Scan_parameters`"
 
     **This key can only be specified in `prepare-scan` execution mode.**
