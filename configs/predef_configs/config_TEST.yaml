@@ -28,5 +28,5 @@ Afterburner:
   Executable: /path/to/smash
   Add_spectators_from_IC: TRUE
   Software_keys:
-        General:
-            Nevents: 50
+    General:
+        Nevents: 50
