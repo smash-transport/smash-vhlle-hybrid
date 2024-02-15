@@ -12,8 +12,10 @@
 
 Instructions on how to compile or install the software above can be found at the provided links either in the official documentation or in the corresponding README files.
 
-The newer versions of ROOT require C++17 bindings or higher, so please make sure to compile SMASH, ROOT, and the sampler with the same compiler utilizing the same compiler flags, which can be adjusted in the :material-file: _CMakeLists.txt_ file of each submodule.
-It is also recommended to start from a clean build directory whenever changing the compiler or linking to external libraries that were compiled with different compiler flags.
+!!! warning "Be consistent w.r.t dependencies"
+    The above prerequisites have in general additional dependencies and it is important to be consistent in compiler options when compiling these and the software itself.
+    We particularly highlight that the newer versions of ROOT require C++17 bindings or higher, which calls for proper treatment of compiler options in SMASH and the hadron sampler.
+    It is also recommended to start from a clean build directory whenever changing the compiler or linking to external libraries that were compiled with different compiler flags.
 
 # Unix system requirements
 
