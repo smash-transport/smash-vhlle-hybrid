@@ -29,6 +29,7 @@ function Unit_Test__codebase-formatting()
             continue
         fi
     done
+    files_with_wrong_formatting=()
     if [[ ${formatter_found} = 'TRUE' ]]; then
         # Quoting shfmt manual:
         # "If a given path is a directory, all shell scripts found under that directory will be used."
