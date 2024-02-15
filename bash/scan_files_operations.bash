@@ -7,19 +7,45 @@
 #
 #===================================================
 
+# NOTE: The parameters names and values are stored in 'list_of_parameters_values'
+#       which is an associative array. No key order is guaranteed, but it is
+#       important for reproducibility across different machines to fix some
+#       ordering. Here we create two normal arrays to sort names and have values
+#       in the same order.
 function Create_And_Populate_Scan_Folder()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty list_of_parameters_values
     local -r \
         parameters=("${!list_of_parameters_values[@]}") \
         scan_combinations_file="${HYBRID_scan_directory}/${HYBRID_scan_combinations_filename}"
-    local parameters_combinations
+    local parameters_names parameters_values parameters_combinations
+    readarray -t parameters_names < <(__static__Get_Fixed_Order_Parameters)
+    readarray -t parameters_values < <(__static__Get_Fixed_Order_Parameters_Values)
     readarray -t parameters_combinations < \
-        <(__static__Get_Parameters_Combinations_For_New_Configuration_Files "${list_of_parameters_values[@]}")
-    readonly parameters_combinations
+        <(__static__Get_Parameters_Combinations_For_New_Configuration_Files "${parameters_values[@]}")
+    readonly parameters_names parameters_values parameters_combinations
     __static__Validate_And_Create_Scan_Folder
     __static__Create_Combinations_File_With_Metadata_Header_Block
     __static__Create_Output_Files_In_Scan_Folder_And_Complete_Combinations_File
+}
+
+function __static__Get_Fixed_Order_Parameters()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty list_of_parameters_values
+    # Sort parameters according to stage: IC, Hydro, Sampler, Afterburner (then alphabetically)
+    local key
+    for key in 'IC' 'Hydro' 'Sampler' 'Afterburner'; do
+        printf '%s\n' "${!list_of_parameters_values[@]}" | grep "^${key}" | sort
+    done
+}
+
+function __static__Get_Fixed_Order_Parameters_Values()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty list_of_parameters_values parameters_names
+    local name
+    for name in "${parameters_names[@]}"; do
+        printf '%s\n' "${list_of_parameters_values["${name}"]}"
+    done
 }
 
 function __static__Get_Parameters_Combinations_For_New_Configuration_Files()
@@ -53,15 +79,14 @@ function __static__Validate_And_Create_Scan_Folder()
 
 function __static__Create_Combinations_File_With_Metadata_Header_Block()
 {
-    Ensure_That_Given_Variables_Are_Set_And_Not_Empty parameters scan_combinations_file
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty parameters_names scan_combinations_file
     Internally_Ensure_Given_Files_Do_Not_Exist "${scan_combinations_file}"
-    local index
     {
-        for index in "${!parameters[@]}"; do
-            printf '# Parameter_%d: %s\n' $((index + 1)) "${parameters[index]}"
+        for index in "${!parameters_names[@]}"; do
+            printf '# Parameter_%d: %s\n' $((index + 1)) "${parameters_names[index]}"
         done
         printf '#\n#___Run'
-        for index in "${!parameters[@]}"; do
+        for index in "${!parameters_names[@]}"; do
             printf '  Parameter_%d' $((index + 1))
         done
         printf '\n'
@@ -70,8 +95,7 @@ function __static__Create_Combinations_File_With_Metadata_Header_Block()
 
 function __static__Create_Output_Files_In_Scan_Folder_And_Complete_Combinations_File()
 {
-    Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
-        list_of_parameters_values parameters parameters_combinations
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty parameters_combinations
     local -r number_of_files=${#parameters_combinations[@]}
     local id filename
     Print_Progress_Bar 0 ${number_of_files}
@@ -116,15 +140,15 @@ function __static__Add_Line_To_Combinations_File()
 
 function __static__Create_Single_Output_File_In_Scan_Folder()
 {
-    Ensure_That_Given_Variables_Are_Set_And_Not_Empty parameters filename
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty parameters_names filename
     local -r run_number=$(($1 + 1))
     shift
     local -r set_of_values=("$@")
     Internally_Ensure_Given_Files_Do_Not_Exist "${filename}"
     __static__Add_Parameters_Comment_Line_To_New_Configuration_File
     local index yq_replacements
-    for ((index = 0; index < ${#parameters[@]}; index++)); do
-        yq_replacements+="( .${parameters[index]} ) = ${set_of_values[index]} |"
+    for index in ${!parameters_names[@]}; do
+        yq_replacements+="( .${parameters_names[index]} ) = ${set_of_values[index]} |"
     done
     yq "${yq_replacements%?}" "${HYBRID_configuration_file}" >> "${filename}"
 }
@@ -132,13 +156,13 @@ function __static__Create_Single_Output_File_In_Scan_Folder()
 function __static__Add_Parameters_Comment_Line_To_New_Configuration_File()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
-        parameters filename run_number set_of_values
-    local -r longest_parameter_length=$(wc -L < <(printf '%s\n' "${parameters[@]}"))
+        parameters_names filename run_number set_of_values
+    local -r longest_parameter_length=$(wc -L < <(printf '%s\n' "${parameters_names[@]}"))
     {
         printf '# Run %d of parameter scan "%s"\n#\n' "${run_number}" "${HYBRID_scan_directory}"
         local index
-        for index in "${!parameters[@]}"; do
-            printf '# %*s: %s\n' "${longest_parameter_length}" "${parameters[index]}" "${set_of_values[index]}"
+        for index in "${!parameters_names[@]}"; do
+            printf '# %*s: %s\n' "${longest_parameter_length}" "${parameters_names[index]}" "${set_of_values[index]}"
         done
         printf '\n'
     } > "${filename}"
