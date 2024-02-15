@@ -34,7 +34,7 @@ function Validate_And_Store_Scan_Parameters()
         if [[ "${HYBRID_scan_parameters["${key}"]}" = '' ]]; then
             continue
         else
-            readarray -t parameters < <(yq -r '.[]' <<< "${HYBRID_scan_parameters["${key}"]}")
+            readarray -t parameters < <(yq --unwrapScalar '.[]' <<< "${HYBRID_scan_parameters["${key}"]}")
             for parameter in "${parameters[@]}"; do
                 if ! __static__Is_Parameter_To_Be_Scanned \
                     "${parameter}" "${HYBRID_software_new_input_keys["${key}"]}"; then
@@ -97,7 +97,7 @@ function __static__Is_Given_Key_Value_A_Valid_Scan()
 function __static__Check_If_Given_Scan_Is_A_YAML_Map()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan
-    if [[ $(yq '. | type' <<< "${given_scan}") != '!!map' ]]; then
+    if [[ $(yq '. | tag' <<< "${given_scan}") != '!!map' ]]; then
         Print_Error 'The given scan\n' --emph "${given_scan}" '\nis not a YAML map.'
         return 1
     fi
@@ -145,14 +145,14 @@ function __static__Has_Valid_Scan_Correct_Values()
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan sorted_scan_keys
     case "${sorted_scan_keys}" in
         "[Values]")
-            if [[ $(yq '.Scan.Values | type' <<< "${given_scan}") != '!!seq' ]]; then
+            if [[ $(yq '.Scan.Values | tag' <<< "${given_scan}") != '!!seq' ]]; then
                 Print_Error \
                     'The value ' --emph "$(yq '.Scan.Values' <<< "${given_scan}")" \
                     ' of the ' --emph 'Values' ' key is not a list of parameter values.'
                 return 1
             fi
             local list_of_value_types
-            list_of_value_types=($(yq '.Scan.Values[] | type' <<< "${given_scan}" | sort -u))
+            list_of_value_types=($(yq '.Scan.Values[] | tag' <<< "${given_scan}" | sort -u))
             if [[ ${#list_of_value_types[@]} -ne 1 ]]; then
                 Print_Error \
                     'The parameter values have different YAML types: ' --emph "${list_of_value_types[*]//!!/}" '.'
