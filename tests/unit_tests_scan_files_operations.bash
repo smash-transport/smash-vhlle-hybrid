@@ -63,7 +63,8 @@ EOF
     for file in "${list_of_files[@]}"; do
         if [[ "${file}" = "${HYBRID_scan_combinations_filename}" ]]; then
             if ! diff -q "${file}" '../ref_scan_combinations.dat' &> /dev/null; then
-                Print_Error 'Scan combinations file expected different.'
+                Print_Error 'Scan combinations file expected different.\n'
+                diff "${file}" '../ref_scan_combinations.dat'
                 return 1
             fi
             continue
