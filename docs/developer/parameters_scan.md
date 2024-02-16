@@ -27,6 +27,12 @@ graph LR
 
 </div>
 
+!!! note "Premature optimization is the root of all evil. - Donald Knuth"
+    The present implementation of the `prepare-scan` mode might appear not that clever, since many intermediate parsing and storing lead to e.g. iterating over the same arrays many times.
+    On the same line, probably some `yq` invocation might be spared by combining more operation in the same call.
+    However, this has been done on purpose trying to always prefer clearer code over _claimed_ speed in the very first implementation.
+    Out of the box, generating a scan with few hundreds parameters combinations takes few seconds on an average laptop and it is reasonable to believe that this is an acceptable performance.
+
 ## Lack of multi-dimensional arrays
 
 In Bash it is not possible to have an array as entry of another array.
