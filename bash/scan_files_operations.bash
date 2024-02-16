@@ -194,5 +194,5 @@ function __static__Add_YAML_Configuration_To_New_Configuration_File()
 function __static__Remove_Scan_Parameters_Key_From_New_Configuration_File()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty filename
-    sed -i '/Scan_parameters/d' "${filename}"
+    sed -i '/^[[:space:]]*Scan_parameters:/d' "${filename}"
 }
