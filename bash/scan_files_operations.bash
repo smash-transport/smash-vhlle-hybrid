@@ -33,9 +33,16 @@ function __static__Get_Fixed_Order_Parameters()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty list_of_parameters_values
     # Sort parameters according to stage: IC, Hydro, Sampler, Afterburner (then alphabetically)
-    local key
+    #
+    # NOTE: Using 'grep' would fail and make the function exit if no match was found
+    #       and therefore it is simply easier to loop over parameters here.
+    local key parameter
     for key in 'IC' 'Hydro' 'Sampler' 'Afterburner'; do
-        printf '%s\n' "${!list_of_parameters_values[@]}" | grep "^${key}" | sort
+        for parameter in "${!list_of_parameters_values[@]}"; do
+            if [[ ${parameter} = ${key}* ]]; then
+                printf "${parameter}\n"
+            fi
+        done | sort --ignore-case
     done
 }
 
