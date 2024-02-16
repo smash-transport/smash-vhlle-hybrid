@@ -162,11 +162,8 @@ function __static__Create_Single_Output_File_In_Scan_Folder()
     local -r set_of_values=("$@")
     Internally_Ensure_Given_Files_Do_Not_Exist "${filename}"
     __static__Add_Parameters_Comment_Line_To_New_Configuration_File
-    local index yq_replacements
-    for index in ${!parameters_names[@]}; do
-        yq_replacements+="( .${parameters_names[index]} ) = ${set_of_values[index]} |"
-    done
-    yq "${yq_replacements%?}" "${HYBRID_configuration_file}" >> "${filename}"
+    __static__Add_YAML_Configuration_To_New_Configuration_File
+    __static__Remove_Scan_Parameters_Key_From_New_Configuration_File
 }
 
 function __static__Add_Parameters_Comment_Line_To_New_Configuration_File()
@@ -182,4 +179,20 @@ function __static__Add_Parameters_Comment_Line_To_New_Configuration_File()
         done
         printf '\n'
     } > "${filename}"
+}
+
+function __static__Add_YAML_Configuration_To_New_Configuration_File()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty parameters_names filename set_of_values
+    local index yq_replacements
+    for index in ${!parameters_names[@]}; do
+        yq_replacements+="( .${parameters_names[index]} ) = ${set_of_values[index]} |"
+    done
+    yq "${yq_replacements%?}" "${HYBRID_configuration_file}" >> "${filename}"
+}
+
+function __static__Remove_Scan_Parameters_Key_From_New_Configuration_File()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty filename
+    sed -i '/Scan_parameters/d' "${filename}"
 }
