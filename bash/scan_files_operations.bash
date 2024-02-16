@@ -12,17 +12,26 @@
 #       important for reproducibility across different machines to fix some
 #       ordering. Here we create two normal arrays to sort names and have values
 #       in the same order.
+#
+# ATTENTION: Here we use process substitution together with readarray to store data
+#            into arrays. As getting the exit code of process substitution can be
+#            tricky (https://unix.stackexchange.com/q/128560/370049) we adopt here
+#            a workaround which consists in storing the data at first in a variable
+#            using a standard command substitution. This will exit on error and
+#            no further error handling is needed.
 function Create_And_Populate_Scan_Folder()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty list_of_parameters_values
     local -r \
         parameters=("${!list_of_parameters_values[@]}") \
         scan_combinations_file="${HYBRID_scan_directory}/${HYBRID_scan_combinations_filename}"
-    local parameters_names parameters_values parameters_combinations
-    readarray -t parameters_names < <(__static__Get_Fixed_Order_Parameters)
-    readarray -t parameters_values < <(__static__Get_Fixed_Order_Parameters_Values)
-    readarray -t parameters_combinations < \
-        <(__static__Get_Parameters_Combinations_For_New_Configuration_Files "${parameters_values[@]}")
+    local auxiliary_string parameters_names parameters_values parameters_combinations
+    auxiliary_string=$(__static__Get_Fixed_Order_Parameters)
+    readarray -t parameters_names < <(printf "${auxiliary_string}")
+    auxiliary_string=$(__static__Get_Fixed_Order_Parameters_Values)
+    readarray -t parameters_values < <(printf "${auxiliary_string}")
+    auxiliary_string=$(__static__Get_Parameters_Combinations_For_New_Configuration_Files "${parameters_values[@]}")
+    readarray -t parameters_combinations < <(printf "${auxiliary_string}")
     readonly parameters_names parameters_values parameters_combinations
     __static__Validate_And_Create_Scan_Folder
     __static__Create_Combinations_File_With_Metadata_Header_Block
