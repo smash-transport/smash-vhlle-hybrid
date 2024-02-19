@@ -131,7 +131,27 @@ function Functional_Test__do-Afterburner-only()
         Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
         return 1
     fi
-    mv 'Afterburner' 'Afterburner-failure-custom-input'
+    mv 'Afterburner' 'Afterburner-failure-wrong-specified-custom-input-shift-id'
+    # Expect failure when wrongly specifying custom input
+    printf '
+    Hybrid_handler:
+      Run_ID: %s
+    Afterburner:
+      Executable: %s/mocks/smash_afterburner_black-box.py
+      Software_keys:
+        Modi:
+          List:
+            File_Directory: "."
+            File_Prefix: "sampling"
+            Shift_Id: 0
+    ' "${run_id}" "${HYBRIDT_tests_folder}" > "${config_filename}"
+    Print_Info 'Running Hybrid-handler expecting failure'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" &> /dev/null
+    if [[ $? -ne 110 ]]; then
+        Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
+        return 1
+    fi
+    mv 'Afterburner' 'Afterburner-failure-wrong-specified-custom-input-shift-id'
     # Expect success and test the add_spectator functionality
     Print_Info 'Running Hybrid-handler expecting success with the add_spectator option'
     mkdir -p "IC/${run_id}"
