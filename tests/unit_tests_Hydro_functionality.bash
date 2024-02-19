@@ -156,7 +156,7 @@ function Unit_Test__Hydro-test-run-software()
 {
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     local -r \
-        hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/Hydro.log" \
+        hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/${HYBRID_terminal_output["Hydro"]}" \
         Hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}" \
         IC_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     local terminal_output_result correct_result

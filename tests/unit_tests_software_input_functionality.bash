@@ -262,9 +262,10 @@ function Unit_Test__add-section-terminal-output()
         return 1
     fi
     local -r \
-        string_to_be_found="first line===== NEW RUN OUTPUT =====" \
-        string_to_search=$(head -n 5 "IC/${run_id}/IC.log" | tr -d '\n')
-
+        string_to_be_found="first line==========================================" \
+        +"======================================" \
+        +"================================ NEW RUN OUTPUT ================================"
+    string_to_search=$(head -n 5 "IC/${run_id}/IC.log" | tr -d '\n')
     if ! [[ "$string_to_search" == "$string_to_be_found"*"=====" ]]; then
         Print_Error 'Terminal output file not properly separated.'
         return 1

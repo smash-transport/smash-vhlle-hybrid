@@ -184,7 +184,8 @@ function Make_Test_Preliminary_Operations__Afterburner-test-run-software()
 function Unit_Test__Afterburner-test-run-software()
 {
     mkdir -p "${HYBRID_software_output_directory[Afterburner]}"
-    local -r afterburner_terminal_output="${HYBRID_software_output_directory[Afterburner]}/Afterburner.log"
+    local -r afterburner_terminal_output="${HYBRID_software_output_directory[Afterburner]}""\
+/${HYBRID_terminal_output["Afterburner"]}"
     local terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_Afterburner
     if [[ ! -f "${afterburner_terminal_output}" ]]; then
