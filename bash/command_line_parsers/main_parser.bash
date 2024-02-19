@@ -76,6 +76,7 @@ function Parse_Command_Line_Options()
                             'Specified output directory ' --emph "$2" ' not found'
                     fi
                     readonly HYBRID_output_directory="$(realpath "$2")"
+                    readonly HYBRID_scan_directory="${HYBRID_output_directory}/$(basename "${HYBRID_scan_directory}")"
                 fi
                 shift 2
                 ;;

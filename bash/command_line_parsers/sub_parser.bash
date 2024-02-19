@@ -17,7 +17,8 @@ function Parse_Specific_Mode_Options_prepare-scan()
                 if [[ ${2-} =~ ^(-|$) ]]; then
                     Print_Option_Specification_Error_And_Exit "$1"
                 else
-                    readonly HYBRID_scan_directory="${HYBRID_output_directory}/$2"
+                    # This will be set readonly later as parsing '-o' will change it
+                    HYBRID_scan_directory="${HYBRID_output_directory}/$2"
                 fi
                 shift 2
                 ;;
