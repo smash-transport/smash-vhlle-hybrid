@@ -15,7 +15,6 @@ function Prepare_Software_Input_File_Afterburner()
     Copy_Base_Configuration_To_Output_Folder_For 'Afterburner'
     Replace_Keys_In_Configuration_File_If_Needed_For 'Afterburner'
     __static__Create_Sampled_Particles_List_File_Or_Symbolic_Link_With_Or_Without_Spectators
-    Separate_Terminal_Output_For 'Afterburner'
 }
 
 function Ensure_All_Needed_Input_Exists_Afterburner()
@@ -36,6 +35,7 @@ function Ensure_Run_Reproducibility_Afterburner()
 
 function Run_Software_Afterburner()
 {
+    Separate_Terminal_Output_For 'Afterburner'
     cd "${HYBRID_software_output_directory[Afterburner]}"
     "${HYBRID_software_executable[Afterburner]}" \
         '-i' "${HYBRID_software_configuration_file[Afterburner]}" \

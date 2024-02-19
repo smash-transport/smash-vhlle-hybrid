@@ -14,7 +14,6 @@ function Prepare_Software_Input_File_IC()
     Ensure_Given_Files_Exist "${HYBRID_software_base_config_file[IC]}"
     Copy_Base_Configuration_To_Output_Folder_For 'IC'
     Replace_Keys_In_Configuration_File_If_Needed_For 'IC'
-    Separate_Terminal_Output_For 'IC'
 }
 
 function Ensure_All_Needed_Input_Exists_IC()
@@ -32,6 +31,7 @@ function Ensure_Run_Reproducibility_IC()
 
 function Run_Software_IC()
 {
+    Separate_Terminal_Output_For 'IC'
     cd "${HYBRID_software_output_directory[IC]}"
     "${HYBRID_software_executable[IC]}" \
         '-i' "${HYBRID_software_configuration_file[IC]}" \

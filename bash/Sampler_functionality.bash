@@ -17,7 +17,6 @@ function Prepare_Software_Input_File_Sampler()
     __static__Validate_Sampler_Config_File
     __static__Transform_Relative_Paths_In_Sampler_Config_File
     __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File
-    Separate_Terminal_Output_For 'Sampler'
 }
 
 function Ensure_All_Needed_Input_Exists_Sampler()
@@ -38,6 +37,7 @@ function Ensure_Run_Reproducibility_Sampler()
 
 function Run_Software_Sampler()
 {
+    Separate_Terminal_Output_For 'Sampler'
     local -r sampler_config_file_path="${HYBRID_software_configuration_file[Sampler]}"
     cd "${HYBRID_software_output_directory[Sampler]}"
     "${HYBRID_software_executable[Sampler]}" 'events' '1' \

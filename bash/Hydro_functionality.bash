@@ -16,7 +16,6 @@ function Prepare_Software_Input_File_Hydro()
     Replace_Keys_In_Configuration_File_If_Needed_For 'Hydro'
     __static__Create_Symbolic_Link_To_IC_File
     __static__Create_Symbolic_Link_To_EOS_Folder
-    Separate_Terminal_Output_For 'Hydro'
 }
 
 function Ensure_All_Needed_Input_Exists_Hydro()
@@ -37,6 +36,7 @@ function Ensure_Run_Reproducibility_Hydro()
 
 function Run_Software_Hydro()
 {
+    Separate_Terminal_Output_For 'Hydro'
     cd "${HYBRID_software_output_directory[Hydro]}"
     local -r \
         hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}" \
