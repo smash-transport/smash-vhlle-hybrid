@@ -44,8 +44,8 @@ function Run_Software_Hydro()
     "${HYBRID_software_executable[Hydro]}" \
         "-params" "${hydro_config_file_path}" \
         "-ISinput" "${ic_output_file_path}" \
-        "-outputDir" "${HYBRID_software_output_directory[Hydro]}" >> \
-        "${HYBRID_software_output_directory[Hydro]}/${HYBRID_terminal_output[Hydro]}" 2>&1
+        "-outputDir" "${HYBRID_software_output_directory[Hydro]}" &>> \
+        "${HYBRID_software_output_directory[Hydro]}/${HYBRID_terminal_output[Hydro]}"
 }
 
 #===============================================================================

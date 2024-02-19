@@ -41,7 +41,7 @@ function Run_Software_Afterburner()
         '-i' "${HYBRID_software_configuration_file[Afterburner]}" \
         '-o' "${HYBRID_software_output_directory[Afterburner]}" \
         '-n' \
-        >> "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_terminal_output[Afterburner]}" 2>&1
+        &>> "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_terminal_output[Afterburner]}"
 }
 
 #===============================================================================

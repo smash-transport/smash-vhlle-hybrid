@@ -41,8 +41,8 @@ function Run_Software_Sampler()
     local -r sampler_config_file_path="${HYBRID_software_configuration_file[Sampler]}"
     cd "${HYBRID_software_output_directory[Sampler]}"
     "${HYBRID_software_executable[Sampler]}" 'events' '1' \
-        "${sampler_config_file_path}" >> \
-        "${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}" 2>&1
+        "${sampler_config_file_path}" &>> \
+        "${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}"
 }
 
 #===============================================================================
