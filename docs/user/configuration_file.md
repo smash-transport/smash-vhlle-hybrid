@@ -87,6 +87,9 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
          - "foo.baz"
         ```
 
+    ??? warning "Each parameter requires a scan specification"
+        Parameters specified in the `Scan_parameters` list need to be accompanied by their scan values to be specified in the `Software_keys` section of the same stage [:material-arrow-right-box: the parameters scan syntax](scans_syntax.md).
+
 ## The initial conditions section
 
 There is no specific key of the `IC` section and only the generic ones can be used.
