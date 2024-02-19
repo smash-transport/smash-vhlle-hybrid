@@ -44,6 +44,12 @@ function Define_Further_Global_Variables()
         [Sampler]='sampler_config.txt'
         [Afterburner]='afterburner_config.yaml'
     )
+    declare -rgA HYBRID_terminal_output=(
+        [IC]='IC.log'
+        [Hydro]='Hydro.log'
+        [Sampler]='Sampler.log'
+        [Afterburner]='Afterburner.log'
+    )
     declare -rgA HYBRID_handler_config_section_filename=(
         [IC]='Hybrid_handler_IC_config.yaml'
         [Hydro]='Hybrid_handler_Hydro_config.yaml'
@@ -127,12 +133,6 @@ function Define_Further_Global_Variables()
         [Hydro]=''
         [Sampler]=''
         [Afterburner]=''
-    )
-    declare -gA HYBRID_terminal_output=(
-        [IC]='IC.log'
-        [Hydro]='Hydro.log'
-        [Sampler]='Sampler.log'
-        [Afterburner]='Afterburner.log'
     )
     declare -gA HYBRID_software_configuration_file=(
         [IC]=''
