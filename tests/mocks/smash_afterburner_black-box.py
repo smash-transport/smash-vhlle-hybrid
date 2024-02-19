@@ -59,22 +59,12 @@ def ensure_no_output_is_overwritten():
 def run_smash(finalize,SMASH_input_file_with_participants_and_spectators,sampler_dir):
     # create smash.lock file
     f = open(args.o+file_name_is_running, "w")
-    regex=re.compile(SMASH_input_file_with_participants_and_spectators)
-    # Get a list of files in the current directory
-    files = os.listdir(sampler_dir)
-    # Filter files that match the base name and have only integer extensions
-    matching_files = [file_in for file_in in files if regex.match(sampler_dir+file_in)]
-    if(len(matching_files)>0):
-        try:
-            for match in matching_files:
-                f_in=open(sampler_dir+match,"r")
-                f_in.close()
-                print("File read")
-        except:
-            print(fatal_error+"Sampled particle list could not be opened")
-            sys.exit(1)
-    else:
-        print(fatal_error+"Sampled particle list could not be found")
+    try:
+        f_in=open(sampler_dir+SMASH_input_file_with_participants_and_spectators,"r")
+        f_in.close()
+        print("File read")
+    except:
+        print(fatal_error+"Sampled particle list could not be opened")
         sys.exit(1)
     f.close()
     # open unfinished particle files
