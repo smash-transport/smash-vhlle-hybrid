@@ -34,6 +34,9 @@ function Validate_And_Store_Scan_Parameters()
         if [[ "${HYBRID_scan_parameters["${key}"]}" = '' ]]; then
             continue
         else
+            # Here the --unwrapScalar option of yq is meant to strip quotes and colors to properly
+            # store the content in a bash array. The yq input is assumed to be a sequence, which
+            # is basically true by construction, see 'Format_Scan_Parameters_Lists' function.
             readarray -t parameters < <(yq --unwrapScalar '.[]' <<< "${HYBRID_scan_parameters["${key}"]}")
             for parameter in "${parameters[@]}"; do
                 if ! __static__Is_Parameter_To_Be_Scanned \
@@ -153,10 +156,16 @@ function __static__Has_Valid_Scan_Correct_Values()
             fi
             local list_of_value_types
             list_of_value_types=($(yq '.Scan.Values[] | tag' <<< "${given_scan}" | sort -u))
+            # If there is more than a type it is in general an error, unless there are exactly two,
+            # which are 'int' and 'float' (this is accepted). Note that the test is done on the
+            # concatenation of the values against 'float int' as the types are guaranteed to be sorted.
             if [[ ${#list_of_value_types[@]} -ne 1 ]]; then
-                Print_Error \
-                    'The parameter values have different YAML types: ' --emph "${list_of_value_types[*]//!!/}" '.'
-                return 1
+                if [[ ${#list_of_value_types[@]} -ne 2 || "${list_of_value_types[*]//!!/}" != 'float int' ]]; then
+                    Print_Error \
+                        'The parameter values have different YAML types: ' \
+                        --emph "${list_of_value_types[*]//!!/}" '.'
+                    return 1
+                fi
             elif [[ ! ${list_of_value_types[0]} =~ ^!!(bool|int|float)$ ]]; then
                 Print_Error \
                     'Parameter scans with values of ' --emph "${list_of_value_types[0]//!!/}" \

@@ -6,7 +6,7 @@ In order to properly run the hybrid handler in `prepare-scan` mode, the configur
     Each parameter which must be scanned has to be declared so by using the `Scan_parameters` key in the corresponding stage section [:material-arrow-right-box: key description](configuration_file.md#scan-parameters).
     **If a parameter is not declared to be scanned** and is specified as a scan in the `Software_keys` section, this will probably not be caught by the hybrid handler and **the produced configurations are likely to be wrong**.
 
-!!! warning "Scanning only numerical parameters is possible"
+!!! warning "Only scanning numerical parameters is possible"
     At the moment, it is not possible to scan parameters whose value is not numerical.
     More precisely, only integer, float or boolean YAML types are accepted.
     Feel free to open an issue if this is a too strong restriction for you.

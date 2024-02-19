@@ -127,7 +127,7 @@ function __static__Validate_Command_Line_Options()
             if ! Element_In_Array_Equals_To "${option}" "${valid_options[@]}"; then
                 exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit \
                     'Option ' --emph "${option}" ' is not allowed in ' --emph "${HYBRID_execution_mode}" \
-                    ' execution mode!' 'Use the ' --emph '--help' ' option to get further information.'
+                    ' execution mode!' 'Use the ' --emph '--help' ' mode option to get further information.'
             fi
         fi
     done

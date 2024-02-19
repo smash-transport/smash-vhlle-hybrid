@@ -62,7 +62,6 @@ function Unit_Test__scan-YAML-scan-syntax()
         '{Scan: {Values: True}}'
         '{Scan: {Values: 42}}'
         '{Scan: {Values: [42, False, 3.14]}}'
-        '{Scan: {Values: [42, 3.14]}}'
         '{Scan: {Values: ["Hi", "Bye"]}}'
     )
     for value in "${values[@]}"; do
@@ -72,12 +71,19 @@ function Unit_Test__scan-YAML-scan-syntax()
             return 1
         fi
     done
-    value='{Scan: {Values: [1,2,3]}}'
-    Call_Codebase_Function __static__Is_Given_Key_Value_A_Valid_Scan "${value}"
-    if [[ $? -ne 0 ]]; then
-        Print_Error 'Scan syntax validation unexpectedly failed (' --emph "${value}" ').'
-        return 1
-    fi
+    values=(
+        '{Scan: {Values: [True, False]}}'
+        '{Scan: {Values: [1,2,3]}}'
+        '{Scan: {Values: [42, 3.14]}}'
+        '{Scan: {Values: [3.14, 6.28]}}'
+    )
+    for value in "${values[@]}"; do
+        Call_Codebase_Function __static__Is_Given_Key_Value_A_Valid_Scan "${value}"
+        if [[ $? -ne 0 ]]; then
+            Print_Error 'Scan syntax validation unexpectedly failed (' --emph "${value}" ').'
+            return 1
+        fi
+    done
 }
 
 function Make_Test_Preliminary_Operations__scan-single-validation()
