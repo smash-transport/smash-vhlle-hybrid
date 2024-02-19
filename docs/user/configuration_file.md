@@ -63,14 +63,14 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
 
     List of software input keys whose value is meant to be scanned.
     Each parameter has to be specified concatenating with a period all the keys as they would appear in the `Software_keys` map.
-    For example, if a software key reads
+    For example, software keys which read
     ```yaml
     Software_keys:
       foo:
-        bar:
-          baz: 42
+        bar: 42
+        baz: 666
     ```
-    then it would be specified in the `Scan_parameters` list as `"foo.bar.baz"`.
+    would be specified in the `Scan_parameters` list as `"foo.bar"` and `"foo.baz"`.
     Such a list is a YAML array and therefore it can be specified both in the compact and extended form.
 
     === "Compact form"
