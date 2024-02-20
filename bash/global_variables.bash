@@ -118,7 +118,7 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
     )
     declare -gA HYBRID_optional_feature=(
-        [Add_spectators_from_IC]='FALSE'
+        [Add_spectators_from_IC]='TRUE'
         [Spectators_source]=''
     )
     # Variables to be set (and possibly made readonly) after all sanity checks on input succeeded
