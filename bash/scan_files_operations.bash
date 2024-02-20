@@ -193,7 +193,6 @@ function __static__Add_YAML_Configuration_To_New_Configuration_File()
     for index in ${!parameters_names[@]}; do
         yq_replacements+="( .${parameters_names[index]} ) = ${set_of_values[index]} |"
     done
-    echo "${yq_replacements}"
     yq "${yq_replacements%?}" "${HYBRID_configuration_file}" >> "${filename}"
 }
 

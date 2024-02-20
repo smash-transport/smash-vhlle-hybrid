@@ -99,3 +99,6 @@ For example, using the default generic `scan` name, the user will obtain the fol
     For reproducibility reasons as well as to keep track that they belong to a scan, the scan name and parameters are printed in the beginning in commented lines.
     These files will have leading zeroes in the run index contained in the filename, depending on the total number of prepared simulations.
     This allows to keep them easily sorted.
+
+!!! warning "Good to know"
+    If you use the `--output-directory` in `prepare-scan` mode to customize the output directory, you will need to specify this command line option again later if you use the `do` mode and want to store the output of the simulations in the same folder.

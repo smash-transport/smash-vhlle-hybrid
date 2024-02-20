@@ -57,3 +57,7 @@ For example, specifying two different scan parameters with 2 and 5 values, respe
           9          666         True
          10          666        False
     ```
+
+??? question "What happens if I provide a single value for a scan parameter?"
+    If you provide a single-value list to `Values`, this will be accepted by the hybrid handler and the provided value will be considered in all combinations.
+    If this happen to be the only provided scan parameter, a single configuration file will be created together with a basically useless single-combination file. :sweat_smile:
