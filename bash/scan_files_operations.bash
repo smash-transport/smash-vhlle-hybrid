@@ -77,8 +77,13 @@ function __static__Get_All_Parameters_Combinations()
 {
     local values string_to_be_expanded
     for values in "$@"; do
-        # Get rid of spaces and square brackets and prepare brace expansion
-        string_to_be_expanded+="{${values//[][ ]/}}_"
+        # Get rid of spaces and square brackets and prepare brace expansion. If there
+        # is only one value, do not add braces as no expansion has to happen.
+        if [[ "${values}" = *,* ]]; then
+            string_to_be_expanded+="{${values//[][ ]/}}_"
+        else
+            string_to_be_expanded+="${values//[][ ]/}_"
+        fi
     done
     # NOTE: The following use of 'eval' is fine since the string that is expanded
     #       is guaranteed to be validated to contain only YAML int, bool or float.
@@ -188,6 +193,7 @@ function __static__Add_YAML_Configuration_To_New_Configuration_File()
     for index in ${!parameters_names[@]}; do
         yq_replacements+="( .${parameters_names[index]} ) = ${set_of_values[index]} |"
     done
+    echo "${yq_replacements}"
     yq "${yq_replacements%?}" "${HYBRID_configuration_file}" >> "${filename}"
 }
 
