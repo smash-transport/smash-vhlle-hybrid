@@ -10,7 +10,7 @@
 | [Hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | 1.0 or higher |
 | [Python](https://www.python.org) | 3.0  or higher |
 
-[^1]: 3.1 is only needed for Afterburner functionalities. Otherwise 1.8 is sufficient.
+[^1]: Version 3.1 is only needed for the afterburner functionality. Otherwise version 1.8 is sufficient.
 
 Instructions on how to compile or install the software above can be found at the provided links either in the official documentation or in the corresponding README files.
 

@@ -25,7 +25,7 @@ function Ensure_All_Needed_Input_Exists_Afterburner()
         "${HYBRID_software_configuration_file[Afterburner]}" \
         "${HYBRID_software_input_file[Afterburner]}"
     Internally_Ensure_Given_Files_Exist \
-        "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_Afterburner_list_filename}"
+        "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
 }
 
 function Ensure_Run_Reproducibility_Afterburner()
@@ -50,7 +50,7 @@ function Run_Software_Afterburner()
 
 function __static__Create_Sampled_Particles_List_File_Or_Symbolic_Link_With_Or_Without_Spectators()
 {
-    local -r target_link_name="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_Afterburner_list_filename}"
+    local -r target_link_name="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
     if [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
         Ensure_Given_Files_Do_Not_Exist "${target_link_name}"
         # Here the config.yaml file is expected to be produced by SMASH in the output folder

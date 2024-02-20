@@ -40,7 +40,7 @@ function Unit_Test__Afterburner-create-input-file()
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     local -r \
         plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar" \
-        plist_Final="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_Afterburner_list_filename}"
+        plist_Final="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
     touch "${plist_Sampler}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner
     if [[ ! -f "${HYBRID_software_configuration_file[Afterburner]}" ]]; then
@@ -79,7 +79,7 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
     local -r \
         plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar" \
         plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar" \
-        plist_Final="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_Afterburner_list_filename}"
+        plist_Final="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
     touch "${HYBRID_software_base_config_file[Afterburner]}" "${plist_Sampler}" "${plist_Final}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
     if [[ $? -ne 110 ]]; then
@@ -145,7 +145,7 @@ function Unit_Test__Afterburner-check-all-input()
         return 1
     fi
     touch \
-        "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_Afterburner_list_filename}" \
+        "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}" \
         "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner
     if [[ $? -ne 0 ]]; then
@@ -154,16 +154,16 @@ function Unit_Test__Afterburner-check-all-input()
             'although all files were provided.'
         return 1
     fi
-    rm "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_Afterburner_list_filename}"
-    touch "${HYBRID_software_output_directory[Sampler]}/original_${HYBRID_Afterburner_list_filename}"
-    ln -s "${HYBRID_software_output_directory[Sampler]}/original_${HYBRID_Afterburner_list_filename}" \
-        "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_Afterburner_list_filename}"
+    rm "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
+    touch "${HYBRID_software_output_directory[Sampler]}/original_${HYBRID_afterburner_list_filename}"
+    ln -s "${HYBRID_software_output_directory[Sampler]}/original_${HYBRID_afterburner_list_filename}" \
+        "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner &> /dev/null
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of existing file unexpectedly failed.'
         return 1
     fi
-    rm "${HYBRID_software_output_directory[Sampler]}/original_${HYBRID_Afterburner_list_filename}"
+    rm "${HYBRID_software_output_directory[Sampler]}/original_${HYBRID_afterburner_list_filename}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of a link to a non-existing file unexpectedly succeeded.'

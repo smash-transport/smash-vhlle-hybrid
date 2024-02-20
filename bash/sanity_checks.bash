@@ -119,16 +119,25 @@ function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
 
 function Ensure_Consistency_Of_Afterburner_Input()
 {
-    if Has_YAML_String_Given_Key 'Afterburner' 'Software_keys.Modi.List.Filename' "${HYBRID_configuration_file}"; then
-        if [[ $(Read_From_YAML_String_Given_Key 'Afterburner' 'Software_keys.Modi.List.Filename' \
-            "${HYBRID_configuration_file}") != "${config_section_input}" ]]; then
+    local config_section_input='Placeholder in case no input file is given.'
+    if Has_YAML_String_Given_Key "${HYBRID_configuration_file}" 'Afterburner' 'Input_file'; then
+        config_section_input=$(Read_From_YAML_String_Given_Key "${HYBRID_configuration_file}" \
+            'Afterburner' 'Input_file')
+    fi
+    if Has_YAML_String_Given_Key "${HYBRID_configuration_file}" 'Afterburner' 'Software_keys' \
+        'Modi' 'List' 'Filename'; then
+        local given_filename
+        given_filename=$(Read_From_YAML_String_Given_Key "${HYBRID_configuration_file}" 'Afterburner' 'Software_keys' \
+            'Modi' 'List' 'Filename')
+        if [[ "$given_filename" != "${config_section_input}" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                'The Afterburner input particle list has to be modified via the Input_file key, not the Software_key!'
+                'The Afterburner input particle list has to be modified via the Input_file key, not the Software_keys!'
         fi
     fi
-    if Has_YAML_String_Given_Key 'Afterburner' 'Software_keys.Modi.List.Shift_ID' "${HYBRID_configuration_file}"; then
+    if Has_YAML_String_Given_Key "${HYBRID_configuration_file}" 'Afterburner' 'Software_keys' 'Modi' \
+        'List' 'Shift_ID'; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            'The Afterburner input particle list has to be modified via the Input_file key, not the Software_key!'
+            'The Afterburner input particle list has to be modified via the Input_file key, not the Software_keys!'
     fi
 }
 

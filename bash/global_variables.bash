@@ -28,7 +28,7 @@ function Define_Further_Global_Variables()
     )
     readonly HYBRID_default_configurations_folder="${HYBRID_top_level_path}/configs"
     readonly HYBRID_python_folder="${HYBRID_top_level_path}/python"
-    readonly HYBRID_Afterburner_list_filename="sampled_particles_list.oscar"
+    readonly HYBRID_afterburner_list_filename="sampled_particles_list.oscar"
     declare -rgA HYBRID_external_python_scripts=(
         [Add_spectators_from_IC]="${HYBRID_python_folder}/add_spectators.py"
     )
