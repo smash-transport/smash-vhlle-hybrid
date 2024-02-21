@@ -61,6 +61,7 @@ function Define_Further_Global_Variables()
     # ATTENTION: The keys inside each YAML list must be alphabetically sorted to allow
     #            the validation mechanism to work!
     readonly HYBRID_valid_scan_specification_keys=(
+        '[Range]'
         '[Values]'
     )
     readonly HYBRID_scan_combinations_filename='scan_combinations.dat'
@@ -68,6 +69,7 @@ function Define_Further_Global_Variables()
     # file and bash variables in which the input information will be stored once parsed.
     declare -rgA HYBRID_hybrid_handler_valid_keys=(
         [Run_ID]='HYBRID_run_id'
+        [Scan_strategy]='HYBRID_scan_strategy'
     )
     declare -rgA HYBRID_ic_valid_keys=(
         [Executable]='HYBRID_software_executable[IC]'
@@ -110,6 +112,7 @@ function Define_Further_Global_Variables()
     HYBRID_scan_directory="${HYBRID_output_directory}/scan"
     # Variables to be set (and possibly made readonly) from configuration/setup
     HYBRID_run_id="Run_$(date +'%Y-%m-%d_%H%M%S')"
+    HYBRID_scan_strategy='Combinations'
     HYBRID_given_software_sections=()
     declare -gA HYBRID_software_executable=(
         [IC]=''
