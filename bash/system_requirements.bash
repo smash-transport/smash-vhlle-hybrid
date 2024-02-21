@@ -25,6 +25,7 @@ function __static__Declare_System_Requirements()
             [sed]='4.2.1'
             [tput]='5.7'
             [yq]='4.18.1'
+            [python3]='3.0.0'
         )
         declare -rga HYBRID_programs_just_required=(
             cat
@@ -311,7 +312,7 @@ function __static__Try_Find_Version()
     fi
     local found_version
     case "$1" in
-        awk | git | sed)
+        awk | git | sed | python3)
             found_version=$($1 --version)
             ;;& # Continue matching other cases
         awk | sed)
@@ -323,7 +324,7 @@ function __static__Try_Find_Version()
             found_version="${BASH_VERSINFO[@]:0:3}"
             found_version="${found_version// /.}"
             ;;
-        git)
+        git | python3)
             found_version=$(grep -oE "${HYBRID_version_regex}" <<< "${found_version}")
             ;;
         tput)
@@ -442,7 +443,7 @@ function __static__Print_Requirement_Version_Report_Line()
     found=${tmp_array[0]}
     version_found=${tmp_array[1]}
     version_ok=${tmp_array[2]}
-    printf -v line "   ${text_color}Command ${emph_color}%6s${text_color}: ${default}" "${program}"
+    printf -v line "   ${text_color}Command ${emph_color}%8s${text_color}: ${default}" "${program}"
     if [[ ${found} = '---' ]]; then
         line+="${red}NOT "
     else

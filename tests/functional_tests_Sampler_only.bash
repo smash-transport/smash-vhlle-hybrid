@@ -24,7 +24,7 @@ function Functional_Test__do-Sampler-only()
     ' "${run_id}" "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config}"
     # Expect success and test presence of output files
     Print_Info 'Running Hybrid-handler expecting success'
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}" '-o' '.'
     if [[ $? -ne 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly failed.'
         return 1
@@ -36,7 +36,7 @@ function Functional_Test__do-Sampler-only()
     terminal_output_file="Sampler/${run_id}/Terminal_Output.txt"
     Print_Info 'Running Hybrid-handler expecting crash in Sampler'
     BLACK_BOX_FAIL='true' \
-        Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}"
+        Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}" '-o' '.'
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded with Sampler crashing.'
         return 1
@@ -62,7 +62,7 @@ function Functional_Test__do-Sampler-only()
       Config_file: %s
     ' "${HYBRIDT_repository_top_level_path}" \
         "${invalid_sampler_config}" > "${hybrid_handler_config}"
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}" &> /dev/null
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}" '-o' '.' &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded with invalid config for Sampler.'
         return 1

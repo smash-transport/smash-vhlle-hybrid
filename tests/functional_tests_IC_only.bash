@@ -22,7 +22,7 @@ function Functional_Test__do-IC-only()
     ' "${run_id}" "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
     # Expect success and test absence of "SMASH" unfinished file
     Print_Info 'Running Hybrid-handler expecting success'
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     if [[ $? -ne 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly failed.'
         return 1
@@ -33,7 +33,7 @@ function Functional_Test__do-IC-only()
     Print_Info 'Running Hybrid-handler expecting invalid IC input file failure'
     terminal_output_file="IC/${run_id}/Terminal_Output.txt"
     BLACK_BOX_FAIL='invalid_config' \
-        Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+        Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded with invalid IC input.'
         return 1
@@ -50,7 +50,7 @@ function Functional_Test__do-IC-only()
     # Expect failure and test "SMASH" unfinished/lock files
     Print_Info 'Running Hybrid-handler expecting crash in IC software'
     BLACK_BOX_FAIL='smash_crashes' \
-        Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+        Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded with IC software crashing.'
         return 1
