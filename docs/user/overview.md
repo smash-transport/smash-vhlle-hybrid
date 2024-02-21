@@ -14,7 +14,7 @@ Few further customizations are possible using command line options, which are do
 
 ## The general behavior
 
-The main `do` execution mode of the handler runs stages of the model and it will create a given output tree at the specified output directory (by default this is the folder from where the handler is run, but it can customized using the `-o` or `--output-directory` command line option).
+The main `do` execution mode of the handler runs stages of the model and it will create a given output tree at the specified output directory (by default this is a subdirectory of the folder from where the handler is run named :file_folder: ***data***, but it can customized using the `-o` or `--output-directory` command line option).
 Assuming all stages are run, this is what the user will obtain.
 ``` { .bash .no-copy }
 📂 Output-directory
