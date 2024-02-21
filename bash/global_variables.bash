@@ -88,7 +88,7 @@ function Define_Further_Global_Variables()
     # Variables to be set (and possibly made readonly) from command line
     HYBRID_execution_mode='help'
     HYBRID_configuration_file='./config.yaml'
-    HYBRID_output_directory="$(realpath .)"
+    HYBRID_output_directory="$(realpath './data')"
     # Variables to be set (and possibly made readonly) from configuration/setup
     HYBRID_run_id="Run_$(date +'%Y-%m-%d_%H%M%S')"
     HYBRID_given_software_sections=()
