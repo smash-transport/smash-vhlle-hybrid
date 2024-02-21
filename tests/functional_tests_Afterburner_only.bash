@@ -32,6 +32,7 @@ function Functional_Test__do-Afterburner-only()
       Run_ID: %s
     Afterburner:
       Executable: %s/tests/mocks/smash_afterburner_black-box.py
+      Add_spectators_from_IC: false
       Software_keys:
         Modi:
           List:
@@ -82,6 +83,7 @@ function Functional_Test__do-Afterburner-only()
     Afterburner:
       Executable: %s/mocks/smash_afterburner_black-box.py
       Input_file: %s/test/particle_lists_2.oscar
+      Add_spectators_from_IC: false
       Software_keys:
         Modi:
           List:
