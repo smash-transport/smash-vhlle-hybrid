@@ -22,7 +22,7 @@ function Unit_Test__copy-hybrid-handler-config-section()
         '  Executable: exh' \
         '  Config_file: confh' > "${HYBRID_configuration_file}"
     local -r git_description="$(git -C "${HYBRIDT_folder_to_run_tests}" describe --long --always --all)"
-    local folder description
+    local folder description expected_result
     for folder in "${HYBRIDT_folder_to_run_tests}" ~; do
         Call_Codebase_Function_In_Subshell Copy_Hybrid_Handler_Config_Section 'IC' \
             "${HYBRIDT_folder_to_run_tests}" "${folder}" #&> /dev/null
