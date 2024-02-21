@@ -139,6 +139,11 @@ function Ensure_Consistency_Of_Afterburner_Input()
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             'The Afterburner input particle list has to be modified via the Input_file key, not the Software_keys!'
     fi
+    if Has_YAML_String_Given_Key "${HYBRID_configuration_file}" 'Afterburner' 'Software_keys' 'Modi' \
+        'List' 'File_Prefix'; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+            'The Afterburner input particle list has to be modified via the Input_file key, not the Software_keys!'
+    fi
 }
 
 Make_Functions_Defined_In_This_File_Readonly
