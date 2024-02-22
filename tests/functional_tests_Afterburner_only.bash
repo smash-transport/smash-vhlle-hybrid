@@ -109,7 +109,7 @@ function Functional_Test__do-Afterburner-only()
             File_Directory: "."
     ' "${run_id}" "${HYBRIDT_tests_folder}" "$(pwd)" > "${config_filename}"
     Print_Info 'Running Hybrid-handler expecting failure when using custom input while also running the sampler'
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" &> /dev/null
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.' &> /dev/null
     if [[ $? -ne 110 ]]; then
         Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
         return 1
@@ -127,7 +127,7 @@ function Functional_Test__do-Afterburner-only()
             Filename: "particle_lists_2.oscar"
     ' "${run_id}" "${HYBRIDT_tests_folder}" > "${config_filename}"
     Print_Info 'Running Hybrid-handler expecting failure when specifying custom input via Software_keys Filename'
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" &> /dev/null
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.' &> /dev/null
     if [[ $? -ne 110 ]]; then
         Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
         return 1
