@@ -112,6 +112,8 @@ Sampler:
     As other stages, the afterburner run needs an additional input file as well, one which contains the sampled particles list.
     This is the main output of the previous sampler stage and, therefore, if not specified, a *particle_lists.oscar* file is expected to exist in the ***Sampler*** output sub-folder with the same `Run_ID`.
     However, using this key, any file can be specified and used.
+    Note that although it is possible to specify the input for the list modus in SMASH via the `Software_keys`, this is not allowed here and will result in an error.
+    Always specify the customized input file for the afterburner stage using this key, if needed.
 
 ???+ config-key "`Add_spectators_from_IC`"
 
