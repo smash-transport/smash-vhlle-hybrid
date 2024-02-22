@@ -35,13 +35,13 @@ function Ensure_Run_Reproducibility_Afterburner()
 
 function Run_Software_Afterburner()
 {
+    Separate_Terminal_Output_For 'Afterburner'
     cd "${HYBRID_software_output_directory[Afterburner]}"
-    local -r afterburner_terminal_output="${HYBRID_software_output_directory[Afterburner]}/Terminal_Output.txt"
     "${HYBRID_software_executable[Afterburner]}" \
         '-i' "${HYBRID_software_configuration_file[Afterburner]}" \
         '-o' "${HYBRID_software_output_directory[Afterburner]}" \
         '-n' \
-        >> "${afterburner_terminal_output}"
+        &>> "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_terminal_output[Afterburner]}"
 }
 
 #===============================================================================

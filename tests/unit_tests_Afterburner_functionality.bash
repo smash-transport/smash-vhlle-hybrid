@@ -184,14 +184,14 @@ function Make_Test_Preliminary_Operations__Afterburner-test-run-software()
 function Unit_Test__Afterburner-test-run-software()
 {
     mkdir -p "${HYBRID_software_output_directory[Afterburner]}"
-    local -r afterburner_terminal_output="${HYBRID_software_output_directory[Afterburner]}/Terminal_Output.txt"
+    local -r terminal_output="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_terminal_output["Afterburner"]}"
     local terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_Afterburner
-    if [[ ! -f "${afterburner_terminal_output}" ]]; then
+    if [[ ! -f "${terminal_output}" ]]; then
         Print_Error 'The terminal output was not created.'
         return 1
     fi
-    terminal_output_result=$(< "${afterburner_terminal_output}")
+    terminal_output_result=$(< "${terminal_output}")
     printf -v correct_result '%s' \
         "-i ${HYBRID_software_configuration_file[Afterburner]} " \
         "-o ${HYBRID_software_output_directory[Afterburner]} -n"

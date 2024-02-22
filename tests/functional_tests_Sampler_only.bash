@@ -33,7 +33,7 @@ function Functional_Test__do-Sampler-only()
     mv 'Sampler' 'Sampler-success'
     # Expect failure and test terminal output
     local terminal_output_file error_message
-    terminal_output_file="Sampler/${run_id}/Terminal_Output.txt"
+    local -r terminal_output_file="Sampler/${run_id}/Sampler.log"
     Print_Info 'Running Hybrid-handler expecting crash in Sampler'
     BLACK_BOX_FAIL='true' \
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}" '-o' '.'

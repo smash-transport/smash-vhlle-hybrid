@@ -36,7 +36,7 @@ function Functional_Test__do-Hydro-only()
     mv 'Hydro' 'Hydro-success'
     # Expect failure when giving an invalid IC output
     Print_Info 'Running Hybrid-handler expecting invalid IC argument'
-    terminal_output_file="Hydro/${run_id}/Terminal_Output.txt"
+    local -r terminal_output_file="Hydro/${run_id}/Hydro.log"
     BLACK_BOX_FAIL='invalid_input' \
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     if [[ $? -eq 0 ]]; then
@@ -74,7 +74,6 @@ function Functional_Test__do-Hydro-only()
     mv 'Hydro' 'Hydro-success-custom-input'
     # Expect failure when an invalid config was supplied
     Print_Info 'Running Hybrid-handler expecting invalid config argument'
-    terminal_output_file="Hydro/${run_id}/Terminal_Output.txt"
     BLACK_BOX_FAIL='invalid_config' \
         Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     if [[ $? -eq 0 ]]; then

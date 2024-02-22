@@ -31,13 +31,13 @@ function Ensure_Run_Reproducibility_IC()
 
 function Run_Software_IC()
 {
+    Separate_Terminal_Output_For 'IC'
     cd "${HYBRID_software_output_directory[IC]}"
-    local ic_terminal_output="${HYBRID_software_output_directory[IC]}/Terminal_Output.txt"
     "${HYBRID_software_executable[IC]}" \
         '-i' "${HYBRID_software_configuration_file[IC]}" \
         '-o' "${HYBRID_software_output_directory[IC]}" \
         '-n' \
-        >> "${ic_terminal_output}"
+        &>> "${HYBRID_software_output_directory[IC]}/${HYBRID_terminal_output[IC]}"
 }
 
 Make_Functions_Defined_In_This_File_Readonly

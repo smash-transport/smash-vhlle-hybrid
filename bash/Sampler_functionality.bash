@@ -37,11 +37,12 @@ function Ensure_Run_Reproducibility_Sampler()
 
 function Run_Software_Sampler()
 {
+    Separate_Terminal_Output_For 'Sampler'
     local -r sampler_config_file_path="${HYBRID_software_configuration_file[Sampler]}"
-    local sampler_terminal_output="${HYBRID_software_output_directory[Sampler]}/Terminal_Output.txt"
     cd "${HYBRID_software_output_directory[Sampler]}"
     "${HYBRID_software_executable[Sampler]}" 'events' '1' \
-        "${sampler_config_file_path}" >> "${sampler_terminal_output}"
+        "${sampler_config_file_path}" &>> \
+        "${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}"
 }
 
 #===============================================================================
