@@ -119,28 +119,27 @@ function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
 
 function Ensure_Consistency_Of_Afterburner_Input()
 {
-    local config_section_input='Placeholder in case no input file is given.'
-    if Has_YAML_String_Given_Key "(< "${HYBRID_configuration_file}")" 'Afterburner' 'Input_file'; then
-        config_section_input=$(Read_From_YAML_String_Given_Key "${HYBRID_configuration_file}" \
-            'Afterburner' 'Input_file')
-    fi
-    if Has_YAML_String_Given_Key "(< "${HYBRID_configuration_file}")" 'Afterburner' 'Software_keys' \
-        'Modi' 'List' 'Filename'; then
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_input_file[Afterburner]'
+    if Has_YAML_String_Given_Key \
+        "$(< "${HYBRID_configuration_file}")" 'Afterburner' 'Software_keys' 'Modi' 'List' 'Filename'; then
         local given_filename
-        given_filename=$(Read_From_YAML_String_Given_Key "(< "${HYBRID_configuration_file}")"'Afterburner' \
+        given_filename=$(Read_From_YAML_String_Given_Key "$(< "${HYBRID_configuration_file}")" 'Afterburner' \
             'Software_keys' 'Modi' 'List' 'Filename')
-        if [[ "$given_filename" != "${config_section_input}" ]]; then
+        if [[ "${given_filename}" != "${HYBRID_software_input_file[Afterburner]}" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                'The Afterburner input particle list has to be modified via the Input_file key, not the Software_keys" \
-                " specifying the input list filename!'
+                'The Afterburner input particle list has to be modified via the ' \
+                --emph 'Input_file' ' key,' 'not the ' --emph 'Software_keys' \
+                ' specifying the input list filename!'
         fi
     fi
-    if Has_YAML_String_Given_Key "(< "${HYBRID_configuration_file}")" 'Afterburner' 'Software_keys' 'Modi' \
-        'List' 'Shift_ID' || Has_YAML_String_Given_Key "(< "${HYBRID_configuration_file}")" 'Afterburner' \
-        'Software_keys' 'Modi' 'List' 'File_Prefix'; then
+    if Has_YAML_String_Given_Key \
+        "$(< "${HYBRID_configuration_file}")" 'Afterburner' 'Software_keys' 'Modi' 'List' 'Shift_ID' \
+        || Has_YAML_String_Given_Key \
+            "$(< "${HYBRID_configuration_file}")" 'Afterburner' 'Software_keys' 'Modi' 'List' 'File_Prefix'; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            'The Afterburner input particle list has to be modified via the Input_file key, not the Software_keys" \
-            " specifying the input list prefix and ID!'
+            'The Afterburner input particle list has to be modified via the ' \
+            --emph 'Input_file' ' key,' 'not the ' --emph 'Software_keys' \
+            ' specifying the input list prefix and ID!'
     fi
 }
 

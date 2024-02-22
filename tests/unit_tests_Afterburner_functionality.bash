@@ -36,7 +36,7 @@ function Make_Test_Preliminary_Operations__Afterburner-create-input-file()
 
 function Unit_Test__Afterburner-create-input-file()
 {
-    touch "${HYBRID_software_base_config_file[Afterburner]}"
+    touch "${HYBRID_software_base_config_file[Afterburner]}" "${HYBRID_configuration_file}"
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     local -r \
         plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar" \
@@ -59,7 +59,7 @@ function Unit_Test__Afterburner-create-input-file()
 
 function Clean_Tests_Environment_For_Following_Test__Afterburner-create-input-file()
 {
-    rm "${HYBRID_software_base_config_file[Afterburner]}"
+    rm "${HYBRID_software_base_config_file[Afterburner]}" "${HYBRID_configuration_file}"
     rm -r "${HYBRID_output_directory}"
 }
 
@@ -80,7 +80,11 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
         plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar" \
         plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar" \
         plist_Final="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
-    touch "${HYBRID_software_base_config_file[Afterburner]}" "${plist_Sampler}" "${plist_Final}"
+    touch \
+        "${HYBRID_software_base_config_file[Afterburner]}" \
+        "${plist_Sampler}" \
+        "${plist_Final}" \
+        "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
     if [[ $? -ne 110 ]]; then
         Print_Error \
