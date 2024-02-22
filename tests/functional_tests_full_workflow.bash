@@ -27,7 +27,7 @@ function __static__Test_Full_Workflow()
     __static__Create_Auxiliaries_For_Hydro
     # Expect success and test absence of "SMASH" unfinished file
     Print_Info 'Running full workflow with Hybrid-handler expecting success'
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     __static__Check_Outcome_Of_Full_Run $?
 }
 

@@ -118,13 +118,13 @@ Sampler:
 ???+ config-key "`Add_spectators_from_IC`"
 
     Whether spectators from the initial conditions stage should be included or not in the afterburner run can be decided via this boolean key.
-    The default value is `false`.
+    The default value is `true`.
 
 ???+ config-key "`Spectators_source`"
 
     If spectators from the initial conditions stage should be included in the afterburner run, a :material-file: *SMASH_IC.oscar* file is expected to exist in the :file_folder: ***IC*** output sub-folder with the same `Run_ID`.
     However, using this key any file path can be specified.
-    This key is ignored, unless `Add_spectators_from_IC` is not set to `true`.
+    This key is ignored if `Add_spectators_from_IC` is set to `false`.
 
 ```yaml title="Example"
 Afterburner:

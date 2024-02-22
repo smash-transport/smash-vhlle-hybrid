@@ -36,15 +36,16 @@ function Ensure_Run_Reproducibility_Hydro()
 
 function Run_Software_Hydro()
 {
+    Separate_Terminal_Output_For 'Hydro'
     cd "${HYBRID_software_output_directory[Hydro]}"
     local -r \
         hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}" \
-        ic_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat" \
-        hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/Terminal_Output.txt"
+        ic_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     "${HYBRID_software_executable[Hydro]}" \
         "-params" "${hydro_config_file_path}" \
         "-ISinput" "${ic_output_file_path}" \
-        "-outputDir" "${HYBRID_software_output_directory[Hydro]}" >> "${hydro_terminal_output}"
+        "-outputDir" "${HYBRID_software_output_directory[Hydro]}" &>> \
+        "${HYBRID_software_output_directory[Hydro]}/${HYBRID_terminal_output[Hydro]}"
 }
 
 #===============================================================================

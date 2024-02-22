@@ -45,6 +45,12 @@ function Define_Further_Global_Variables()
         [Sampler]='sampler_config.txt'
         [Afterburner]='afterburner_config.yaml'
     )
+    declare -rgA HYBRID_terminal_output=(
+        [IC]='IC.log'
+        [Hydro]='Hydro.log'
+        [Sampler]='Sampler.log'
+        [Afterburner]='Afterburner.log'
+    )
     declare -rgA HYBRID_handler_config_section_filename=(
         [IC]='Hybrid_handler_IC_config.yaml'
         [Hydro]='Hybrid_handler_Hydro_config.yaml'
@@ -89,7 +95,7 @@ function Define_Further_Global_Variables()
     # Variables to be set (and possibly made readonly) from command line
     HYBRID_execution_mode='help'
     HYBRID_configuration_file='./config.yaml'
-    HYBRID_output_directory="$(realpath .)"
+    HYBRID_output_directory="$(realpath './data')"
     # Variables to be set (and possibly made readonly) from configuration/setup
     HYBRID_run_id="Run_$(date +'%Y-%m-%d_%H%M%S')"
     HYBRID_given_software_sections=()
@@ -119,7 +125,7 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
     )
     declare -gA HYBRID_optional_feature=(
-        [Add_spectators_from_IC]='FALSE'
+        [Add_spectators_from_IC]='TRUE'
         [Spectators_source]=''
     )
     # Variables to be set (and possibly made readonly) after all sanity checks on input succeeded
