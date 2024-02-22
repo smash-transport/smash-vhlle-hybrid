@@ -32,6 +32,7 @@ function Functional_Test__do-Afterburner-only()
       Run_ID: %s
     Afterburner:
       Executable: %s/tests/mocks/smash_afterburner_black-box.py
+      Add_spectators_from_IC: false
       Software_keys:
         Modi:
           List:
@@ -39,14 +40,14 @@ function Functional_Test__do-Afterburner-only()
     ' "${run_id}" "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
     # Expect success and test absence of "SMASH" unfinished file
     Print_Info 'Running Hybrid-handler expecting success'
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     __static__Check_Successful_Handler_Run $?
     mv 'Afterburner' 'Afterburner-success'
     # Expect failure and test "SMASH" message
     Print_Info 'Running Hybrid-handler expecting invalid Afterburner input file failure'
     local -r terminal_output_file="Afterburner/${run_id}/Afterburner.log"
     BLACK_BOX_FAIL='invalid_config' \
-        Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+        Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded with invalid Afterburner input.'
         return 1
@@ -63,7 +64,7 @@ function Functional_Test__do-Afterburner-only()
     # Expect failure and test "SMASH" unfinished/lock files
     Print_Info 'Running Hybrid-handler expecting crash in Afterburner software'
     BLACK_BOX_FAIL='smash_crashes' \
-        Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+        Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded with Afterburner software crashing.'
         return 1
@@ -82,6 +83,7 @@ function Functional_Test__do-Afterburner-only()
     Afterburner:
       Executable: %s/mocks/smash_afterburner_black-box.py
       Input_file: %s/test/particle_lists_2.oscar
+      Add_spectators_from_IC: false
       Software_keys:
         Modi:
           List:
@@ -89,7 +91,7 @@ function Functional_Test__do-Afterburner-only()
     ' "${HYBRIDT_tests_folder}" "$(pwd)" > "${config_filename}"
     # Expect success and test absence of "SMASH" unfinished file
     Print_Info 'Running Hybrid-handler expecting success'
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     __static__Check_Successful_Handler_Run $? || return 1
     mv 'Afterburner' 'Afterburner-success-custom-input'
     # Expect failure when using custom input while also running the sampler
@@ -107,7 +109,7 @@ function Functional_Test__do-Afterburner-only()
             File_Directory: "."
     ' "${run_id}" "${HYBRIDT_tests_folder}" "$(pwd)" > "${config_filename}"
     Print_Info 'Running Hybrid-handler expecting failure'
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" &> /dev/null
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.' &> /dev/null
     if [[ $? -ne 110 ]]; then
         Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
         return 1
@@ -128,7 +130,7 @@ function Functional_Test__do-Afterburner-only()
           List:
             File_Directory: "."
     ' "${run_id}" "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     __static__Check_Successful_Handler_Run $?
     mv 'Afterburner' 'Afterburner-success-with-spectators'
     # Expect success and test the add_spectator functionality with custom spectator input
@@ -149,7 +151,7 @@ function Functional_Test__do-Afterburner-only()
           List:
             File_Directory: "."
     ' "${run_id}" "${HYBRIDT_tests_folder}" "$(pwd)" > "${config_filename}"
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     __static__Check_Successful_Handler_Run $? || return 1
     mv 'Afterburner' 'Afterburner-success-with-spectators'
     # Expect failure when combining custom spectator lists and running IC
@@ -170,7 +172,7 @@ function Functional_Test__do-Afterburner-only()
           List:
             File_Directory: "."
     ' "${HYBRIDT_tests_folder}" "$(pwd)" > "${config_filename}"
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" &> /dev/null
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.' &> /dev/null
     if [[ $? -ne 110 ]]; then
         Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
         return 1

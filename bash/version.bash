@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023-2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -10,11 +10,8 @@
 function Print_Software_Version()
 {
     Ensure_That_Given_Variables_Are_Set HYBRID_codebase_version
-    # First handle cases where git is not available, or codebase downloaded as archive and not cloned
-    # NOTE: Git introduced -C option in version 1.8.5
-    if ! hash git &> /dev/null \
-        || __static__Is_Git_Version_Older_Than '1.8.3' \
-        || ! git -C "${HYBRID_top_level_path}" rev-parse --is-inside-work-tree &> /dev/null; then
+    # First handle if the codebase was downloaded as archive and not cloned
+    if ! git -C "${HYBRID_top_level_path}" rev-parse --is-inside-work-tree &> /dev/null; then
         __static__Print_Pretty_Version_Line "${HYBRID_codebase_version}"
         return 0
     fi

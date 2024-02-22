@@ -94,7 +94,7 @@ function Define_Further_Global_Variables()
     # Variables to be set (and possibly made readonly) from command line
     HYBRID_execution_mode='help'
     HYBRID_configuration_file='./config.yaml'
-    HYBRID_output_directory="$(realpath .)"
+    HYBRID_output_directory="$(realpath './data')"
     # Variables to be set (and possibly made readonly) from configuration/setup
     HYBRID_run_id="Run_$(date +'%Y-%m-%d_%H%M%S')"
     HYBRID_given_software_sections=()
@@ -124,7 +124,7 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
     )
     declare -gA HYBRID_optional_feature=(
-        [Add_spectators_from_IC]='FALSE'
+        [Add_spectators_from_IC]='TRUE'
         [Spectators_source]=''
     )
     # Variables to be set (and possibly made readonly) after all sanity checks on input succeeded

@@ -3,6 +3,7 @@
 | Name  | E-mail |
 | :---: | :----: |
 | Alessandro Sciarra | asciarra@fias.uni-frankfurt.de   |
+| Gabriele Inghirami | g.inghirami@gsi.de               |
 | Jan Hammelmann     | hammelmann@fias.uni-frankfurt.de |
 | Niklas Götz        | goetz@fias.uni-frankfurt.de      |
 | Nils Saß           | nsass@fias.uni-frankfurt.de      |
