@@ -50,9 +50,6 @@ function Run_Software_Hydro()
 
 #===============================================================================
 
-# NOTE: The IC file is assumed to exist here (its existence is checked later).
-#       If the file exists we will just use it; if it exists as a broken link
-#       we overwrite it with 'ln -f'.
 function __static__Create_Symbolic_Link_To_IC_File()
 {
     local -r target_link_name="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
