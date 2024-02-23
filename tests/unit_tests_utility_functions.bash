@@ -319,5 +319,11 @@ function Unit_Test__utility-files-existence()
         Print_Error 'Function to ensure existent folders unexpectedly succeeded on a file.'
         return 1
     fi
+    Call_Codebase_Function Ensure_Given_Folders_Do_Not_Exist 'not-existing' 'dfadgdsfs'
+    Call_Codebase_Function_In_Subshell Ensure_Given_Folders_Do_Not_Exist "${HOME}" &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Function to ensure not existent folders unexpectedly succeeded.'
+        return 1
+    fi
     rm 'link_test'
 }

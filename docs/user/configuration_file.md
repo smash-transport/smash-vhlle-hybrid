@@ -56,6 +56,40 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
     If you need to add a key to the software default configuration file, you should create a custom one and specify it via the `Config_file` key.
     Depending on your needs, you could also create a more complete configuration file and change the values of some keys in your run(s) via this key.
 
+<i id="scan-parameters"></i>
+???+ config-key "`Scan_parameters`"
+
+    **This key can only be specified in `prepare-scan` execution mode.**
+
+    List of software input keys whose value is meant to be scanned.
+    Each parameter has to be specified concatenating with a period all the keys as they would appear in the `Software_keys` map.
+    For example, software keys which read
+    ```yaml
+    Software_keys:
+      foo:
+        bar: 42
+        baz: 666
+    ```
+    would be specified in the `Scan_parameters` list as `"foo.bar"` and `"foo.baz"`.
+    Such a list is a YAML array and therefore it can be specified both in the compact and extended form.
+
+    === "Compact form"
+
+        ```yaml
+        Scan_parameters: ["foo.bar", "foo.baz"]
+        ```
+
+    === "Extended form"
+
+        ```yaml
+        Scan_parameters:
+         - "foo.bar"
+         - "foo.baz"
+        ```
+
+    ??? warning "Each parameter requires a scan specification"
+        Parameters specified in the `Scan_parameters` list need to be accompanied by their scan values to be specified in the `Software_keys` section of the same stage [:material-arrow-right-box: the parameters scan syntax](scans_syntax.md).
+
 ## The initial conditions section
 
 There is no specific key of the `IC` section and only the generic ones can be used.
@@ -154,8 +188,11 @@ Sampler:
 Afterburner:
     Executable: /path/to/smash
 ```
-**Note:** Such a configuration file will execute all the modules in production mode, involving a fine hydrodynamic grid and a large statistic of sampled events. 
-It is therefore better suited to be executed at a computer cluster. To test your set-up locally, we suggest using config_TEST.yaml, for more read the section [Predefined configuration files](predef-configs.md).
+
+!!! warning "This is going to be costly!"
+    Such a configuration file will execute all the modules in production mode, involving a fine hydrodynamic grid and a large statistic of sampled events.
+    It is therefore better suited to be executed on a computer cluster.
+    To test your setup locally, we suggest using the :material-file: *config_TEST.yaml* configuration file :material-arrow-right-box: [Predefined configuration files](predefined_configs.md).
 
 
 ??? question "What if I want to omit some stages?"

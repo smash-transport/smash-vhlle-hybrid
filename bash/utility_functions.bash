@@ -178,9 +178,19 @@ function Ensure_Given_Files_Exist()
     __static__Check_Given_Files_With '! -f' 'FATAL' "$@"
 }
 
+function Ensure_Given_Folders_Do_Not_Exist()
+{
+    __static__Check_Given_Files_With '-d' 'FATAL' "$@"
+}
+
 function Ensure_Given_Folders_Exist()
 {
     __static__Check_Given_Files_With '! -d' 'FATAL' "$@"
+}
+
+function Internally_Ensure_Given_Files_Do_Not_Exist()
+{
+    __static__Check_Given_Files_With '-f' 'INTERNAL' "$@"
 }
 
 function Internally_Ensure_Given_Files_Exist()
@@ -223,6 +233,10 @@ function __static__Check_Given_Files_With()
         "! -f")
             negations=('NOT ' '')
             string+=' file'
+            ;;
+        -d)
+            negations=('' 'NOT ')
+            string+=' folder'
             ;;
         "! -d")
             negations=('NOT ' '')
@@ -332,11 +346,14 @@ function Ensure_That_Given_Variables_Are_Set_And_Not_Empty()
         # would return the variable declared attributes (e.g. 'a' for arrays).
         if [[ $(declare -p "${variable_name}" 2> /dev/null) =~ ^declare\ -[aA] ]]; then
             declare -n ref=${variable_name}
+            set +u # Here 'ref' might be unset for empty associative arrays! Do not exit if so
             if [[ ${#ref[@]} -ne 0 ]]; then
+                set -u
                 continue
             fi
+            set -u
         else
-            set +u # Here variable_name might be unset! Do not exit if so
+            set +u # Here 'variable_name' might be unset! Do not exit if so
             if [[ "${!variable_name}" != '' ]]; then
                 set -u
                 continue

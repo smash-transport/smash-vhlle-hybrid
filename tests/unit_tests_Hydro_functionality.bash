@@ -24,7 +24,9 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
     HYBRID_output_directory="${HYBRIDT_folder_to_run_tests}/test_dir_Hydro"
     HYBRID_software_base_config_file[Hydro]='vhlle_config_cool'
     HYBRID_given_software_sections=('Hydro')
-    HYBRID_software_executable[Hydro]="$(which echo)"
+    # To test the generic case, create symbolic link to dummy executable
+    ln -s "$(which echo)" "${PWD}/dummy_exec"
+    HYBRID_software_executable[Hydro]="${PWD}/dummy_exec"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 }
 
@@ -32,8 +34,6 @@ function Unit_Test__Hydro-create-input-file()
 {
     local -r ic_file="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     touch "${HYBRID_software_base_config_file[Hydro]}"
-    ln -s "$(which ls)" dummy_exec
-    HYBRID_software_executable[Hydro]="${HYBRIDT_folder_to_run_tests}/dummy_exec"
     mkdir 'eos'
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
     if [[ ! -f "${HYBRID_software_configuration_file[Hydro]}" ]]; then
@@ -78,7 +78,7 @@ function Unit_Test__Hydro-create-input-file()
         return 1
     fi
     rm -r "${HYBRID_software_output_directory[Hydro]}"/*
-    ln -s "${HYBRIDT_folder_to_run_tests}/eos" "${HYBRID_software_output_directory[Hydro]}/eos"
+    ln -s "${PWD}/eos" "${HYBRID_software_output_directory[Hydro]}/eos"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
     if [[ $? -ne 0 ]]; then
         Print_Error 'Preparation failed although the correct symlink exists.'
@@ -95,7 +95,7 @@ function Unit_Test__Hydro-create-input-file()
 
 function Clean_Tests_Environment_For_Following_Test__Hydro-create-input-file()
 {
-    rm "${HYBRID_software_base_config_file[Hydro]}"
+    rm "${HYBRID_software_base_config_file[Hydro]}" 'dummy_exec'
     rm -r "${HYBRID_output_directory}"
 }
 
@@ -144,7 +144,7 @@ function Unit_Test__Hydro-check-all-input()
 
 function Clean_Tests_Environment_For_Following_Test__Hydro-check-all-input()
 {
-    rm -r "${HYBRID_output_directory}"
+    rm -r "${HYBRID_output_directory}" 'dummy_exec'
 }
 
 function Make_Test_Preliminary_Operations__Hydro-test-run-software()

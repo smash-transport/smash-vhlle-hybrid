@@ -9,7 +9,7 @@
 
 function Unit_Test__copy-hybrid-handler-config-section()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${FUNCNAME}.yaml
     # Avoid empty lines in the beginning in this test as yq behavior
     # might change with different versions (here we compare strings)
     printf '%s\n' \
@@ -23,9 +23,10 @@ function Unit_Test__copy-hybrid-handler-config-section()
         '  Config_file: confh' > "${HYBRID_configuration_file}"
     local -r git_description="$(git -C "${HYBRIDT_folder_to_run_tests}" describe --long --always --all)"
     local folder description expected_result
+    Print_Info "${HYBRID_handler_config_section_filename[IC]}"
     for folder in "${HYBRIDT_folder_to_run_tests}" ~; do
-        Call_Codebase_Function_In_Subshell Copy_Hybrid_Handler_Config_Section 'IC' \
-            "${HYBRIDT_folder_to_run_tests}" "${folder}" #&> /dev/null
+        Call_Codebase_Function_In_Subshell Copy_Hybrid_Handler_Config_Section \
+            'IC' "." "${folder}" &> /dev/null
         if [[ "${folder}" = "${HYBRIDT_folder_to_run_tests}" ]]; then
             description="${git_description}"
         else

@@ -38,7 +38,7 @@ function Make_Test_Preliminary_Operations__configuration-validate-YAML()
 
 function Unit_Test__configuration-validate-YAML()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf 'Scalar\nKey: Value\n' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell Validate_And_Parse_Configuration_File &> /dev/null
     if [[ $? -eq 0 ]]; then
@@ -57,7 +57,7 @@ function Make_Test_Preliminary_Operations__configuration-validate-section-labels
 
 function Unit_Test__configuration-validate-section-labels()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf 'Invalid: Value\n' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell Validate_And_Parse_Configuration_File &> /dev/null
     if [[ $? -eq 0 ]]; then
@@ -100,7 +100,7 @@ function Make_Test_Preliminary_Operations__configuration-validate-all-keys()
 
 function Unit_Test__configuration-validate-all-keys()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf '
     Hybrid_handler:
       Try: 1
@@ -157,7 +157,7 @@ function Make_Test_Preliminary_Operations__configuration-validate-boolean-values
 
 function Unit_Test__configuration-validate-boolean-values()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     local value counter=0
     for value in y Y yes Yes YES n N no No NO on On ON off Off OFF 0 1; do
         printf '
@@ -202,7 +202,7 @@ function Make_Test_Preliminary_Operations__configuration-parse-general-section()
 
 function Unit_Test__configuration-parse-general-section()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf 'Hybrid_handler: {}\nIC:\n  Executable: foo\n' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell Validate_And_Parse_Configuration_File
     if [[ $? -ne 0 ]]; then
@@ -216,12 +216,13 @@ function Unit_Test__configuration-parse-general-section()
 
 function __static__Test_Section_Parsing_In_Subshell()
 (
-    local section executable input_file new_keys
+    local section executable input_file scan_params new_keys
     section=$1
     executable=$2
     config_file=$3
     input_file=$4
-    new_keys=$5
+    scan_params=$5
+    new_keys=$6
     Call_Codebase_Function Validate_And_Parse_Configuration_File
     if [[ "${#HYBRID_given_software_sections[@]}" -ne 1 ]] \
         || [[ "${HYBRID_given_software_sections[0]}" != "${section}" ]]; then
@@ -236,6 +237,9 @@ function __static__Test_Section_Parsing_In_Subshell()
     if [[ ${HYBRID_software_user_custom_input_file[${section}]} != "${input_file}" ]]; then
         Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (input file).'
     fi
+    if [[ ${HYBRID_scan_parameters[${section}]} != "${scan_params}" ]]; then
+        Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (scan parameters).'
+    fi
     if [[ ${HYBRID_software_new_input_keys[${section}]} != "${new_keys}" ]]; then
         Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (software keys).'
     fi
@@ -248,17 +252,19 @@ function Make_Test_Preliminary_Operations__configuration-parse-IC-section()
 
 function Unit_Test__configuration-parse-IC-section()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf '
     IC:
       Executable: foo
       Config_file: bar
+      Scan_parameters:
+        - General.Randomseed
       Software_keys:
         General:
           Randomseed: 12345
     ' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
-        'IC' 'foo' 'bar' '' $'General:\n  Randomseed: 12345'
+        'IC' 'foo' 'bar' '' '- General.Randomseed' $'General:\n  Randomseed: 12345'
     if [[ $? -ne 0 ]]; then
         return 1
     fi
@@ -274,17 +280,18 @@ function Make_Test_Preliminary_Operations__configuration-parse-Hydro-section()
 
 function Unit_Test__configuration-parse-Hydro-section()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf '
     Hydro:
       Executable: foo
       Config_file: bar
       Input_file: ket
+      Scan_parameters: [etaS]
       Software_keys:
         etaS: 0.12345
     ' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
-        'Hydro' 'foo' 'bar' 'ket' 'etaS: 0.12345'
+        'Hydro' 'foo' 'bar' 'ket' '[etaS]' 'etaS: 0.12345'
     if [[ $? -ne 0 ]]; then
         return 1
     fi
@@ -300,16 +307,17 @@ function Make_Test_Preliminary_Operations__configuration-parse-Sampler-section()
 
 function Unit_Test__configuration-parse-Sampler-section()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf '
     Sampler:
       Executable: foo
       Config_file: bar
+      Scan_parameters: [shear]
       Software_keys:
         shear: 1.2345
     ' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
-        'Sampler' 'foo' 'bar' '' 'shear: 1.2345'
+        'Sampler' 'foo' 'bar' '' '[shear]' 'shear: 1.2345'
     if [[ $? -ne 0 ]]; then
         return 1
     fi
@@ -325,18 +333,24 @@ function Make_Test_Preliminary_Operations__configuration-parse-Afterburner-secti
 
 function Unit_Test__configuration-parse-Afterburner-section()
 {
-    HYBRID_configuration_file=${HYBRIDT_folder_to_run_tests}/${FUNCNAME}.yaml
+    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
     printf '
     Afterburner:
       Executable: foo
       Config_file: bar
       Input_file: ket
+      Scan_parameters:
+        - General.End_Time
+        - General.Randomseed
       Software_keys:
         General:
           End_Time: 42000
+          Randomseed: 42
     ' > "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell __static__Test_Section_Parsing_In_Subshell \
-        'Afterburner' 'foo' 'bar' 'ket' $'General:\n  End_Time: 42000'
+        'Afterburner' 'foo' 'bar' 'ket' \
+        $'- General.End_Time\n- General.Randomseed' \
+        $'General:\n  End_Time: 42000\n  Randomseed: 42'
     if [[ $? -ne 0 ]]; then
         return 1
     fi

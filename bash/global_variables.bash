@@ -57,6 +57,13 @@ function Define_Further_Global_Variables()
         [Sampler]='Hybrid_handler_Sampler_config.yaml'
         [Afterburner]='Hybrid_handler_Afterburner_config.yaml'
     )
+    # This array specifies a set of YAML lists of keys that define a valid parameter scan.
+    # ATTENTION: The keys inside each YAML list must be alphabetically sorted to allow
+    #            the validation mechanism to work!
+    readonly HYBRID_valid_scan_specification_keys=(
+        '[Values]'
+    )
+    readonly HYBRID_scan_combinations_filename='scan_combinations.dat'
     # The following associative arrays declare maps between valid keys in the handler config
     # file and bash variables in which the input information will be stored once parsed.
     declare -rgA HYBRID_hybrid_handler_valid_keys=(
@@ -65,23 +72,27 @@ function Define_Further_Global_Variables()
     declare -rgA HYBRID_ic_valid_keys=(
         [Executable]='HYBRID_software_executable[IC]'
         [Config_file]='HYBRID_software_base_config_file[IC]'
+        [Scan_parameters]='HYBRID_scan_parameters[IC]'
         [Software_keys]='HYBRID_software_new_input_keys[IC]'
     )
     declare -rgA HYBRID_hydro_valid_keys=(
         [Executable]='HYBRID_software_executable[Hydro]'
         [Config_file]='HYBRID_software_base_config_file[Hydro]'
         [Input_file]='HYBRID_software_user_custom_input_file[Hydro]'
+        [Scan_parameters]='HYBRID_scan_parameters[Hydro]'
         [Software_keys]='HYBRID_software_new_input_keys[Hydro]'
     )
     declare -rgA HYBRID_sampler_valid_keys=(
         [Executable]='HYBRID_software_executable[Sampler]'
         [Config_file]='HYBRID_software_base_config_file[Sampler]'
+        [Scan_parameters]='HYBRID_scan_parameters[Sampler]'
         [Software_keys]='HYBRID_software_new_input_keys[Sampler]'
     )
     declare -rgA HYBRID_afterburner_valid_keys=(
         [Executable]='HYBRID_software_executable[Afterburner]'
         [Config_file]='HYBRID_software_base_config_file[Afterburner]'
         [Input_file]='HYBRID_software_user_custom_input_file[Afterburner]'
+        [Scan_parameters]='HYBRID_scan_parameters[Afterburner]'
         [Software_keys]='HYBRID_software_new_input_keys[Afterburner]'
         [Add_spectators_from_IC]='HYBRID_optional_feature[Add_spectators_from_IC]'
         [Spectators_source]='HYBRID_optional_feature[Spectators_source]'
@@ -96,6 +107,7 @@ function Define_Further_Global_Variables()
     HYBRID_execution_mode='help'
     HYBRID_configuration_file='./config.yaml'
     HYBRID_output_directory="$(realpath './data')"
+    HYBRID_scan_directory="${HYBRID_output_directory}/scan"
     # Variables to be set (and possibly made readonly) from configuration/setup
     HYBRID_run_id="Run_$(date +'%Y-%m-%d_%H%M%S')"
     HYBRID_given_software_sections=()
@@ -117,6 +129,12 @@ function Define_Further_Global_Variables()
         [Hydro]="${HYBRID_default_configurations_folder}/vhlle_hydro"
         [Sampler]="${HYBRID_default_configurations_folder}/hadron_sampler"
         [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"
+    )
+    declare -gA HYBRID_scan_parameters=(
+        [IC]=''
+        [Hydro]=''
+        [Sampler]=''
+        [Afterburner]=''
     )
     declare -gA HYBRID_software_new_input_keys=(
         [IC]=''
