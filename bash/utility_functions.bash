@@ -25,9 +25,11 @@ function Element_In_Array_Matches()
     return 1
 }
 
-# NOTE: This function needs to be called with the YAML string as first argument
-#       and the section key(s) as remaining argument(s). If YAML is invalid,
-#       an error is printed and the function exits.
+# NOTE: This function needs to be called with the YAML string as first argument and the
+#       section key(s) as remaining argument(s). As it is assumed everywhere that no key
+#       contains a period (or a space), keys can be passed to this function also already
+#       concatenated (or in a mixed way).
+#       If YAML is invalid, an error is printed and the function exits.
 function Has_YAML_String_Given_Key()
 {
     local yaml_string section key
@@ -39,6 +41,9 @@ function Has_YAML_String_Given_Key()
     if ! yq <<< "${yaml_string}" &> /dev/null; then
         Print_Internal_And_Exit 'Function ' --emph "${FUNCNAME}" ' called with invalid YAML string.'
     fi
+    # Reset parameters letting word splitting split keys after having replaced periods by spaces.
+    # This is needed to correctly deal with any possible way keys are passed to this function.
+    set -- ${@//./ }
     section="$(printf '.%s' "${@:1:$#-1}")" # All arguments but last
     key=${@: -1}                            # Last argument
     if [[ $(yq "${section}"' | has("'"${key}"'")' <<< "${yaml_string}") = 'true' ]]; then
@@ -48,9 +53,8 @@ function Has_YAML_String_Given_Key()
     fi
 }
 
-# NOTE: This function needs to be called with the YAML string as first argument
-#       and the section key(s) as remaining argument(s). If YAML does not contain
-#       the key (or it is invalid) the function exits with an error.
+# NOTE: This function must be called like 'Has_YAML_String_Given_Key'.
+#       If YAML does not contain the key (or it is invalid) the function exits with an error.
 function Read_From_YAML_String_Given_Key()
 {
     local yaml_string key
@@ -65,9 +69,8 @@ function Read_From_YAML_String_Given_Key()
     yq "${key}" <<< "${yaml_string}"
 }
 
-# NOTE: This function needs to be called with the YAML string as first argument
-#       and the section key(s) as remaining argument(s). If YAML does not contain
-#       the key (or it is invalid) the function exits with an error.
+# NOTE: This function must be called like 'Has_YAML_String_Given_Key'.
+#       If YAML does not contain the key (or it is invalid) the function exits with an error.
 function Print_YAML_String_Without_Given_Key()
 {
     local yaml_string key

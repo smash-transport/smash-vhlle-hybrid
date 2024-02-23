@@ -19,10 +19,6 @@ function Format_Scan_Parameters_Lists()
     readonly HYBRID_scan_parameters
 }
 
-# NOTE: In the following functions the parameter(s) to be scanned are stored as a period-separated
-#       list of keys to navigate the YAML tree. However, the utility functions are general and needs
-#       keys as separate arguments. Hence we let word-splitting help us when calling the function.
-#       By that it is also assumed that there are no spaces in keys (a kind of design decision).
 function Validate_And_Store_Scan_Parameters()
 {
     Ensure_That_Given_Variables_Are_Set list_of_parameters_values
@@ -45,7 +41,7 @@ function Validate_And_Store_Scan_Parameters()
                 else
                     parameter_value=$(
                         Read_From_YAML_String_Given_Key \
-                            "${HYBRID_software_new_input_keys["${key}"]}" ${parameter//./ }
+                            "${HYBRID_software_new_input_keys["${key}"]}" "${parameter}"
                     )
                     # Get rid of YAML top-level 'Scan' key
                     list_of_parameters_values["${key}.Software_keys.${parameter}"]=$(
@@ -69,14 +65,14 @@ function Validate_And_Store_Scan_Parameters()
 function __static__Is_Parameter_To_Be_Scanned()
 {
     local -r key="$1" yaml_section="$2"
-    if ! Has_YAML_String_Given_Key "${yaml_section}" ${key//./ }; then
+    if ! Has_YAML_String_Given_Key "${yaml_section}" "${key}"; then
         Print_Error \
             'The ' --emph "${key}" ' parameter is asked to be scanned but its value' \
             'was not specified in the corresponding ' --emph 'Software_keys' '.'
         return 1
     fi
     local parameter_value
-    parameter_value=$(Read_From_YAML_String_Given_Key "${yaml_section}" ${key//./ })
+    parameter_value=$(Read_From_YAML_String_Given_Key "${yaml_section}" "${key}")
     if ! __static__Is_Given_Key_Value_A_Valid_Scan "${parameter_value}"; then
         Print_Error -l -- 'The ' --emph "${key}" \
             ' parameter is asked to be scanned but its value was not properly specified as a scan.'
