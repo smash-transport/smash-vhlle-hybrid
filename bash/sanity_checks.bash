@@ -48,7 +48,6 @@ function Perform_Internal_Sanity_Checks()
         "${HYBRID_software_base_config_file[@]}"
 }
 
-
 function Ensure_Consistency_Of_Afterburner_Input()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_input_file[Afterburner]'
