@@ -78,7 +78,7 @@ function __static__Generate_And_Store_Parameter_List_Of_Ranges()
             #     Print_Internal_And_Exit \
             #         'The range has to be defined by a lower and an upper bound'
             # fi
-            
+
             # local first_element=${values%%,*}  # Extract first element before comma
             # local second_element=${values#*,}  # Extract substring after the first comma
             # if (( first_element >= second_element )); then
@@ -96,4 +96,3 @@ function __static__Generate_And_Store_Parameter_List_Of_Ranges()
             ;;
     esac
 }
-

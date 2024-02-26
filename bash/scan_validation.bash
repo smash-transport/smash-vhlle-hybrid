@@ -195,9 +195,9 @@ function __static__Has_Valid_Scan_Correct_Values()
                 return 1
             fi
             num_values=$(yq '.Scan.Range | length' <<< "${given_scan}")
-            if (( num_values != 2 )); then
+            if ((num_values != 2)); then
                 Print_Error \
-                    'Exactly two values are expected for the range. '\
+                    'Exactly two values are expected for the range. ' \
                     'The given range is ' --emph "${num_values}" ' long.'
                 return 1
             fi
