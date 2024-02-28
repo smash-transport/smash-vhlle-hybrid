@@ -1,4 +1,4 @@
-build*
+build*/
 binaries
 python_scripts/*.pyc
 
