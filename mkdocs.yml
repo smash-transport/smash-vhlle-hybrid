@@ -31,9 +31,12 @@ nav:
        - Types of scans: user/scans_types.md
   - Developer Guide:
     - developer/index.md
-    - Building the documentation: developer/building_docs.md
-    - Contributing: developer/contributing.md
-    - Parameters scan: developer/parameters_scan.md
+    - General aspects:
+      - Building the documentation: developer/building_docs.md
+      - Contributing: developer/contributing.md
+    - Code design and technicalities:
+      - Parameters scan: developer/parameters_scan.md
+      - Utility function: developer/utility_functions.md
 
 markdown_extensions:
   # More markdown functionality

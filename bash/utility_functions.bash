@@ -7,6 +7,30 @@
 #
 #===================================================
 
+# ATTENTION: Unless it makes sense to do it differently, each function here
+#            should have a short documentation before and then be included in
+#            the developer guide. Be consistent when adding a new function.
+#            Here a simple bash trick is used: A no-operation ':' followed by
+#            a here-doc is used to be able to put the markdown documentation
+#            inside and still make this be ignored by the shell. In the here-doc
+#            a couple of "snippet anchors" is used to be able to include the
+#            snippets in the developer guide. Each snippet begins and ends with
+#            '--8<-- [start:<label>]' and '--8<-- [end:<label>]', respectively.
+#            The first snippet is for a short description of the function and
+#            the second for a bash example of how to call it. If the snippets
+#            are missing, then the function is documented differently.
+
+: << 'DOCSTRING'
+--8<-- [start:Element_In_Array_Equals_To-desc]
+Test if an array contains a given element using string comparison.
+The function returns 0 if the element is in the array, 1 otherwise.
+--8<-- [end:Element_In_Array_Equals_To-desc]
+--8<-- [start:Element_In_Array_Equals_To-ex]
+if Element_In_Array_Equals_To 'element' "${array[@]}"; then
+    # 'element' is in array
+fi
+--8<-- [end:Element_In_Array_Equals_To-ex]
+DOCSTRING
 function Element_In_Array_Equals_To()
 {
     local element
@@ -16,6 +40,18 @@ function Element_In_Array_Equals_To()
     return 1
 }
 
+: << 'DOCSTRING'
+--8<-- [start:Element_In_Array_Matches-desc]
+Test if an array contains a given element using regex comparison.
+The function returns 0 if at least one element in the array matches the regular
+expression, 1 otherwise.
+--8<-- [end:Element_In_Array_Matches-desc]
+--8<-- [start:Element_In_Array_Matches-ex]
+if Element_In_Array_Matches '^file_[0-9]+' "${array[@]}"; then
+    # array contains one entry matching the regex
+fi
+--8<-- [end:Element_In_Array_Matches-ex]
+DOCSTRING
 function Element_In_Array_Matches()
 {
     local element
@@ -25,11 +61,19 @@ function Element_In_Array_Matches()
     return 1
 }
 
-# NOTE: This function needs to be called with the YAML string as first argument and the
-#       section key(s) as remaining argument(s). As it is assumed everywhere that no key
-#       contains a period (or a space), keys can be passed to this function also already
-#       concatenated (or in a mixed way).
-#       If YAML is invalid, an error is printed and the function exits.
+: << 'DOCSTRING'
+--8<-- [start:Has_YAML_String_Given_Key-desc]
+Test if a YAML string contains a given key.
+If the YAML string is invalid, an error is printed and the function exits.
+The function returns 0 if the key is present in the YAML string, 1 otherwise.
+--8<-- [end:Has_YAML_String_Given_Key-desc]
+--8<-- [start:Has_YAML_String_Given_Key-ex]
+yaml_string=$'section:\n  key: 42\n'
+if Has_YAML_String_Given_Key "${yaml_string}" 'section' 'key'; then
+    # this is executed
+fi
+--8<-- [end:Has_YAML_String_Given_Key-ex]
+DOCSTRING
 function Has_YAML_String_Given_Key()
 {
     local yaml_string section key
@@ -53,8 +97,20 @@ function Has_YAML_String_Given_Key()
     fi
 }
 
-# NOTE: This function must be called like 'Has_YAML_String_Given_Key'.
-#       If YAML does not contain the key (or it is invalid) the function exits with an error.
+: << 'DOCSTRING'
+--8<-- [start:Read_From_YAML_String_Given_Key-desc]
+Read a given key from a YAML string.
+If the YAML string does not contain the key (or it is invalid) the function exits with an error.
+The read key is printed to standard output.
+--8<-- [end:Read_From_YAML_String_Given_Key-desc]
+--8<-- [start:Read_From_YAML_String_Given_Key-ex]
+yaml_string=$'section:\n  key: 42\n'
+key_value=$(Read_From_YAML_String_Given_Key "${yaml_string}" 'section' 'key')
+echo "${key_value}"  # <-- this prints '42'
+key_value=$(Read_From_YAML_String_Given_Key "${yaml_string}" 'section.key')
+echo "${key_value}"  # <-- this prints '42'
+--8<-- [end:Read_From_YAML_String_Given_Key-ex]
+DOCSTRING
 function Read_From_YAML_String_Given_Key()
 {
     local yaml_string key
@@ -69,8 +125,18 @@ function Read_From_YAML_String_Given_Key()
     yq "${key}" <<< "${yaml_string}"
 }
 
-# NOTE: This function must be called like 'Has_YAML_String_Given_Key'.
-#       If YAML does not contain the key (or it is invalid) the function exits with an error.
+: << 'DOCSTRING'
+--8<-- [start:Print_YAML_String_Without_Given_Key-desc]
+Remove a given key from a YAML string.
+If the YAML string does not contain the key (or it is invalid) the function exits with an error.
+The new YAML string is printed to standard output.
+--8<-- [end:Print_YAML_String_Without_Given_Key-desc]
+--8<-- [start:Print_YAML_String_Without_Given_Key-ex]
+yaml_string=$'a: 17\nb: 42\n'
+yaml_string=$(Print_YAML_String_Without_Given_Key "${yaml_string}" 'b')
+echo "${yaml_string}"  # <-- this prints 'a: 17'
+--8<-- [end:Print_YAML_String_Without_Given_Key-ex]
+DOCSTRING
 function Print_YAML_String_Without_Given_Key()
 {
     local yaml_string key
@@ -85,6 +151,19 @@ function Print_YAML_String_Without_Given_Key()
     yq 'del('"${key}"')' <<< "${yaml_string}"
 }
 
+: << 'DOCSTRING'
+--8<-- [start:Print_Line_of_Equals-desc]
+Print a lines of equals to the standard output.
+Function interface:
+
+1. Length in characters of the line.
+2. Prefix to be printed before the line (optional, default: `''`).
+3. Postfix to be printed after the line (optional, default: `'\n'`).
+--8<-- [end:Print_Line_of_Equals-desc]
+--8<-- [start:Print_Line_of_Equals-ex]
+Print_Line_of_Equals 80 '\e[96m    ' '\e[0m\n'
+--8<-- [end:Print_Line_of_Equals-ex]
+DOCSTRING
 function Print_Line_of_Equals()
 {
     local length indentation prefix postfix
@@ -98,6 +177,21 @@ function Print_Line_of_Equals()
     printf "${postfix}"
 }
 
+: << 'DOCSTRING'
+--8<-- [start:Print_Centered_Line-desc]
+Print a string horizontally centered in the terminal or in the provided length.
+Function interface:
+
+1. String to be printed.
+2. Length in characters of the line (optional, default: terminal width).
+3. Prefix to be printed before the line (optional, default: `''`).
+4. Padding character to fill the line left and right of the string (optional, default: `' '`).
+5. Postfix to be printed after the line (optional, default: `'\n'`).
+--8<-- [end:Print_Centered_Line-desc]
+--8<-- [start:Print_Centered_Line-ex]
+Print_Centered_Line 'Hello world!' 80 '\e[96m    ' '=' '\e[0m\n'
+--8<-- [end:Print_Centered_Line-ex]
+DOCSTRING
 function Print_Centered_Line()
 {
     local input_string output_total_width indentation padding_character \
@@ -125,24 +219,54 @@ function Print_Centered_Line()
         "${padding_utility}"
 }
 
+: << 'DOCSTRING'
+--8<-- [start:Print_Option_Specification_Error_And_Exit-desc]
+Print a fatal error about the given option using the logger and exits.
+--8<-- [end:Print_Option_Specification_Error_And_Exit-desc]
+--8<-- [start:Print_Option_Specification_Error_And_Exit-ex]
+Print_Option_Specification_Error_And_Exit '--filename'
+--8<-- [end:Print_Option_Specification_Error_And_Exit-ex]
+DOCSTRING
 function Print_Option_Specification_Error_And_Exit()
 {
     exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit \
         'The value of the option ' --emph "$1" ' was not correctly specified (either forgotten or invalid)!'
 }
 
+: << 'DOCSTRING'
+--8<-- [start:Print_Not_Implemented_Function_Error-desc]
+Print an error about the caller function using the logger.
+--8<-- [end:Print_Not_Implemented_Function_Error-desc]
+--8<-- [start:Print_Not_Implemented_Function_Error-ex]
+Print_Not_Implemented_Function_Error
+--8<-- [end:Print_Not_Implemented_Function_Error-ex]
+DOCSTRING
 function Print_Not_Implemented_Function_Error()
 {
     Print_Error 'Function ' --emph "${FUNCNAME[1]}" ' not implemented yet, skipping it.'
 }
 
+: << 'DOCSTRING'
+--8<-- [start:Remove_Comments_In_File-desc]
+Remove comments starting with a given character (default `'#'`) in a given file.
+In particular:
+
+* Entire lines starting with a comment (possibly with leading spaces) are removed.
+* Inline comments with any space before them are removed.
+
+!!! danger "Think before using this function!"
+    This function considers as comments anything coming after _any_ occurrence of
+    the specified comment character and **you should not use it if there might
+    be occurrences of that character that do not start a comment!**
+    For the hybrid handler configuration such a basic implementation is enough.
+--8<-- [end:Remove_Comments_In_File-desc]
+--8<-- [start:Remove_Comments_In_File-ex]
+Remove_Comments_In_File 'config.yaml'
+Remove_Comments_In_File 'doc.tex' '%'
+--8<-- [end:Remove_Comments_In_File-ex]
+DOCSTRING
 function Remove_Comments_In_File()
 {
-    # NOTE: This function considers as comments anything coming after ANY occurrence of
-    #       the specified comment character and you should not use it if there might
-    #       be occurrences of that character that do not start a comment!
-    #        1) Entire lines starting with a comment (possibly with leading spaces) are removed
-    #        2) Inline comments with any space before them are removed
     local filename comment_character
     filename=$1
     comment_character=${2:-#}
@@ -156,20 +280,23 @@ function Remove_Comments_In_File()
     fi
 }
 
+: << 'DOCSTRING'
+--8<-- [start:Strip_ANSI_Color_Codes_From_String-desc]
+Remove ANSI color codes from the given string.
+The cleaned up string is printed to standard output.
+--8<-- [end:Strip_ANSI_Color_Codes_From_String-desc]
+--8<-- [start:Strip_ANSI_Color_Codes_From_String-ex]
+Strip_ANSI_Color_Codes_From_String $'\e[96mHi\e[0m' # <-- this prints 'Hi'
+--8<-- [end:Strip_ANSI_Color_Codes_From_String-ex]
+DOCSTRING
 function Strip_ANSI_Color_Codes_From_String()
 {
     # Adjusted from https://stackoverflow.com/a/18000433/14967071
     sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,3})*)?[mGK]//g" <<< "$1"
 }
 
-# NOTE: In the following functions that check existence of files or folders,
-#       symbolic links are accepted and the entity of what they resolve to is
-#       what is tested. Links resolution is done using 'realpath -m' before
-#       testing the entity (the option -m accepts non existing paths).
-#
-# NOTE: The arguments passed to these functions are interpreted as file/folder
-#       names, but if an argument is '--', then the arguments before can be
-#       used as add-on messages to be printed in case of error (one per line).
+#-------------------------------------------------------------------------------
+# NOTE: Refer to the developer guide for information about these functions
 function Ensure_Given_Files_Do_Not_Exist()
 {
     __static__Check_Given_Files_With '-f' 'FATAL' "$@"
@@ -287,7 +414,19 @@ function __static__Check_Given_Files_With()
             '\nUnable to continue.'
     fi
 }
+#-------------------------------------------------------------------------------
 
+: << 'DOCSTRING'
+--8<-- [start:Call_Function_If_Existing_Or_Exit-desc]
+Check if the given function exists and if so call it forwarding all arguments.
+Exit with an internal error otherwise.
+--8<-- [end:Call_Function_If_Existing_Or_Exit-desc]
+--8<-- [start:Call_Function_If_Existing_Or_Exit-ex]
+# These two are equivalent if the function 'Mystery_Function' is defined
+Call_Function_If_Existing_Or_Exit 'Mystery_Function' 'Arg_1' 'Arg_2' 'Arg_3'
+Mystery_Function 'Arg_1' 'Arg_2' 'Arg_3'
+--8<-- [end:Call_Function_If_Existing_Or_Exit-ex]
+DOCSTRING
 function Call_Function_If_Existing_Or_Exit()
 {
     local name_of_the_function=$1
@@ -301,6 +440,17 @@ function Call_Function_If_Existing_Or_Exit()
     fi
 }
 
+: << 'DOCSTRING'
+--8<-- [start:Call_Function_If_Existing_Or_No_Op-desc]
+Check if the given function exists and if so call it forwarding all arguments.
+This is a no-operation if the function is not defined.
+--8<-- [end:Call_Function_If_Existing_Or_No_Op-desc]
+--8<-- [start:Call_Function_If_Existing_Or_No_Op-ex]
+# These two are equivalent if the function 'Mystery_Function' is defined
+Call_Function_If_Existing_Or_No_Op 'Mystery_Function' 'Arg_1' 'Arg_2' 'Arg_3'
+Mystery_Function 'Arg_1' 'Arg_2' 'Arg_3'
+--8<-- [end:Call_Function_If_Existing_Or_No_Op-ex]
+DOCSTRING
 function Call_Function_If_Existing_Or_No_Op()
 {
     local name_of_the_function=$1
@@ -310,18 +460,27 @@ function Call_Function_If_Existing_Or_No_Op()
     fi
 }
 
-# NOTE: In Bash there are several ways to declare variables and somehow these are
-#       (apparently) not consistent w.r.t. the variable resulting set when tested via
-#       [[ -v ... ]] and therefore here we decided to also use the 'declare' command.
-#       For example, 'local foo' is not setting a variable (the -v test fails, which
-#       makes sense). However, also 'foo=()' is not setting the array variable
-#       which is not what we want here. In this function "set" means DECLARED IN
-#       SOME WAY and 'foo=()' should not result in an error. On the other hand,
-#       if this function is used to test existence of an entry of an array, then
-#       'declare -p array[0]' would fail even if array[0] existed, while the test
-#       [[ -v array[0] ]] would succeed. Hence we treat this case separately.
+: << 'DOCSTRING'
+--8<-- [start:Ensure_That_Given_Variables_Are_Set-desc]
+Check if the given variables are set, i.e. have been declared.
+Exit with an internal error if at least one variable is not set.
+--8<-- [end:Ensure_That_Given_Variables_Are_Set-desc]
+--8<-- [start:Ensure_That_Given_Variables_Are_Set-ex]
+Ensure_That_Given_Variables_Are_Set 'var_1' 'var_2' 'var_3'
+--8<-- [end:Ensure_That_Given_Variables_Are_Set-ex]
+DOCSTRING
 function Ensure_That_Given_Variables_Are_Set()
 {
+    # NOTE: In Bash there are several ways to declare variables and somehow these are
+    #       (apparently) not consistent w.r.t. the variable resulting set when tested via
+    #       [[ -v ... ]] and therefore here we decided to also use the 'declare' command.
+    #       For example, 'local foo' is not setting a variable (the -v test fails, which
+    #       makes sense). However, also 'foo=()' is not setting the array variable
+    #       which is not what we want here. In this function "set" means DECLARED IN
+    #       SOME WAY and 'foo=()' should not result in an error. On the other hand,
+    #       if this function is used to test existence of an entry of an array, then
+    #       'declare -p array[0]' would fail even if array[0] existed, while the test
+    #       [[ -v array[0] ]] would succeed. Hence we treat this case separately.
     local variable_name
     for variable_name in "$@"; do
         if ! declare -p "${variable_name}" &> /dev/null; then
@@ -334,14 +493,27 @@ function Ensure_That_Given_Variables_Are_Set()
     done
 }
 
-# NOTE: See Ensure_That_Given_Variables_Are_Set comment. Moreover, since we indirectly
-#       access the variable through its name, we need to check separately the case
-#       in which the variable is an array. In bash, the "array length" of a non-array
-#       variable is 1 (as accessing an array without index returns the first entry).
-#       Hence, for 'foo=""', ${#foo[@]} would return 1 and a non zero length is not
-#       synonym of a non-empty variable.
+: << 'DOCSTRING'
+--8<-- [start:Ensure_That_Given_Variables_Are_Set_And_Not_Empty-desc]
+Check if the given variables are set and not empty.
+Exit with an internal error if at least one variable is not set or set but empty.
+
+??? question "What does empty mean?"
+    A normal variable is empty if it is set to `''`.
+    An array is considered empty if it has size equal to 0.
+--8<-- [end:Ensure_That_Given_Variables_Are_Set_And_Not_Empty-desc]
+--8<-- [start:Ensure_That_Given_Variables_Are_Set_And_Not_Empty-ex]
+Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'var_1' 'var_2' 'var_3'
+--8<-- [end:Ensure_That_Given_Variables_Are_Set_And_Not_Empty-ex]
+DOCSTRING
 function Ensure_That_Given_Variables_Are_Set_And_Not_Empty()
 {
+    # NOTE: See Ensure_That_Given_Variables_Are_Set comment. Moreover, since we indirectly
+    #       access the variable through its name, we need to check separately the case
+    #       in which the variable is an array. In bash, the "array length" of a non-array
+    #       variable is 1 (as accessing an array without index returns the first entry).
+    #       Hence, for 'foo=""', ${#foo[@]} would return 1 and a non zero length is not
+    #       synonym of a non-empty variable.
     local variable_name
     for variable_name in "$@"; do
         # The following can be done using the "${ref@A}" bash-5 expansion which
@@ -367,6 +539,19 @@ function Ensure_That_Given_Variables_Are_Set_And_Not_Empty()
     done
 }
 
+: << 'DOCSTRING'
+--8<-- [start:Make_Functions_Defined_In_This_File_Readonly-desc]
+Extract all functions defined in the file where called and mark them as `readonly`.
+
+!!! warning "An important assumption"
+    Only functions defined as `#!bash function Name_Of_The_Function()` and the
+    braces on new lines are recognized.
+    Accepted symbols in the function name are letters, `_`, `:` and `-`.
+--8<-- [end:Make_Functions_Defined_In_This_File_Readonly-desc]
+--8<-- [start:Make_Functions_Defined_In_This_File_Readonly-ex]
+Make_Functions_Defined_In_This_File_Readonly
+--8<-- [end:Make_Functions_Defined_In_This_File_Readonly-ex]
+DOCSTRING
 function Make_Functions_Defined_In_This_File_Readonly()
 {
     # Make this function a no-op if sed or grep are not available, so that
