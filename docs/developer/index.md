@@ -8,7 +8,7 @@ hide:
 
 The hybrid handler has been developed trying to make the entry point of a newbie developer as low as possible.
 Although :simple-gnubash: **Bash** can be sometimes not that simple to read[^1], the integration-operation segregation principle ([IOSP](https://clean-code-developer.com/grades/grade-1-red/)) has been used most of the times at the the top-level to allow the reader to get a first understanding of what the main functions are doing, having then the possibility to deepen into lower levels if needed.
-Said it differently, reading the code top-down should be straightforward, as the most top-level function is a series of function calls only, whose names should clearly describe what it is done.
+Said differently, reading the code top-down should be straightforward, as the most top-level function is a series of function calls only, whose names should clearly describe what is done.
 
 Therefore, this guide is not meant to document any possible implementation detail, but rather provide the reader with important information, which might be difficult to grasp by reading the codebase.
 Assumptions that are crucial to know before even getting to the code have a dedicated card here in the following.
