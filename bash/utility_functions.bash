@@ -89,10 +89,9 @@ function Print_Line_of_Equals()
 {
     local length indentation prefix postfix
     length="$1"
-    indentation="${2-}" # Input arg. or empty string
-    prefix="${3-}"      # Input arg. or empty string
-    postfix="${4-\n}"   # Input arg. or endline
-    printf "${prefix}${indentation}"
+    prefix="${2-}"    # Input arg. or empty string
+    postfix="${3-\n}" # Input arg. or endline
+    printf "${prefix}"
     for ((i = 0; i < ${length}; i++)); do
         printf '='
     done
