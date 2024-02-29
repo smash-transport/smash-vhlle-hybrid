@@ -21,12 +21,12 @@ function Unit_Test__utility-has-YAML-string-given-key()
         Print_Error "Function called on invalid YAML succeeded."
         return 1
     fi
-    Call_Codebase_Function_In_Subshell Has_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a' 'b' 'c' &> /dev/null
+    Call_Codebase_Function_In_Subshell Has_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a.b' 'c' &> /dev/null
     if [[ $? -ne 0 ]]; then
         Print_Error 'Existing key ' --emph '{a: {b: {c:}}}' ' not found.'
         return 1
     fi
-    Call_Codebase_Function_In_Subshell Has_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a' 'b' &> /dev/null
+    Call_Codebase_Function_In_Subshell Has_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a.b' &> /dev/null
     if [[ $? -ne 0 ]]; then
         Print_Error 'Existing key ' --emph '{a: {b:}}' ' not found.'
         return 1
@@ -36,7 +36,7 @@ function Unit_Test__utility-has-YAML-string-given-key()
         Print_Error 'Existing key ' --emph '{a:}' ' not found.'
         return 1
     fi
-    Call_Codebase_Function_In_Subshell Has_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a' 'b' 'nope' &> /dev/null
+    Call_Codebase_Function_In_Subshell Has_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a.b.nope' &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error "Not existing key found."
         return 1
@@ -61,12 +61,12 @@ function Unit_Test__utility-read-from-YAML-string-given-key()
         return 1
     fi
     local result
-    result=$(Call_Codebase_Function Read_From_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a' 'b' 'c')
+    result=$(Call_Codebase_Function Read_From_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a.b' 'c')
     if [[ ${result} -ne 42 ]]; then
         Print_Error "Reading scalar key failed."
         return 1
     fi
-    result=$(Call_Codebase_Function Read_From_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a' 'b')
+    result=$(Call_Codebase_Function Read_From_YAML_String_Given_Key $'a:\n  b:\n    c: 42\n' 'a.b')
     if [[ "${result}" != 'c: 42' ]]; then
         Print_Error "Reading map key failed."
         return 1
@@ -96,7 +96,7 @@ function Unit_Test__utility-print-YAML-string-without-given-key()
         Print_Error "Deleting scalar key failed."
         return 1
     fi
-    result=$(Call_Codebase_Function Print_YAML_String_Without_Given_Key $'a:\n  b:\n    c: 17\n' 'a' 'b')
+    result=$(Call_Codebase_Function Print_YAML_String_Without_Given_Key $'a:\n  b:\n    c: 17\n' 'a.b')
     if [[ "${result}" != 'a: {}' ]]; then
         Print_Error "Deleting map key failed."
         return 1
