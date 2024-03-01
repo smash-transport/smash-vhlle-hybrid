@@ -114,6 +114,11 @@ If such a function exists, the runner will check for existence of the correspond
     * Codebase functions to be invoked in unit tests should be called through the `Call_Codebase_Function` and `Call_Codebase_Function_In_Subshell` interface functions (passing the name of the function to be invoked as first argument and the arguments to be forward afterwards).
     *  In functional tests you'll probably want to run the hybrid handler with some options and this can be easily achieved by using the `Run_Hybrid_Handler_With_Given_Options_In_Subshell` function.
 
+!!! note "The Bash behavior of the tests runner"
+    The shell `errexit` option is not enabled in the tests runner and, therefore, its Bash behavior when running tests is not the same as when running the handler.
+    This is a natural choice in a testing framework where the error handling is wished to be done by hand to e.g. count failures and build up a report about failed tests.
+    However, the `errexit` mode is enabled when running the codebase functions, otherwise the real behavior of the handler code would not be tested!
+
 !!! warning "Each test is run in its own subshell"
     The full test flow, including setup and teardown, is run in a subshell in order to isolate its changes from the external environment.
     In this way tests should not interfere with each other and the developer should be aware of this aspect.

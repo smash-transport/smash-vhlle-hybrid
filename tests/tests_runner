@@ -54,7 +54,7 @@ function Setup_Initial_And_Final_Output_Space()
 
 function Enable_Global_Needed_Shell_Options()
 {
-    # See CONTRIBUTING for explanation about why globally
+    # See developer guide for explanation about why globally
     shopt -s extglob
     set -o pipefail -o nounset
     # NOTE: The behavior about 'errexit' mode here is not the same as in the handler, i.e. we do
