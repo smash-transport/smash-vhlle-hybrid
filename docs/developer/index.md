@@ -26,6 +26,15 @@ Assumptions that are crucial to know before even getting to the code have a dedi
     The developer has to be aware that the code does break, if such an assumption is violated.
     Although the external software used for each stage might violate this, it is not the case at the moment and it is considered unlikely to happen in the future.
 
+-   :computer:{ .lg .middle } &nbsp; __Ready to code?__
+
+    ---
+
+    Cool, but not so quick.
+    Every project has its contributing rules and you are kindly requested to go over them at least once before starting.
+
+    [:material-arrow-right-box:&nbsp; Read more](contributing.md)
+
 -   :arrow_forward:{ .lg .middle } &nbsp; __Building the documentation__
 
     ---
@@ -35,14 +44,23 @@ Assumptions that are crucial to know before even getting to the code have a dedi
 
     [:material-arrow-right-box:&nbsp; Check it out!](building_docs.md)
 
--   :computer:{ .lg .middle } &nbsp; __Ready to code?__
+-   :test_tube:{ .lg .middle } &nbsp; __A handy testing framework__
 
     ---
 
-    Not so quick.
-    Every project has its contributing rules and you are kindly requested to go over them at least once before starting.
+    Tests are the key to be confident that the code works as expected.
+    A testing framework has been developed tailored on the project.
+    Adding new tests is as simple as writing a new function!
 
-    [:material-arrow-right-box:&nbsp; Read more](contributing.md)
+    [:material-arrow-right-box:&nbsp; Check it out!](testing_framework.md)
+
+-   :tools:{ .lg .middle } &nbsp; __Utility functions__
+
+    ---
+
+    As in every codebase, there are operations that are totally general and can be delegated to utility functions that will help in extending or improving the codebase.
+
+    [:material-arrow-right-box:&nbsp; Reference page](utility_functions.md)
 
 -   :material-barcode-scan:{ .lg .middle } &nbsp; __Design of the parameter scan__
 
@@ -51,5 +69,6 @@ Assumptions that are crucial to know before even getting to the code have a dedi
     Since the `prepare-scan` execution mode implementation is not trivial and it required a couple of design decisions, it has been decided to comment on each of these in a dedicated page.
 
     [:material-arrow-right-box:&nbsp; Read more](parameters_scan.md)
+
 
 </div>

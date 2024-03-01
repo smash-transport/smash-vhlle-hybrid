@@ -32,8 +32,9 @@ nav:
   - Developer Guide:
     - developer/index.md
     - General aspects:
-      - Building the documentation: developer/building_docs.md
       - Contributing: developer/contributing.md
+      - The testing framework: developer/testing_framework.md
+      - Building the documentation: developer/building_docs.md
     - Code design and technicalities:
       - Parameters scan: developer/parameters_scan.md
       - Utility function: developer/utility_functions.md
