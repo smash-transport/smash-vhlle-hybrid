@@ -26,6 +26,17 @@ Assumptions that are crucial to know before even getting to the code have a dedi
     The developer has to be aware that the code does break, if such an assumption is violated.
     Although the external software used for each stage might violate this, it is not the case at the moment and it is considered unlikely to happen in the future.
 
+!!! warning "The stages names hard-coded everywhere"
+    Each simulation phase has a label associated to it (i.e. `IC`, `Hydro`, etc.) and these are used in variable names as well, although with lower-case letters only.
+    In the codebase it has been exerted leverage on this aspect and at some point the name of variables are built using the section labels transformed into lower-case words.
+    Hence, it is important that section labels do not contain characters that would break this mechanism, like dashes or spaces.
+
+!!! tip "Ensure variables that should be defined *are* defined"
+    In Bash, from within a function, it is possible to access the caller local variables.
+    However, this should be used with care and not be abused as it might lead to code which is easy to use wrong.
+    When needed, make sure to use the dedicated [utility functions](utility_functions.md) `Ensure_That_Given_Variables_Are_Set` and `Ensure_That_Given_Variables_Are_Set_And_Not_Empty` in the beginning of your function.
+    This is also a way to document the implementation.
+
 -   :computer:{ .lg .middle } &nbsp; __Ready to code?__
 
     ---
