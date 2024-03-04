@@ -65,6 +65,14 @@ Assumptions that are crucial to know before even getting to the code have a dedi
 
     [:material-arrow-right-box:&nbsp; Check it out!](testing_framework.md)
 
+-   :rocket:{ .lg .middle } &nbsp; __New release procedure__
+
+    ---
+
+    At every new release few standard steps are required and it is important not to forget them and to always be consistent in how a new version of the code is released.
+
+    [:material-arrow-right-box:&nbsp; Discover more!](release_procedure.md)
+
 -   :tools:{ .lg .middle } &nbsp; __Utility functions__
 
     ---
