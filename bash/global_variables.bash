@@ -70,6 +70,7 @@ function Define_Further_Global_Variables()
     declare -rgA HYBRID_hybrid_handler_valid_keys=(
         [Run_ID]='HYBRID_run_id'
         [Scan_strategy]='HYBRID_scan_strategy'
+        [Number_of_Samples]='HYBRID_number_of_samples'
     )
     declare -rgA HYBRID_ic_valid_keys=(
         [Executable]='HYBRID_software_executable[IC]'
@@ -113,6 +114,7 @@ function Define_Further_Global_Variables()
     # Variables to be set (and possibly made readonly) from configuration/setup
     HYBRID_run_id="Run_$(date +'%Y-%m-%d_%H%M%S')"
     HYBRID_scan_strategy='Combinations'
+    HYBRID_number_of_samples=1
     HYBRID_given_software_sections=()
     declare -gA HYBRID_software_executable=(
         [IC]=''

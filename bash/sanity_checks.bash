@@ -167,7 +167,21 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
                 fi
             done
             ;;
-        prepare-scan) ;;
+        prepare-scan)
+            if [[ "${HYBRID_scan_strategy}" = 'LHS' ]]; then
+                if [[ -n "${HYBRID_number_of_samples//[0-9]}" ]]; then
+                    Print_Error \
+                        'The number of samples has to be a positive integer. ' \
+                            'The number of samples is ' --emph "${HYBRID_number_of_samples}" '.'
+                    return 1
+                elif [[ ${HYBRID_number_of_samples} -lt 2 ]]; then
+                    Print_Error \
+                        'The number of samples has to be greater 1. ' \
+                        'The number of samples is ' --emph "${HYBRID_number_of_samples}" '.'
+                    return 1
+                fi
+            fi
+            ;;
         help) ;; # This is the default mode which is set in tests -> do nothing, but catch it
         *)
             Print_Internal_And_Exit 'Unknown execution mode passed to ' --emph "${FUNCNAME}" ' function.'

@@ -4,10 +4,7 @@ If a parameter scan is created with more than one scan parameter, it has to be d
 
 ## All combinations by default
 
-Unless differently specified(1), all combinations of parameters values are considered and one output handler configuration file per combination will be created.
-{.annotate}
-
-1. :warning: Actually, different types of scan and a way to select them has still to be implemented.
+Unless differently specified, all combinations of parameters values are considered and one output handler configuration file per combination will be created. Alternativly, the key for specifying all combinations is the Hybrid handler key is `Scan_strategy: Combinations`
 
 From the mathematical point of view, given $n$ scan parameters with set of values $X_1, ..., X_n\,$, the set of considered combinations is nothing but the $n$-ary Cartesian product over all sets of values,
 
@@ -61,3 +58,9 @@ For example, specifying two different scan parameters with 2 and 5 values, respe
 ??? question "What happens if I provide a single value for a scan parameter?"
     If you provide a single-value list to `Values`, this will be accepted by the hybrid handler and the provided value will be considered in all combinations.
     If this happen to be the only provided scan parameter, a single configuration file will be created together with a basically useless single-combination file. :sweat_smile:
+
+### Latin Hypercube Sampling
+
+This can be specified by choosing the  `Scan_strategy: LHS` and also giving the number of samples to draw  `Number_of_Samples: n`,
+where  `n` is an integer greater 2. LHS samples multidimensional parameters near random, while keeping the distance between 
+samples maximal, and is commonly used for Bayesian inference. Refer to the [:link: wikipedia page](https://en.wikipedia.org/wiki/Latin_hypercube_sampling) for more information. The sampling itself is done by calling the [:link: PyDoe](https://pythonhosted.org/pyDOE/randomized.html#latin-hypercube) Python library function, using the `maximin` setting.

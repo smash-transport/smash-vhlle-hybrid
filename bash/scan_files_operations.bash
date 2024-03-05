@@ -31,7 +31,7 @@ function Create_And_Populate_Scan_Folder()
     auxiliary_string=$(__static__Get_Fixed_Order_Parameters_Values)
     readarray -t parameters_values < <(printf "${auxiliary_string}")
     auxiliary_string=$(__static__Get_Parameters_Combinations_For_New_Configuration_Files "${parameters_values[@]}")
-    readarray -t parameters_combinations < <(printf "${auxiliary_string}")
+    readarray -t parameters_combinations < <(printf -- "${auxiliary_string}")
     readonly parameters_names parameters_values parameters_combinations
     __static__Validate_And_Create_Scan_Folder
     __static__Create_Combinations_File_With_Metadata_Header_Block
@@ -66,11 +66,19 @@ function __static__Get_Fixed_Order_Parameters_Values()
 
 function __static__Get_Parameters_Combinations_For_New_Configuration_Files()
 {
-    # NOTE: This is were multiple ways of doing combinations will be implemented:
-    #       For example, cartesian product VS all first values, all second ones, etc.
-    #       At the moment only the cartesian product approach is implemented, i.e.
-    #       all possible combinations of parameters values are considered.
-    __static__Get_All_Parameters_Combinations "$@"
+    case "${HYBRID_scan_strategy}" in
+        'LHS')
+            printf "$(python3 ${HYBRID_python_folder}/latin_hypercube_sampling.py\
+                --parameter_ranges "$*" --num_samples ${HYBRID_number_of_samples})"
+        ;;
+        'Combinations')
+            __static__Get_All_Parameters_Combinations "$@"
+        ;;
+        *)
+        Print_Internal_And_Exit \
+            'Unknown scan strategy in ' --emph "${FUNCNAME}" ' function.'
+        ;;
+    esac
 }
 
 function __static__Get_All_Parameters_Combinations()
