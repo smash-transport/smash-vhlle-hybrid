@@ -68,16 +68,16 @@ function __static__Get_Parameters_Combinations_For_New_Configuration_Files()
 {
     case "${HYBRID_scan_strategy}" in
         'LHS')
-            printf "$(python3 ${HYBRID_python_folder}/latin_hypercube_sampling.py\
-                --parameter_ranges "$*" --num_samples ${HYBRID_number_of_samples})"
-        ;;
+            printf "$(python3 ${HYBRID_python_folder}/latin_hypercube_sampling.py --parameter_ranges "$*" \
+                --num_samples ${HYBRID_number_of_samples})"
+            ;;
         'Combinations')
             __static__Get_All_Parameters_Combinations "$@"
-        ;;
+            ;;
         *)
-        Print_Internal_And_Exit \
-            'Unknown scan strategy in ' --emph "${FUNCNAME}" ' function.'
-        ;;
+            Print_Internal_And_Exit \
+                'Unknown scan strategy in ' --emph "${FUNCNAME}" ' function.'
+            ;;
     esac
 }
 

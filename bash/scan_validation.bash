@@ -173,7 +173,7 @@ function __static__Has_Valid_Scan_Correct_Values()
             if [[ $(yq '.Scan.Range | tag' <<< "${given_scan}") != '!!seq' ]]; then
                 Print_Error \
                     'The value ' --emph "$(yq '.Scan.Range' <<< "${given_scan}")" \
-                    ' of the ' --emph 'Values' ' key is not a list of parameter values.'
+                    ' of the ' --emph 'Range' ' key is not a range of parameter values.'
                 return 1
             fi
             local list_of_value_types num_values first_value second_value

@@ -169,10 +169,10 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
             ;;
         prepare-scan)
             if [[ "${HYBRID_scan_strategy}" = 'LHS' ]]; then
-                if [[ -n "${HYBRID_number_of_samples//[0-9]}" ]]; then
+                if [[ -n "${HYBRID_number_of_samples//[0-9]/}" ]]; then
                     Print_Error \
                         'The number of samples has to be a positive integer. ' \
-                            'The number of samples is ' --emph "${HYBRID_number_of_samples}" '.'
+                        'The number of samples is ' --emph "${HYBRID_number_of_samples}" '.'
                     return 1
                 elif [[ ${HYBRID_number_of_samples} -lt 2 ]]; then
                     Print_Error \
