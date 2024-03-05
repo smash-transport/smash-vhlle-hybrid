@@ -27,9 +27,49 @@ Closing the branch means to merge it into `main`, which will be tagged and conta
 
 ## Release checklist
 
-- [x] Create the `release` branch and switch to it.
+- [x] Create the `release` branch from `develop` and switch to it.
 - [x] Make sure everything is ready to go.
 - [x] Bump version number global variable in main script to a **stable state**.
-- [x] Close the `release` branch in the git-flow sense.
-- [x] From `main` build and deploy the documentation.
+- [x] Close the `release` branch in the git-flow sense:
+      - merge it into the `main` branch;
+      - switch to `main` and tag the last commit;
+      - switch to `develop` and merge the `release` back into it[^3].
+- [x] Publish the new release by pushing the changes and the new tag on `main`.
+- [x] From `main` [build and deploy the documentation](building_docs.md).
 - [x] From `develop` bump version number global variable in main script to an **unstable state**.
+
+=== "Create the release branch"
+    ```bash
+    # Git-flow extension
+    git flow release start 1.2.0
+
+    # Vanilla Git commands
+    git switch -c release/1.2.0 develop
+    ```
+
+=== "Create the release branch"
+    ```bash
+    # Git-flow extension
+    git flow release finish 1.2.0
+
+    # Vanilla Git commands
+    git switch main
+    git merge --no-ff release/1.2.0
+    git tag -a 1.2.0
+    git switch develop
+    git merge --no-ff release/1.2.0
+    git branch -d release/1.2.0
+    ```
+
+=== "Publish new release"
+    ```bash
+    # Only vanilla Git commands
+    git push origin main
+    git push origin develop
+    git push origin --tags
+    git push origin :release/1.2.0  # if pushed
+    ```
+
+[^3]:
+    This might lead to conflicts if the codebase has evolved on the `develop` branch.
+    Please note as well that merging `main` into `develop` would be equivalent as the `main` branch is meant for stable releases only and it should not contain anything new w.r.t. the `develop` branch.
