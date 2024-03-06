@@ -181,6 +181,13 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
                     return 1
                 fi
             fi
+            if [[ "${HYBRID_scan_strategy}" = 'Combinations' ]]; then
+                if [[ ${HYBRID_number_of_samples} -gt 2 ]]; then
+                    Print_Error \
+                        'TA number of samples is only accepted for LHS strategy. '
+                    return 1
+                fi
+            fi
             ;;
         help) ;; # This is the default mode which is set in tests -> do nothing, but catch it
         *)

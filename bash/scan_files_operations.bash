@@ -30,7 +30,11 @@ function Create_And_Populate_Scan_Folder()
     readarray -t parameters_names < <(printf "${auxiliary_string}")
     auxiliary_string=$(__static__Get_Fixed_Order_Parameters_Values)
     readarray -t parameters_values < <(printf "${auxiliary_string}")
+    echo "${list_of_parameters_values[@]}"
+    echo "${parameters_values[@]}"
     auxiliary_string=$(__static__Get_Parameters_Combinations_For_New_Configuration_Files "${parameters_values[@]}")
+    echo "${list_of_parameters_values[@]}"
+    echo "${auxiliary_string}"
     readarray -t parameters_combinations < <(printf -- "${auxiliary_string}")
     readonly parameters_names parameters_values parameters_combinations
     __static__Validate_And_Create_Scan_Folder
@@ -68,7 +72,7 @@ function __static__Get_Parameters_Combinations_For_New_Configuration_Files()
 {
     case "${HYBRID_scan_strategy}" in
         'LHS')
-            printf "$(python3 ${HYBRID_python_folder}/latin_hypercube_sampling.py --parameter_ranges "$*" \
+            printf -- "$(python3 ${HYBRID_python_folder}/latin_hypercube_sampling.py --parameter_ranges "$*" \
                 --num_samples ${HYBRID_number_of_samples})"
             ;;
         'Combinations')
