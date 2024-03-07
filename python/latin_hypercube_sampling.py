@@ -5,14 +5,14 @@ import ast
 from pyDOE import lhs
 
 #scale the hypercube to the specified ranges
-def generate_points_from_ranges(ranges, probabilities):
+def generate_points_from_ranges(ranges, unit_points):
     points = []
-    for i in range(len(probabilities)):
+    for i in range(len(unit_points)):
         sample = []
-        for j in range(len(probabilities[i])):
+        for j in range(len(unit_points[i])):
             range_min, range_max = ranges[j]
-            probability = probabilities[i][j]
-            value = range_min + (range_max - range_min) * probability
+            unit_point = unit_points[i][j]
+            value = range_min + (range_max - range_min) * unit_point
             sample.append(value)
         points.append(sample)
     return np.array(points)
@@ -20,30 +20,25 @@ def generate_points_from_ranges(ranges, probabilities):
 if __name__ == '__main__':
     # pass arguments from the command line to the script
     parser = argparse.ArgumentParser()
-    parser.add_argument("--parameter_ranges", required = True,
+    parser.add_argument("--parameter_names", required = True, nargs='+',
+                        help="Names of the parameters to be sampled.")
+    parser.add_argument("--parameter_ranges", required = True, nargs='+',
                         help="Ranges of the parameters to be sampled.")
-    parser.add_argument("--num_samples", required = True,
+    parser.add_argument("--num_samples", required = True, 
                         help="Number of samples to be drawn.")
     args = parser.parse_args()
-
-    list_of_strings = args.parameter_ranges.split('] [')
-    list_of_strings[0] = list_of_strings[0] + ']'
-    list_of_strings[-1] = '[' + list_of_strings[-1]
-
-    for i in range(1, len(list_of_strings) - 1):
-        list_of_strings[i] = '[' + list_of_strings[i] + ']'
-
-    # parse each string into a list
-    list_of_lists = [ast.literal_eval(sublist) for sublist in list_of_strings]
-
-    # convert the list of lists into a numpy array
-    arr = np.array(list_of_lists)
-    unit = lhs(arr.shape[0], samples=int(args.num_samples), criterion='maximin')
-    result= generate_points_from_ranges(arr, unit)
+    parameter_names = args.parameter_names
+    parameter_ranges = args.parameter_ranges
+    parameter_ranges = np.array([ast.literal_eval(i) for i in parameter_ranges])
+    unit = lhs(parameter_ranges.shape[0], samples=int(args.num_samples), criterion='centermaximin')
+    result=generate_points_from_ranges(parameter_ranges, unit).transpose()
     return_string=""
-    for row in result:
-        for elem in row:
-            return_string += str(elem) + " "
-        return_string += "\n"
-    print(return_string)
-
+    for i in range(len(parameter_names)):
+        return_string += "["+parameter_names[i] + "]='["
+        for j in range(result.shape[1]):
+            return_string += str(result[i][j]) 
+            if j != result.shape[1]-1:
+                return_string += ","
+            else:
+                return_string += "]'\n"
+    print("list_of_parameters_values=(\n"+return_string+"\n)")

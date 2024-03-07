@@ -106,7 +106,7 @@ function Unit_Test__scan-create-single-file-LHS()
 {
     declare -A list_of_parameters_values=(
         ['IC.Software_keys.Modi.Collider.Sqrtsnn']='[4.3, 7.7]'
-        ['Hydro.Software_keys.etaS']='[0.13, 0.17]'
+        ['Hydro.Software_keys.etaS']='[-0.13, 0.17]'
     )
     HYBRID_scan_strategy='LHS'
     HYBRID_number_of_samples=2
@@ -121,7 +121,7 @@ function Unit_Test__scan-create-single-file-LHS()
             Sqrtsnn: {Scan: {Range: [4.3, 7.7]}}
     Hydro:
       Software_keys:
-        etaS: {Scan: {Range: [0.13, 0.17]}}
+        etaS: {Scan: {Range: [-0.13, 0.17]}}
     ' > 'config.yaml'
     HYBRID_scan_directory='scan_test'
     Call_Codebase_Function Create_And_Populate_Scan_Folder &> /dev/null 9>&1 # Suppress progress bar, too

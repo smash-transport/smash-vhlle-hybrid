@@ -68,8 +68,7 @@ function __static__Get_Parameters_Combinations_For_New_Configuration_Files()
 {
     case "${HYBRID_scan_strategy}" in
         'LHS')
-            printf -- "$(python3 ${HYBRID_python_folder}/latin_hypercube_sampling.py --parameter_ranges "$*" \
-                --num_samples ${HYBRID_number_of_samples})"
+            __static__Get_Unique_Sample_Points "$@"
             ;;
         'Combinations')
             __static__Get_All_Parameters_Combinations "$@"
@@ -96,6 +95,17 @@ function __static__Get_All_Parameters_Combinations()
     # NOTE: The following use of 'eval' is fine since the string that is expanded
     #       is guaranteed to be validated to contain only YAML int, bool or float.
     eval printf '%s\\\n' "${string_to_be_expanded%?}" | sed 's/_/ /g'
+}
+
+function __static__Get_Unique_Sample_Points()
+{
+    local index parameter
+    for ((index = 0; index < ${HYBRID_number_of_samples}; index++)); do
+        for parameter in "$@"; do
+            printf '%s ' $(python3 -c "print(${parameter}[${index}])")
+        done
+        printf '\n'
+    done
 }
 
 function __static__Validate_And_Create_Scan_Folder()
