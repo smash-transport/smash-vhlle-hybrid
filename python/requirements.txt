@@ -1,0 +1,4 @@
+numpy==1.26.4
+pyDOE==0.3.8
+PyYAML==6.0.1
+scipy==1.12.0
