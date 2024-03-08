@@ -20,10 +20,18 @@ function Create_List_Of_Parameters_Values()
             for parameter in "${!list_of_parameters_values[@]}"; do
                 __static__Generate_And_Store_Parameter_List_Of_Ranges "${parameter}"
             done
-            declare -gA "$(python3 ${HYBRID_python_folder}/latin_hypercube_sampling.py \
+            local key value
+            while IFS='=' read -r key value; do
+                if [[ "${!list_of_parameters_values[@]}" =~ $key ]]; then
+                    list_of_parameters_values["${key}"]="${value}"
+                else
+                    Print_Internal_And_Exit \
+                        'Processing of parameters failed in ' --emph "${FUNCNAME}" ' function.'
+                fi
+            done < <(python3 ${HYBRID_python_folder}/latin_hypercube_sampling.py \
                 --parameter_names "${!list_of_parameters_values[@]}" \
                 --parameter_ranges "${list_of_parameters_values[@]}" \
-                --num_samples ${HYBRID_number_of_samples})"
+                --num_samples ${HYBRID_number_of_samples})
             ;;
         'Combinations')
             local parameter

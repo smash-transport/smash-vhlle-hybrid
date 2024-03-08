@@ -34,11 +34,13 @@ if __name__ == '__main__':
     result=generate_points_from_ranges(parameter_ranges, unit).transpose()
     return_string=""
     for i in range(len(parameter_names)):
-        return_string += "["+parameter_names[i] + "]='["
+        return_string += parameter_names[i] + "=["
         for j in range(result.shape[1]):
             return_string += str(result[i][j]) 
             if j != result.shape[1]-1:
                 return_string += ","
+            elif i != len(parameter_names)-1:
+                return_string += "]\n"
             else:
-                return_string += "]'\n"
-    print("list_of_parameters_values=(\n"+return_string+"\n)")
+                return_string += "]"
+    print(return_string)

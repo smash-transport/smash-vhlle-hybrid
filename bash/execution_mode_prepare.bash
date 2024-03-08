@@ -18,7 +18,7 @@ function Do_Needed_Operation_For_Parameter_Scan()
     # This syntax is handy when it comes to prepare all the configuration files
     # as it naturally interacts well with yq. The value is a YAML sequence of the
     # parameter values.
-    declare -gA list_of_parameters_values
+    declare -A list_of_parameters_values
     Format_Scan_Parameters_Lists
     Print_Info 'Validating input scan parameters values'
     Validate_And_Store_Scan_Parameters
