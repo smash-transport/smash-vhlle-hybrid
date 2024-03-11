@@ -166,25 +166,24 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
                         --emph 'parameter-scan' ' execution mode.'
                 fi
             done
+            if [[ "${HYBRID_number_of_samples}" =~ '^[1-9][0-9]*$' ]]; then
+                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                    'Number of samples can only be specified in ' \
+                    'the prepare-scan mode!'
+                return 1
+            fi
             ;;
         prepare-scan)
-            if [[ "${HYBRID_scan_strategy}" = 'LHS' ]]; then
-                if [[ -n "${HYBRID_number_of_samples//[0-9]/}" ]]; then
-                    Print_Error \
-                        'The number of samples has to be a positive integer. ' \
-                        'The number of samples is ' --emph "${HYBRID_number_of_samples}" '.'
-                    return 1
-                elif [[ ${HYBRID_number_of_samples} -lt 2 ]]; then
-                    Print_Error \
-                        'The number of samples has to be greater 1. ' \
-                        'The number of samples is ' --emph "${HYBRID_number_of_samples}" '.'
-                    return 1
-                fi
-            fi
-            if [[ "${HYBRID_scan_strategy}" = 'Combinations' ]]; then
-                if [[ ${HYBRID_number_of_samples} -gt 2 ]]; then
-                    Print_Error \
-                        'Number of samples is only accepted for LHS strategy. '
+            if [[ "${HYBRID_number_of_samples}" -eq 0 ]]; then
+                readonly HYBRID_scan_strategy='Combinations'
+            else
+                if [[ "${HYBRID_number_of_samples}" -ge 2 ]]; then
+                    readonly HYBRID_scan_strategy='LHS'
+                    readonly HYBRID_number_of_samples
+                else
+                    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                        'Number of samples has to be a positive integer greater than 1 ' \
+                        'for Latin Hypercube Sampling scan.'
                     return 1
                 fi
             fi

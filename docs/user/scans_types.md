@@ -61,6 +61,5 @@ For example, specifying two different scan parameters with 2 and 5 values, respe
 
 ### Latin Hypercube Sampling
 
-This can be specified by choosing the  `Scan_strategy: LHS` and also giving the number of samples to draw  `Number_of_Samples: n`,
-where  `n` is an integer greater 2. LHS samples multidimensional parameters near random, while keeping the distance between 
+If `LHS_scan: n` is specified with any value but 0, Latin Hypercube Sampling is used. The value  `n` is an integer greater 2. LHS samples multidimensional parameters near random, while keeping the distance between 
 samples maximal, and is commonly used for Bayesian inference. Refer to the [:link: wikipedia page](https://en.wikipedia.org/wiki/Latin_hypercube_sampling) for more information. The sampling itself is done by calling the [:link: PyDoe](https://pythonhosted.org/pyDOE/randomized.html#latin-hypercube) Python library function, using the `maximin` setting.

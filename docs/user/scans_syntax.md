@@ -62,3 +62,16 @@ This is possible in the `Values` YAML array inside the `Scan` map.
              - 42
              - 666
     ```
+### Latin Hypercube Sampling
+
+Here, one has to give the range within which one wants to sample
+This is possible in the `Range` YAML array inside the `Scan` map.
+
+=== "Compact style"
+
+    ```yaml title="Example"
+    Scan_parameters: ["foo.bar"]
+    Software_keys:
+      foo:
+        bar: {Scan: {Range: [17, 666]}}
+    ```

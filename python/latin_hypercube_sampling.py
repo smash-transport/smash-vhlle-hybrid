@@ -29,6 +29,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
     parameter_names = args.parameter_names
     parameter_ranges = args.parameter_ranges
+    if len(parameter_names) != len(parameter_ranges) or int(args.num_samples) < 2:
+        raise ValueError("The number of parameter names and parameter ranges must match and"
+                          +"number of samples must be greater 0")
     parameter_ranges = np.array([ast.literal_eval(i) for i in parameter_ranges])
     unit = lhs(parameter_ranges.shape[0], samples=int(args.num_samples), criterion='centermaximin')
     result=generate_points_from_ranges(parameter_ranges, unit).transpose()
@@ -39,8 +42,7 @@ if __name__ == '__main__':
             return_string += str(result[i][j]) 
             if j != result.shape[1]-1:
                 return_string += ","
-            elif i != len(parameter_names)-1:
-                return_string += "]\n"
             else:
-                return_string += "]"
-    print(return_string)
+                return_string += "]\n"
+            
+    print(return_string, end='')

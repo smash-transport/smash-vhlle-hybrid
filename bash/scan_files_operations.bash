@@ -29,7 +29,7 @@ function Create_And_Populate_Scan_Folder()
     auxiliary_string=$(__static__Get_Fixed_Order_Parameters)
     readarray -t parameters_names < <(printf "${auxiliary_string}")
     auxiliary_string=$(__static__Get_Fixed_Order_Parameters_Values)
-    readarray -t parameters_values < <(printf "${auxiliary_string}")
+    readarray -t parameters_values < <(printf -- "${auxiliary_string}")
     auxiliary_string=$(__static__Get_Parameters_Combinations_For_New_Configuration_Files "${parameters_values[@]}")
     readarray -t parameters_combinations < <(printf -- "${auxiliary_string}")
     readonly parameters_names parameters_values parameters_combinations
@@ -68,7 +68,7 @@ function __static__Get_Parameters_Combinations_For_New_Configuration_Files()
 {
     case "${HYBRID_scan_strategy}" in
         'LHS')
-            __static__Get_Unique_Sample_Points "$@"
+            __static__Get_Samples_for_LHS "$@"
             ;;
         'Combinations')
             __static__Get_All_Parameters_Combinations "$@"
@@ -97,14 +97,24 @@ function __static__Get_All_Parameters_Combinations()
     eval printf '%s\\\n' "${string_to_be_expanded%?}" | sed 's/_/ /g'
 }
 
-function __static__Get_Unique_Sample_Points()
+# For Latin Hypercube Sampling, a python script creates for each parameter a list of
+# values. Each single sample is then created by taking one value from each list.
+function __static__Get_Samples_for_LHS()
 {
-    local index parameter
     for ((index = 0; index < ${HYBRID_number_of_samples}; index++)); do
+        first_parameter=true
         for parameter in "$@"; do
-            printf '%s ' $(python3 -c "print(${parameter}[${index}])")
+            value=$(python3 -c "print(${parameter}[${index}])")
+            if $first_parameter; then
+                printf '%s' "$value"
+                first_parameter=false
+            else
+                printf ' %s' "$value"
+            fi
         done
-        printf '\n'
+        if [[ $index -ne $((${HYBRID_number_of_samples} - 1)) ]]; then
+            printf '\n'
+        fi
     done
 }
 
@@ -182,6 +192,7 @@ function __static__Create_Single_Output_File_In_Scan_Folder()
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty parameters_names filename
     local -r run_number=$(($1 + 1))
     shift
+
     local -r set_of_values=("$@")
     Internally_Ensure_Given_Files_Do_Not_Exist "${filename}"
     __static__Add_Parameters_Comment_Line_To_New_Configuration_File
@@ -218,4 +229,6 @@ function __static__Remove_Scan_Parameters_Key_From_New_Configuration_File()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty filename
     sed -i '/^[[:space:]]*Scan_parameters:/d' "${filename}"
+    sed -i '/^[[:space:]]*LHS_scan:/d' "${filename}"
+
 }

@@ -45,8 +45,8 @@ function Make_Test_Preliminary_Operations__scan-create-list-LHS()
         source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
     done
     Define_Further_Global_Variables
-    HYBRID_scan_strategy='LHS'
     HYBRID_number_of_samples=3
+    HYBRID_scan_strategy='LHS'
 }
 
 function Unit_Test__scan-create-list-LHS()
