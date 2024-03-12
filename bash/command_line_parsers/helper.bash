@@ -122,21 +122,21 @@ function __static__Print_Given_Command_Line_Option_Help()
         --output-directory)
             __static__Print_Command_Line_Option_Help \
                 '-o | --output-directory' "${HYBRID_output_directory/${PWD}/.}" \
-                "Directory where the output folder(s) will be created."
+                'Directory where the output folder(s) will be created.'
             ;;
         --configuration-file)
             __static__Print_Command_Line_Option_Help \
                 '-c | --configuration-file' "${HYBRID_configuration_file}" \
-                "YAML configuration file to be used by the handler."
+                'YAML configuration file to be used by the handler.'
             ;;
         --scan-name)
             __static__Print_Command_Line_Option_Help \
-                '-s | --scan-name' "$(realpath --relative-to=. "${HYBRID_scan_directory}")" \
-                "Label of the scan used by the handler to produce output." \
-                "The new configuration files will be put in a sub-folder" \
-                "of the output directory named using the specified name" \
-                "and the configuration files themselves will contain the" \
-                "scan name as part of their name."
+                '-s | --scan-name' "./$(realpath -m --relative-to=. "${HYBRID_scan_directory}")" \
+                'Label of the scan used by the handler to produce output.' \
+                'The new configuration files will be put in a sub-folder' \
+                'of the output directory named using the specified name' \
+                'and the configuration files themselves will contain the' \
+                'scan name as part of their name.'
             ;;
         *)
             Print_Internal_And_Exit \
