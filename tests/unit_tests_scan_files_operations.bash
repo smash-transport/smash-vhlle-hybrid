@@ -42,12 +42,12 @@ function Unit_Test__scan-create-single-file()
 # Parameter_2: Hydro.Software_keys.etaS
 #
 #___Run  Parameter_1  Parameter_2
-      1          4.3         0.13
-      2          4.3         0.15
-      3          4.3         0.17
-      4          7.7         0.13
-      5          7.7         0.15
-      6          7.7         0.17
+      1                   4.3                  0.13
+      2                   4.3                  0.15
+      3                   4.3                  0.17
+      4                   7.7                  0.13
+      5                   7.7                  0.15
+      6                   7.7                  0.17
 EOF
     HYBRID_scan_directory='scan_test'
     Call_Codebase_Function Create_And_Populate_Scan_Folder &> /dev/null 9>&1 # Suppress progress bar, too
@@ -127,8 +127,8 @@ function Unit_Test__scan-create-single-file-LHS()
 # Parameter_2: Hydro.Software_keys.etaS
 #
 #___Run  Parameter_1  Parameter_2
-      1          4.3        -0.13
-      2          7.7         0.17
+      1                   4.3                 -0.13
+      2                   7.7                  0.17
 EOF
     HYBRID_scan_directory='scan_test'
     Call_Codebase_Function Create_And_Populate_Scan_Folder &> /dev/null 9>&1 # Suppress progress bar, too
@@ -150,11 +150,11 @@ EOF
             fi
             continue
         fi
-        if [[ ! "${file}" =~ ^${HYBRID_scan_directory}_run_[1-6]\.yaml$ ]]; then
+        if [[ ! "${file}" =~ ^${HYBRID_scan_directory}_run_[12]\.yaml$ ]]; then
             Print_Error 'Filename ' --emph "${file}" ' not matching expected name.'
             return 1
         fi
-        values=($1) # Use word splitting to split values
+        values=(${1}) # Use word splitting to split values
         shift
         sqrt_snn=$(Read_From_YAML_String_Given_Key "$(< "${file}")" 'IC' 'Software_keys' 'Modi' 'Collider' 'Sqrtsnn')
         if [[ "${sqrt_snn}" != "${values[0]}" ]]; then

@@ -51,29 +51,32 @@ function Make_Test_Preliminary_Operations__scan-create-list-LHS()
 
 function Unit_Test__scan-create-list-LHS()
 {
-    declare -gA list_of_parameters_values=(
+    declare -A list_of_parameters_values=(
         ['IC.Software_keys.Modi.Collider.Sqrtsnn']='{Range: [4.3, 7.7]}'
         ['Hydro.Software_keys.etaS']='{Range: [-0.13, 0.17]}'
     )
+    declare -A ranges=(
+        ['IC.Software_keys.Modi.Collider.Sqrtsnn']='[4.3, 7.7]'
+        ['Hydro.Software_keys.etaS']='[-0.13, 0.17]'
+    )
     Call_Codebase_Function Create_List_Of_Parameters_Values
     for key in "${!list_of_parameters_values[@]}"; do
-        expected_value="${list_of_parameters_values[$key]}"
-        actual_value="${list_of_parameters_values[$key]}"
-        if [[ "$actual_value" != "$expected_value" ]]; then
-            Print_Error "Parameter values list for '$key' was not correctly created." \
-                "Expected: '$expected_value', Actual: '$actual_value'."
-            return 1
-        fi
-    done
-
-    # Check if each key has a list with exactly three values
-    for key in "${!list_of_parameters_values[@]}"; do
-        value="${list_of_parameters_values[$key]}"
-        value_count=$(echo "$value" | tr -cd ',' | wc -c)
+        local temp_array lower_bound upper_bound actual_values value_count
+        temp_array=($(printf "%s" "${ranges[$key]}" | grep -o '[0-9.-]*'))
+        lower_bound="${temp_array[0]}"
+        upper_bound="${temp_array[1]}"
+        actual_values="${list_of_parameters_values[$key]}"
+        value_count=$(grep -o ',' <<< "${actual_values}" | wc -l)
         if [ "$value_count" -ne 2 ]; then
-            Print_Error "Key $key does not have exactly three values in its list."
+            Print_Error "Key ${key} does not have exactly three values in its list."
             return 1
         fi
+        IFS=',' read -r -a actual_values <<< "${actual_values:1:-1}"
+        for value in "${actual_values[@]}"; do
+            if (($(bc <<< "${value} < ${lower_bound}"))) || (($(bc <<< "${value} > ${upper_bound}"))); then
+                Print_Error "Parameter values list for key ${key} was not correctly created."
+                return 1
+            fi
+        done
     done
-
 }

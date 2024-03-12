@@ -27,11 +27,11 @@ function Create_And_Populate_Scan_Folder()
         scan_combinations_file="${HYBRID_scan_directory}/${HYBRID_scan_combinations_filename}"
     local auxiliary_string parameters_names parameters_values parameters_combinations
     auxiliary_string=$(__static__Get_Fixed_Order_Parameters)
-    readarray -t parameters_names < <(printf "${auxiliary_string}")
+    readarray -t parameters_names < <(printf '%s'"${auxiliary_string}")
     auxiliary_string=$(__static__Get_Fixed_Order_Parameters_Values)
-    readarray -t parameters_values < <(printf -- "${auxiliary_string}")
+    readarray -t parameters_values < <(printf '%s' "${auxiliary_string}")
     auxiliary_string=$(__static__Get_Parameters_Combinations_For_New_Configuration_Files "${parameters_values[@]}")
-    readarray -t parameters_combinations < <(printf -- "${auxiliary_string}")
+    readarray -t parameters_combinations < <(printf '%s' "${auxiliary_string}")
     readonly parameters_names parameters_values parameters_combinations
     __static__Validate_And_Create_Scan_Folder
     __static__Create_Combinations_File_With_Metadata_Header_Block
@@ -101,21 +101,16 @@ function __static__Get_All_Parameters_Combinations()
 # values. Each single sample is then created by taking one value from each list.
 function __static__Get_Samples_for_LHS()
 {
-    for ((index = 0; index < ${HYBRID_number_of_samples}; index++)); do
-        first_parameter=true
-        for parameter in "$@"; do
-            value=$(python3 -c "print(${parameter}[${index}])")
-            if $first_parameter; then
-                printf '%s' "$value"
-                first_parameter=false
-            else
-                printf ' %s' "$value"
-            fi
-        done
-        if [[ $index -ne $((${HYBRID_number_of_samples} - 1)) ]]; then
-            printf '\n'
-        fi
-    done
+    local -r series_of_lists=$(
+        IFS=','
+        printf '%s' "$*"
+    )
+    python -c "
+import numpy as np
+data = np.array([${series_of_lists}])
+for i in range(${HYBRID_number_of_samples}):
+    print(*data.transpose()[i])
+"
 }
 
 function __static__Validate_And_Create_Scan_Folder()
@@ -182,7 +177,7 @@ function __static__Add_Line_To_Combinations_File()
     {
         printf '%7d' $(($1 + 1))
         shift
-        printf '  %11s' "$@"
+        printf '  %20s' "$@"
         printf '\n'
     } >> "${scan_combinations_file}"
 }
@@ -192,7 +187,6 @@ function __static__Create_Single_Output_File_In_Scan_Folder()
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty parameters_names filename
     local -r run_number=$(($1 + 1))
     shift
-
     local -r set_of_values=("$@")
     Internally_Ensure_Given_Files_Do_Not_Exist "${filename}"
     __static__Add_Parameters_Comment_Line_To_New_Configuration_File
@@ -228,7 +222,6 @@ function __static__Add_YAML_Configuration_To_New_Configuration_File()
 function __static__Remove_Scan_Parameters_Key_From_New_Configuration_File()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty filename
-    sed -i '/^[[:space:]]*Scan_parameters:/d' "${filename}"
-    sed -i '/^[[:space:]]*LHS_scan:/d' "${filename}"
-
+    yq -i 'del(.Hybrid_handler.LHS_scan) | del(.Hybrid_handler | select(length==0))' "${filename}"
+    yq -i 'del(.. | select(has("Scan_parameters")).Scan_parameters)' "${filename}"
 }

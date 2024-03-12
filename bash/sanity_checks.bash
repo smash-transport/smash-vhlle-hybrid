@@ -166,26 +166,23 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
                         --emph 'parameter-scan' ' execution mode.'
                 fi
             done
-            if [[ "${HYBRID_number_of_samples}" =~ '^[1-9][0-9]*$' ]]; then
+            if [[ "${HYBRID_number_of_samples}" != "${HYBRID_default_number_of_samples}" ]]; then
                 exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
                     'Number of samples can only be specified in ' \
                     'the prepare-scan mode!'
-                return 1
             fi
             ;;
         prepare-scan)
-            if [[ "${HYBRID_number_of_samples}" -eq 0 ]]; then
+            if [[ ! "${HYBRID_number_of_samples}" =~ ^[1-9][0-9]*$ ]] \
+                || [[ "${HYBRID_number_of_samples}" -eq 1 ]]; then
+                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                    'The number of samples for Latin Hypercube Sampling scan ' \
+                    'has to be ' --emph 'a positive integer greater than 1' '.'
+            elif [[ "${HYBRID_number_of_samples}" -eq 0 ]]; then
                 readonly HYBRID_scan_strategy='Combinations'
             else
-                if [[ "${HYBRID_number_of_samples}" -ge 2 ]]; then
-                    readonly HYBRID_scan_strategy='LHS'
-                    readonly HYBRID_number_of_samples
-                else
-                    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                        'Number of samples has to be a positive integer greater than 1 ' \
-                        'for Latin Hypercube Sampling scan.'
-                    return 1
-                fi
+                readonly HYBRID_scan_strategy='LHS'
+                readonly HYBRID_number_of_samples
             fi
             ;;
         help) ;; # This is the default mode which is set in tests -> do nothing, but catch it

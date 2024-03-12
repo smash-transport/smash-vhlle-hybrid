@@ -19,7 +19,7 @@ function Create_List_Of_Parameters_Values()
             local parameter
             declare -A list_of_parameters_ranges
             for parameter in "${!list_of_parameters_values[@]}"; do
-                __static__Generate_And_Store_Parameter_List_Of_Ranges "${parameter}"
+                __static__Generate_And_Store_Parameter_Ranges "${parameter}"
             done
             local key value
             while IFS='=' read -r key value; do
@@ -67,7 +67,7 @@ function __static__Generate_And_Store_Parameter_List_Of_Values()
     esac
 }
 
-function __static__Generate_And_Store_Parameter_List_Of_Ranges()
+function __static__Generate_And_Store_Parameter_Ranges()
 {
     Ensure_That_Given_Variables_Are_Set list_of_parameters_ranges
     local -r parameter=$1 scan_map="${list_of_parameters_values["$1"]}"

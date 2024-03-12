@@ -139,16 +139,48 @@ function __static__Check_If_Keys_Of_Given_Scan_Have_Correct_Values()
     fi
 }
 
-function __static__Validate_YAML_Numeric_Sequence_Key()
+function __static__Has_Valid_Scan_Correct_Values()
 {
-    if [[ $(yq '.Scan.'$1' | tag' <<< "${given_scan}") != '!!seq' ]]; then
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan sorted_scan_keys
+    case "${sorted_scan_keys}" in
+        "[Values]")
+            __static__Validate_YAML_Numeric_Sequence_Value 'Values'
+            ;;
+        "[Range]")
+            __static__Validate_YAML_Numeric_Sequence_Value 'Range' || return 1
+            num_values=$(yq '.Scan.Range | length' <<< "${given_scan}")
+            if ((num_values != 2)); then
+                Print_Error \
+                    'Exactly two values are expected for the range. ' \
+                    'The given range is ' --emph "${num_values}" ' long.'
+                return 1
+            fi
+            if [[ $(yq '.Scan.Range[0] > .Scan.Range[1]' <<< "${given_scan}") == "true" ]]; then
+                Print_Error \
+                    'The first value must be smaller than the second value in the Range. ' \
+                    'The given range is ' --emph "$(yq '.Scan.Range' <<< "${given_scan}")" '.'
+                return 1
+            fi
+            ;;
+        *)
+            Print_Internal_And_Exit \
+                'Unknown scan passed to ' --emph "${FUNCNAME}" ' function.'
+            ;;
+    esac
+}
+
+function __static__Validate_YAML_Numeric_Sequence_Value()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan
+    local -r key=$1
+    if [[ $(yq ".Scan.${key} | tag" <<< "${given_scan}") != '!!seq' ]]; then
         Print_Error \
-            'The value ' --emph "$(yq '.Scan.'$1 <<< "${given_scan}")" \
-            ' of the ' --emph $1 ' key is not a range of parameter values.'
+            'The value ' --emph "$(yq ".Scan.${key}" <<< "${given_scan}")" \
+            ' of the ' --emph "${key}" ' key is not a range of parameter values.'
         return 1
     fi
     local list_of_value_types num_values first_value second_value
-    list_of_value_types=($(yq '.Scan.'$1'[] | tag' <<< "${given_scan}" | sort -u))
+    list_of_value_types=($(yq ".Scan.${key}[] | tag" <<< "${given_scan}" | sort -u))
     # If there is more than a type it is in general an error, unless there are exactly two,
     # which are 'int' and 'float' (this is accepted). Note that the test is done on the
     # concatenation of the values against 'float int' as the types are guaranteed to be sorted.
@@ -165,37 +197,4 @@ function __static__Validate_YAML_Numeric_Sequence_Key()
             ' type are not allowed.' 'Valid parameter types are ' --emph 'bool int float' ', only.'
         return 1
     fi
-}
-
-function __static__Has_Valid_Scan_Correct_Values()
-{
-    Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan sorted_scan_keys
-    case "${sorted_scan_keys}" in
-        "[Values]")
-            __static__Validate_YAML_Numeric_Sequence_Key 'Values'
-            ;;
-        "[Range]")
-            num_values=$(yq '.Scan.Range | length' <<< "${given_scan}")
-            if ((num_values != 2)); then
-                Print_Error \
-                    'Exactly two values are expected for the range. ' \
-                    'The given range is ' --emph "${num_values}" ' long.'
-                return 1
-            fi
-            __static__Validate_YAML_Numeric_Sequence_Key 'Range'
-            if [[ $? -eq 1 ]]; then
-                return 1
-            fi
-            if [[ $(yq '.Scan.Range[0] > .Scan.Range[1]' <<< "${given_scan}") == "true" ]]; then
-                Print_Error \
-                    'The first value must be smaller than the second value in the Range. ' \
-                    'The given range is ' --emph "$(yq '.Scan.Range' <<< "${given_scan}")" '.'
-                return 1
-            fi
-            ;;
-        *)
-            Print_Internal_And_Exit \
-                'Unknown scan passed to ' --emph "${FUNCNAME}" ' function.'
-            ;;
-    esac
 }
