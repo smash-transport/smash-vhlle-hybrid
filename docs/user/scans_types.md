@@ -4,7 +4,7 @@ If a parameter scan is created with more than one scan parameter, it has to be d
 
 ## All combinations by default
 
-Unless differently specified, all combinations of parameters values are considered and one output handler configuration file per combination will be created. Alternativly, the key for specifying all combinations is the Hybrid handler key is `Scan_strategy: Combinations`
+Unless differently specified, all combinations of parameters values are considered and one output handler configuration file per combination will be created.
 
 From the mathematical point of view, given $n$ scan parameters with set of values $X_1, ..., X_n\,$, the set of considered combinations is nothing but the $n$-ary Cartesian product over all sets of values,
 
@@ -61,5 +61,6 @@ For example, specifying two different scan parameters with 2 and 5 values, respe
 
 ### Latin Hypercube Sampling
 
-If `LHS_scan: n` is specified with any value but 0, Latin Hypercube Sampling is used. The value  `n` is an integer greater 2. LHS samples multidimensional parameters near random, while keeping the distance between 
-samples maximal, and is commonly used for Bayesian inference. Refer to the [:link: wikipedia page](https://en.wikipedia.org/wiki/Latin_hypercube_sampling) for more information. The sampling itself is done by calling the [:link: PyDoe](https://pythonhosted.org/pyDOE/randomized.html#latin-hypercube) Python library function, using the `maximin` setting.
+This algorithm, [if enabled](configuration_file.md#LHS-scan), samples multidimensional parameters randomly, while keeping the distance between samples maximal, and is commonly used for Bayesian inference.
+Refer to e.g. [:simple-wikipedia: this page](https://en.wikipedia.org/wiki/Latin_hypercube_sampling) for more information.
+The sampling itself is done by calling the `lhs` function from the [:fontawesome-brands-python: pyDoe](https://pythonhosted.org/pyDOE/randomized.html#latin-hypercube) Python library function, using the `maximin` criterion.
