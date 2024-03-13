@@ -144,10 +144,10 @@ function __static__Has_Valid_Scan_Correct_Values()
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan sorted_scan_keys
     case "${sorted_scan_keys}" in
         "[Values]")
-            __static__Validate_YAML_Numeric_Sequence_Value 'Values'
+            __static__Has_YAML_Key_A_Numeric_Sequence_As_Value 'Values' || return 1
             ;;
         "[Range]")
-            __static__Validate_YAML_Numeric_Sequence_Value 'Range' || return 1
+            __static__Has_YAML_Key_A_Numeric_Sequence_As_Value 'Range' || return 1
             local range num_values
             range=$(yq '.Scan.Range | .. style="flow"' <<< "${given_scan}")
             num_values=$(yq '. | length' <<< "${range}")
@@ -171,7 +171,7 @@ function __static__Has_Valid_Scan_Correct_Values()
     esac
 }
 
-function __static__Validate_YAML_Numeric_Sequence_Value()
+function __static__Has_YAML_Key_A_Numeric_Sequence_As_Value()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan
     local -r key=$1

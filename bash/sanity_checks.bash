@@ -177,7 +177,7 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
                 || [[ "${HYBRID_number_of_samples}" -eq 1 ]]; then
                 exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
                     'The number of samples for Latin Hypercube Sampling scan ' \
-                    'has to be ' --emph 'a positive integer greater than 1' '.'
+                    'has to be ' --emph 'an integer greater than 1' '.'
             elif [[ "${HYBRID_number_of_samples}" -eq 0 ]]; then
                 readonly HYBRID_scan_strategy='Combinations'
             else

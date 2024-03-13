@@ -98,7 +98,7 @@ function __static__Get_All_Parameters_Combinations()
 }
 
 # For Latin Hypercube Sampling, a python script creates for each parameter a list of
-# values. Each single sample is then created by taking one value from each list.
+# values. Each single sample is then created by taking one value from each list in order.
 function __static__Get_Samples_for_LHS()
 {
     local -r series_of_lists=$(

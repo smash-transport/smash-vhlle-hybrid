@@ -14,13 +14,16 @@
 function Create_List_Of_Parameters_Values()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty list_of_parameters_values
+    local parameter
     case "${HYBRID_scan_strategy}" in
         'LHS')
-            local parameter
             declare -A list_of_parameters_ranges
             for parameter in "${!list_of_parameters_values[@]}"; do
                 __static__Generate_And_Store_Parameter_Ranges "${parameter}"
             done
+            # Here the python script which generates the parameters values is assumed to print
+            # lists of values in the form: 'parameter.name=[x1,x2,x3,...]' and this is parsed
+            # back into the 'list_of_parameters_values' array in a while-read construct.
             local key value
             while IFS='=' read -r key value; do
                 if Element_In_Array_Equals_To "${key}" "${!list_of_parameters_values[@]}"; then
@@ -35,7 +38,6 @@ function Create_List_Of_Parameters_Values()
                 --num_samples ${HYBRID_number_of_samples})
             ;;
         'Combinations')
-            local parameter
             for parameter in "${!list_of_parameters_values[@]}"; do
                 __static__Generate_And_Store_Parameter_List_Of_Values "${parameter}"
             done
