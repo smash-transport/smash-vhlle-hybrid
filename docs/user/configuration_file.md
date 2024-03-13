@@ -19,6 +19,8 @@ This is called `Hybrid_handler` and it can contain the following key(s).
     This is the name used by the handler to create the folder for the actual run in the stage-dedicated directory.
     If this key is not specified, a default name containing the date and time of the run is used (`Run_YYYY-MM-DD_hhmmss`).
 
+    Note that, **if the `--id` command line option is used** when running the handler, **this key will be ignored**, the value specified on the command line will be used and a message printed to standard output.
+
 ```yaml title="Example"
 Hybrid_handler:
     Run_ID: Cool_stuff_1
