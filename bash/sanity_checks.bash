@@ -9,6 +9,7 @@
 
 function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables()
 {
+    __static__Perform_Command_Line_VS_Configuration_Consistency_Checks
     local key
     for key in "${HYBRID_valid_software_configuration_sections[@]}"; do
         # The software output directories are always ALL set, even if not all software is run. This
@@ -22,10 +23,10 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
     done
     __static__Set_Software_Input_Data_File_If_Not_Set_By_User 'Spectators'
     __static__Set_Global_Variables_As_Readonly
-    __static__Perform_Command_Line_VS_Configuration_Consistency_Checks
     __static__Perform_Logic_Checks_Depending_On_Execution_Mode
 }
 
+# This "static" function is put here and not below "non static" ones as it should be often updated
 function __static__Set_Global_Variables_As_Readonly()
 {
     readonly \
@@ -73,6 +74,17 @@ function Ensure_Consistency_Of_Afterburner_Input()
             --emph 'Input_file' ' key,' 'not the ' --emph 'Software_keys' \
             ' specifying the input list prefix and ID!'
     fi
+}
+
+function __static__Perform_Command_Line_VS_Configuration_Consistency_Checks()
+{
+    if Has_YAML_String_Given_Key "$(< "${HYBRID_configuration_file}")" 'Hybrid_handler.Run_ID' \
+        && Element_In_Array_Equals_To '--id' "${!HYBRID_command_line_options_given_to_handler[@]}"; then
+        Print_Attention 'The run ID was specified both in the configuration file and as command line option.'
+        Print_Warning -l -- 'The value specified as ' --emph 'command line option' ' will be used!\n'
+        HYBRID_run_id="${HYBRID_command_line_options_given_to_handler['--id']}"
+    fi
+    readonly HYBRID_run_id
 }
 
 function __static__Ensure_Executable_Exists()
@@ -153,16 +165,6 @@ function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
             fi
         fi
     fi
-}
-
-function __static__Perform_Command_Line_VS_Configuration_Consistency_Checks()
-{
-    if Has_YAML_String_Given_Key "$(< "${HYBRID_configuration_file}")" 'Hybrid_handler.Run_ID' \
-        && Element_In_Array_Equals_To '--id' "${HYBRID_command_line_options_given_to_handler[@]}"; then
-        Print_Attention 'The run ID was specified both in the configuration file and as command line option.'
-        Print_Warning 'The run ID value specified in the configuration file will be used!'
-    fi
-    readonly HYBRID_run_id
 }
 
 function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()

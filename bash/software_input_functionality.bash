@@ -125,14 +125,23 @@ function Copy_Hybrid_Handler_Config_Section()
 
 function __static__Extract_Sections_From_Configuration_File()
 {
-    if ! yq 'with_entries(select(.key | test("(Hybrid_handler|'"${1}"')")))' "${HYBRID_configuration_file}"; then
+    local section code=0
+    section=$(
+        yq "
+            with_entries(select(.key | test(\"(Hybrid_handler|${1})\")))
+            | .Hybrid_handler.Run_ID = \"${HYBRID_run_id}\"
+        " "${HYBRID_configuration_file}"
+    ) || code=$?
+    if [[ ${code} -ne 0 ]]; then
         Print_Internal_And_Exit 'Failure extracting sections from configuration file for reproducibility.'
+    else
+        printf '%s' "${section}"
     fi
 }
 
 function __static__Get_Repository_State()
 {
-    local code=0
+    local git_call code=0
     git_call=$(git -C "${1}" describe --long --always --all 2> /dev/null) || code=$?
     if [[ ${code} -ne 0 ]]; then
         printf 'Not a Git repository'
