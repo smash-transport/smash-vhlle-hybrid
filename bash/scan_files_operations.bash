@@ -27,11 +27,11 @@ function Create_And_Populate_Scan_Folder()
         scan_combinations_file="${HYBRID_scan_directory}/${HYBRID_scan_combinations_filename}"
     local auxiliary_string parameters_names parameters_values parameters_combinations
     auxiliary_string=$(__static__Get_Fixed_Order_Parameters)
-    readarray -t parameters_names < <(printf "${auxiliary_string}")
+    readarray -t parameters_names < <(printf '%s'"${auxiliary_string}")
     auxiliary_string=$(__static__Get_Fixed_Order_Parameters_Values)
-    readarray -t parameters_values < <(printf "${auxiliary_string}")
+    readarray -t parameters_values < <(printf '%s' "${auxiliary_string}")
     auxiliary_string=$(__static__Get_Parameters_Combinations_For_New_Configuration_Files "${parameters_values[@]}")
-    readarray -t parameters_combinations < <(printf "${auxiliary_string}")
+    readarray -t parameters_combinations < <(printf '%s' "${auxiliary_string}")
     readonly parameters_names parameters_values parameters_combinations
     __static__Validate_And_Create_Scan_Folder
     __static__Create_Combinations_File_With_Metadata_Header_Block
@@ -66,11 +66,18 @@ function __static__Get_Fixed_Order_Parameters_Values()
 
 function __static__Get_Parameters_Combinations_For_New_Configuration_Files()
 {
-    # NOTE: This is were multiple ways of doing combinations will be implemented:
-    #       For example, cartesian product VS all first values, all second ones, etc.
-    #       At the moment only the cartesian product approach is implemented, i.e.
-    #       all possible combinations of parameters values are considered.
-    __static__Get_All_Parameters_Combinations "$@"
+    case "${HYBRID_scan_strategy}" in
+        'LHS')
+            __static__Get_Samples_for_LHS "$@"
+            ;;
+        'Combinations')
+            __static__Get_All_Parameters_Combinations "$@"
+            ;;
+        *)
+            Print_Internal_And_Exit \
+                'Unknown scan strategy in ' --emph "${FUNCNAME}" ' function.'
+            ;;
+    esac
 }
 
 function __static__Get_All_Parameters_Combinations()
@@ -88,6 +95,22 @@ function __static__Get_All_Parameters_Combinations()
     # NOTE: The following use of 'eval' is fine since the string that is expanded
     #       is guaranteed to be validated to contain only YAML int, bool or float.
     eval printf '%s\\\n' "${string_to_be_expanded%?}" | sed 's/_/ /g'
+}
+
+# For Latin Hypercube Sampling, a python script creates for each parameter a list of
+# values. Each single sample is then created by taking one value from each list in order.
+function __static__Get_Samples_for_LHS()
+{
+    local -r series_of_lists=$(
+        IFS=','
+        printf '%s' "$*"
+    )
+    python3 -c "
+import numpy as np
+data = np.array([${series_of_lists}])
+for i in range(${HYBRID_number_of_samples}):
+    print(*data.transpose()[i])
+"
 }
 
 function __static__Validate_And_Create_Scan_Folder()
@@ -108,7 +131,7 @@ function __static__Create_Combinations_File_With_Metadata_Header_Block()
         done
         printf '#\n#___Run'
         for index in "${!parameters_names[@]}"; do
-            printf '  Parameter_%d' $((index + 1))
+            printf '  %20s' "Parameter_$((index + 1))"
         done
         printf '\n'
     } > "${scan_combinations_file}"
@@ -154,7 +177,7 @@ function __static__Add_Line_To_Combinations_File()
     {
         printf '%7d' $(($1 + 1))
         shift
-        printf '  %11s' "$@"
+        printf '  %20s' "$@"
         printf '\n'
     } >> "${scan_combinations_file}"
 }
@@ -199,5 +222,6 @@ function __static__Add_YAML_Configuration_To_New_Configuration_File()
 function __static__Remove_Scan_Parameters_Key_From_New_Configuration_File()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty filename
-    sed -i '/^[[:space:]]*Scan_parameters:/d' "${filename}"
+    yq -i 'del(.Hybrid_handler.LHS_scan) | del(.Hybrid_handler | select(length==0))' "${filename}"
+    yq -i 'del(.. | select(has("Scan_parameters")).Scan_parameters)' "${filename}"
 }

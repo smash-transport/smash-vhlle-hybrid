@@ -61,7 +61,7 @@ function Unit_Test__system-requirements()
     git_version=2.0
     sed_version=4.2.1
     tput_version=5.9
-    yq_version=4.18.1
+    yq_version=4.24.2
     Call_Codebase_Function_In_Subshell Check_System_Requirements
     if [[ $? -ne 0 ]]; then
         Print_Error "Check system requirements of good system failed."

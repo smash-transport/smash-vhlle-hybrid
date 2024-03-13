@@ -146,7 +146,14 @@ function __static__Parse_Section()
     local yaml_section valid_key
     if Has_YAML_String_Given_Key "${yaml_config}" "${section_label}"; then
         yaml_section="$(Read_From_YAML_String_Given_Key "${yaml_config}" "${section_label}")"
-        if [[ ${section_label} != 'Hybrid_handler' ]]; then
+        if [[ ${section_label} = 'Hybrid_handler' ]]; then
+            if Has_YAML_String_Given_Key "${yaml_section}" 'LHS_scan' \
+                && [[ "${HYBRID_execution_mode}" != 'prepare-scan' ]]; then
+                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                    'The ' --emph 'LHS_scan' ' key can only be specified in the ' \
+                    --emph 'prepare-scan' ' execution mode!'
+            fi
+        else
             HYBRID_given_software_sections+=("${section_label}")
         fi
         declare -n reference_to_map="HYBRID_${section_label,,}_valid_keys"

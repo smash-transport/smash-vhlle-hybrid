@@ -167,7 +167,19 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
                 fi
             done
             ;;
-        prepare-scan) ;;
+        prepare-scan)
+            if [[ ! "${HYBRID_number_of_samples}" =~ ^[1-9][0-9]*$ ]] \
+                || [[ "${HYBRID_number_of_samples}" -eq 1 ]]; then
+                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                    'The number of samples for Latin Hypercube Sampling scan ' \
+                    'has to be ' --emph 'an integer greater than 1' '.'
+            elif [[ "${HYBRID_number_of_samples}" -eq 0 ]]; then
+                readonly HYBRID_scan_strategy='Combinations'
+            else
+                readonly HYBRID_scan_strategy='LHS'
+                readonly HYBRID_number_of_samples
+            fi
+            ;;
         help) ;; # This is the default mode which is set in tests -> do nothing, but catch it
         *)
             Print_Internal_And_Exit 'Unknown execution mode passed to ' --emph "${FUNCNAME}" ' function.'

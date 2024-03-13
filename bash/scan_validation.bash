@@ -144,28 +144,23 @@ function __static__Has_Valid_Scan_Correct_Values()
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan sorted_scan_keys
     case "${sorted_scan_keys}" in
         "[Values]")
-            if [[ $(yq '.Scan.Values | tag' <<< "${given_scan}") != '!!seq' ]]; then
+            __static__Has_YAML_Key_A_Numeric_Sequence_As_Value 'Values' || return 1
+            ;;
+        "[Range]")
+            __static__Has_YAML_Key_A_Numeric_Sequence_As_Value 'Range' || return 1
+            local range num_values
+            range=$(yq '.Scan.Range | .. style="flow"' <<< "${given_scan}")
+            num_values=$(yq '. | length' <<< "${range}")
+            if ((num_values != 2)); then
                 Print_Error \
-                    'The value ' --emph "$(yq '.Scan.Values' <<< "${given_scan}")" \
-                    ' of the ' --emph 'Values' ' key is not a list of parameter values.'
+                    'Exactly two values are expected for the range. ' \
+                    'The given range contains ' --emph "${num_values}" ' values.'
                 return 1
             fi
-            local list_of_value_types
-            list_of_value_types=($(yq '.Scan.Values[] | tag' <<< "${given_scan}" | sort -u))
-            # If there is more than a type it is in general an error, unless there are exactly two,
-            # which are 'int' and 'float' (this is accepted). Note that the test is done on the
-            # concatenation of the values against 'float int' as the types are guaranteed to be sorted.
-            if [[ ${#list_of_value_types[@]} -ne 1 ]]; then
-                if [[ ${#list_of_value_types[@]} -ne 2 || "${list_of_value_types[*]//!!/}" != 'float int' ]]; then
-                    Print_Error \
-                        'The parameter values have different YAML types: ' \
-                        --emph "${list_of_value_types[*]//!!/}" '.'
-                    return 1
-                fi
-            elif [[ ! ${list_of_value_types[0]} =~ ^!!(bool|int|float)$ ]]; then
+            if [[ $(yq '.[0] > .[1]' <<< "${range}") == "true" ]]; then
                 Print_Error \
-                    'Parameter scans with values of ' --emph "${list_of_value_types[0]//!!/}" \
-                    ' type are not allowed.' 'Valid parameter types are ' --emph 'bool int float' ', only.'
+                    'The first value must be smaller than the second value in the Range. ' \
+                    'The given range is ' --emph "${range}" '.'
                 return 1
             fi
             ;;
@@ -174,4 +169,34 @@ function __static__Has_Valid_Scan_Correct_Values()
                 'Unknown scan passed to ' --emph "${FUNCNAME}" ' function.'
             ;;
     esac
+}
+
+function __static__Has_YAML_Key_A_Numeric_Sequence_As_Value()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty given_scan
+    local -r key=$1
+    if [[ $(yq ".Scan.${key} | tag" <<< "${given_scan}") != '!!seq' ]]; then
+        Print_Error \
+            'The value ' --emph "$(yq ".Scan.${key}" <<< "${given_scan}")" \
+            ' of the ' --emph "${key}" ' key is not a range of parameter values.'
+        return 1
+    fi
+    local list_of_value_types num_values first_value second_value
+    list_of_value_types=($(yq ".Scan.${key}[] | tag" <<< "${given_scan}" | sort -u))
+    # If there is more than a type it is in general an error, unless there are exactly two,
+    # which are 'int' and 'float' (this is accepted). Note that the test is done on the
+    # concatenation of the values against 'float int' as the types are guaranteed to be sorted.
+    if [[ ${#list_of_value_types[@]} -ne 1 ]]; then
+        if [[ ${#list_of_value_types[@]} -ne 2 || "${list_of_value_types[*]//!!/}" != 'float int' ]]; then
+            Print_Error \
+                'The parameter values have different YAML types: ' \
+                --emph "${list_of_value_types[*]//!!/}" '.'
+            return 1
+        fi
+    elif [[ ! ${list_of_value_types[0]} =~ ^!!(bool|int|float)$ ]]; then
+        Print_Error \
+            'Parameter scans with values of ' --emph "${list_of_value_types[0]//!!/}" \
+            ' type are not allowed.' 'Valid parameter types are ' --emph 'bool int float' ', only.'
+        return 1
+    fi
 }

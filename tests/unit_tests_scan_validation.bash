@@ -63,6 +63,10 @@ function Unit_Test__scan-YAML-scan-syntax()
         '{Scan: {Values: 42}}'
         '{Scan: {Values: [42, False, 3.14]}}'
         '{Scan: {Values: ["Hi", "Bye"]}}'
+        '{Scan: {Range: ["Hi", "Bye"]}}'
+        '{Scan: {Range: [2, 1]}}'
+        '{Scan: {Range: [1, 2, 3]}}'
+        '{Scan: {Range: [1, "Bye"]}}'
     )
     for value in "${values[@]}"; do
         Call_Codebase_Function __static__Is_Given_Key_Value_A_Valid_Scan "${value}" &> /dev/null
@@ -76,6 +80,7 @@ function Unit_Test__scan-YAML-scan-syntax()
         '{Scan: {Values: [1,2,3]}}'
         '{Scan: {Values: [42, 3.14]}}'
         '{Scan: {Values: [3.14, 6.28]}}'
+        '{Scan: {Range: [-2, -1.2]}}'
     )
     for value in "${values[@]}"; do
         Call_Codebase_Function __static__Is_Given_Key_Value_A_Valid_Scan "${value}"

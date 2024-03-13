@@ -47,9 +47,11 @@ jobs:
     # print the picked Python version
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
-    # install needed non-standard packages
+    # this Action should follow steps to set up Python build environment
     - name: Install Python dependencies
-      run: python -m pip install --upgrade pip numpy pyyaml
+      uses: py-actions/py-dependency-install@v4
+      with:
+        path: "python/requirements.txt"
     # now everything should be ready to setup bash and run codebase tests
     - name: code_check
     # we set some environment variables which depend on the specific matrix element
@@ -77,8 +79,8 @@ jobs:
             make -j$(nproc) > "${output_file}" 2>&1 || { cat "${output_file}"; exit 1; }
             BASH_EXE=$(pwd)/bash
             # now we install yq in the minimum version supported by the handler (otherwise a more recent version is available in GitHub actions)
-            printf "Download yq-v4.18.1...\n"
-            wget -nv -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.18.1/yq_linux_amd64
+            printf "Download yq-v4.24.2...\n"
+            wget -nv -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.24.2/yq_linux_amd64
             chmod +x /usr/local/bin/yq
         else
             BASH_EXE=$(which bash)

@@ -15,7 +15,7 @@ Once scan parameters have been specified as such, they **must** appear in the `S
 However, their value should not be a simple parameter value, but a YAML map with a given format.
 In the following we will refer to this map as "scan object".
 The different allowed ways to specify scan objects are discussed in the following, providing an example for each of them.
-The scan object shall always have a `Scan` key as single top-level key.
+**The scan object shall always have a `Scan` key as single top-level key.**
 ```yaml title="Generic parameter scan specification"
 Scan_parameters: ["Parameter"]
 Software_keys:
@@ -60,5 +60,43 @@ This is possible in the `Values` YAML array inside the `Scan` map.
             Values:
              - 17
              - 42
+             - 666
+    ```
+
+### Latin Hypercube Sampling
+
+This type of scan has to be [explicitly enabled](configuration_file.md#LHS-scan) by using the `LHS_scan` key.
+Once done so, for each scan parameter, a range in which the values will be sampled has to be specified using the `Range` YAML array inside the `Scan` map.
+
+=== "Compact style"
+
+    ```yaml title="Example"
+    Scan_parameters: ["foo.bar"]
+    Software_keys:
+      foo:
+        bar: {Scan: {Range: [-17, 666]}}
+    ```
+
+=== "Mixed style"
+
+    ```yaml title="Example"
+    Scan_parameters: ["foo.bar"]
+    Software_keys:
+      foo:
+        bar:
+          Scan:
+            Range: [-17, 666]
+    ```
+
+=== "Extended style"
+
+    ```yaml title="Example"
+    Scan_parameters: ["foo.bar"]
+    Software_keys:
+      foo:
+        bar:
+          Scan:
+            Range:
+             - 17
              - 666
     ```

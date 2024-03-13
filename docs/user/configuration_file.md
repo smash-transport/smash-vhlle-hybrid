@@ -24,6 +24,17 @@ Hybrid_handler:
     Run_ID: Cool_stuff_1
 ```
 
+<i id="LHS-scan"></i>
+???+ config-key "`LHS_scan`"
+
+    This key can be provided only in `prepare-scan` execution mode and its presence enables the [Latin Hypercube Sampling](scans_syntax.md#latin-hypercube-sampling) algorithm to generate the combinations of parameters values.
+    **Its value** refers to the number of desired samples and it **must be an integer larger than 1**.
+    ```yaml title="Example"
+    Hybrid_handler:
+        LHS_scan: 10
+    ```
+
+
 ## The software sections
 
 Each stage of the model has a dedicated section.
