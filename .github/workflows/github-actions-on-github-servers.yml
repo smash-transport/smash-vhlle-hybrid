@@ -47,9 +47,11 @@ jobs:
     # print the picked Python version
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
-    # install needed non-standard packages
+    # this Action should follow steps to set up Python build environment
     - name: Install Python dependencies
-      run: python -m pip install --upgrade pip numpy pyyaml
+      uses: py-actions/py-dependency-install@v4
+      with:
+        path: "python/requirements.txt"
     # now everything should be ready to setup bash and run codebase tests
     - name: code_check
     # we set some environment variables which depend on the specific matrix element
