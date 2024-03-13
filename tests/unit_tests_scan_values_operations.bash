@@ -60,18 +60,16 @@ function Unit_Test__scan-create-list-LHS()
         ['Hydro.Software_keys.etaS']='[-0.13, 0.17]'
     )
     Call_Codebase_Function Create_List_Of_Parameters_Values
+    local lower_bound upper_bound actual_values value
     for key in "${!list_of_parameters_values[@]}"; do
-        local temp_array lower_bound upper_bound actual_values value_count
-        temp_array=($(printf "%s" "${ranges[$key]}" | grep -o '[0-9.-]*'))
-        lower_bound="${temp_array[0]}"
-        upper_bound="${temp_array[1]}"
-        actual_values="${list_of_parameters_values[$key]}"
-        value_count=$(grep -o ',' <<< "${actual_values}" | wc -l)
-        if [ "$value_count" -ne 2 ]; then
+        lower_bound=$(yq '.[0]' <<< "${ranges[${key}]}")
+        upper_bound=$(yq '.[1]' <<< "${ranges[${key}]}")
+        actual_values="${list_of_parameters_values[${key}]}"
+        readarray -t actual_values < <(yq --unwrapScalar '.[]' <<< "${list_of_parameters_values[${key}]}")
+        if [ "${#actual_values[@]}" -ne 3 ]; then
             Print_Error "Key ${key} does not have exactly three values in its list."
             return 1
         fi
-        IFS=',' read -r -a actual_values <<< "${actual_values:1:-1}"
         for value in "${actual_values[@]}"; do
             if (($(bc <<< "${value} < ${lower_bound}"))) || (($(bc <<< "${value} > ${upper_bound}"))); then
                 Print_Error "Parameter values list for key ${key} was not correctly created."
