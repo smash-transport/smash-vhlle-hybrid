@@ -138,6 +138,12 @@ function __static__Print_Given_Command_Line_Option_Help()
                 'and the configuration files themselves will contain the' \
                 'scan name as part of their name.'
             ;;
+        --id)
+            __static__Print_Command_Line_Option_Help \
+                '--id' "${HYBRID_run_id}" \
+                'Run ID to be used by the handler. The timestamp in the' \
+                'default value refers to when the hybrid handler is run.'
+            ;;
         *)
             Print_Internal_And_Exit \
                 'Unknown option ' --emph "$1" ' passed to ' --emph "${FUNCNAME}" ' function.'

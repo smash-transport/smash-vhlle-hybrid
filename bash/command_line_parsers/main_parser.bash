@@ -88,6 +88,14 @@ function Parse_Command_Line_Options()
                 fi
                 shift 2
                 ;;
+            --id)
+                if [[ ${2-} =~ ^(-|$) ]]; then
+                    Print_Option_Specification_Error_And_Exit "$1"
+                else
+                    HYBRID_run_id=$2
+                fi
+                shift 2
+                ;;
             *)
                 exit_code=${HYBRID_fatal_command_line} Print_Fatal_And_Exit \
                     'Invalid option ' --emph "$1" ' specified in ' --emph "${HYBRID_execution_mode}" \

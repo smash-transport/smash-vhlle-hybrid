@@ -112,8 +112,9 @@ function Define_Further_Global_Variables()
     HYBRID_configuration_file='./config.yaml'
     HYBRID_output_directory="$(realpath './data')"
     HYBRID_scan_directory="${HYBRID_output_directory}/scan"
-    # Variables to be set (and possibly made readonly) from configuration/setup
+    # Variables which can be specified both from command line and from configuration/setup
     HYBRID_run_id="Run_$(date +'%Y-%m-%d_%H%M%S')"
+    # Variables to be set (and possibly made readonly) from configuration/setup
     HYBRID_number_of_samples="${HYBRID_default_number_of_samples}"
     HYBRID_given_software_sections=()
     declare -gA HYBRID_software_executable=(

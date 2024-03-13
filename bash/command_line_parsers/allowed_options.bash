@@ -25,7 +25,7 @@ function _HYBRID_Declare_Allowed_Command_Line_Options()
     declare -rgA HYBRID_allowed_command_line_options=(
         ['help']=''
         ['version']=''
-        ['do']='--output-directory --configuration-file'
-        ['prepare-scan']='--output-directory --configuration-file --scan-name'
+        ['do']='--output-directory --configuration-file --id'
+        ['prepare-scan']='--output-directory --configuration-file --scan-name --id'
     )
 }
