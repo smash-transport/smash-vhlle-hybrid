@@ -105,7 +105,7 @@ function __static__Get_Samples_for_LHS()
         IFS=','
         printf '%s' "$*"
     )
-    python -c "
+    python3 -c "
 import numpy as np
 data = np.array([${series_of_lists}])
 for i in range(${HYBRID_number_of_samples}):

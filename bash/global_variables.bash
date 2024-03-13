@@ -32,6 +32,7 @@ function Define_Further_Global_Variables()
     readonly HYBRID_default_number_of_samples=0
     declare -rgA HYBRID_external_python_scripts=(
         [Add_spectators_from_IC]="${HYBRID_python_folder}/add_spectators.py"
+        [Latin_hypercube_sampling]="${HYBRID_python_folder}/latin_hypercube_sampling.py"
     )
     declare -rgA HYBRID_software_default_input_filename=(
         [IC]=''

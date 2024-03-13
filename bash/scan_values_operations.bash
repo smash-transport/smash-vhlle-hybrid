@@ -29,7 +29,7 @@ function Create_List_Of_Parameters_Values()
                     Print_Internal_And_Exit \
                         'Processing of parameters failed in ' --emph "${FUNCNAME}" ' function.'
                 fi
-            done < <(python3 ${HYBRID_python_folder}/latin_hypercube_sampling.py \
+            done < <(${HYBRID_external_python_scripts[Latin_hypercube_sampling]} \
                 --parameter_names "${!list_of_parameters_ranges[@]}" \
                 --parameter_ranges "${list_of_parameters_ranges[@]}" \
                 --num_samples ${HYBRID_number_of_samples})
