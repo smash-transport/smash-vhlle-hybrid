@@ -63,4 +63,4 @@ For example, specifying two different scan parameters with 2 and 5 values, respe
 
 This algorithm, [if enabled](configuration_file.md#LHS-scan), samples multidimensional parameters randomly, while keeping the distance between samples maximal, and is commonly used for Bayesian inference.
 Refer to e.g. [:simple-wikipedia: this page](https://en.wikipedia.org/wiki/Latin_hypercube_sampling) for more information.
-The sampling itself is done by calling the `lhs` function from the [:fontawesome-brands-python: pyDoe](https://pythonhosted.org/pyDOE/randomized.html#latin-hypercube) Python library function, using the `maximin` criterion.
+The sampling itself is done by calling the `lhs` function from the [:fontawesome-brands-python: pyDoe](https://pythonhosted.org/pyDOE/randomized.html#latin-hypercube) Python library function, using the `centermaximin` criterion.
