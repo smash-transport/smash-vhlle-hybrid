@@ -148,17 +148,19 @@ function __static__Has_Valid_Scan_Correct_Values()
             ;;
         "[Range]")
             __static__Validate_YAML_Numeric_Sequence_Value 'Range' || return 1
-            num_values=$(yq '.Scan.Range | length' <<< "${given_scan}")
+            local range num_values
+            range=$(yq '.Scan.Range | .. style="flow"' <<< "${given_scan}")
+            num_values=$(yq '. | length' <<< "${range}")
             if ((num_values != 2)); then
                 Print_Error \
                     'Exactly two values are expected for the range. ' \
-                    'The given range is ' --emph "${num_values}" ' long.'
+                    'The given range contains ' --emph "${num_values}" ' values.'
                 return 1
             fi
-            if [[ $(yq '.Scan.Range[0] > .Scan.Range[1]' <<< "${given_scan}") == "true" ]]; then
+            if [[ $(yq '.[0] > .[1]' <<< "${range}") == "true" ]]; then
                 Print_Error \
                     'The first value must be smaller than the second value in the Range. ' \
-                    'The given range is ' --emph "$(yq '.Scan.Range' <<< "${given_scan}")" '.'
+                    'The given range is ' --emph "${range}" '.'
                 return 1
             fi
             ;;
