@@ -131,7 +131,7 @@ function __static__Create_Combinations_File_With_Metadata_Header_Block()
         done
         printf '#\n#___Run'
         for index in "${!parameters_names[@]}"; do
-            printf '  Parameter_%d' $((index + 1))
+            printf '  %20s' "Parameter_$((index + 1))"
         done
         printf '\n'
     } > "${scan_combinations_file}"

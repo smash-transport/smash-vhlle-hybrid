@@ -41,7 +41,7 @@ function Unit_Test__scan-create-single-file()
 # Parameter_1: IC.Software_keys.Modi.Collider.Sqrtsnn
 # Parameter_2: Hydro.Software_keys.etaS
 #
-#___Run  Parameter_1  Parameter_2
+#___Run           Parameter_1           Parameter_2
       1                   4.3                  0.13
       2                   4.3                  0.15
       3                   4.3                  0.17
@@ -126,7 +126,7 @@ function Unit_Test__scan-create-single-file-LHS()
 # Parameter_1: IC.Software_keys.Modi.Collider.Sqrtsnn
 # Parameter_2: Hydro.Software_keys.etaS
 #
-#___Run  Parameter_1  Parameter_2
+#___Run           Parameter_1           Parameter_2
       1                   4.3                 -0.13
       2                   7.7                  0.17
 EOF
