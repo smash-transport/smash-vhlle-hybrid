@@ -166,11 +166,6 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
                         --emph 'parameter-scan' ' execution mode.'
                 fi
             done
-            if [[ "${HYBRID_number_of_samples}" != "${HYBRID_default_number_of_samples}" ]]; then
-                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                    'Number of samples can only be specified in ' \
-                    'the prepare-scan mode!'
-            fi
             ;;
         prepare-scan)
             if [[ ! "${HYBRID_number_of_samples}" =~ ^[1-9][0-9]*$ ]] \
