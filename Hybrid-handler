@@ -80,10 +80,7 @@ function Define_Repository_Global_Path()
 
 function Store_Command_Line_Options_Into_Global_Variable()
 {
-    # The first array will be modified by the parser, while the second constant one is used e.g.
-    # for sanity checks about information that can be specified in the configuration file, too.
     HYBRID_command_line_options_to_parse=("$@")
-    readonly HYBRID_command_line_options_given_to_handler=("$@")
 }
 
 function Source_Codebase_Files()
