@@ -5,9 +5,9 @@ etaS      0.2     # to be updated
 zetaS     0.0
 e_crit    0.5
 
-nx        201
-ny        201
-nz        401
+nx        161
+ny        161
+nz        71
 xmin     -20.0
 xmax      20.0
 ymin     -20.0
