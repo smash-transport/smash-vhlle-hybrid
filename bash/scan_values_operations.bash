@@ -50,39 +50,35 @@ function Create_List_Of_Parameters_Values()
 function __static__Generate_And_Store_Parameter_List_Of_Values()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty list_of_parameters_values
-    local -r parameter=$1 scan_map="${list_of_parameters_values["$1"]}"
-    local sorted_scan_keys
-    sorted_scan_keys="$(yq '. | keys | sort | .. style="flow"' <<< "${scan_map}")"
-    readonly sorted_scan_keys
-    case "${sorted_scan_keys}" in
-        "[Values]")
-            list_of_parameters_values["${parameter}"]=$(
-                yq '.Values | .. style="flow"' <<< "${scan_map}"
-            )
-            ;;
-        *)
-            Print_Internal_And_Exit \
-                'Unknown ' --emph "${sorted_scan_keys}" 'scan in ' --emph "${FUNCNAME}" ' function.'
-            ;;
-    esac
+    __static__Extract_Parameter_Attribute_And_Store_It 'Values' "$1" 'list_of_parameters_values'
 }
 
 function __static__Generate_And_Store_Parameter_Ranges()
 {
     Ensure_That_Given_Variables_Are_Set list_of_parameters_ranges
-    local -r parameter=$1 scan_map="${list_of_parameters_values["$1"]}"
+    __static__Extract_Parameter_Attribute_And_Store_It 'Range' "$1" 'list_of_parameters_ranges'
+}
+
+function __static__Extract_Parameter_Attribute_And_Store_It()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty list_of_parameters_values
+    local -r \
+        entity=$1 \
+        parameter=$2 \
+        scan_map="${list_of_parameters_values[$2]}"
+    declare -n reference_to_storage=$3
     local sorted_scan_keys
     sorted_scan_keys="$(yq '. | keys | sort | .. style="flow"' <<< "${scan_map}")"
     readonly sorted_scan_keys
     case "${sorted_scan_keys}" in
-        "[Range]")
-            list_of_parameters_ranges["${parameter}"]=$(
-                yq '.Range | .. style="flow"' <<< "${scan_map}"
+        "[Range]" | "[Values]")
+            reference_to_storage["${parameter}"]=$(
+                yq '.'"${entity}"' | .. style="flow"' <<< "${scan_map}"
             )
             ;;
         *)
             Print_Internal_And_Exit \
-                'Unknown ' --emph "${sorted_scan_keys}" 'scan in ' --emph "${FUNCNAME}" ' function.'
+                'Unknown ' --emph "${sorted_scan_keys}" 'scan in ' --emph "${FUNCNAME[1]}" ' function.'
             ;;
     esac
 }
