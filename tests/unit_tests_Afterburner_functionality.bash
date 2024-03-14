@@ -25,6 +25,8 @@ __static__Do_Preliminary_Setup_Operations()
     HYBRID_software_base_config_file[Afterburner]='my_cool_conf.yaml'
     HYBRID_given_software_sections=('Afterburner')
     HYBRID_software_executable[Afterburner]=$(which echo) # Use command as fake executable
+    # Touch dummy empty handler config as this is always there in sanity checks
+    touch "${HYBRID_configuration_file}"
 }
 
 function Make_Test_Preliminary_Operations__Afterburner-create-input-file()

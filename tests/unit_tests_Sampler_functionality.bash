@@ -24,6 +24,8 @@ function Make_Test_Preliminary_Operations__Sampler-create-input-file()
     HYBRID_output_directory="${HYBRIDT_folder_to_run_tests}/test_dir_Sampler"
     HYBRID_given_software_sections=('Sampler')
     HYBRID_software_executable[Sampler]="$(which echo)"
+    # Touch dummy empty handler config as this is always there in sanity checks
+    touch "${HYBRID_configuration_file}"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 }
 

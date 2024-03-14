@@ -27,6 +27,8 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
     # To test the generic case, create symbolic link to dummy executable
     ln -s "$(which echo)" "${PWD}/dummy_exec"
     HYBRID_software_executable[Hydro]="${PWD}/dummy_exec"
+    # Touch dummy empty handler config as this is always there in sanity checks
+    touch "${HYBRID_configuration_file}"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 }
 
