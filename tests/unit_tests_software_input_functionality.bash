@@ -182,17 +182,3 @@ function Unit_Test__replace-in-software-input-TXT()
     fi
     rm "${base_input_file}"
 }
-
-function Make_Test_Preliminary_Operations__copy-hybrid-handler-config-section()
-{
-    local file_to_be_sourced list_of_files
-    list_of_files=(
-        'global_variables.bash'
-        'software_input_functionality.bash'
-        'sanity_checks.bash'
-    )
-    for file_to_be_sourced in "${list_of_files[@]}"; do
-        source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
-    done
-    Define_Further_Global_Variables
-}

@@ -40,6 +40,7 @@ function __static__Source_Codebase_Files()
         'scan_validation.bash'
         'scan_values_operations.bash'
         'software_input_functionality.bash'
+        'software_operations.bash'
         'system_requirements.bash'
         'version.bash'
     )

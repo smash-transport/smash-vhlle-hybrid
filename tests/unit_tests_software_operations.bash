@@ -7,6 +7,20 @@
 #
 #===================================================
 
+function Make_Test_Preliminary_Operations__copy-hybrid-handler-config-section()
+{
+    local file_to_be_sourced list_of_files
+    list_of_files=(
+        'global_variables.bash'
+        'software_operations.bash'
+        'sanity_checks.bash'
+    )
+    for file_to_be_sourced in "${list_of_files[@]}"; do
+        source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
+    done
+    Define_Further_Global_Variables
+}
+
 function Unit_Test__copy-hybrid-handler-config-section()
 {
     HYBRID_configuration_file=${FUNCNAME}.yaml
