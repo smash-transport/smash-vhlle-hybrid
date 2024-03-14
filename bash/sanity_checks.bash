@@ -78,6 +78,7 @@ function Ensure_Consistency_Of_Afterburner_Input()
 
 function __static__Perform_Command_Line_VS_Configuration_Consistency_Checks()
 {
+    Internally_Ensure_Given_Files_Exist "${HYBRID_configuration_file}"
     if Has_YAML_String_Given_Key "$(< "${HYBRID_configuration_file}")" 'Hybrid_handler.Run_ID' \
         && Element_In_Array_Equals_To '--id' "${!HYBRID_command_line_options_given_to_handler[@]}"; then
         Print_Attention 'The run ID was specified both in the configuration file and as command line option.'
