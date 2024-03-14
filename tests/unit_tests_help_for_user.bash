@@ -19,6 +19,7 @@ function Make_Test_Preliminary_Operations__give-requested-help()
     done
     HYBRID_configuration_file='./config.yaml'
     HYBRID_output_directory='.'
+    HYBRID_run_id='Cool_run'
 }
 
 function __static__Run_Helper_Expecting_Success()

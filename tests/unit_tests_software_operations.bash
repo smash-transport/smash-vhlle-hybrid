@@ -28,7 +28,7 @@ function Unit_Test__copy-hybrid-handler-config-section()
     # might change with different versions (here we compare strings)
     printf '%s\n' \
         'Hybrid_handler:' \
-        '  Run_ID: test' \
+        "  Run_ID: ${HYBRID_run_id}" \
         'IC:' \
         '  Executable: ex' \
         '  Config_file: conf' \
@@ -37,11 +37,12 @@ function Unit_Test__copy-hybrid-handler-config-section()
         '  Config_file: confh' > "${HYBRID_configuration_file}"
     local -r git_description="$(git -C "${HYBRIDT_folder_to_run_tests}" describe --long --always --all)"
     local folder description expected_result
-    Print_Info "${HYBRID_handler_config_section_filename[IC]}"
     for folder in "${HYBRIDT_folder_to_run_tests}" ~; do
-        Call_Codebase_Function_In_Subshell Copy_Hybrid_Handler_Config_Section \
-            'IC' "." "${folder}" &> /dev/null
-        if [[ "${folder}" = "${HYBRIDT_folder_to_run_tests}" ]]; then
+        Call_Codebase_Function_In_Subshell Copy_Hybrid_Handler_Config_Section 'IC' "." "${folder}"
+        if [[ $? -ne 0 ]]; then
+            Print_Error 'Extraction of configuration failed.'
+            return 1
+        elif [[ "${folder}" = "${HYBRIDT_folder_to_run_tests}" ]]; then
             description="${git_description}"
         else
             description='Not a Git repository'
@@ -50,7 +51,7 @@ function Unit_Test__copy-hybrid-handler-config-section()
             "# Git describe of executable folder: ${description}\n\n" \
             "# Git describe of handler folder: ${git_description}\n\n" \
             'Hybrid_handler:\n' \
-            '  Run_ID: test\n' \
+            "  Run_ID: ${HYBRID_run_id}\n" \
             'IC:\n' \
             '  Executable: ex\n' \
             '  Config_file: conf' # No trailing endline as "$(< ...)" strips them
