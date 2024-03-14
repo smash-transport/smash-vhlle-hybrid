@@ -153,7 +153,7 @@ function Print_YAML_String_Without_Given_Key()
 
 : << 'DOCSTRING'
 --8<-- [start:Print_Line_of_Equals-desc]
-Print a lines of equals to the standard output.
+Print a line of equal signs to the standard output.
 Function interface:
 
 1. Length in characters of the line.

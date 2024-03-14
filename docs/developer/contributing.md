@@ -13,7 +13,7 @@ It will speed up the code review and avoid comments about codebase notation.
     Such a confidence can only be attained if the developer can be confident that their changes are not breaking existing functionality.
     Sounds like magic?
     No, it simply means that there are tests for basically every functionality. :innocent:
-    You are requested to stick to this exciting aspect and, possibly, device and why not write tests for your new code before implementing the code itself.
+    You are requested to stick to this existing aspect and, possibly, device and why not write tests for your new code before implementing the code itself.
     A sufficiently handy testing framework has been developed tailored on this project and you find the needed information about it in a dedicated page [:material-arrow-right-box: testing framework](testing_framework.md).
     **The basic idea is that adding new tests is as simple as adding a new function.**
 
