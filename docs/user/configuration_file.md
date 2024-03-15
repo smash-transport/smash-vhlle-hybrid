@@ -48,6 +48,13 @@ These are (with the corresponding software to be used):
 As a general comment, whenever a path has to be specified, both an absolute and a relative one are accepted.
 However, **it is strongly encouraged to exclusively use absolute paths** as relative ones should be specified w.r.t. different folders (most of the times relatively to the stage output directory).
 
+!!! info "Enforced sanity rules"
+    Since the hybrid handler understands which software should be run from the presence of the corresponding section, there are a couple of totally natural rules that are enforced and will make the handler fail if violated.
+
+    1. At least one software section must be present in the configuration file.
+    2. Software sections must be specified in order and without gaps.
+       This means that it is not possible to e.g. ask the handler to run the initial condition and the sampler stages.
+
 ## Keys common to all software sections
 
 ???+ config-key "`Executable`"

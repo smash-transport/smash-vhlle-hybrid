@@ -54,7 +54,7 @@ function Setup_Initial_And_Final_Output_Space()
 
 function Enable_Global_Needed_Shell_Options()
 {
-    # See CONTRIBUTING for explanation about why globally
+    # See developer guide for explanation about why globally
     shopt -s extglob
     set -o pipefail -o nounset
     # NOTE: The behavior about 'errexit' mode here is not the same as in the handler, i.e. we do
@@ -188,10 +188,10 @@ function Print_Tests_Report()
         separator_length=$((test_name_string_length + 3 + 2 * ${#left_margin}))
         passed_string="$(printf "Run %d test(s): %2d passed" ${HYBRIDT_tests_run} ${HYBRIDT_tests_passed})"
         failed_string="$(printf "    ${HYBRIDT_tests_run//?/ }          %2d failed" ${HYBRIDT_tests_failed})"
-        Print_Line_of_Equals "${separator_length}" "${indentation}" '\n\e[96m' '\e[0m\n'
+        Print_Line_of_Equals "${separator_length}" "\n\e[96m${indentation}" '\e[0m\n'
         Print_Centered_Line "${passed_string}" ${separator_length} "${indentation}"
         Print_Centered_Line "${failed_string}" ${separator_length} "${indentation}"
-        Print_Line_of_Equals "${separator_length}" "${indentation}" '\e[96m' '\e[0m\n'
+        Print_Line_of_Equals "${separator_length}" "\e[96m${indentation}" '\e[0m\n'
     fi
     if [[ ${HYBRIDT_report_level} -ge 2 ]]; then
         local name percentage
@@ -199,13 +199,13 @@ function Print_Tests_Report()
                         if($2!=0) {printf "%.0f%%", 100*$1/$2} else {printf "-- %"}
                       }' <<< "${HYBRIDT_tests_passed} ${HYBRIDT_tests_run}")
         Print_Centered_Line "${percentage} of tests passed!" ${separator_length} "${indentation}"
-        Print_Line_of_Equals "${separator_length}" "${indentation}" '\e[96m' '\e[0m\n'
+        Print_Line_of_Equals "${separator_length}" "\e[96m${indentation}" '\e[0m\n'
         if [[ ${HYBRIDT_tests_failed} -ne 0 ]]; then
             printf "${indentation}${left_margin}\e[91mThe following tests failed:\e[0m\n"
             for name in "${HYBRIDT_which_tests_failed[@]}"; do
                 printf "${indentation}${left_margin} - \e[93m${name}\e[0m\n"
             done
-            Print_Line_of_Equals "${separator_length}" "${indentation}" '\e[96m' '\e[0m\n'
+            Print_Line_of_Equals "${separator_length}" "\e[96m${indentation}" '\e[0m\n'
         fi
     fi
     if [[ ${HYBRIDT_tests_failed} -ne 0 ]]; then
