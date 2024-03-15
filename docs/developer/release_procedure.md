@@ -3,7 +3,7 @@
 The codebase development is done using the [Git-flow branching pattern](http://nvie.com/git-model)[^1].
 
 !!! tip "Use a Git extension"
-    There are few extensions that allow to automatize the overhead of sticking to the branching model by hand using Git vanilla commands.
+    There are few extensions that allow to automatize the overhead of sticking to the branching model by hand, i.e. by using Git vanilla commands.
     Since [trunk based development](https://trunkbaseddevelopment.com) has become in the software landscape more appealing, most Git extension to implement Git-flow pattern have decreased maintenance and many froze.
     However, in simple scenarios, like manual usage in the terminal, any extension should work as expected.
     You can check-out the [AVH edition](https://github.com/petervanderdoes/gitflow-avh) (which has been archived in June 2023) or the [CJS Edition](https://github.com/CJ-Systems/gitflow-cjs) which is still (rarely) active.
