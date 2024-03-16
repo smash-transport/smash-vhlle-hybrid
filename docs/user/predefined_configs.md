@@ -1,7 +1,7 @@
 # The predefined configuration files
 
 ## Configuring the collision setups
-There are several complete handler configuration files prepared for the user to run the hybrid handler in its entirety for different collision systems and energies.
+There are several complete handler configuration files prepared for the user to run the hybrid handler in its entirety for different collision systems and energies. They follow the setup chosen in [:newspaper: *Schäfer et al.: Eur.Phys.J.A 58 (2022) 11, 230*](https://link.springer.com/article/10.1140/epja/s10050-022-00872-x). However, the finer hydrodynamic grid is by default commented out and has to be uncommented to reproduce the same setup as in the publication.
 The shear viscosities applied are taken from [:newspaper: *Karpenko et al.: Phys.Rev.C 91 (2015)*](https://journals.aps.org/prc/abstract/10.1103/PhysRevC.91.014906) and the longitudinal and transversal smearing parameters are adjusted to improve agreement with experimental data.
 The supported collision systems are listed in the following table.
 
@@ -29,6 +29,12 @@ They can be executed in the standard manner using `-c` option in the execution m
 !!! warning "Be aware of computational cost!"
     The default predefined setup is meant to be executed on a computing cluster, we do not recommend executing it locally.
     If you want to test a simple setup on your local machine, refer to the test setup explained here below.
+
+!!! warning "Tradeoff between runtime and precision"
+    Although SMASH-vHLLE-hybrid conserves in average all charges and almost all energy, this is strongly dependent on the grid in $\eta$ direction.
+    Therefore, there is a tradeoff between the runtime and memory consumption of the hydrodynamic stage and conservation.
+    The default in the configuration tries to strike a balance, as there is less than 10% loss of energy for central collisions from $\small\sqrt{s} = 4.3\;\mathrm{GeV}$ to $\small\sqrt{s} = 200\;\mathrm{GeV}$.
+    The original publication [:newspaper: *Schäfer et al.: Eur.Phys.J.A 58 (2022) 11, 230*](https://link.springer.com/article/10.1140/epja/s10050-022-00872-x) used a considerably finer grid, resulting in around 8 times higher runtime and memory consumption, but also less than 7% loss for small energies and almost perfect conservation for high energies.
 
 ## Running a test setup
 
