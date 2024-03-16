@@ -15,7 +15,7 @@ Hydro:
         etaS: 0.1
         Rg: 1.0
         Rgz: 1.3
-        # These settings are needed to reproduce the results of Eur.Phys.J.A 58 (2022) 11, 230
+        # These settings were used for the hydrodynamical simulations Eur.Phys.J.A 58 (2022) 11, 230
         # nx: 201
         # ny: 201
         # nz: 401
