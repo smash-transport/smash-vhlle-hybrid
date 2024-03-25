@@ -47,6 +47,7 @@ function Parse_Execution_Mode()
         HYBRID_execution_mode+='-help'
         HYBRID_command_line_options_to_parse=()
     fi
+    __static__Store_Remaining_Command_Line_Arguments_Into_Global_Associative_Array
 }
 
 # NOTE: The strategy of the following function is to
@@ -85,6 +86,14 @@ function Parse_Command_Line_Options()
                     Print_Option_Specification_Error_And_Exit "$1"
                 else
                     readonly HYBRID_configuration_file="$(realpath "$2")"
+                fi
+                shift 2
+                ;;
+            --id)
+                if [[ ${2-} =~ ^(-|$) ]]; then
+                    Print_Option_Specification_Error_And_Exit "$1"
+                else
+                    HYBRID_run_id=$2
                 fi
                 shift 2
                 ;;
@@ -131,6 +140,38 @@ function __static__Validate_Command_Line_Options()
             fi
         fi
     done
+}
+
+function __static__Store_Remaining_Command_Line_Arguments_Into_Global_Associative_Array()
+{
+    set -- "${HYBRID_command_line_options_to_parse[@]}"
+    if [[ ! ${1-} =~ ^(-|$) ]]; then
+        Print_Internal_And_Exit \
+            'First argument is not an option starting with dash in\n' --emph "${FUNCNAME}" '.'
+    fi
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -*)
+                if [[ ! ${2-} =~ ^(-|$) ]]; then
+                    HYBRID_command_line_options_given_to_handler["$1"]="$2"
+                    shift
+                fi
+                if [[ ! ${2-} =~ ^(-|$) ]]; then
+                    # This if-clause might become a while-loop and here one could append to the
+                    # array entry with a separator. However, such a separator should not be
+                    # contained in the values and it is not yet necessary to take such a decision.
+                    Print_Internal_And_Exit \
+                        'Unexpected if-clause entered in ' --emph "${FUNCNAME}" '.' \
+                        'Multiple values for command line options not yet supported.'
+                fi
+                shift
+                ;;
+            *)
+                Print_Internal_And_Exit 'Unexpected case entered in ' --emph "${FUNCNAME}" '.'
+                ;;
+        esac
+    done
+    readonly -A HYBRID_command_line_options_given_to_handler
 }
 
 Make_Functions_Defined_In_This_File_Readonly

@@ -25,6 +25,8 @@ function Make_Test_Preliminary_Operations__IC-create-input-file()
     HYBRID_software_base_config_file[IC]='my_cool_conf.yaml'
     HYBRID_given_software_sections=('IC')
     HYBRID_software_executable[IC]=$(which echo) # Use command as fake executable
+    # Touch dummy empty handler config as this is always there in sanity checks
+    touch "${HYBRID_configuration_file}"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 }
 

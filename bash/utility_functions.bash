@@ -407,6 +407,7 @@ function __static__Check_Given_Files_With()
     if [[ "${#add_on_message[@]}" -ne 0 ]]; then
         Print_Error -l -- "${add_on_message[@]}"
     fi
+    Print_Debug 'Error occurred in ' --emph "${FUNCNAME[2]}" ' function.'
     if [[ "${error}" = 'INTERNAL' ]]; then
         Print_Internal_And_Exit '\nThis should not have happened.'
     else

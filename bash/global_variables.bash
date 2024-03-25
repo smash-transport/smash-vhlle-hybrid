@@ -107,13 +107,20 @@ function Define_Further_Global_Variables()
     declare -rg HYBRID_boolean_keys=(
         'Add_spectators_from_IC'
     )
+    # This array will be filled by the parser as option-to-value(s) map and it is intended
+    # to track information given on the command line. For information like the run ID that
+    # can be given both on the command line and in the configuration file, the latter comes
+    # after and it naturally has precedence. Thanks to this array we can "give precedence"
+    # and use the input from the command line.
+    declare -gA HYBRID_command_line_options_given_to_handler=()
     # Variables to be set (and possibly made readonly) from command line
     HYBRID_execution_mode='help'
     HYBRID_configuration_file='./config.yaml'
     HYBRID_output_directory="$(realpath './data')"
     HYBRID_scan_directory="${HYBRID_output_directory}/scan"
-    # Variables to be set (and possibly made readonly) from configuration/setup
+    # Variables which can be specified both from command line and from configuration/setup
     HYBRID_run_id="Run_$(date +'%Y-%m-%d_%H%M%S')"
+    # Variables to be set (and possibly made readonly) from configuration/setup
     HYBRID_number_of_samples="${HYBRID_default_number_of_samples}"
     HYBRID_given_software_sections=()
     declare -gA HYBRID_software_executable=(

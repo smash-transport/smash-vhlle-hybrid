@@ -69,7 +69,7 @@ function Unit_Test__scan-YAML-scan-syntax()
         '{Scan: {Range: [1, "Bye"]}}'
     )
     for value in "${values[@]}"; do
-        Call_Codebase_Function __static__Is_Given_Key_Value_A_Valid_Scan "${value}" &> /dev/null
+        Call_Codebase_Function_In_Subshell __static__Is_Given_Key_Value_A_Valid_Scan "${value}" &> /dev/null
         if [[ $? -eq 0 ]]; then
             Print_Error 'Scan syntax validation for\n' --emph "${value}" '\nunexpectedly succeeded.'
             return 1
@@ -83,7 +83,7 @@ function Unit_Test__scan-YAML-scan-syntax()
         '{Scan: {Range: [-2, -1.2]}}'
     )
     for value in "${values[@]}"; do
-        Call_Codebase_Function __static__Is_Given_Key_Value_A_Valid_Scan "${value}"
+        Call_Codebase_Function_In_Subshell __static__Is_Given_Key_Value_A_Valid_Scan "${value}"
         if [[ $? -ne 0 ]]; then
             Print_Error 'Scan syntax validation unexpectedly failed (' --emph "${value}" ').'
             return 1
@@ -100,13 +100,13 @@ function __static__Test_Validation_Of_Parameter()
 {
     local -r section=$1 key=$2 new_keys=$3 expect=$4
     if [[ "${expect}" = 'EXPECT_SUCCESS' ]]; then
-        Call_Codebase_Function __static__Is_Parameter_To_Be_Scanned "${key}" "${new_keys}"
+        Call_Codebase_Function_In_Subshell __static__Is_Parameter_To_Be_Scanned "${key}" "${new_keys}"
         if [[ $? -ne 0 ]]; then
             Print_Error 'Validation of ' --emph "${section}" ' parameter unexpectedly failed.'
             return 1
         fi
     else
-        Call_Codebase_Function __static__Is_Parameter_To_Be_Scanned "${key}" "${new_keys}" &> /dev/null
+        Call_Codebase_Function_In_Subshell __static__Is_Parameter_To_Be_Scanned "${key}" "${new_keys}" &> /dev/null
         if [[ $? -eq 0 ]]; then
             Print_Error 'Validation of ' --emph "${section}" ' parameter unexpectedly succeeded.'
             return 1
@@ -123,14 +123,26 @@ function Unit_Test__scan-single-validation()
         [Afterburner]=''
     )
     __static__Test_Validation_Of_Parameter \
-        'IC' 'Modi.Collider.Sqrtsnn' "${HYBRID_software_new_input_keys[IC]}" 'EXPECT_SUCCESS' || return 1
+        'IC' 'Modi.Collider.Sqrtsnn' "${HYBRID_software_new_input_keys[IC]}" 'EXPECT_SUCCESS'
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
     __static__Test_Validation_Of_Parameter \
-        'Hydro' 'etaS' "${HYBRID_software_new_input_keys[Hydro]}" 'EXPECT_SUCCESS' || return 1
+        'Hydro' 'etaS' "${HYBRID_software_new_input_keys[Hydro]}" 'EXPECT_SUCCESS'
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
     __static__Test_Validation_Of_Parameter \
-        'Sampler' 'shear' "${HYBRID_software_new_input_keys[Sampler]}" 'EXPECT_FAILURE' || return 1
+        'Sampler' 'shear' "${HYBRID_software_new_input_keys[Sampler]}" 'EXPECT_FAILURE'
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
     __static__Test_Validation_Of_Parameter \
         'Afterburner ' 'General.Randomseed' \
-        "${HYBRID_software_new_input_keys[Afterburner]}" 'EXPECT_FAILURE' || return 1
+        "${HYBRID_software_new_input_keys[Afterburner]}" 'EXPECT_FAILURE'
+    if [[ $? -ne 0 ]]; then
+        return 1
+    fi
 }
 
 function Make_Test_Preliminary_Operations__scan-global-validation()

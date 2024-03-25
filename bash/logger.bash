@@ -344,7 +344,7 @@ function __static__ReplaceEndlinesInMessage()
         if [[ "${twoChars}" = '\n' ]]; then
             if [[ ${index} -eq 0 || "${1:$((index - 1)):1}" != '\' ]]; then
                 message+="\n${const_indentation}"
-                ((index++))
+                ((index++)) || true # In case logger is used with errexit enabled
                 continue
             fi
         elif [[ "${oneChar}" = $'\n' ]]; then

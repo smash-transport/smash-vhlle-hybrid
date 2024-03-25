@@ -29,6 +29,8 @@ nav:
     - Parameters scan:
        - Scan syntax: user/scans_syntax.md
        - Types of scans: user/scans_types.md
+    - FAQ:
+       - user/FAQ/index.md
   - Developer Guide:
     - developer/index.md
     - General aspects:
