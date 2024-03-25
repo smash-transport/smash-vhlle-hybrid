@@ -26,6 +26,6 @@ function _HYBRID_Declare_Allowed_Command_Line_Options()
         ['help']=''
         ['version']=''
         ['do']='--output-directory --configuration-file --id'
-        ['prepare-scan']='--output-directory --configuration-file --scan-name --id'
+        ['prepare-scan']='--output-directory --configuration-file --scan-name'
     )
 }
