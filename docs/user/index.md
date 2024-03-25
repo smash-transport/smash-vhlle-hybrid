@@ -54,4 +54,12 @@ Once cloned the repository, you can simply run the `Hybrid-handler` script[^1].
 
     [:material-arrow-right-box:&nbsp; Specifying parameters scans](scans_syntax.md)
 
+-   :question:{ .lg .middle } &nbsp; __Questions?__
+
+    ---
+
+    Check out our FAQ section. If needed, feel free to open an issue in the codebase repository.
+
+    [:material-arrow-right-box:&nbsp; Frequently asked questions](FAQ/index.md)
+
 </div>
