@@ -13,6 +13,7 @@ function Make_Test_Preliminary_Operations__parse-execution-mode()
     list_of_files=(
         'command_line_parsers/allowed_options.bash'
         'command_line_parsers/main_parser.bash'
+        'command_line_parsers/sub_parser.bash'
         'global_variables.bash'
     )
     for file_to_be_sourced in "${list_of_files[@]}"; do
@@ -53,10 +54,16 @@ function Unit_Test__parse-execution-mode()
     __static__Test_Parsing_Of_Execution_Mode_In_Subshell_Expecting_Success 'version' 0 || return 1
     HYBRID_command_line_options_to_parse=('do')
     __static__Test_Parsing_Of_Execution_Mode_In_Subshell_Expecting_Success 'do' 0 || return 1
-    HYBRID_command_line_options_to_parse=('do' '-o' '/path/to/folder')
-    __static__Test_Parsing_Of_Execution_Mode_In_Subshell_Expecting_Success 'do' 2 || return 1
+    HYBRID_command_line_options_to_parse=('do' '-o' '/path/to/folder' '--id' '42')
+    __static__Test_Parsing_Of_Execution_Mode_In_Subshell_Expecting_Success 'do' 4 || return 1
     HYBRID_command_line_options_to_parse=('do' '-o' '/path/to/folder' '--help')
     __static__Test_Parsing_Of_Execution_Mode_In_Subshell_Expecting_Success 'do-help' 0 || return 1
+    HYBRID_command_line_options_to_parse=('prepare-scan')
+    __static__Test_Parsing_Of_Execution_Mode_In_Subshell_Expecting_Success 'prepare-scan' 0 || return 1
+    HYBRID_command_line_options_to_parse=('prepare-scan' '-o' '/path/to/folder' '-s' '/scan/folder/path')
+    __static__Test_Parsing_Of_Execution_Mode_In_Subshell_Expecting_Success 'prepare-scan' 4 || return 1
+    HYBRID_command_line_options_to_parse=('prepare-scan' '-o' '/path/to/folder' '--help')
+    __static__Test_Parsing_Of_Execution_Mode_In_Subshell_Expecting_Success 'prepare-scan-help' 0 || return 1
     HYBRID_command_line_options_to_parse=('invalid-mode')
     Call_Codebase_Function_In_Subshell Parse_Execution_Mode &> /dev/null
     if [[ $? -eq 0 ]]; then
@@ -99,6 +106,7 @@ function Unit_Test__parse-command-line-options()
         Print_Error 'Parsing of CLO in wrong execution mode succeeded.'
         return 1
     fi
+
     HYBRID_execution_mode='do'
     HYBRID_command_line_options_to_parse=(--output-directory)
     __static__Test_CLO_Parsing_Missing_Value || return 1
@@ -116,4 +124,14 @@ function Unit_Test__parse-command-line-options()
     HYBRID_command_line_options_to_parse=(-c "${HOME}") # Here it does not matter we use a folder instead of a file
     __static__Replace_Short_Options_With_Long_Ones
     __static__Test_Single_CLO_Parsing_In_Subshell HYBRID_configuration_file "${HOME}" || return 1
+    HYBRID_command_line_options_to_parse=(--id 42)
+    __static__Test_Single_CLO_Parsing_In_Subshell HYBRID_run_id 42 || return 1
+
+    HYBRID_execution_mode='prepare-scan'
+    HYBRID_command_line_options_to_parse=(--scan-name)
+    __static__Test_CLO_Parsing_Missing_Value || return 1
+    HYBRID_command_line_options_to_parse=(-s "cool-stuff")
+    __static__Replace_Short_Options_With_Long_Ones
+    __static__Test_Single_CLO_Parsing_In_Subshell \
+        HYBRID_scan_directory "${HYBRID_output_directory}/cool-stuff" || return 1
 }
