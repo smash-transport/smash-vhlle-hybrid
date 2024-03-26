@@ -603,24 +603,21 @@ function __static__Print_Python_Requirement_Report_Line()
         line+="${yellow}✘"
     elif [[ ${found} = '?' ]]; then
         line+="${yellow}?"
+    elif [[ ${version_ok} = '?' ]]; then
+        line+="${green}?"
     else
         line+="${green}✔︎"
     fi
-    if [[ ${found} =~ ^(---|\?)$ ]]; then
+    if [[ ${version_found} = '---' ]]; then
         line+=$(printf '%-15s' '')
     else
         line+="  ${text_color}->  "
-        if [[ ${found} != '---' ]]; then
-            if [[ ! ${version_found} =~ ^(---|\?)$ ]]; then
-                if [[ ${version_ok} = '---' ]]; then
-                    line+="${red}"
-                else
-                    line+="${green}"
-                fi
-                line+=$(printf "%-9s" "${version_found}")
-            fi
-            line+="${default}"
+        if [[ ${version_ok} = 'OK' ]]; then
+            line+="${green}"
+        else
+            line+="${red}"
         fi
+        line+=$(printf "%-9s${default}" "${version_found}")
     fi
     Print_Debug "${requirement}"
     line+="${emph_color}[${HYBRID_python_requirements["${requirement}"]}]${default}"

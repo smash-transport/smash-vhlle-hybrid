@@ -16,17 +16,23 @@
 #
 # This script prints:
 #
-#   "found|version|OK"
+#   "OK|version|OK"
 #   if the package is installed and the version requirement is satisfied (exit 0)
+#
+#   "OK|---|OK"
+#   if the package is installed, has no version, but there is no version requirement (exit 0)
 #
 #   "---|---|---"
 #   if the package is NOT installed (exit 1)
 #
-#   "found|version|---"
+#   "OK|version|---"
 #   if the package is installed, but the version requirement is NOT satisfied (exit 2)
 #
 #   "?|---|---"
 #   if it was not possible to check requirement (exit 3)
+#
+#   "OK|---|?"
+#   if the package is installed, but has no version and it was not possible to check requirement (exit 4)
 #
 # NOTE: This script should avoid as much as possible to import modules that are not
 #       guaranteed to be always present, because this is a tool to check requirements.
@@ -42,25 +48,39 @@ except:
     print('?|---|---')
     exit(3)
 
-requirement = sys.argv[1] + sys.argv[2]
 package_name = sys.argv[1]
+version_specifier = sys.argv[2]
+requirement = package_name + version_specifier
 
 if os.environ.get('HYBRID_TEST_MODE') is not None:
     # Mock pip, useful in handler unit tests
-    installed_packages = {"numpy": "1.26.4"}
+    installed_packages = {"numpy": "1.26.4", "pyDOE": "", "PyYAML": "5.0"}
 else:
     pip_freeze_list = subprocess.check_output([sys.executable, '-m', 'pip', 'freeze'])
     pip_freeze_list = [line.decode().split('==') for line in pip_freeze_list.split()]
-    installed_packages = {r[0]: r[1] for r in pip_freeze_list}
+    installed_packages = {}
+    for r in pip_freeze_list:
+        if len(r) == 1:
+            installed_packages[r[0]] = ''
+        elif len(r) == 2:
+            installed_packages[r[0]] = r[1]
 
 if package_name not in installed_packages.keys():
     print("---|---|---")
     exit(1)
 else:
     available_version = installed_packages[package_name]
-    if available_version in Requirement(requirement).specifier:
-        print(f"OK|{available_version}|OK")
-        exit(0)
+    if available_version == "":
+        if version_specifier == "":
+            print("OK|---|OK")
+            exit(0)
+        else:
+            print("OK|---|?")
+            exit(4)
     else:
-        print(f"wrong|{available_version}|---")
-        exit(2)
+        if available_version in Requirement(requirement).specifier:
+            print(f"OK|{available_version}|OK")
+            exit(0)
+        else:
+            print(f"wrong|{available_version}|---")
+            exit(2)
