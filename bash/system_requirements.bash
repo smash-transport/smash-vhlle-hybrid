@@ -554,11 +554,10 @@ function __static__Print_Requirement_Version_Report_Line()
         yellow='\e[93m' \
         text_color='\e[38;5;38m' \
         default='\e[0m'
-    local line found version_found version_ok tmp_array program=$1
-    tmp_array=(${system_information[${program}]//|/ }) # Unquoted to let word splitting act
-    found=${tmp_array[0]}
-    version_found=${tmp_array[1]}
-    version_ok=${tmp_array[2]}
+    local line found version_found version_ok  program=$1
+    found=$(__static__Get_Field_In_System_Information_String "${program}" 0)
+    version_found=$(__static__Get_Field_In_System_Information_String "${program}" 1)
+    version_ok=$(__static__Get_Field_In_System_Information_String "${program}" 2)
     printf -v line "   ${text_color}Command ${emph_color}%8s${text_color}: ${default}" "${program}"
     if [[ ${found} = '---' ]]; then
         line+="${red}NOT "
