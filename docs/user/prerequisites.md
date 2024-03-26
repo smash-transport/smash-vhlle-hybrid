@@ -1,5 +1,3 @@
-
-
 # Simulation software
 
 | Software | Required version |
@@ -21,7 +19,7 @@ Instructions on how to compile or install the software above can be found at the
 
 ---
 
-# Unix system requirements
+## Unix system requirements
 
 The hybrid handler makes use of many tools which are usually installed on Unix systems.
 For some of them a minimum version is required and for the others their availability is enough.
@@ -42,3 +40,17 @@ To check out what is required and what is available on your system, simply run t
     Unfortunately, there is no standard way to figure out which implementation a command offers.
     However, all GNU commands support the `--version` command line option and their output contains the `GNU` word.
     This allows to understand if the needed GNU version is available or if the commands refers to something else.
+
+## Python requirements
+
+Few standalone python scripts are used for dedicated tasks and this implies that the hybrid handler will terminate with an error if some of these requirements are missing.
+However, since not all requirements are *always* needed, the hybrid handler will only check for some of them on a per-run basis.
+In the system overview obtained by running the `Hybrid-handler` executable without options, also python requirements are listed, each with a short description about when such a requirement is needed.
+
+!!! question "I simply want to install all requirements. What should I do?"
+    In the :file_folder: **python** folder, you'll find a :material-file: *requirements.txt* file which you can use to set up a dedicated python [virtual environment](https://docs.python.org/3/tutorial/venv.html).
+    Alternatively, although discouraged, you can simply run (from the repository top-level)
+    ```
+    pip install --user -r python/requirements.txt
+    ```
+    to install the requirements globally for your user.
