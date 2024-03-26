@@ -54,8 +54,13 @@ function __static__Inhibit_Commands_Version()
 
 function Unit_Test__system-requirements()
 {
+    # This environment variable makes the python check requirement tool mock pip and
+    # find only the always required python packages, independently from OS installation.
+    # Note that it needs to be set to a value to be visible from the python script.
+    export HYBRID_TEST_MODE='set'
     __static__Inhibit_Commands_Version
     local gnu {awk,git,sed,tput,yq}_version
+    # Prepare mocked good system
     gnu='GNU'
     awk_version=4.1
     git_version=2.0
@@ -72,6 +77,15 @@ function Unit_Test__system-requirements()
         Print_Error "Check system requirements making report of good system failed."
         return 1
     fi
+    # Make "missing" python requirement needed changing execution mode
+    HYBRID_execution_mode='do'
+    Call_Codebase_Function_In_Subshell Check_System_Requirements &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error "Check system requirements of system without needed python succeeded."
+        return 1
+    fi
+    HYBRID_execution_mode='test'
+    # Prepare mocked bad system
     gnu='BSD'
     awk_version=4.1.0
     git_version=1.8.3
