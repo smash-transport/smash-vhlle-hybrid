@@ -86,6 +86,14 @@ function Check_System_Requirements_And_Make_Report()
     local system_report=()
     local -r single_field_length=18 # This variable is used to prepare the report correctly formatted
     declare -A system_information   # Same use of this variable as in 'Check_System_Requirements' function
+    # Define colors for all reports
+    local -r \
+        emph_color='\e[96m' \
+        red='\e[91m' \
+        green='\e[92m' \
+        yellow='\e[93m' \
+        text_color='\e[38;5;38m' \
+        default='\e[0m'
     __static__Analyze_System_Properties
     __static__Print_Python_Report_Title
     __static__Print_Report_Of_Requirements_With_Minimum_version 'Python'
@@ -546,14 +554,9 @@ function __static__Get_Larger_Version()
 
 function __static__Print_Requirement_Version_Report_Line()
 {
-    Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[$1]"
-    local -r \
-        emph_color='\e[96m' \
-        red='\e[91m' \
-        green='\e[92m' \
-        yellow='\e[93m' \
-        text_color='\e[38;5;38m' \
-        default='\e[0m'
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
+        "system_information[$1]" \
+        emph_color red green yellow text_color default
     local line found version_found version_ok  program=$1
     found=$(__static__Get_Field_In_System_Information_String "${program}" 0)
     version_found=$(__static__Get_Field_In_System_Information_String "${program}" 1)
@@ -585,14 +588,9 @@ function __static__Print_Requirement_Version_Report_Line()
 
 function __static__Print_Python_Requirement_Report_Line()
 {
-    Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[$1]"
-    local -r \
-        emph_color='\e[96m' \
-        red='\e[91m' \
-        green='\e[92m' \
-        yellow='\e[93m' \
-        text_color='\e[38;5;38m' \
-        default='\e[0m'
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
+        "system_information[$1]" \
+        emph_color red green yellow text_color default
     local line found version_found version_ok requirement=$1
     found=$(__static__Get_Field_In_System_Information_String "${requirement}" 0)
     version_found=$(__static__Get_Field_In_System_Information_String "${requirement}" 1)
@@ -630,14 +628,8 @@ function __static__Print_Python_Requirement_Report_Line()
 
 function __static__Get_Single_Tick_Cross_Requirement_Report()
 {
-    Ensure_That_Given_Variables_Are_Set_And_Not_Empty single_field_length
-    local -r \
-        emph_color='\e[96m' \
-        red='\e[91m' \
-        green='\e[92m' \
-        yellow='\e[93m' \
-        text_color='\e[38;5;38m' \
-        default='\e[0m'
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
+        single_field_length emph_color red green yellow text_color default
     local line name="$1" status=$2 name_string
     printf -v name_string "%s ${emph_color}%s" "${name% *}" "${name#* }"
     printf -v line " %*s${text_color}: ${default}" "${single_field_length}" "${name_string}"
