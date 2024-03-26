@@ -63,8 +63,11 @@ function Check_System_Requirements()
     #       the key is prefixed by 'GNU-' and the content has a first "field" that is
     #       'found' or '---' and a second one that is either 'OK' or '---' to indicate
     #       whether the GNU version of the command is in use or not.
-    #       Finally, the same array is used for environment variables and, in this case,
+    #       The same array is used for environment variables and, in this case,
     #       the content is either 'OK' or '---'.
+    #       Finally, the same array is used for python requirements. The keys are the
+    #       python requirements and the values have one field only which is either
+    #       'OK' or '---' or '?' or 'wrong'.
     #
     # ATTENTION: The code relies on the "fields" in system_information elements not
     #            containing spaces. This assumption might be dropped, but that array
@@ -177,6 +180,9 @@ function __static__Analyze_System_Properties()
         else
             system_information["${name}"]='---'
         fi
+    done
+    for program in "${!HYBRID_python_requirements[@]}"; do
+        system_information["${program}"]="$(__static__Is_Python_Requirement_Satisfied "${program}")"
     done
     for program in "${!system_information[@]}"; do
         Print_Debug "${program} -> ${system_information[${program}]}"
@@ -412,6 +418,19 @@ function __static__Is_Gnu_Version_In_Use()
     else
         return 1
     fi
+}
+
+function __static__Is_Python_Requirement_Satisfied()
+{
+    local requirement name version_specifier
+    requirement=$1
+    # According to PEP-440 this should be the symbols that separate the name from the version
+    # specifiers -> see https://peps.python.org/pep-0440/#version-specifiers for more info.
+    name="${requirement%%[~<>=\!]*}"
+    name="${name%%*([[:space:]])}" # Trim possible trailing spaces
+    version_specifier="${requirement//${name}/}"
+    # Ignore exit code from the tool, as not needed here
+    ${HYBRID_python_test_requirement_tool} "${name}" "${version_specifier}" || return 0
 }
 
 #===================================================================================================
