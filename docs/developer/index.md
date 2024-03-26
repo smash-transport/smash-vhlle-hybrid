@@ -26,7 +26,7 @@ Assumptions that are crucial to know before even getting to the code have a dedi
     The developer has to be aware that the code does break, if such an assumption is violated.
     Although the external software used for each stage might violate this, it is not the case at the moment and it is considered unlikely to happen in the future.
 
-!!! warning "The stages names hard-coded everywhere"
+!!! warning "The stages names are hard-coded everywhere"
     Each simulation phase has a label associated to it (i.e. `IC`, `Hydro`, etc.) and these are used in variable names as well, although with lower-case letters only.
     In the codebase it has been exerted leverage on this aspect and at some point the name of variables are built using the section labels transformed into lower-case words.
     Hence, it is important that section labels do not contain characters that would break this mechanism, like dashes or spaces.

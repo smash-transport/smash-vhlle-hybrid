@@ -21,6 +21,20 @@ It will speed up the code review and avoid comments about codebase notation.
     Use the `.bash` extension (**NOT** `.sh`) for files containing *Bash* code.
     This is often ignored in shell scripting.
 
+!!! danger "Keep an eye on system requirements"
+    Whenever you need to use an external command, you should ask yourself whether this is a new system requirement and, if so, whether it is really needed.
+    Often in Bash world you can achieve the same task in different ways and it might be that you do not need to add a further dependency.
+    Sometimes it is really needed and, in this case, **you must not forget to add the requirement to the system requirements checks**[^1].
+    The same applies to python requirements, which not only need to be added to the :material-file: *python/requirements.txt* file.
+    Unless they are always required, you need to
+
+      1. add a comment to the Bash code about under which condition the new requirements are needed (this will be displayed to the user);
+      2. implement the condition to limit the check to the runs which need such requirements;
+      3. ensure tests pass (they might require setting some more global variables in the `tests_runner`, depending on the new conditions).
+
+[^1]:
+    For OS requirements, it should be simply enough to add the new requirements to the appropriate array in the function where system requirements are defined.
+
 ## Editing existing files or creating new ones
 
 This codebase is distributed under the terms of the GPLv3 license.
