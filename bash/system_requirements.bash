@@ -423,18 +423,12 @@ function __static__Try_Find_Version()
     case "$1" in
         awk | git | sed | python3)
             found_version=$($1 --version)
-            ;;& # Continue matching other cases
-        awk | sed)
-            found_version=$(__static__Get_First_Line_From_String "${found_version}")
             found_version=$(grep -oE "${HYBRID_version_regex}" <<< "${found_version}")
             found_version=$(__static__Get_First_Line_From_String "${found_version}")
             ;;
         bash)
             found_version="${BASH_VERSINFO[@]:0:3}"
             found_version="${found_version// /.}"
-            ;;
-        git | python3)
-            found_version=$(grep -oE "${HYBRID_version_regex}" <<< "${found_version}")
             ;;
         tput)
             found_version=$(tput -V | grep -oE "${HYBRID_version_regex}")
