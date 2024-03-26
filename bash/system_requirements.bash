@@ -112,21 +112,22 @@ function __static__Parse_Python_Requirements_Into_Global_Array()
     Ensure_That_Given_Variables_Are_Set HYBRID_python_requirements
     local line comment
     while read -r line; do
-        line=${line%#*}               # Remove in-line comments
-        line=${line##+([[:space:]])}  # Remove leading spaces
-        line=${line%%+([[:space:]])}  # Remove trailing spaces
+        line=${line%#*}              # Remove in-line comments
+        line=${line##+([[:space:]])} # Remove leading spaces
+        line=${line%%+([[:space:]])} # Remove trailing spaces
         if [[ ${line} =~ ^[[:space:]]*$ ]]; then
             continue
         fi
         case "${line}" in
-            pyDOE* )
+            pyDOE*)
                 comment='Required in "prepare-scan" mode with LHS enabled'
                 ;;
-            PyYAML* )
+            PyYAML*)
                 comment='Required in "do" mode for afterburner with spectators'
                 ;;
-            * )
+            *)
                 comment='Always required'
+                ;;
         esac
         HYBRID_python_requirements["${line}"]="${comment}"
     done < "${HYBRID_python_requirements_file}"
@@ -282,8 +283,7 @@ function __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing()
                     continue
                 fi
                 ;;
-            *)
-                ;;
+            *) ;;
         esac
         Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[${requirement}]"
         package_found=$(__static__Get_Field_In_System_Information_String "${requirement}" 0)
@@ -303,7 +303,7 @@ function __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing()
         fi
         if [[ ! ${version_found} =~ ${HYBRID_version_regex} ]]; then
             Print_Internal_And_Exit \
-                'Unexpected version value ' --emph "${version_found}" ' found when checking for python '\
+                'Unexpected version value ' --emph "${version_found}" ' found when checking for python ' \
                 --emph "${requirement}" ' requirement.'
         fi
         if [[ "${version_ok}" = '---' ]]; then
@@ -558,7 +558,7 @@ function __static__Print_Requirement_Version_Report_Line()
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
         "system_information[$1]" \
         emph_color red green yellow text_color default
-    local line found version_found version_ok  program=$1
+    local line found version_found version_ok program=$1
     found=$(__static__Get_Field_In_System_Information_String "${program}" 0)
     version_found=$(__static__Get_Field_In_System_Information_String "${program}" 1)
     version_ok=$(__static__Get_Field_In_System_Information_String "${program}" 2)
