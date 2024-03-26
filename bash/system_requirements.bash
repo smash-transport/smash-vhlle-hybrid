@@ -87,8 +87,10 @@ function Check_System_Requirements_And_Make_Report()
     local -r single_field_length=18 # This variable is used to prepare the report correctly formatted
     declare -A system_information   # Same use of this variable as in 'Check_System_Requirements' function
     __static__Analyze_System_Properties
-    __static__Print_Report_Title
-    __static__Print_Report_Of_Programs_With_Minimum_version
+    __static__Print_Python_Report_Title
+    __static__Print_Report_Of_Requirements_With_Minimum_version 'Python'
+    __static__Print_OS_Report_Title
+    __static__Print_Report_Of_Requirements_With_Minimum_version 'OS'
     __static__Prepare_Binary_Report_Array
     __static__Print_Formatted_Binary_Report
 }
@@ -307,23 +309,38 @@ function __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing()
     fi
 }
 
-function __static__Print_Report_Title()
+function __static__Print_OS_Report_Title()
 {
     printf "\e[1m  System requirements overview:\e[0m\n\n"
 }
 
-function __static__Print_Report_Of_Programs_With_Minimum_version()
+function __static__Print_Python_Report_Title()
 {
-    local report_string program
+    printf "\e[1m  Python requirements overview:\e[0m\n\n"
+}
+
+function __static__Print_Report_Of_Requirements_With_Minimum_version()
+{
+    local report_string program sorting_column
     # NOTE: sort might not be available, hence put report in string and then optionally sort it
     report_string=''
-    for program in "${!HYBRID_versions_requirements[@]}"; do
-        report_string+=$(__static__Print_Requirement_Version_Report_Line "${program}")$'\n'
-    done
+    if [[ $1 = 'OS' ]]; then
+        sorting_column=3
+        for program in "${!HYBRID_versions_requirements[@]}"; do
+            report_string+=$(__static__Print_Requirement_Version_Report_Line "${program}")$'\n'
+        done
+    elif [[ $1 = 'Python' ]]; then
+        sorting_column=1
+        for program in "${!HYBRID_python_requirements[@]}"; do
+            report_string+=$(__static__Print_Python_Requirement_Report_Line "${program}")$'\n'
+        done
+    else
+        Print_Internal_And_Exit 'Unexpected call of ' --emph "${FUNCNAME}" ' function.'
+    fi
     if hash sort &> /dev/null; then
         # The third column is that containing the program name; remember that the
         # 'here-string' adds a newline to the string when feeding it into the command
-        sort -b -k3 <<< "${report_string%?}"
+        sort -b -k${sorting_column} <<< "${report_string%?}"
     else
         printf '%s' "${report_string}"
     fi
@@ -570,6 +587,51 @@ function __static__Print_Requirement_Version_Report_Line()
         fi
         line+="${default}"
     fi
+    printf "${line}\n"
+}
+
+function __static__Print_Python_Requirement_Report_Line()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[$1]"
+    local -r \
+        emph_color='\e[96m' \
+        red='\e[91m' \
+        green='\e[92m' \
+        yellow='\e[93m' \
+        text_color='\e[38;5;38m' \
+        default='\e[0m'
+    local line found version_found version_ok requirement=$1
+    found=$(__static__Get_Field_In_System_Information_String "${requirement}" 0)
+    version_found=$(__static__Get_Field_In_System_Information_String "${requirement}" 1)
+    version_ok=$(__static__Get_Field_In_System_Information_String "${requirement}" 2)
+    printf -v line "${emph_color}%18s${text_color}: ${default}" "${requirement}"
+    if [[ ${found} = '---' ]]; then
+        line+="${red}✘"
+    elif [[ ${found} = 'wrong' ]]; then
+        line+="${yellow}✘"
+    elif [[ ${found} = '?' ]]; then
+        line+="${yellow}?"
+    else
+        line+="${green}✔︎"
+    fi
+    if [[ ${found} =~ ^(---|\?)$ ]]; then
+        line+=$(printf '%-15s' '')
+    else
+        line+="  ${text_color}->  "
+        if [[ ${found} != '---' ]]; then
+            if [[ ! ${version_found} =~ ^(---|\?)$ ]]; then
+                if [[ ${version_ok} = '---' ]]; then
+                    line+="${red}"
+                else
+                    line+="${green}"
+                fi
+                line+=$(printf "%-9s" "${version_found}")
+            fi
+            line+="${default}"
+        fi
+    fi
+    Print_Debug "${requirement}"
+    line+="${emph_color}[${HYBRID_python_requirements["${requirement}"]}]${default}"
     printf "${line}\n"
 }
 
