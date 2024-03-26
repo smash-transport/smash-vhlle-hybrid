@@ -27,6 +27,10 @@
 #
 #   "?|---|---"
 #   if it was not possible to check requirement (exit 3)
+#
+# NOTE: This script should avoid as much as possible to import modules that are not
+#       guaranteed to be always present, because this is a tool to check requirements.
+#       This is why the import about non-standard modules is in a try-except block.
 
 import sys
 import os
