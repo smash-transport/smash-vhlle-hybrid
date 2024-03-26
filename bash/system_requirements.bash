@@ -293,6 +293,7 @@ function __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing()
             Print_Warning \
                 'Unable to check python ' --emph "${requirement}" ' requirement!' \
                 'Please ensure that it is satisfied.'
+            continue
         elif [[ "${package_found}" = '---' ]]; then
             Print_Error \
                 'Python requirement ' --emph "${requirement}" \
