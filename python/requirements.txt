@@ -1,4 +1,9 @@
-numpy==1.26.4
-pyDOE==0.3.8
-PyYAML==6.0.1
-scipy==1.12.0
+# This file contains all python requirements that the hybrid handler needs in
+# all its functionality. Some of them are not always needed and, therefore, the
+# system requirements check does not always require them all. Note that python
+# code is also used hard-coded via 'python -c' in some places in Bash code and
+# some of the following requirements are a direct consequence of that.
+
+numpy~=1.11
+PyYAML~=6.0.1
+pyDOE~=0.3.8
