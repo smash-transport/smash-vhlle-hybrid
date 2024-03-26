@@ -291,7 +291,7 @@ function __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing()
         version_ok=$(__static__Get_Field_In_System_Information_String "${requirement}" 2)
         if [[ "${package_found}" = '?' ]]; then
             Print_Warning \
-                'Unable to check python ' --emph "${program}" ' requirement!' \
+                'Unable to check python ' --emph "${requirement}" ' requirement!' \
                 'Please ensure that it is satisfied.'
         elif [[ "${package_found}" = '---' ]]; then
             Print_Error \
