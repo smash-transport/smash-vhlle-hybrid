@@ -78,6 +78,13 @@ function Define_Tests_Global_Variables()
     HYBRIDT_tests_failed=0
     HYBRIDT_which_tests_failed=()
     HYBRIDT_tests_to_be_run=()
+    # These handler global variables are needed for checking system requirements and we define them
+    # here as not global as some tests might source the handler global variables definition and
+    # redefine them. The execution mode is not set to real value.
+    HYBRID_top_level_path="${HYBRIDT_repository_top_level_path}"
+    HYBRID_execution_mode='test'
+    HYBRID_scan_strategy='LHS'
+    declare -gA HYBRID_optional_feature=([Add_spectators_from_IC]='TRUE')
 }
 
 function Source_Needed_Files()

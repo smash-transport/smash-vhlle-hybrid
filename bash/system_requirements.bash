@@ -77,6 +77,7 @@ function Check_System_Requirements()
     __static__Exit_If_Some_GNU_Requirement_Is_Missing
     __static__Exit_If_Minimum_Versions_Are_Not_Available
     __static__Exit_If_Some_Needed_Environment_Variable_Is_Missing
+    __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing
 }
 
 function Check_System_Requirements_And_Make_Report()
@@ -250,6 +251,59 @@ function __static__Exit_If_Some_Needed_Environment_Variable_Is_Missing()
     done
     if [[ ${errors} -ne 0 ]]; then
         Print_Fatal_And_Exit 'Please, set the above environment variable(s) to appropriate value(s).'
+    fi
+}
+
+function __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
+        HYBRID_execution_mode HYBRID_scan_strategy HYBRID_optional_feature[Add_spectators_from_IC]
+    local requirement errors=0 package_found version_found version_ok
+    for requirement in "${!HYBRID_python_requirements[@]}"; do
+        case "${requirement}" in
+            pyDOE*)
+                if [[ ${HYBRID_execution_mode} != 'prepare-scan' || ${HYBRID_scan_strategy} != 'LHS' ]]; then
+                    continue
+                fi
+                ;;
+            PyYAML*)
+                if [[ ${HYBRID_execution_mode} != 'do' ]] \
+                    || [[ ${HYBRID_optional_feature[Add_spectators_from_IC]} != 'TRUE' ]]; then
+                    continue
+                fi
+                ;;
+            *)
+                ;;
+        esac
+        Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[${requirement}]"
+        package_found=$(__static__Get_Field_In_System_Information_String "${requirement}" 0)
+        version_found=$(__static__Get_Field_In_System_Information_String "${requirement}" 1)
+        version_ok=$(__static__Get_Field_In_System_Information_String "${requirement}" 2)
+        if [[ "${package_found}" = '?' ]]; then
+            Print_Warning \
+                'Unable to check python ' --emph "${program}" ' requirement!' \
+                'Please ensure that it is satisfied.'
+        elif [[ "${package_found}" = '---' ]]; then
+            Print_Error \
+                'Python requirement ' --emph "${requirement}" \
+                ' not found, but needed in this run.'
+            ((errors++)) || true
+            continue
+        fi
+        if [[ ! ${version_found} =~ ${HYBRID_version_regex} ]]; then
+            Print_Internal_And_Exit \
+                'Unexpected version value ' --emph "${version_found}" ' found when checking for python '\
+                --emph "${requirement}" ' requirement.'
+        fi
+        if [[ "${version_ok}" = '---' ]]; then
+            Print_Error \
+                'Python requirement ' --emph "${requirement}" \
+                ' not met! Found version ' --emph "${version_found}" ' installed.'
+            ((errors++)) || true
+        fi
+    done
+    if [[ ${errors} -ne 0 ]]; then
+        Print_Fatal_And_Exit 'Please install the above python requirement(s).'
     fi
 }
 
