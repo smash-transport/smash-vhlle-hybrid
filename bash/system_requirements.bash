@@ -16,8 +16,11 @@
 
 function __static__Declare_System_Requirements()
 {
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty HYBRID_top_level_path
     if ! declare -p HYBRID_version_regex &> /dev/null; then
         readonly HYBRID_version_regex='[0-9](.[0-9]+)*'
+        readonly HYBRID_python_requirements_file="${HYBRID_top_level_path}/python/requirements.txt"
+        readonly HYBRID_python_test_requirement_tool="${HYBRID_top_level_path}/python/test_requirement.py"
         declare -rgA HYBRID_versions_requirements=(
             [awk]='4.1'
             [bash]='4.4'
@@ -38,6 +41,9 @@ function __static__Declare_System_Requirements()
         )
         declare -rga HYBRID_gnu_programs_required=(awk sed sort wc)
         declare -rga HYBRID_env_variables_required=(TERM)
+        declare -gA HYBRID_python_requirements
+        __static__Parse_Python_Requirements_Into_Global_Array
+        readonly -A HYBRID_python_requirements
     fi
 }
 
@@ -85,6 +91,32 @@ function Check_System_Requirements_And_Make_Report()
 
 #===================================================================================================
 # First level of Utility functions for functionality above
+
+function __static__Parse_Python_Requirements_Into_Global_Array()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty HYBRID_python_requirements_file
+    Ensure_That_Given_Variables_Are_Set HYBRID_python_requirements
+    local line comment
+    while read -r line; do
+        line=${line%#*}               # Remove in-line comments
+        line=${line##+([[:space:]])}  # Remove leading spaces
+        line=${line%%+([[:space:]])}  # Remove trailing spaces
+        if [[ ${line} =~ ^[[:space:]]*$ ]]; then
+            continue
+        fi
+        case "${line}" in
+            pyDOE* )
+                comment='Required in "prepare-scan" mode with LHS enabled'
+                ;;
+            PyYAML* )
+                comment='Required in "do" mode for afterburner with spectators'
+                ;;
+            * )
+                comment='Always required'
+        esac
+        HYBRID_python_requirements["${line}"]="${comment}"
+    done < "${HYBRID_python_requirements_file}"
+}
 
 function __static__Analyze_System_Properties()
 {
