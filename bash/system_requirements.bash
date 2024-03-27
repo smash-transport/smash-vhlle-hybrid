@@ -218,7 +218,8 @@ function __static__Exit_If_Some_GNU_Requirement_Is_Missing()
         fi
     done
     if [[ ${errors} -ne 0 ]]; then
-        Print_Fatal_And_Exit 'The GNU version of the above program(s) is needed.'
+        exit_code=${HYBRID_fatal_missing_requirement} Print_Fatal_And_Exit \
+            'The GNU version of the above program(s) is needed.'
     fi
 }
 
@@ -249,7 +250,8 @@ function __static__Exit_If_Minimum_Versions_Are_Not_Available()
         fi
     done
     if [[ ${errors} -ne 0 ]]; then
-        Print_Fatal_And_Exit 'Please install (maybe locally) the required versions of the above program(s).'
+        exit_code=${HYBRID_fatal_missing_requirement} Print_Fatal_And_Exit \
+            'Please install (maybe locally) the required versions of the above program(s).'
     fi
 }
 
@@ -265,7 +267,8 @@ function __static__Exit_If_Some_Needed_Environment_Variable_Is_Missing()
         fi
     done
     if [[ ${errors} -ne 0 ]]; then
-        Print_Fatal_And_Exit 'Please, set the above environment variable(s) to appropriate value(s).'
+        exit_code=${HYBRID_fatal_missing_requirement} Print_Fatal_And_Exit \
+            'Please, set the above environment variable(s) to appropriate value(s).'
     fi
 }
 
@@ -328,7 +331,8 @@ function __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing()
         fi
     done
     if [[ ${errors} -ne 0 ]]; then
-        Print_Fatal_And_Exit 'Please install the above Python requirement(s).'
+        exit_code=${HYBRID_fatal_missing_requirement} Print_Fatal_And_Exit \
+            'Please install the above Python requirement(s).'
     fi
 }
 
