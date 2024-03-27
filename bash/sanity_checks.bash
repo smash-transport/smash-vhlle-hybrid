@@ -10,7 +10,10 @@
 function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables()
 {
     __static__Perform_Command_Line_VS_Configuration_Consistency_Checks
+    # Note that the fine-grained Python requirement check has to be done after the type
+    # of parameter scan has been set, which is done done in the first function here.
     __static__Perform_Logic_Checks_Depending_On_Execution_Mode
+    __static__Exit_If_Some_Further_Needed_Python_Requirement_Is_Missing
     local key
     for key in "${HYBRID_valid_software_configuration_sections[@]}"; do
         # The software output directories are always ALL set, even if not all software is run. This
@@ -52,6 +55,18 @@ function Perform_Internal_Sanity_Checks()
 
 #===================================================================================================
 
+function __static__Perform_Command_Line_VS_Configuration_Consistency_Checks()
+{
+    Internally_Ensure_Given_Files_Exist "${HYBRID_configuration_file}"
+    if Has_YAML_String_Given_Key "$(< "${HYBRID_configuration_file}")" 'Hybrid_handler.Run_ID' \
+        && Element_In_Array_Equals_To '--id' "${!HYBRID_command_line_options_given_to_handler[@]}"; then
+        Print_Attention 'The run ID was specified both in the configuration file and as command line option.'
+        Print_Warning -l -- 'The value specified as ' --emph 'command line option' ' will be used!\n'
+        HYBRID_run_id="${HYBRID_command_line_options_given_to_handler['--id']}"
+    fi
+    readonly HYBRID_run_id
+}
+
 function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
 {
     case "${HYBRID_execution_mode}" in
@@ -85,16 +100,43 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
     esac
 }
 
-function __static__Perform_Command_Line_VS_Configuration_Consistency_Checks()
+function __static__Exit_If_Some_Further_Needed_Python_Requirement_Is_Missing()
 {
-    Internally_Ensure_Given_Files_Exist "${HYBRID_configuration_file}"
-    if Has_YAML_String_Given_Key "$(< "${HYBRID_configuration_file}")" 'Hybrid_handler.Run_ID' \
-        && Element_In_Array_Equals_To '--id' "${!HYBRID_command_line_options_given_to_handler[@]}"; then
-        Print_Attention 'The run ID was specified both in the configuration file and as command line option.'
-        Print_Warning -l -- 'The value specified as ' --emph 'command line option' ' will be used!\n'
-        HYBRID_run_id="${HYBRID_command_line_options_given_to_handler['--id']}"
+    echo "Begin ${FUNCNAME}"
+    if ! Is_Python_Requirement_Satisfied 'packaging' &> /dev/null; then
+        return # In this case we cannot do anything and the user should have already be warned
     fi
-    readonly HYBRID_run_id
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty HYBRID_python_requirements
+    local requirement unsatisfied_requirements=()
+    for requirement in "${!HYBRID_python_requirements[@]}"; do
+        case "${requirement}" in
+            pyDOE*)
+                if [[ ${HYBRID_execution_mode} = 'prepare-scan' ]] && [[ ${HYBRID_scan_strategy} = 'LHS' ]]; then
+                    if ! Is_Python_Requirement_Satisfied "${requirement}" &> /dev/null; then
+                        unsatisfied_requirements+=( "${requirement}" )
+                    fi
+                fi
+                ;;
+            PyYAML*)
+                if [[ ${HYBRID_execution_mode} = 'do' ]] \
+                    && Element_In_Array_Equals_To 'Afterburner' "${HYBRID_given_software_sections[@]}" \
+                    && [[ ${HYBRID_optional_feature[Add_spectators_from_IC]} = 'TRUE' ]]; then
+                    if ! Is_Python_Requirement_Satisfied "${requirement}" &> /dev/null; then
+                        unsatisfied_requirements+=( "${requirement}" )
+                    fi
+                fi
+                ;;
+            *) ;;
+        esac
+    done
+    echo "Middle ${FUNCNAME}: ${#unsatisfied_requirements[@]} "
+    if [[ ${#unsatisfied_requirements[@]} -gt 0 ]]; then
+        exit_code=${HYBRID_fatal_missing_requirement} Print_Fatal_And_Exit \
+            'The following Python requirements are not satisfied but needed for this run:\n' \
+            --emph "$(printf '  %s\n' "${unsatisfied_requirements[@]}")"
+            #'' '\nUnable to continue.'
+    fi
+    echo "End ${FUNCNAME}"
 }
 
 function __static__Ensure_Executable_Exists()

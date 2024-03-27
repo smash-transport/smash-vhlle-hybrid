@@ -77,7 +77,7 @@ function Check_System_Requirements()
     __static__Exit_If_Some_GNU_Requirement_Is_Missing
     __static__Exit_If_Minimum_Versions_Are_Not_Available
     __static__Exit_If_Some_Needed_Environment_Variable_Is_Missing
-    __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing
+    __static__Exit_If_Some_Always_Needed_Python_Requirement_Is_Missing
 }
 
 function Check_System_Requirements_And_Make_Report()
@@ -101,6 +101,18 @@ function Check_System_Requirements_And_Make_Report()
     __static__Print_Formatted_Binary_Report
     __static__Print_Python_Report_Title
     __static__Print_Report_Of_Requirements_With_Minimum_version 'Python'
+}
+
+function Is_Python_Requirement_Satisfied()
+{
+    local requirement name version_specifier
+    requirement=$1
+    # According to PEP-440 this should be the symbols that separate the name from the version
+    # specifiers -> see https://peps.python.org/pep-0440/#version-specifiers for more info.
+    name="${requirement%%[~<>=\!]*}"
+    name="${name%%*([[:space:]])}" # Trim possible trailing spaces
+    version_specifier="${requirement//${name}/}"
+    ${HYBRID_python_test_requirement_tool} "${name}" "${version_specifier}"
 }
 
 #===================================================================================================
@@ -129,7 +141,7 @@ function __static__Parse_Python_Requirements_Into_Global_Array()
                 comment='Required in "do" mode for afterburner with spectators'
                 ;;
             *)
-                comment='Always required'
+                comment='Always required' # This comment is used elsewhere -> rename with care!
                 ;;
         esac
         HYBRID_python_requirements["${line}"]="${comment}"
@@ -198,7 +210,7 @@ function __static__Analyze_System_Properties()
     done
     for program in "${!HYBRID_python_requirements[@]}"; do
         # Here the exit code of the requirement check is not relevant and we ignore it with '|| true'
-        system_information["${program}"]="$(__static__Is_Python_Requirement_Satisfied "${program}" || true)"
+        system_information["${program}"]="$(Is_Python_Requirement_Satisfied "${program}" || true)"
     done
     for program in "${!system_information[@]}"; do
         Print_Debug "${program} -> ${system_information[${program}]}"
@@ -272,9 +284,9 @@ function __static__Exit_If_Some_Needed_Environment_Variable_Is_Missing()
     fi
 }
 
-function __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing()
+function __static__Exit_If_Some_Always_Needed_Python_Requirement_Is_Missing()
 {
-    if ! __static__Is_Python_Requirement_Satisfied 'packaging' &> /dev/null; then
+    if ! Is_Python_Requirement_Satisfied 'packaging' &> /dev/null; then
         Print_Error \
             'The Python ' --emph 'packaging' ' module is required to check Python requirements.' \
             'Please install it e.g. via ' --emph 'pip install packaging' '.' \
@@ -285,23 +297,9 @@ function __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing()
         HYBRID_execution_mode HYBRID_scan_strategy HYBRID_optional_feature[Add_spectators_from_IC]
     local requirement errors=0 package_found version_found version_ok
     for requirement in "${!HYBRID_python_requirements[@]}"; do
-        case "${requirement}" in
-            packaging*)
-                continue # Never abort here, as this is just needed to check Python requirements
-                ;;
-            pyDOE*)
-                if [[ ${HYBRID_execution_mode} != 'prepare-scan' || ${HYBRID_scan_strategy} != 'LHS' ]]; then
-                    continue
-                fi
-                ;;
-            PyYAML*)
-                if [[ ${HYBRID_execution_mode} != 'do' ]] \
-                    || [[ ${HYBRID_optional_feature[Add_spectators_from_IC]} != 'TRUE' ]]; then
-                    continue
-                fi
-                ;;
-            *) ;;
-        esac
+        if [[ "${HYBRID_python_requirements[${requirement}]}" != 'Always required' ]]; then
+            continue
+        fi
         Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[${requirement}]"
         package_found=$(__static__Get_Field_In_System_Information_String "${requirement}" 0)
         version_found=$(__static__Get_Field_In_System_Information_String "${requirement}" 1)
@@ -512,18 +510,6 @@ function __static__Is_Gnu_Version_In_Use()
     else
         return 1
     fi
-}
-
-function __static__Is_Python_Requirement_Satisfied()
-{
-    local requirement name version_specifier
-    requirement=$1
-    # According to PEP-440 this should be the symbols that separate the name from the version
-    # specifiers -> see https://peps.python.org/pep-0440/#version-specifiers for more info.
-    name="${requirement%%[~<>=\!]*}"
-    name="${name%%*([[:space:]])}" # Trim possible trailing spaces
-    version_specifier="${requirement//${name}/}"
-    ${HYBRID_python_test_requirement_tool} "${name}" "${version_specifier}"
 }
 
 #===================================================================================================
