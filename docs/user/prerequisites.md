@@ -1,12 +1,30 @@
 # Simulation software
 
-| Software | Required version |
-| :------: | :--------------: |
+!!! info "Be aware about the meaning of the version requirements"
+    In the following we state a version requirement for the external software needed in the various phases.
+    Strictly speaking, this is not a requirement for the hybrid handler, which most likely will correctly work even if different versions of the physics software are used.
+    However, the hybrid handler makes use of some default configuration files for each software and this does rely on the version of the given software.
+    Said differently, if you e.g. need to use older versions of some software, expect to have to specify a different base configuration for that given software [:material-arrow-right-box: configuration keys documentation](configuration_file.md#Config-file).
+
+<div class="grid" markdown>
+<div class="center-table" markdown>
+
+| Physics Software | Suggested version |
+| :--------------: | :---------------: |
 | [SMASH](https://github.com/smash-transport/smash) | 3.1 or higher[^1] |
 | [vHLLE](https://github.com/yukarpenko/vhlle) | - |
 | [vHLLE parameters](https://github.com/yukarpenko/vhlle_params) | - |
 | [Hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | 1.0 or higher |
+
+</div>
+<div class="center-table" markdown>
+
+| Other software | Required version |
+| :------------: | :--------------: |
 | [Python](https://www.python.org) | 3.0  or higher |
+
+</div>
+</div>
 
 [^1]: Version `3.1` is only needed for the afterburner functionality. Otherwise version `1.8` is sufficient.
 

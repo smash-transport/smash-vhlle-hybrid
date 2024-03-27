@@ -64,6 +64,7 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
     Path to the executable file of the software to be used.
     This key is **required** for all specified stages.
 
+<i id="Config-file"></i>
 ???+ config-key "`Config_file`"
 
     Path to the software specific configuration file.
