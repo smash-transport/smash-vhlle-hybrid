@@ -95,12 +95,12 @@ function Check_System_Requirements_And_Make_Report()
         text_color='\e[38;5;38m' \
         default='\e[0m'
     __static__Analyze_System_Properties
-    __static__Print_Python_Report_Title
-    __static__Print_Report_Of_Requirements_With_Minimum_version 'Python'
     __static__Print_OS_Report_Title
     __static__Print_Report_Of_Requirements_With_Minimum_version 'OS'
     __static__Prepare_Binary_Report_Array
     __static__Print_Formatted_Binary_Report
+    __static__Print_Python_Report_Title
+    __static__Print_Report_Of_Requirements_With_Minimum_version 'Python'
 }
 
 #===================================================================================================
@@ -343,21 +343,23 @@ function __static__Print_OS_Report_Title()
 
 function __static__Print_Python_Report_Title()
 {
-    printf "\e[1m  Python requirements overview:\e[0m\n\n"
+    printf "\n\e[1m  Python requirements overview:\e[0m\n\n"
 }
 
 function __static__Print_Report_Of_Requirements_With_Minimum_version()
 {
-    local report_string program sorting_column
+    local report_string program sorting_column final_newline
     # NOTE: sort might not be available, hence put report in string and then optionally sort it
     report_string=''
     if [[ $1 = 'OS' ]]; then
         sorting_column=3
+        final_newline='\n'
         for program in "${!HYBRID_versions_requirements[@]}"; do
             report_string+=$(__static__Print_Requirement_Version_Report_Line "${program}")$'\n'
         done
     elif [[ $1 = 'Python' ]]; then
         sorting_column=1
+        final_newline=''
         for program in "${!HYBRID_python_requirements[@]}"; do
             report_string+=$(__static__Print_Python_Requirement_Report_Line "${program}")$'\n'
         done
@@ -371,7 +373,7 @@ function __static__Print_Report_Of_Requirements_With_Minimum_version()
     else
         printf '%s' "${report_string}"
     fi
-    printf '\n'
+    printf "${final_newline}"
 }
 
 function __static__Prepare_Binary_Report_Array()
