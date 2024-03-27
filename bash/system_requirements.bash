@@ -65,8 +65,8 @@ function Check_System_Requirements()
     #       whether the GNU version of the command is in use or not.
     #       The same array is used for environment variables and, in this case,
     #       the content is either 'OK' or '---'.
-    #       Finally, the same array is used for python requirements. The keys are the
-    #       python requirements and the values have one field only which is either
+    #       Finally, the same array is used for Python requirements. The keys are the
+    #       Python requirements and the values have one field only which is either
     #       'OK' or '---' or '?' or 'wrong'.
     #
     # ATTENTION: The code relies on the "fields" in system_information elements not
@@ -119,6 +119,9 @@ function __static__Parse_Python_Requirements_Into_Global_Array()
             continue
         fi
         case "${line}" in
+            packaging*)
+                comment='Required to check Python requirements'
+                ;;
             pyDOE*)
                 comment='Required in "prepare-scan" mode with LHS enabled'
                 ;;
@@ -194,7 +197,8 @@ function __static__Analyze_System_Properties()
         fi
     done
     for program in "${!HYBRID_python_requirements[@]}"; do
-        system_information["${program}"]="$(__static__Is_Python_Requirement_Satisfied "${program}")"
+        # Here the exit code of the requirement check is not relevant and we ignore it with '|| true'
+        system_information["${program}"]="$(__static__Is_Python_Requirement_Satisfied "${program}" || true)"
     done
     for program in "${!system_information[@]}"; do
         Print_Debug "${program} -> ${system_information[${program}]}"
@@ -267,11 +271,21 @@ function __static__Exit_If_Some_Needed_Environment_Variable_Is_Missing()
 
 function __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing()
 {
+    if ! __static__Is_Python_Requirement_Satisfied 'packaging' &> /dev/null; then
+        Print_Error \
+            'The Python ' --emph 'packaging' ' module is required to check Python requirements.' \
+            'Please install it e.g. via ' --emph 'pip install packaging' '.' \
+            'Then the handler will be able to check Python requirements.' \
+            'Skipping requirements check might lead to unexpected behavior or errors.' ''
+    fi
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
         HYBRID_execution_mode HYBRID_scan_strategy HYBRID_optional_feature[Add_spectators_from_IC]
     local requirement errors=0 package_found version_found version_ok
     for requirement in "${!HYBRID_python_requirements[@]}"; do
         case "${requirement}" in
+            packaging*)
+                continue # Never abort here, as this is just needed to check Python requirements
+                ;;
             pyDOE*)
                 if [[ ${HYBRID_execution_mode} != 'prepare-scan' || ${HYBRID_scan_strategy} != 'LHS' ]]; then
                     continue
@@ -291,7 +305,7 @@ function __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing()
         version_ok=$(__static__Get_Field_In_System_Information_String "${requirement}" 2)
         if [[ "${package_found}" = '?' ]]; then
             Print_Warning \
-                'Unable to check python ' --emph "${requirement}" ' requirement!' \
+                'Unable to check Python ' --emph "${requirement}" ' requirement!' \
                 'Please ensure that it is satisfied.'
             continue
         elif [[ "${package_found}" = '---' ]]; then
@@ -303,7 +317,7 @@ function __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing()
         fi
         if [[ ! ${version_found} =~ ${HYBRID_version_regex} ]]; then
             Print_Internal_And_Exit \
-                'Unexpected version value ' --emph "${version_found}" ' found when checking for python ' \
+                'Unexpected version value ' --emph "${version_found}" ' found when checking for Python ' \
                 --emph "${requirement}" ' requirement.'
         fi
         if [[ "${version_ok}" = '---' ]]; then
@@ -314,7 +328,7 @@ function __static__Exit_If_Some_Needed_Python_Requirement_Is_Missing()
         fi
     done
     if [[ ${errors} -ne 0 ]]; then
-        Print_Fatal_And_Exit 'Please install the above python requirement(s).'
+        Print_Fatal_And_Exit 'Please install the above Python requirement(s).'
     fi
 }
 
@@ -503,8 +517,7 @@ function __static__Is_Python_Requirement_Satisfied()
     name="${requirement%%[~<>=\!]*}"
     name="${name%%*([[:space:]])}" # Trim possible trailing spaces
     version_specifier="${requirement//${name}/}"
-    # Ignore exit code from the tool, as not needed here
-    ${HYBRID_python_test_requirement_tool} "${name}" "${version_specifier}" || return 0
+    ${HYBRID_python_test_requirement_tool} "${name}" "${version_specifier}"
 }
 
 #===================================================================================================

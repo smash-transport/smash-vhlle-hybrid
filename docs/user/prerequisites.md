@@ -43,12 +43,16 @@ To check out what is required and what is available on your system, simply run t
 
 ## Python requirements
 
-Few standalone python scripts are used for dedicated tasks and this implies that the hybrid handler will terminate with an error if some of these requirements are missing.
+!!! warning "You need the Python `packaging` module installed!"
+    The handler uses Python itself to check Python requirements and it needs to use the `packaging` module to do so.
+    Make sure to have it available before starting, otherwise the handler will produce a non-fatal error mentioning this aspect.
+
+Few standalone Python scripts are used for dedicated tasks and this implies that the hybrid handler will terminate with an error if some of these requirements are missing.
 However, since not all requirements are *always* needed, the hybrid handler will only check for some of them on a per-run basis.
-In the system overview obtained by running the `Hybrid-handler` executable without options, also python requirements are listed, each with a short description about when such a requirement is needed.
+In the system overview obtained by running the `Hybrid-handler` executable without options, also Python requirements are listed, each with a short description about when such a requirement is needed.
 
 !!! question "I simply want to install all requirements. What should I do?"
-    In the :file_folder: **python** folder, you'll find a :material-file: *requirements.txt* file which you can use to set up a dedicated python [virtual environment](https://docs.python.org/3/tutorial/venv.html).
+    In the :file_folder: **python** folder, you'll find a :material-file: *requirements.txt* file which you can use to set up a dedicated Python [virtual environment](https://docs.python.org/3/tutorial/venv.html).
     Alternatively, although discouraged, you can simply run (from the repository top-level)
     ```
     pip install --user -r python/requirements.txt

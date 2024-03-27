@@ -42,15 +42,19 @@ import sys
 import os
 import subprocess
 
-try:
-    from packaging.requirements import Requirement
-except:
-    print('?|---|---')
-    exit(3)
-
 package_name = sys.argv[1]
 version_specifier = sys.argv[2]
 requirement = package_name + version_specifier
+
+try:
+    from packaging.requirements import Requirement
+except:
+    if package_name == 'packaging':
+        print('---|---|---')
+        exit(1)
+    else:
+        print('?|---|---')
+        exit(3)
 
 if os.environ.get('HYBRID_TEST_MODE') is not None:
     # Mock pip, useful in handler unit tests
