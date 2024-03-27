@@ -10,6 +10,7 @@
 function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables()
 {
     __static__Perform_Command_Line_VS_Configuration_Consistency_Checks
+    __static__Perform_Logic_Checks_Depending_On_Execution_Mode
     local key
     for key in "${HYBRID_valid_software_configuration_sections[@]}"; do
         # The software output directories are always ALL set, even if not all software is run. This
@@ -23,7 +24,6 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
     done
     __static__Set_Software_Input_Data_File_If_Not_Set_By_User 'Spectators'
     __static__Set_Global_Variables_As_Readonly
-    __static__Perform_Logic_Checks_Depending_On_Execution_Mode
 }
 
 # This "static" function is put here and not below "non static" ones as it should be often updated
@@ -50,6 +50,40 @@ function Perform_Internal_Sanity_Checks()
         "${HYBRID_software_base_config_file[@]}"
 }
 
+#===================================================================================================
+
+function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
+{
+    case "${HYBRID_execution_mode}" in
+        do)
+            local key
+            for key in "${!HYBRID_scan_parameters[@]}"; do
+                if [[ "${HYBRID_scan_parameters["${key}"]}" != '' ]]; then
+                    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                        'Configuration key ' --emph 'Scan_parameters' ' can ONLY be specified in ' \
+                        --emph 'parameter-scan' ' execution mode.'
+                fi
+            done
+            ;;
+        prepare-scan)
+            if [[ "${HYBRID_number_of_samples}" -eq ${HYBRID_default_number_of_samples} ]]; then
+                readonly HYBRID_scan_strategy='Combinations'
+            elif [[ ! "${HYBRID_number_of_samples}" =~ ^[1-9][0-9]*$ ]] \
+                || [[ "${HYBRID_number_of_samples}" -eq 1 ]]; then
+                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                    'The number of samples for Latin Hypercube Sampling scan ' \
+                    'has to be ' --emph 'an integer greater than 1' '.'
+            else
+                readonly HYBRID_scan_strategy='LHS'
+            fi
+            readonly HYBRID_number_of_samples
+            ;;
+        help) ;; # This is the default mode which is set in tests -> do nothing, but catch it
+        *)
+            Print_Internal_And_Exit 'Unknown execution mode passed to ' --emph "${FUNCNAME}" ' function.'
+            ;;
+    esac
+}
 
 function __static__Perform_Command_Line_VS_Configuration_Consistency_Checks()
 {
@@ -141,39 +175,6 @@ function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
             fi
         fi
     fi
-}
-
-function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
-{
-    case "${HYBRID_execution_mode}" in
-        do)
-            local key
-            for key in "${!HYBRID_scan_parameters[@]}"; do
-                if [[ "${HYBRID_scan_parameters["${key}"]}" != '' ]]; then
-                    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                        'Configuration key ' --emph 'Scan_parameters' ' can ONLY be specified in ' \
-                        --emph 'parameter-scan' ' execution mode.'
-                fi
-            done
-            ;;
-        prepare-scan)
-            if [[ ! "${HYBRID_number_of_samples}" =~ ^[1-9][0-9]*$ ]] \
-                || [[ "${HYBRID_number_of_samples}" -eq 1 ]]; then
-                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                    'The number of samples for Latin Hypercube Sampling scan ' \
-                    'has to be ' --emph 'an integer greater than 1' '.'
-            elif [[ "${HYBRID_number_of_samples}" -eq 0 ]]; then
-                readonly HYBRID_scan_strategy='Combinations'
-            else
-                readonly HYBRID_scan_strategy='LHS'
-                readonly HYBRID_number_of_samples
-            fi
-            ;;
-        help) ;; # This is the default mode which is set in tests -> do nothing, but catch it
-        *)
-            Print_Internal_And_Exit 'Unknown execution mode passed to ' --emph "${FUNCNAME}" ' function.'
-            ;;
-    esac
 }
 
 Make_Functions_Defined_In_This_File_Readonly
