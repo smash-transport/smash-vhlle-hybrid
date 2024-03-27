@@ -3,4 +3,5 @@ spectra_dir      =DEFAULT=
 number_of_events 1000
 weakContribution 0
 shear            1
+bulk             0
 ecrit            0.5
