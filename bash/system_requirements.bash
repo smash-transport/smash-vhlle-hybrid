@@ -292,6 +292,7 @@ function __static__Exit_If_Some_Always_Needed_Python_Requirement_Is_Missing()
             'Please install it e.g. via ' --emph 'pip install packaging' '.' \
             'Then the handler will be able to check Python requirements.' \
             'Skipping requirements check might lead to unexpected behavior or errors.' ''
+        return
     fi
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
         HYBRID_execution_mode HYBRID_scan_strategy HYBRID_optional_feature[Add_spectators_from_IC]

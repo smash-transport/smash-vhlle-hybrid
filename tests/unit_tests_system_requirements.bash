@@ -52,6 +52,17 @@ function __static__Inhibit_Commands_Version()
     }
 }
 
+function Make_Test_Preliminary_Operations__system-requirements()
+{
+    local file_to_be_sourced list_of_files
+    list_of_files=(
+        'sanity_checks.bash'
+    )
+    for file_to_be_sourced in "${list_of_files[@]}"; do
+        source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
+    done
+}
+
 function Unit_Test__system-requirements()
 {
     # This environment variable makes the python check requirement tool mock pip and
@@ -77,9 +88,11 @@ function Unit_Test__system-requirements()
         Print_Error "Check system requirements making report of good system failed."
         return 1
     fi
-    # Make "missing" python requirement needed changing execution mode
-    HYBRID_execution_mode='do'
-    Call_Codebase_Function_In_Subshell Check_System_Requirements &> /dev/null
+    # Make "missing" python requirement needed changing global variables
+    HYBRID_execution_mode='prepare-scan'
+    HYBRID_scan_strategy='LHS'
+    Call_Codebase_Function_In_Subshell \
+        __static__Exit_If_Some_Further_Needed_Python_Requirement_Is_Missing &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error "Check system requirements of system without needed python succeeded."
         return 1
