@@ -102,7 +102,6 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
 
 function __static__Exit_If_Some_Further_Needed_Python_Requirement_Is_Missing()
 {
-    echo "Begin ${FUNCNAME}"
     if ! Is_Python_Requirement_Satisfied 'packaging' &> /dev/null; then
         return # In this case we cannot do anything and the user should have already be warned
     fi
@@ -113,7 +112,7 @@ function __static__Exit_If_Some_Further_Needed_Python_Requirement_Is_Missing()
             pyDOE*)
                 if [[ ${HYBRID_execution_mode} = 'prepare-scan' ]] && [[ ${HYBRID_scan_strategy} = 'LHS' ]]; then
                     if ! Is_Python_Requirement_Satisfied "${requirement}" &> /dev/null; then
-                        unsatisfied_requirements+=( "${requirement}" )
+                        unsatisfied_requirements+=("${requirement}")
                     fi
                 fi
                 ;;
@@ -122,21 +121,19 @@ function __static__Exit_If_Some_Further_Needed_Python_Requirement_Is_Missing()
                     && Element_In_Array_Equals_To 'Afterburner' "${HYBRID_given_software_sections[@]}" \
                     && [[ ${HYBRID_optional_feature[Add_spectators_from_IC]} = 'TRUE' ]]; then
                     if ! Is_Python_Requirement_Satisfied "${requirement}" &> /dev/null; then
-                        unsatisfied_requirements+=( "${requirement}" )
+                        unsatisfied_requirements+=("${requirement}")
                     fi
                 fi
                 ;;
             *) ;;
         esac
     done
-    echo "Middle ${FUNCNAME}: ${#unsatisfied_requirements[@]} "
     if [[ ${#unsatisfied_requirements[@]} -gt 0 ]]; then
         exit_code=${HYBRID_fatal_missing_requirement} Print_Fatal_And_Exit \
             'The following Python requirements are not satisfied but needed for this run:\n' \
-            --emph "$(printf '  %s\n' "${unsatisfied_requirements[@]}")"
-            #'' '\nUnable to continue.'
+            --emph "$(printf '  %s\n' "${unsatisfied_requirements[@]}")" \
+            '' '\nUnable to continue.'
     fi
-    echo "End ${FUNCNAME}"
 }
 
 function __static__Ensure_Executable_Exists()
