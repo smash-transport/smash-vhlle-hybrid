@@ -45,7 +45,7 @@ function Run_Software_Sampler()
         "${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}"
 }
 
-#===============================================================================
+#===================================================================================================
 
 function __static__Validate_Sampler_Config_File()
 {
@@ -80,7 +80,7 @@ function __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File()
     fi
 }
 
-#===============================================================================
+#===================================================================================================
 
 function __static__Is_Sampler_Config_Valid()
 {
