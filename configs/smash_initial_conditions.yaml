@@ -11,7 +11,7 @@ General:
 
 Output:
     Initial_Conditions:
-      Format: ["ASCII", "Binary", "Oscar2013"]
+      Format: ["ASCII","Oscar2013"]
       Extended: True
 
 
