@@ -112,6 +112,7 @@ function __static__Is_Sampler_Config_Valid()
         'rescatter'
         'weakContribution'
         'shear'
+        'bulk'
         'ecrit'
         'Nbins'
         'q_max'
