@@ -9,7 +9,7 @@
 
 function Prepare_Software_Input_File_Afterburner()
 {
-    Ensure_Consistency_Of_Afterburner_Input
+    __static__Ensure_Consistency_Of_Afterburner_Input
     Create_Output_Directory_For 'Afterburner'
     Ensure_Given_Files_Do_Not_Exist "${HYBRID_software_configuration_file[Afterburner]}"
     Ensure_Given_Files_Exist "${HYBRID_software_base_config_file[Afterburner]}"
@@ -46,7 +46,33 @@ function Run_Software_Afterburner()
         &>> "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_terminal_output[Afterburner]}"
 }
 
-#===============================================================================
+#===================================================================================================
+
+function __static__Ensure_Consistency_Of_Afterburner_Input()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_input_file[Afterburner]'
+    if Has_YAML_String_Given_Key \
+        "$(< "${HYBRID_configuration_file}")" 'Afterburner' 'Software_keys' 'Modi' 'List' 'Filename'; then
+        local given_filename
+        given_filename=$(Read_From_YAML_String_Given_Key "$(< "${HYBRID_configuration_file}")" 'Afterburner' \
+            'Software_keys' 'Modi' 'List' 'Filename')
+        if [[ "${given_filename}" != "${HYBRID_software_input_file[Afterburner]}" ]]; then
+            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                'The Afterburner input particle list has to be modified via the ' \
+                --emph 'Input_file' ' key,' 'not the ' --emph 'Software_keys' \
+                ' specifying the input list filename!'
+        fi
+    fi
+    if Has_YAML_String_Given_Key \
+        "$(< "${HYBRID_configuration_file}")" 'Afterburner' 'Software_keys' 'Modi' 'List' 'Shift_ID' \
+        || Has_YAML_String_Given_Key \
+            "$(< "${HYBRID_configuration_file}")" 'Afterburner' 'Software_keys' 'Modi' 'List' 'File_Prefix'; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+            'The Afterburner input particle list has to be modified via the ' \
+            --emph 'Input_file' ' key,' 'not the ' --emph 'Software_keys' \
+            ' specifying the input list prefix and ID!'
+    fi
+}
 
 function __static__Create_Sampled_Particles_List_File_Or_Symbolic_Link_With_Or_Without_Spectators()
 {
