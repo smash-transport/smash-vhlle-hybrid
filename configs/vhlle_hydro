@@ -1,9 +1,11 @@
 eosType       1
 eosTypeHadron 1
 
-etaS      0.2     # to be updated
-zetaS     0.0
-e_crit    0.5
+etaS       0.2     # to be updated
+etaSparam  0     
+zetaS      0.0
+zetaSparam 0
+e_crit     0.5
 
 nx        161
 ny        161
