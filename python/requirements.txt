@@ -4,7 +4,7 @@
 # code is also used hard-coded via 'python -c' in some places in Bash code and
 # some of the following requirements are a direct consequence of that.
 
-packaging
+packaging>=17.0
 numpy~=1.11
 PyYAML~=6.0.1
 pyDOE~=0.3.8

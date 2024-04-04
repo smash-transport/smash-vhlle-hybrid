@@ -28,7 +28,7 @@ It will speed up the code review and avoid comments about codebase notation.
     The same applies to python requirements, which not only need to be added to the :material-file: *python/requirements.txt* file.
     Unless they are always required, you need to
 
-      1. add a comment to the Bash code about under which condition the new requirements are needed (this will be displayed to the user);
+      1. add a comment about under which condition the new requirements are needed to the Bash code where system requirements are checked (this will be displayed to the user);
       2. implement the condition to limit the check to the runs which need such requirements (this has been done where the sanity checks are performed);
       3. ensure tests pass (they might require setting some more global variables in the `tests_runner`, depending on the new conditions).
 
