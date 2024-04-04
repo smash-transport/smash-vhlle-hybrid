@@ -122,8 +122,9 @@ function __static__Check_If_Afterburner_Config_Consistent_With_Sampler
             PrintAttention "The number of events sampled is not equal to" \
                 "the number of events set to run in the afterburner." \
                 "Nevents in the afterburner is reset!"
-            HYBRID_software_new_input_keys=( [Afterburner]=$'General:\n  Nevents: '"${events_sampler}")
-            Replace_Keys_In_Configuration_File_If_Needed_For 'Afterburner'
+            Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
+                'YAML' "${config_afterburner}" \
+                "$(printf "%s:\n %s: %s\n" 'General' 'Nevents' "${events_sampler}")"
         fi
     fi
 }
