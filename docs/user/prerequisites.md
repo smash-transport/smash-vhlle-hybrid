@@ -1,14 +1,30 @@
-
-
 # Simulation software
 
-| Software | Required version |
-| :------: | :--------------: |
+!!! info "Be aware about the meaning of the version requirements"
+    In the following we state a version requirement for the external software needed in the various phases.
+    Strictly speaking, this is not a requirement for the hybrid handler, which most likely will correctly work even if different versions of the physics software are used.
+    However, the hybrid handler makes use of some default configuration files for each software and this does rely on the version of the given software.
+    Said differently, if you e.g. need to use older versions of some software, expect to have to specify a different base configuration for that given software [:material-arrow-right-box: configuration keys documentation](configuration_file.md#Config-file).
+
+<div class="grid" markdown>
+<div class="center-table" markdown>
+
+| Physics Software | Suggested version |
+| :--------------: | :---------------: |
 | [SMASH](https://github.com/smash-transport/smash) | 3.1 or higher[^1] |
 | [vHLLE](https://github.com/yukarpenko/vhlle) | - |
 | [vHLLE parameters](https://github.com/yukarpenko/vhlle_params) | - |
 | [Hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | 1.0 or higher |
+
+</div>
+<div class="center-table" markdown>
+
+| Other software | Required version |
+| :------------: | :--------------: |
 | [Python](https://www.python.org) | 3.0  or higher |
+
+</div>
+</div>
 
 [^1]: Version `3.1` is only needed for the afterburner functionality. Otherwise version `1.8` is sufficient.
 
@@ -21,7 +37,7 @@ Instructions on how to compile or install the software above can be found at the
 
 ---
 
-# Unix system requirements
+## Unix system requirements
 
 The hybrid handler makes use of many tools which are usually installed on Unix systems.
 For some of them a minimum version is required and for the others their availability is enough.
@@ -42,3 +58,21 @@ To check out what is required and what is available on your system, simply run t
     Unfortunately, there is no standard way to figure out which implementation a command offers.
     However, all GNU commands support the `--version` command line option and their output contains the `GNU` word.
     This allows to understand if the needed GNU version is available or if the commands refers to something else.
+
+## Python requirements
+
+!!! warning "You need the Python `packaging` module installed!"
+    The handler uses Python itself to check Python requirements and it needs to use the `packaging` module to do so.
+    Make sure to have it available before starting, otherwise the handler will produce a non-fatal error mentioning this aspect.
+
+Few standalone Python scripts are used for dedicated tasks and this implies that the hybrid handler will terminate with an error if some of these requirements are missing.
+However, since not all requirements are *always* needed, the hybrid handler will only check for some of them on a per-run basis.
+In the system overview obtained by running the `Hybrid-handler` executable without options, also Python requirements are listed, each with a short description about when such a requirement is needed.
+
+!!! question "I simply want to install all requirements. What should I do?"
+    In the :file_folder: **python** folder, you'll find a :material-file: *requirements.txt* file which you can use to set up a dedicated Python [virtual environment](https://docs.python.org/3/tutorial/venv.html).
+    Alternatively, although discouraged, you can simply run (from the repository top-level)
+    ```
+    pip install --user -r python/requirements.txt
+    ```
+    to install the requirements globally for your user.

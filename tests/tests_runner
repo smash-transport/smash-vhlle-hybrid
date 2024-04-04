@@ -31,7 +31,7 @@ function Main()
     Source_Needed_Files
     Print_Helper_And_Exit_If_Requested "$@"
     Parse_Tests_Suite_Parameter_And_Source_Specific_Code "${1-}"
-    Check_System_Requirements
+    Check_System_Requirements_For_Tests
     Call_Through_Interface 'Define_Available_Tests'
     Parse_Tests_Command_Line_Options "${@:2}"
     Prepare_Test_Environment
@@ -78,6 +78,13 @@ function Define_Tests_Global_Variables()
     HYBRIDT_tests_failed=0
     HYBRIDT_which_tests_failed=()
     HYBRIDT_tests_to_be_run=()
+    # These handler global variables are needed for checking system requirements and we define them
+    # here as not global as some tests might source the handler global variables definition and
+    # redefine them. The execution mode is not set to real value.
+    HYBRID_top_level_path="${HYBRIDT_repository_top_level_path}"
+    HYBRID_execution_mode='test'
+    HYBRID_scan_strategy='LHS'
+    declare -gA HYBRID_optional_feature=([Add_spectators_from_IC]='TRUE')
 }
 
 function Source_Needed_Files()
@@ -101,6 +108,15 @@ function Print_Helper_And_Exit_If_Requested()
 {
     if Element_In_Array_Matches '^-(h|-help)$' "$@"; then
         Parse_Tests_Command_Line_Options '--help'
+    fi
+}
+
+function Check_System_Requirements_For_Tests()
+{
+    Check_System_Requirements
+    if ! Is_Python_Requirement_Satisfied 'packaging' &> /dev/null; then
+        exit_code=${HYBRID_fatal_missing_requirement} Print_Fatal_And_Exit \
+            'Python ' --emph 'packaging' ' module needed to run tests.'
     fi
 }
 

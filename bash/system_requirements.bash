@@ -16,8 +16,11 @@
 
 function __static__Declare_System_Requirements()
 {
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty HYBRID_top_level_path
     if ! declare -p HYBRID_version_regex &> /dev/null; then
         readonly HYBRID_version_regex='[0-9](.[0-9]+)*'
+        readonly HYBRID_python_requirements_file="${HYBRID_top_level_path}/python/requirements.txt"
+        readonly HYBRID_python_test_requirement_tool="${HYBRID_top_level_path}/python/test_requirement.py"
         declare -rgA HYBRID_versions_requirements=(
             [awk]='4.1'
             [bash]='4.4'
@@ -38,6 +41,9 @@ function __static__Declare_System_Requirements()
         )
         declare -rga HYBRID_gnu_programs_required=(awk sed sort wc)
         declare -rga HYBRID_env_variables_required=(TERM)
+        declare -gA HYBRID_python_requirements
+        __static__Parse_Python_Requirements_Into_Global_Array
+        readonly -A HYBRID_python_requirements
     fi
 }
 
@@ -57,8 +63,11 @@ function Check_System_Requirements()
     #       the key is prefixed by 'GNU-' and the content has a first "field" that is
     #       'found' or '---' and a second one that is either 'OK' or '---' to indicate
     #       whether the GNU version of the command is in use or not.
-    #       Finally, the same array is used for environment variables and, in this case,
+    #       The same array is used for environment variables and, in this case,
     #       the content is either 'OK' or '---'.
+    #       Finally, the same array is used for Python requirements. The keys are the
+    #       Python requirements and the values have one field only which is either
+    #       'OK' or '---' or '?' or 'wrong'.
     #
     # ATTENTION: The code relies on the "fields" in system_information elements not
     #            containing spaces. This assumption might be dropped, but that array
@@ -68,6 +77,7 @@ function Check_System_Requirements()
     __static__Exit_If_Some_GNU_Requirement_Is_Missing
     __static__Exit_If_Minimum_Versions_Are_Not_Available
     __static__Exit_If_Some_Needed_Environment_Variable_Is_Missing
+    __static__Exit_If_Some_Always_Needed_Python_Requirement_Is_Missing
 }
 
 function Check_System_Requirements_And_Make_Report()
@@ -76,15 +86,67 @@ function Check_System_Requirements_And_Make_Report()
     local system_report=()
     local -r single_field_length=18 # This variable is used to prepare the report correctly formatted
     declare -A system_information   # Same use of this variable as in 'Check_System_Requirements' function
+    # Define colors for all reports
+    local -r \
+        emph_color='\e[96m' \
+        red='\e[91m' \
+        green='\e[92m' \
+        yellow='\e[93m' \
+        text_color='\e[38;5;38m' \
+        default='\e[0m'
     __static__Analyze_System_Properties
-    __static__Print_Report_Title
-    __static__Print_Report_Of_Programs_With_Minimum_version
+    __static__Print_OS_Report_Title
+    __static__Print_Report_Of_Requirements_With_Minimum_version 'OS'
     __static__Prepare_Binary_Report_Array
     __static__Print_Formatted_Binary_Report
+    __static__Print_Python_Report_Title
+    __static__Print_Report_Of_Requirements_With_Minimum_version 'Python'
+}
+
+function Is_Python_Requirement_Satisfied()
+{
+    local requirement name version_specifier
+    requirement=$1
+    # According to PEP-440 this should be the symbols that separate the name from the version
+    # specifiers -> see https://peps.python.org/pep-0440/#version-specifiers for more info.
+    name="${requirement%%[~<>=\!]*}"
+    name="${name%%*([[:space:]])}" # Trim possible trailing spaces
+    version_specifier="${requirement//${name}/}"
+    ${HYBRID_python_test_requirement_tool} "${name}" "${version_specifier}"
 }
 
 #===================================================================================================
 # First level of Utility functions for functionality above
+
+function __static__Parse_Python_Requirements_Into_Global_Array()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty HYBRID_python_requirements_file
+    Ensure_That_Given_Variables_Are_Set HYBRID_python_requirements
+    local line comment
+    while read -r line; do
+        line=${line%#*}              # Remove in-line comments
+        line=${line##+([[:space:]])} # Remove leading spaces
+        line=${line%%+([[:space:]])} # Remove trailing spaces
+        if [[ ${line} =~ ^[[:space:]]*$ ]]; then
+            continue
+        fi
+        case "${line}" in
+            packaging*)
+                comment='Required to check Python requirements'
+                ;;
+            pyDOE*)
+                comment='Required in "prepare-scan" mode with LHS enabled'
+                ;;
+            PyYAML*)
+                comment='Required in "do" mode for afterburner with spectators'
+                ;;
+            *)
+                comment='Always required' # This comment is used elsewhere -> rename with care!
+                ;;
+        esac
+        HYBRID_python_requirements["${line}"]="${comment}"
+    done < "${HYBRID_python_requirements_file}"
+}
 
 function __static__Analyze_System_Properties()
 {
@@ -146,6 +208,10 @@ function __static__Analyze_System_Properties()
             system_information["${name}"]='---'
         fi
     done
+    for program in "${!HYBRID_python_requirements[@]}"; do
+        # Here the exit code of the requirement check is not relevant and we ignore it with '|| true'
+        system_information["${program}"]="$(Is_Python_Requirement_Satisfied "${program}" || true)"
+    done
     for program in "${!system_information[@]}"; do
         Print_Debug "${program} -> ${system_information[${program}]}"
     done
@@ -164,7 +230,8 @@ function __static__Exit_If_Some_GNU_Requirement_Is_Missing()
         fi
     done
     if [[ ${errors} -ne 0 ]]; then
-        Print_Fatal_And_Exit 'The GNU version of the above program(s) is needed.'
+        exit_code=${HYBRID_fatal_missing_requirement} Print_Fatal_And_Exit \
+            'The GNU version of the above program(s) is needed.'
     fi
 }
 
@@ -195,7 +262,8 @@ function __static__Exit_If_Minimum_Versions_Are_Not_Available()
         fi
     done
     if [[ ${errors} -ne 0 ]]; then
-        Print_Fatal_And_Exit 'Please install (maybe locally) the required versions of the above program(s).'
+        exit_code=${HYBRID_fatal_missing_requirement} Print_Fatal_And_Exit \
+            'Please install (maybe locally) the required versions of the above program(s).'
     fi
 }
 
@@ -211,31 +279,101 @@ function __static__Exit_If_Some_Needed_Environment_Variable_Is_Missing()
         fi
     done
     if [[ ${errors} -ne 0 ]]; then
-        Print_Fatal_And_Exit 'Please, set the above environment variable(s) to appropriate value(s).'
+        exit_code=${HYBRID_fatal_missing_requirement} Print_Fatal_And_Exit \
+            'Please, set the above environment variable(s) to appropriate value(s).'
     fi
 }
 
-function __static__Print_Report_Title()
+function __static__Exit_If_Some_Always_Needed_Python_Requirement_Is_Missing()
+{
+    if ! Is_Python_Requirement_Satisfied 'packaging' &> /dev/null; then
+        Print_Error \
+            'The Python ' --emph 'packaging' ' module is required to check Python requirements.' \
+            'Please install it e.g. via ' --emph 'pip install packaging' '.' \
+            'Then the handler will be able to check Python requirements.' \
+            'Skipping requirements check might lead to unexpected behavior or errors.' ''
+        return
+    fi
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
+        HYBRID_execution_mode HYBRID_scan_strategy HYBRID_optional_feature[Add_spectators_from_IC]
+    local requirement errors=0 package_found version_found version_ok
+    for requirement in "${!HYBRID_python_requirements[@]}"; do
+        if [[ "${HYBRID_python_requirements[${requirement}]}" != 'Always required' ]]; then
+            continue
+        fi
+        Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[${requirement}]"
+        package_found=$(__static__Get_Field_In_System_Information_String "${requirement}" 0)
+        version_found=$(__static__Get_Field_In_System_Information_String "${requirement}" 1)
+        version_ok=$(__static__Get_Field_In_System_Information_String "${requirement}" 2)
+        if [[ "${package_found}" = '?' ]]; then
+            Print_Warning \
+                'Unable to check Python ' --emph "${requirement}" ' requirement!' \
+                'Please ensure that it is satisfied.'
+            continue
+        elif [[ "${package_found}" = '---' ]]; then
+            Print_Error \
+                'Python requirement ' --emph "${requirement}" \
+                ' not found, but needed in this run.'
+            ((errors++)) || true
+            continue
+        fi
+        if [[ ! ${version_found} =~ ${HYBRID_version_regex} ]]; then
+            Print_Internal_And_Exit \
+                'Unexpected version value ' --emph "${version_found}" ' found when checking for Python ' \
+                --emph "${requirement}" ' requirement.'
+        fi
+        if [[ "${version_ok}" = '---' ]]; then
+            Print_Error \
+                'Python requirement ' --emph "${requirement}" \
+                ' not met! Found version ' --emph "${version_found}" ' installed.'
+            ((errors++)) || true
+        fi
+    done
+    if [[ ${errors} -ne 0 ]]; then
+        exit_code=${HYBRID_fatal_missing_requirement} Print_Fatal_And_Exit \
+            'Please install the above Python requirement(s).'
+    fi
+}
+
+function __static__Print_OS_Report_Title()
 {
     printf "\e[1m  System requirements overview:\e[0m\n\n"
 }
 
-function __static__Print_Report_Of_Programs_With_Minimum_version()
+function __static__Print_Python_Report_Title()
 {
-    local report_string program
+    printf "\n\e[1m  Python requirements overview:\e[0m\n\n"
+}
+
+function __static__Print_Report_Of_Requirements_With_Minimum_version()
+{
+    local report_string program sorting_column final_newline
     # NOTE: sort might not be available, hence put report in string and then optionally sort it
     report_string=''
-    for program in "${!HYBRID_versions_requirements[@]}"; do
-        report_string+=$(__static__Print_Requirement_Version_Report_Line "${program}")$'\n'
-    done
+    if [[ $1 = 'OS' ]]; then
+        sorting_column=3
+        final_newline='\n'
+        for program in "${!HYBRID_versions_requirements[@]}"; do
+            report_string+=$(__static__Print_Requirement_Version_Report_Line "${program}")$'\n'
+        done
+    elif [[ $1 = 'Python' ]]; then
+        sorting_column=2
+        final_newline=''
+        for program in "${!HYBRID_python_requirements[@]}"; do
+            report_string+=$(__static__Print_Python_Requirement_Report_Line "${program}")$'\n'
+        done
+    else
+        Print_Internal_And_Exit 'Unexpected call of ' --emph "${FUNCNAME}" ' function.'
+    fi
     if hash sort &> /dev/null; then
-        # The third column is that containing the program name; remember that the
-        # 'here-string' adds a newline to the string when feeding it into the command
-        sort -b -k3 <<< "${report_string%?}"
+        # The sorting column must take into account hidden color codes seen by sort and
+        # here we want to sort using either the program/module name; remember that the
+        # the 'here-string' adds a newline to the string when feeding it into the command.
+        sort -b -f -k${sorting_column} <<< "${report_string%?}"
     else
         printf '%s' "${report_string}"
     fi
-    printf '\n'
+    printf "${final_newline}"
 }
 
 function __static__Prepare_Binary_Report_Array()
@@ -314,18 +452,12 @@ function __static__Try_Find_Version()
     case "$1" in
         awk | git | sed | python3)
             found_version=$($1 --version)
-            ;;& # Continue matching other cases
-        awk | sed)
-            found_version=$(__static__Get_First_Line_From_String "${found_version}")
             found_version=$(grep -oE "${HYBRID_version_regex}" <<< "${found_version}")
             found_version=$(__static__Get_First_Line_From_String "${found_version}")
             ;;
         bash)
             found_version="${BASH_VERSINFO[@]:0:3}"
             found_version="${found_version// /.}"
-            ;;
-        git | python3)
-            found_version=$(grep -oE "${HYBRID_version_regex}" <<< "${found_version}")
             ;;
         tput)
             found_version=$(tput -V | grep -oE "${HYBRID_version_regex}")
@@ -430,20 +562,16 @@ function __static__Get_Larger_Version()
 
 function __static__Print_Requirement_Version_Report_Line()
 {
-    Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[$1]"
-    local -r \
-        emph_color='\e[96m' \
-        red='\e[91m' \
-        green='\e[92m' \
-        yellow='\e[93m' \
-        text_color='\e[38;5;38m' \
-        default='\e[0m'
-    local line found version_found version_ok tmp_array program=$1
-    tmp_array=(${system_information[${program}]//|/ }) # Unquoted to let word splitting act
-    found=${tmp_array[0]}
-    version_found=${tmp_array[1]}
-    version_ok=${tmp_array[2]}
-    printf -v line "   ${text_color}Command ${emph_color}%8s${text_color}: ${default}" "${program}"
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
+        "system_information[$1]" \
+        emph_color red green yellow text_color default
+    local line found version_found version_ok program=$1
+    found=$(__static__Get_Field_In_System_Information_String "${program}" 0)
+    version_found=$(__static__Get_Field_In_System_Information_String "${program}" 1)
+    version_ok=$(__static__Get_Field_In_System_Information_String "${program}" 2)
+    # The space after the color code of the command name is important to
+    # make it separate as 'columns' from the requirement for later sorting.
+    printf -v line "   ${text_color}Command ${emph_color} %8s${text_color}: ${default}" "${program}"
     if [[ ${found} = '---' ]]; then
         line+="${red}NOT "
     else
@@ -468,16 +596,49 @@ function __static__Print_Requirement_Version_Report_Line()
     printf "${line}\n"
 }
 
+function __static__Print_Python_Requirement_Report_Line()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
+        "system_information[$1]" \
+        emph_color red green yellow text_color default
+    local line found version_found version_ok requirement=$1
+    found=$(__static__Get_Field_In_System_Information_String "${requirement}" 0)
+    version_found=$(__static__Get_Field_In_System_Information_String "${requirement}" 1)
+    version_ok=$(__static__Get_Field_In_System_Information_String "${requirement}" 2)
+    # The space after the color code of the requirement is important to make it
+    # separate as 'columns' from the requirement for later sorting.
+    printf -v line "${emph_color} %18s${text_color}: ${default}" "${requirement}"
+    if [[ ${found} = '---' ]]; then
+        line+="${red}✘"
+    elif [[ ${found} = 'wrong' ]]; then
+        line+="${yellow}✘"
+    elif [[ ${found} = '?' ]]; then
+        line+="${yellow}?"
+    elif [[ ${version_ok} = '?' ]]; then
+        line+="${green}?"
+    else
+        line+="${green}✔︎"
+    fi
+    if [[ ${version_found} = '---' ]]; then
+        line+=$(printf '%-15s' '')
+    else
+        line+="  ${text_color}->  "
+        if [[ ${version_ok} = 'OK' ]]; then
+            line+="${green}"
+        else
+            line+="${red}"
+        fi
+        line+=$(printf "%-9s${default}" "${version_found}")
+    fi
+    Print_Debug "${requirement}"
+    line+="${emph_color}[${HYBRID_python_requirements["${requirement}"]}]${default}"
+    printf "${line}\n"
+}
+
 function __static__Get_Single_Tick_Cross_Requirement_Report()
 {
-    Ensure_That_Given_Variables_Are_Set_And_Not_Empty single_field_length
-    local -r \
-        emph_color='\e[96m' \
-        red='\e[91m' \
-        green='\e[92m' \
-        yellow='\e[93m' \
-        text_color='\e[38;5;38m' \
-        default='\e[0m'
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
+        single_field_length emph_color red green yellow text_color default
     local line name="$1" status=$2 name_string
     printf -v name_string "%s ${emph_color}%s" "${name% *}" "${name#* }"
     printf -v line " %*s${text_color}: ${default}" "${single_field_length}" "${name_string}"

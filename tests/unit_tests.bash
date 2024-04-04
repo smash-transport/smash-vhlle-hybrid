@@ -50,7 +50,7 @@ function Call_Codebase_Function()
     __static__Call_Codebase_Function_As_Desired "$@"
 }
 
-#=======================================================================================================================
+#===================================================================================================
 
 # NOTE: In the following, if the codebase function call fails, this function will exit
 #       the current shell because of the 'errexit' mode. If this function is called in

@@ -1,4 +1,14 @@
 #!/usr/bin/env python3
+
+#===================================================
+#
+#    Copyright (c) 2024
+#      SMASH Hybrid Team
+#
+#    GNU General Public License (GPLv3 or later)
+#
+#===================================================
+
 import argparse
 import numpy as np
 import ast
