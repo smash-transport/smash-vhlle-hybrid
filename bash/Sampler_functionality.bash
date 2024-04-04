@@ -15,7 +15,7 @@ function Prepare_Software_Input_File_Sampler()
     Copy_Base_Configuration_To_Output_Folder_For 'Sampler'
     Replace_Keys_In_Configuration_File_If_Needed_For 'Sampler'
     __static__Validate_Sampler_Config_File
-    __static__Is_Sampler_Config_Consistent_With_Hydro
+    __static__Check_If_Sampler_Config_Consistent_With_Hydro
     __static__Transform_Relative_Paths_In_Sampler_Config_File
     __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File
 }
@@ -183,9 +183,8 @@ function __static__Is_Sampler_Config_Valid()
     fi
 }
 
-function __static__Is_Sampler_Config_Consistent_With_Hydro()
+function __static__Check_If_Sampler_Config_Consistent_With_Hydro()
 {
-    #local viscous_type=$1
     local -r config_sampler="${HYBRID_software_configuration_file[Sampler]}"
     if Has_YAML_String_Given_Key "$(< "${HYBRID_configuration_file}")" 'Hydro'; then
         local -r config_hydro="${HYBRID_software_configuration_file[Hydro]}";
