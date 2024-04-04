@@ -22,9 +22,10 @@ function Prepare_Software_Input_File_Afterburner()
 function Ensure_All_Needed_Input_Exists_Afterburner()
 {
     Ensure_Given_Folders_Exist "${HYBRID_software_output_directory[Afterburner]}"
-    Ensure_Given_Files_Exist \
-        "${HYBRID_software_configuration_file[Afterburner]}" \
+    Ensure_Given_Files_Or_Unfinished_Exist \
         "${HYBRID_software_input_file[Afterburner]}"
+    Ensure_Given_Files_Exist \
+        "${HYBRID_software_configuration_file[Afterburner]}"
     Internally_Ensure_Given_Files_Exist \
         "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
 }
@@ -111,7 +112,7 @@ function __static__Check_If_Afterburner_Config_Consistent_With_Sampler
 {
     local -r config_afterburner="${HYBRID_software_configuration_file[Afterburner]}"
     if Has_YAML_String_Given_Key "$(< "${HYBRID_configuration_file}")" 'Sampler'; then
-        local -r config_sampler="${HYBRID_software_configuration_file[Sampler]}";
+        local -r config_sampler="${HYBRID_software_configuration_file[Sampler]}"
         while read key value; do
             if [ "${key}" = 'number_of_events' ]; then
                 local events_sampler="${value}"

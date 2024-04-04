@@ -45,6 +45,8 @@ function Run_Software_Sampler()
         "${sampler_config_file_path}" &>> \
         "${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}" \
         || Report_About_Software_Failure_For 'Sampler'
+        "${sampler_config_file_path}" &>> "\
+${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}"
 }
 
 #===================================================================================================
@@ -187,7 +189,7 @@ function __static__Check_If_Sampler_Config_Consistent_With_Hydro()
 {
     local -r config_sampler="${HYBRID_software_configuration_file[Sampler]}"
     if Has_YAML_String_Given_Key "$(< "${HYBRID_configuration_file}")" 'Hydro'; then
-        local -r config_hydro="${HYBRID_software_configuration_file[Hydro]}";
+        local -r config_hydro="${HYBRID_software_configuration_file[Hydro]}"
         while read key value; do
             case "${key}" in
                 etaS)
@@ -204,13 +206,13 @@ function __static__Check_If_Sampler_Config_Consistent_With_Hydro()
                     ;;
             esac
         done < "${config_hydro}"
-        local is_hydro_shear=0;
-        local is_hydro_bulk=0;
+        local is_hydro_shear=0
+        local is_hydro_bulk=0
         if [ "${shear_hydro}" = 1 -o "${shear_hydro_param}" = 1 ]; then
-            is_hydro_shear=1;
-        fi 
+            is_hydro_shear=1
+        fi
         if [ "${bulk_hydro}" = 1 -o "${bulk_hydro_param}" = 1 ]; then
-            is_hydro_bulk=1;
+            is_hydro_bulk=1
         fi
         while read key value; do
             case "${key}" in
