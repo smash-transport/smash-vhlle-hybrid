@@ -357,7 +357,7 @@ function __static__Print_Report_Of_Requirements_With_Minimum_version()
             report_string+=$(__static__Print_Requirement_Version_Report_Line "${program}")$'\n'
         done
     elif [[ $1 = 'Python' ]]; then
-        sorting_column=1
+        sorting_column=2
         final_newline=''
         for program in "${!HYBRID_python_requirements[@]}"; do
             report_string+=$(__static__Print_Python_Requirement_Report_Line "${program}")$'\n'
@@ -366,9 +366,10 @@ function __static__Print_Report_Of_Requirements_With_Minimum_version()
         Print_Internal_And_Exit 'Unexpected call of ' --emph "${FUNCNAME}" ' function.'
     fi
     if hash sort &> /dev/null; then
-        # The third column is that containing the program name; remember that the
-        # 'here-string' adds a newline to the string when feeding it into the command
-        sort -b -k${sorting_column} <<< "${report_string%?}"
+        # The sorting column must take into account hidden color codes seen by sort and
+        # here we want to sort using either the program/module name; remember that the
+        # the 'here-string' adds a newline to the string when feeding it into the command.
+        sort -b -f -k${sorting_column} <<< "${report_string%?}"
     else
         printf '%s' "${report_string}"
     fi
@@ -568,7 +569,9 @@ function __static__Print_Requirement_Version_Report_Line()
     found=$(__static__Get_Field_In_System_Information_String "${program}" 0)
     version_found=$(__static__Get_Field_In_System_Information_String "${program}" 1)
     version_ok=$(__static__Get_Field_In_System_Information_String "${program}" 2)
-    printf -v line "   ${text_color}Command ${emph_color}%8s${text_color}: ${default}" "${program}"
+    # The space after the color code of the command name is important to
+    # make it separate as 'columns' from the requirement for later sorting.
+    printf -v line "   ${text_color}Command ${emph_color} %8s${text_color}: ${default}" "${program}"
     if [[ ${found} = '---' ]]; then
         line+="${red}NOT "
     else
@@ -602,7 +605,9 @@ function __static__Print_Python_Requirement_Report_Line()
     found=$(__static__Get_Field_In_System_Information_String "${requirement}" 0)
     version_found=$(__static__Get_Field_In_System_Information_String "${requirement}" 1)
     version_ok=$(__static__Get_Field_In_System_Information_String "${requirement}" 2)
-    printf -v line "${emph_color}%18s${text_color}: ${default}" "${requirement}"
+    # The space after the color code of the requirement is important to make it
+    # separate as 'columns' from the requirement for later sorting.
+    printf -v line "${emph_color} %18s${text_color}: ${default}" "${requirement}"
     if [[ ${found} = '---' ]]; then
         line+="${red}✘"
     elif [[ ${found} = 'wrong' ]]; then
