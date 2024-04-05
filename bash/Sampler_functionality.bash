@@ -188,30 +188,34 @@ function __static__Is_Sampler_Config_Valid()
 function __static__Check_If_Sampler_Config_Consistent_With_Hydro()
 {
     local -r config_sampler="${HYBRID_software_configuration_file[Sampler]}"
-    if Has_YAML_String_Given_Key "$(< "${HYBRID_configuration_file}")" 'Hydro'; then
+    if Element_In_Array_Equals_To 'Hydro' "${HYBRID_given_software_sections[@]}"; then
         local -r config_hydro="${HYBRID_software_configuration_file[Hydro]}"
+        local etaS=0
+        local etaSparam=0
+        local zetaS=0
+        local zetaSparam=0
         while read key value; do
             case "${key}" in
                 etaS)
-                    local shear_hydro=$(echo "${value}"'>'0 | bc -l)
+                    shear_hydro=$(bc -l <<< "${value}>0")
                     ;;
                 etaSparam)
-                    local shear_hydro_param=$(echo "${value}"'>'0 | bc -l)
+                    shear_hydro_param=$(bc -l <<< "${value}>0")
                     ;;
                 zetaS)
-                    local bulk_hydro=$(echo "${value}"'>'0 | bc -l)
+                    bulk_hydro=$(bc -l <<< "${value}>0")
                     ;;
                 zetaSparam)
-                    local bulk_hydro_param=$(echo "${value}"'>'0 | bc -l)
+                    bulk_hydro_param=$(bc -l <<< "${value}>0")
                     ;;
             esac
         done < "${config_hydro}"
         local is_hydro_shear=0
         local is_hydro_bulk=0
-        if [ "${shear_hydro}" = 1 -o "${shear_hydro_param}" = 1 ]; then
+        if [[ "${shear_hydro}" -eq 1 || "${shear_hydro_param}" -eq 1 ]]; then
             is_hydro_shear=1
         fi
-        if [ "${bulk_hydro}" = 1 -o "${bulk_hydro_param}" = 1 ]; then
+        if [[ "${bulk_hydro}" -eq 1 || "${bulk_hydro_param}" -eq 1 ]]; then
             is_hydro_bulk=1
         fi
         while read key value; do
@@ -224,22 +228,20 @@ function __static__Check_If_Sampler_Config_Consistent_With_Hydro()
                     ;;
             esac
         done < "${config_sampler}"
-        if ! [ "${is_hydro_shear}" = "${is_sampler_shear}" ]; then
+        if [[ "${is_hydro_shear}" -ne "${is_sampler_shear}" ]]; then
             __static__State_Consistency_Of_Sampler_With_Hydro 'shear'
         fi
-        if ! [ "${is_hydro_bulk}" = "${is_sampler_bulk}" ]; then
+        if [[ "${is_hydro_bulk}" -ne "${is_sampler_bulk}" ]]; then
             __static__State_Consistency_Of_Sampler_With_Hydro 'bulk'
         fi
     fi
 }
 
-function __static__State_Consistency_Of_Sampler_With_Hydro()
+function __static__State_Inconsistency_Of_Sampler_With_Hydro()
 {
-    # usage for shear and bulk
-    local viscous_type=$1
-    PrintAttention "The sampler and hydrodynamics parameters" \
-        "are inconsistent in values for $viscous_type correction." \
-        "Check you hybrid handler configuration file!"
+    PrintAttention 'The sampler and hydrodynamics parameters' \
+        'are inconsistent in values for ' --emph "$1" ' correction.' \
+        'Check your hybrid handler configuration file!'
 }
 
 function __static__Get_Path_Field_From_Sampler_Config_As_Global_Path()
