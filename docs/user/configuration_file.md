@@ -42,10 +42,13 @@ Hybrid_handler:
 Each stage of the model has a dedicated section.
 These are (with the corresponding software to be used):
 
-* `IC` for the initial conditions run (SMASH);
-* `Hydro` for the viscous hydrodynamics stage (vHLLE);
-* `Sampler` to perform particlization (Hadron sampler) and
-* `Afterburner` for the last stage (SMASH).
+:cloud_tornado: &nbsp; `IC` for the initial conditions run (SMASH);
+
+:droplet: &nbsp;  `Hydro` for the viscous hydrodynamics stage (vHLLE);
+
+:seedling: &nbsp; `Sampler` to perform particlization (Hadron sampler) and
+
+:fire: &nbsp; `Afterburner` for the last stage (SMASH).
 
 As a general comment, whenever a path has to be specified, both an absolute and a relative one are accepted.
 However, **it is strongly encouraged to exclusively use absolute paths** as relative ones should be specified w.r.t. different folders (most of the times relatively to the stage output directory).
@@ -111,7 +114,7 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
     ??? warning "Each parameter requires a scan specification"
         Parameters specified in the `Scan_parameters` list need to be accompanied by their scan values to be specified in the `Software_keys` section of the same stage [:material-arrow-right-box: the parameters scan syntax](scans_syntax.md).
 
-## The initial conditions section
+## :cloud_tornado: &nbsp; The initial conditions section
 
 There is no specific key of the `IC` section and only the generic ones can be used.
 
@@ -124,7 +127,7 @@ IC:
             End_Time: 100
 ```
 
-## The hydrodynamics section
+## :droplet: &nbsp; The hydrodynamics section
 
 ???+ config-key "`Input_file`"
 
@@ -141,7 +144,7 @@ Hydro:
     Input_file: /path/to/IC_output.dat
 ```
 
-## The hadron sampler section
+## :seedling: &nbsp; The hadron sampler section
 
 Also the hadron sampler needs in input the freezeout surface file, which is produced at the previous hydrodynamics stage.
 However, there is no dedicated `Input_file` key in the hadron sampler section of the hybrid handler configuration file, because the hadron sampler must receive the path to this file in its own configuration file already.
@@ -160,7 +163,7 @@ Sampler:
         surface: /path/to/custom/freezeout.dat
 ```
 
-## The afterburner section
+## :fire: &nbsp; The afterburner section
 
 ???+ config-key "`Input_file`"
 
