@@ -116,6 +116,8 @@ function __static__Is_Sampler_Config_Valid()
         'ecrit'
         'Nbins'
         'q_max'
+        'cs2'
+        'ratio_pressure_energydensity'
     )
     local keys_to_be_found=2
     while read key value; do
