@@ -16,7 +16,7 @@ function Prepare_Software_Input_File_Afterburner()
     Copy_Base_Configuration_To_Output_Folder_For 'Afterburner'
     Replace_Keys_In_Configuration_File_If_Needed_For 'Afterburner'
     __static__Create_Sampled_Particles_List_File_Or_Symbolic_Link_With_Or_Without_Spectators
-    __static__Check_If_Afterburner_Config_Consistent_With_Sampler
+    __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
 }
 
 function Ensure_All_Needed_Input_Exists_Afterburner()
@@ -108,24 +108,32 @@ function __static__Create_Sampled_Particles_List_File_Or_Symbolic_Link_With_Or_W
     fi
 }
 
-function __static__Check_If_Afterburner_Config_Consistent_With_Sampler
+function __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
 {
     local -r config_afterburner="${HYBRID_software_configuration_file[Afterburner]}"
-    if Has_YAML_String_Given_Key "$(< "${HYBRID_configuration_file}")" 'Sampler'; then
+    if Element_In_Array_Equals_To 'Sampler' "${HYBRID_given_software_sections[@]}"; then
         local -r config_sampler="${HYBRID_software_configuration_file[Sampler]}"
         while read key value; do
-            if [ "${key}" = 'number_of_events' ]; then
-                local events_sampler="${value}"
+            if [[ "${key}" = 'number_of_events' ]]; then
+                local events_sampler
+                events_sampler="${value}"
             fi
         done < "${config_sampler}"
-        local events_afterburner=$(Read_From_YAML_String_Given_Key "$(< "${config_afterburner}")" 'General.Nevents')
-        if ! [ "${events_sampler}" = "${events_afterburner}" ]; then
-            PrintAttention "The number of events sampled is not equal to" \
-                "the number of events set to run in the afterburner." \
-                "Nevents in the afterburner is reset!"
+        local events_afterburner
+        events_afterburner=$(Read_From_YAML_String_Given_Key "$(< "${config_afterburner}")" 'General.Nevents')
+        if [[ "${events_afterburner}" -gt "${events_sampler}" ]]; then
+            PrintAttention 'The number of events set to run in the afterburner: ' \
+                --emph "${events_afterburner}" '\nis greater than the number of events sampled: ' \
+                --emph "${events_sampler}.\n" \
+                'Nevents in the afterburner is reset to ' --emph "${events_sampler}!"
             Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
                 'YAML' "${config_afterburner}" \
                 "$(printf "%s:\n %s: %s\n" 'General' 'Nevents' "${events_sampler}")"
+        fi
+        if [[ "${events_afterburner}" -lt "${events_sampler}" ]]; then
+            PrintAttention 'The number of events set to run in the afterburner: ' \
+                --emph "${events_afterburner}" '\nis smaller than the number of events sampled: ' \
+                --emph "${events_sampler}."
         fi
     fi
 }

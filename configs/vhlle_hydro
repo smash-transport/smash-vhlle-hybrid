@@ -20,8 +20,8 @@ etamax    5.0
 tauGridResize 20.0
 
 icModel    6
-Rg      1.4
-Rgz     1.0
+Rg         1.4
+Rgz        1.0
 
 tau0       2.7842
 tauMax     25.0
