@@ -150,7 +150,7 @@ function __static__Is_Sampler_Config_Valid()
                 fi
                 ((keys_to_be_found--))
                 ;;
-            rescatter | weakContribution | shear)
+            rescatter | weakContribution | shear | bulk)
                 if [[ ! "${value}" =~ ^[01]$ ]]; then
                     Print_Error 'Key ' --emph "${key}" ' must be either ' \
                         --emph '0' ' or ' --emph '1' '.'
