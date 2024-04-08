@@ -15,7 +15,7 @@ function Prepare_Software_Input_File_Sampler()
     Copy_Base_Configuration_To_Output_Folder_For 'Sampler'
     Replace_Keys_In_Configuration_File_If_Needed_For 'Sampler'
     __static__Validate_Sampler_Config_File
-    __static__Check_If_Sampler_Config_Consistent_With_Hydro
+    __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro
     __static__Transform_Relative_Paths_In_Sampler_Config_File
     __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File
 }
@@ -123,7 +123,8 @@ function __static__Is_Sampler_Config_Valid()
         'cs2'
         'ratio_pressure_energydensity'
     )
-    local keys_to_be_found=2
+    local keys_to_be_found
+    keys_to_be_found=2
     while read key value; do
         if ! Element_In_Array_Equals_To "${key}" "${allowed_keys[@]}"; then
             Print_Error 'Invalid key ' --emph "${key}" ' found in sampler configuration file.'
@@ -185,15 +186,21 @@ function __static__Is_Sampler_Config_Valid()
     fi
 }
 
-function __static__Check_If_Sampler_Config_Consistent_With_Hydro()
+function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
 {
     local -r config_sampler="${HYBRID_software_configuration_file[Sampler]}"
     if Element_In_Array_Equals_To 'Hydro' "${HYBRID_given_software_sections[@]}"; then
         local -r config_hydro="${HYBRID_software_configuration_file[Hydro]}"
-        local etaS=0
-        local etaSparam=0
-        local zetaS=0
-        local zetaSparam=0
+        local etaS
+        local etaSparam
+        local zetaS
+        local zetaSparam
+        local ecrit_hydro
+        etaS=0
+        etaSparam=0
+        zetaS=0
+        zetaSparam=0
+        ecrit_hydro=0.5
         while read key value; do
             case "${key}" in
                 etaS)
@@ -208,31 +215,55 @@ function __static__Check_If_Sampler_Config_Consistent_With_Hydro()
                 zetaSparam)
                     bulk_hydro_param=$(bc -l <<< "${value}>0")
                     ;;
+                e_crit)
+                    ecrit_hydro=${value}
+                    ;;
             esac
         done < "${config_hydro}"
-        local is_hydro_shear=0
-        local is_hydro_bulk=0
+        local is_hydro_shear
+        local is_hydro_bulk
+        is_hydro_shear=0
+        is_hydro_bulk=0
         if [[ "${shear_hydro}" -eq 1 || "${shear_hydro_param}" -eq 1 ]]; then
             is_hydro_shear=1
         fi
         if [[ "${bulk_hydro}" -eq 1 || "${bulk_hydro_param}" -eq 1 ]]; then
             is_hydro_bulk=1
         fi
+        local is_sampler_shear
+        local is_sampler_bulk
+        local ecrit_sampler
+        is_sampler_shear=1
+        is_sampler_bulk=0
+        ecrit_sampler=0.5
         while read key value; do
             case "${key}" in
                 shear)
-                    local is_sampler_shear=${value}
+                    is_sampler_shear=${value}
                     ;;
                 bulk)
-                    local is_sampler_bulk=${value}
+                    is_sampler_bulk=${value}
                     ;;
+                ecrit)
+                    ecrit_sampler=${value}
             esac
         done < "${config_sampler}"
         if [[ "${is_hydro_shear}" -ne "${is_sampler_shear}" ]]; then
-            __static__State_Consistency_Of_Sampler_With_Hydro 'shear'
+            __static__State_Inconsistency_Of_Sampler_With_Hydro 'shear'
         fi
         if [[ "${is_hydro_bulk}" -ne "${is_sampler_bulk}" ]]; then
-            __static__State_Consistency_Of_Sampler_With_Hydro 'bulk'
+            __static__State_Inconsistency_Of_Sampler_With_Hydro 'bulk'
+        fi
+        local is_ecrit_equal
+        is_ecrit_equal=$(bc -l <<< "${ecrit_sampler}==${ecrit_hydro}")
+        if [[ "${is_ecrit_equal}" -ne 1 ]]; then
+            Print_Attention 'The threshold energy density in the sampler: ' \
+                --emph "${ecrit_sampler}" '\nis not equal to the threshold energy density in hydrodynamics: ' \
+                --emph "${ecrit_hydro}.\n" \
+                --emph 'ecrit' ' in the sampler configuration file is reset to ' --emph "${ecrit_hydro}!"
+            Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
+                'TXT' "${config_sampler}" \
+                "$(printf "%s    %s\n" 'ecrit' "${ecrit_hydro}")"
         fi
     fi
 }
