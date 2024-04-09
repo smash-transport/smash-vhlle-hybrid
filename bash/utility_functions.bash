@@ -307,16 +307,6 @@ function Ensure_Given_Files_Exist()
     __static__Check_Given_Files_With '! -f' 'FATAL' "$@"
 }
 
-function Ensure_Given_Files_Or_Unfinished_Exist()
-{
-    local check_passed=0
-    __static__Check_Given_Files_With '! -f' 'NO_COMMENT' "$@"
-    if [ ${check_passed} -eq 0 ]; then
-        __static__Check_Given_Files_With '! -f' 'FATAL_NO_PRINT' "$@"'.unfinished'
-        __static__Check_Given_Files_With '-f' 'FATAL_UNFINISHED' "$@"'.unfinished'
-    fi
-}
-
 function Ensure_Given_Folders_Do_Not_Exist()
 {
     __static__Check_Given_Files_With '-d' 'FATAL' "$@"
@@ -386,7 +376,7 @@ function __static__Check_Given_Files_With()
             ;;
     esac
     case "${error}" in
-        FATAL | INTERNAL | NO_COMMENT | FATAL_NO_PRINT | FATAL_UNFINISHED) ;;
+        FATAL | INTERNAL | NO_EXIT) ;;
         *)
             Print_Internal_And_Exit 'Wrong error passed to ' --emph "${FUNCNAME}" ' function.'
             ;;
@@ -401,7 +391,6 @@ function __static__Check_Given_Files_With()
     done
     case ${#list_of_files[@]} in
         0)
-            check_passed=1
             return
             ;;
         1)
@@ -411,14 +400,12 @@ function __static__Check_Given_Files_With()
             string+="s were ${negations[0]}found but are expected ${negations[1]}to exist:"
             ;;
     esac
-    if ! [ "${error}" = 'FATAL_NO_PRINT' ]; then
-        Print_Error "${string}"
-        for filename in "${list_of_files[@]}"; do
-            Print_Error -l -- ' - ' --emph "${filename}"
-        done
-        if [[ "${#add_on_message[@]}" -ne 0 ]]; then
-            Print_Error -l -- "${add_on_message[@]}"
-        fi
+    Print_Error "${string}"
+    for filename in "${list_of_files[@]}"; do
+        Print_Error -l -- ' - ' --emph "${filename}"
+    done
+    if [[ "${#add_on_message[@]}" -ne 0 ]]; then
+        Print_Error -l -- "${add_on_message[@]}"
     fi
     Print_Debug 'Error occurred in ' --emph "${FUNCNAME[2]}" ' function.'
     if [[ "${error}" = 'INTERNAL' ]]; then
@@ -441,19 +428,7 @@ function __static__Check_Given_Files_With()
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
                 '\nUnable to continue.'
             ;;
-        'NO_COMMENT') ;;
-
-        'FATAL_NO_PRINT')
-            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                '\nUnable to continue.'
-            ;;
-        'FATAL_UNFINISHED')
-            Print_Attention 'Instead of the correct input file, a file of this type with '
-            \''unfinished'\'' label exists.' \
-                'It is possible the previous stage of the simulation failed.'
-            Print_Fatal_And_Exit \
-                '\nUnable to continue.'
-            ;;
+        'NO_EXIT') ;;
     esac
 
 }

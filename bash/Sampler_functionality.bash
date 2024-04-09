@@ -17,7 +17,7 @@ function Prepare_Software_Input_File_Sampler()
     __static__Validate_Sampler_Config_File
     __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro
     __static__Transform_Relative_Paths_In_Sampler_Config_File
-    __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File
+    __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File_Ensuring_Its_Existence
 }
 
 function Ensure_All_Needed_Input_Exists_Sampler()
@@ -74,10 +74,11 @@ function __static__Transform_Relative_Paths_In_Sampler_Config_File()
 # The following symbolic link is not needed by the sampler, as the sampler only refers to information
 # specified in its input file. However, we want to have all input for a software in the output folder
 # for future easier reproducibility (and we do so for all software handled in the codebase).
-function __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File()
+function __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File_Ensuring_Its_Existence()
 {
     local freezeout_path
     freezeout_path=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface')
+    Ensure_Input_File_Exists_And_Alert_If_Unfinished "${freezeout_path}"
     if [[ "$(dirname "${freezeout_path}")" != "${HYBRID_software_output_directory[Sampler]}" ]]; then
         ln -s "${freezeout_path}" \
             "${HYBRID_software_output_directory[Sampler]}/freezeout.dat"
@@ -246,6 +247,7 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
                     ;;
                 ecrit)
                     ecrit_sampler=${value}
+                    ;;
             esac
         done < "${config_sampler}"
         if [[ "${is_hydro_shear}" -ne "${is_sampler_shear}" ]]; then
