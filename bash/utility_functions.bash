@@ -376,7 +376,7 @@ function __static__Check_Given_Files_With()
             ;;
     esac
     case "${error}" in
-        FATAL | INTERNAL | NO_EXIT) ;;
+        FATAL | INTERNAL) ;;
         *)
             Print_Internal_And_Exit 'Wrong error passed to ' --emph "${FUNCNAME}" ' function.'
             ;;
@@ -420,17 +420,6 @@ function __static__Check_Given_Files_With()
         exit_code=${exit_code_to_use} Print_Fatal_And_Exit \
             '\nUnable to continue.'
     fi
-    case "${error}" in
-        'INTERNAL')
-            Print_Internal_And_Exit '\nThis should not have happened.'
-            ;;
-        'FATAL')
-            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                '\nUnable to continue.'
-            ;;
-        'NO_EXIT') ;;
-    esac
-
 }
 #-------------------------------------------------------------------------------
 

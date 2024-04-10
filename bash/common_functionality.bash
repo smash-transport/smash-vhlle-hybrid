@@ -63,33 +63,21 @@ function Report_About_Software_Failure_For()
         '\n' --emph "$1" ' run failed.'
 }
 
+
 function Ensure_Input_File_Exists_And_Alert_If_Unfinished()
 {
-    local input_file
-    local input_file_unfinished
-    input_file=$1
-    input_file_unfinished="${input_file}.unfinished"
-    printf "$(realpath -m "${input_file}")\n"
-    printf "$(realpath -m "${input_file_unfinished}")\n"
-    if [ ! -f "$(realpath -m "${input_file}")" ]; then
-        printf "Input file does not exist\n"
-        if [ -f "$(realpath -m "${input_file_unfinished}")" ]; then
-            printf "Unfinished input file exists\n"
-            Check_Given_Files_Exist_Without_Exiting "${input_file}"
-            Print_Attention 'Instead of the correct input file, a different file was found:' \
-                ' - ' --emph "$(realpath -m "${input_file_unfinished}")\n" \
-                'It is possible the previous stage of the simulation failed.'
-            Print_Fatal_And_Exit \
-                '\nUnable to continue.'
+    local -r \
+        input_file="$(realpath -m "$1")" \
+        input_file_unfinished="$(realpath -m "${1}.unfinished")"
+    if [[ ! -f "${input_file}" ]]; then
+        if [[ -f "${input_file_unfinished}" ]]; then
+            Ensure_Given_Files_Exist \
+                "Instead of the correct input file, a different file was found:\n - " \
+                --emph "${input_file_unfinished}" \
+                "\nIt is possible the previous stage of the simulation failed." \
+                -- "${input_file}"
         else
-            printf "Unfinished input file does not exist\n"
             Ensure_Given_Files_Exist "${input_file}"
         fi
     fi
 }
-
-function Check_Given_Files_Exist_Without_Exiting()
-{
-    __static__Check_Given_Files_With '! -f' 'NO_EXIT' "$@"
-}
-
