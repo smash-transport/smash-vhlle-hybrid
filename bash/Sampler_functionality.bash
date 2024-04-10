@@ -192,11 +192,7 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
     local -r config_sampler="${HYBRID_software_configuration_file[Sampler]}"
     if Element_In_Array_Equals_To 'Hydro' "${HYBRID_given_software_sections[@]}"; then
         local -r config_hydro="${HYBRID_software_configuration_file[Hydro]}"
-        local etaS
-        local etaSparam
-        local zetaS
-        local zetaSparam
-        local ecrit_hydro
+        local etaS etaSparam zetaS zetaSparam ecrit_hydro
         etaS=0
         etaSparam=0
         zetaS=0
@@ -221,8 +217,7 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
                     ;;
             esac
         done < "${config_hydro}"
-        local is_hydro_shear
-        local is_hydro_bulk
+        local is_hydro_shear is_hydro_bulk
         is_hydro_shear=0
         is_hydro_bulk=0
         if [[ "${shear_hydro}" -eq 1 || "${shear_hydro_param}" -eq 1 ]]; then
@@ -231,9 +226,8 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
         if [[ "${bulk_hydro}" -eq 1 || "${bulk_hydro_param}" -eq 1 ]]; then
             is_hydro_bulk=1
         fi
-        local is_sampler_shear
-        local is_sampler_bulk
-        local ecrit_sampler
+        local is_sampler_shear is_sampler_bulk \
+            ecrit_sampler
         is_sampler_shear=1
         is_sampler_bulk=0
         ecrit_sampler=0.5
@@ -250,19 +244,17 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
                     ;;
             esac
         done < "${config_sampler}"
-        if [[ "${is_hydro_shear}" -ne "${is_sampler_shear}" ]]; then
+        if [[ "${is_hydro_shear}" -eq 1 && "${is_sampler_shear}" -eq 0 ]]; then
             __static__State_Inconsistency_Of_Sampler_With_Hydro 'shear'
         fi
-        if [[ "${is_hydro_bulk}" -ne "${is_sampler_bulk}" ]]; then
+        if [[ "${is_hydro_bulk}" -eq 1 && "${is_sampler_bulk}" -eq 0 ]]; then
             __static__State_Inconsistency_Of_Sampler_With_Hydro 'bulk'
         fi
-        local is_ecrit_equal
-        is_ecrit_equal=$(bc -l <<< "${ecrit_sampler}==${ecrit_hydro}")
-        if [[ "${is_ecrit_equal}" -ne 1 ]]; then
-            Print_Attention 'The threshold energy density in the sampler: ' \
-                --emph "${ecrit_sampler}" '\nis not equal to the threshold energy density in hydrodynamics: ' \
-                --emph "${ecrit_hydro}.\n" \
-                --emph 'ecrit' ' in the sampler configuration file is reset to ' --emph "${ecrit_hydro}!"
+        if ! awk '{if($1==$2){exit 0}else{exit 1}}' <<< "${ecrit_hydro} ${ecrit_sampler}" &> /dev/null; then
+            Print_Attention 'The threshold energy density in the sampler (' \
+                --emph "${ecrit_sampler}" ')\nis not equal to the threshold energy density in hydrodynamics (' \
+                --emph "${ecrit_hydro}" ').\n' \
+                --emph 'ecrit' ' in the sampler configuration file is reset to ' --emph "${ecrit_hydro}" '!'
             Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
                 'TXT' "${config_sampler}" \
                 "$(printf "%s    %s\n" 'ecrit' "${ecrit_hydro}")"
@@ -274,7 +266,9 @@ function __static__State_Inconsistency_Of_Sampler_With_Hydro()
 {
     PrintAttention 'The sampler and hydrodynamics parameters' \
         'are inconsistent in values for ' --emph "$1" ' correction.' \
-        'Check your hybrid handler configuration file!'
+        'Viscous corrections are present in hydrodynamic stage,' \
+        'but will not be applied in the Cooper-Frye sampling,' \
+        'Please, ensure that this is desired behavior.'
 }
 
 function __static__Get_Path_Field_From_Sampler_Config_As_Global_Path()

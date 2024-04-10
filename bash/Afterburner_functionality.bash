@@ -122,19 +122,19 @@ function __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
         local events_afterburner
         events_afterburner=$(Read_From_YAML_String_Given_Key "$(< "${config_afterburner}")" 'General.Nevents')
         if [[ "${events_afterburner}" -gt "${events_sampler}" ]]; then
-            PrintAttention 'The number of events set to run in the afterburner: ' \
-                --emph "${events_afterburner}" '\nis greater than the number of events sampled: ' \
-                --emph "${events_sampler}.\n" \
-                --emph 'Nevents' ' in the afterburner configuration file is reset to ' --emph "${events_sampler}!"
+            PrintAttention 'The number of events set to run in the afterburner (' \
+                --emph "${events_afterburner}" ')\nis greater than the number of events sampled (' \
+                --emph "${events_sampler}" ').\n' \
+                --emph 'Nevents' ' in the afterburner configuration file is reset to ' --emph "${events_sampler}" '!'
             Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
                 'YAML' "${config_afterburner}" \
                 "$(printf "%s:\n  %s:  %s\n" 'General' 'Nevents' "${events_sampler}")"
-        fi
-        if [[ "${events_afterburner}" -lt "${events_sampler}" ]]; then
-            PrintAttention 'The number of events set to run in the afterburner: ' \
-                --emph "${events_afterburner}" '\nis smaller than the number of events sampled: ' \
-                --emph "${events_sampler}.\n" \
-                'Check your hybrid handler configuration file!'
+        elif [[ "${events_afterburner}" -lt "${events_sampler}" ]]; then
+            PrintAttention 'The number of events set to run in the afterburner (' \
+                --emph "${events_afterburner}" ')\nis smaller than the number of events sampled (' \
+                --emph "${events_sampler}" ').' \
+                'Excess sampled events remain unused.' \
+                'Please, ensure that this is desired behavior.'
         fi
     fi
 }
