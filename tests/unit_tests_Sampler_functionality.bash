@@ -207,6 +207,42 @@ function Clean_Tests_Environment_For_Following_Test__Sampler-validate-config-fil
     rm -r "${HYBRID_output_directory}"
 }
 
+function Make_Test_Preliminary_Operations__Sampler-config-consistent-with-hydro()
+{
+    Make_Test_Preliminary_Operations__Sampler-create-input-file
+}
+
+function Unit_Test__Sampler-config-consistent-with-hydro()
+{
+    HYBRID_given_software_sections+=('Hydro')
+    mkdir -p "${HYBRID_software_output_directory[Hydro]}"
+    # Hydro config file with default ecrit
+    touch "${HYBRID_software_output_directory[Hydro]}/hydro_config.txt"
+    printf '%s   %s\n' "ecrit" "0.5" > "${HYBRID_software_configuration_file[Hydro]}"
+    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
+    # Sampler config file with different ecrit
+    local ecrit_entered
+    ecrit_entered=0.3
+    touch "${HYBRID_software_output_directory[Sampler]}/sampler_config.txt"
+    printf '%s   %s\n' "e_crit" "${ecrit_entered}" > "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell Check_If_Sampler_Configuration_Is_Consistent_With_Hydro
+    local ecrit_found
+    while read key value; do
+        if [[ "${key}" = "e_crit" ]]; then
+            ecrit_found="${value}"
+        fi
+    done < "${HYBRID_software_configuration_file[Sampler]}"
+    if ![[ "${ecrit_found}" = "${ecrit_entered}" ]]; then
+        Print_Error 'The value of e_crit was not correctly replaced in sampler config.'
+        return 1
+    fi
+}
+
+function Clean_Tests_Environment_For_Following_Test__Sampler-config-consistent-with-hydro()
+{
+    rm -r "${HYBRID_output_directory}"
+}
+
 function Make_Test_Preliminary_Operations__Sampler-test-run-software()
 {
     Make_Test_Preliminary_Operations__Sampler-create-input-file
