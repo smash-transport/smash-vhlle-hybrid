@@ -54,7 +54,9 @@ function Unit_Test__Hydro-create-input-file()
     fi
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro &> /dev/null
     if [[ $? -ne ${HYBRID_fatal_logic_error} ]]; then
-        Print_Error 'Preparation of input with existent did not fail with exit code 110 as expected.'
+        Print_Error \
+            'Preparation of input with existent did not fail with exit code ' \
+            --emph "${HYBRID_fatal_logic_error}" ' as expected.'
         return 1
     fi
     rm -r "${HYBRID_software_output_directory[Hydro]}"/*
