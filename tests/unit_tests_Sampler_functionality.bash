@@ -234,14 +234,15 @@ function Unit_Test__Sampler-config-consistent-with-hydro()
     ecrit_entered='0.3'
     touch "${HYBRID_software_configuration_file[Sampler]}"
     printf '%s   %s\n' "ecrit" "${ecrit_entered}" > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro &> /dev/null
+    Call_Codebase_Function_In_Subshell \
+        __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro &> /dev/null
     local ecrit_found
     while read key value; do
         if [[ "${key}" = "ecrit" ]]; then
             ecrit_found="${value}"
         fi
     done < "${HYBRID_software_configuration_file[Sampler]}"
-    if ! [[ "${ecrit_found}" = "${ecrit_hydro}" ]]; then
+    if [[ "${ecrit_found}" != "${ecrit_hydro}" ]]; then
         Print_Error 'The value of ecrit was not correctly replaced in sampler config.'
         return 1
     fi

@@ -45,8 +45,6 @@ function Run_Software_Sampler()
         "${sampler_config_file_path}" &>> \
         "${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}" \
         || Report_About_Software_Failure_For 'Sampler'
-        "${sampler_config_file_path}" &>> "\
-${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}"
 }
 
 #===================================================================================================

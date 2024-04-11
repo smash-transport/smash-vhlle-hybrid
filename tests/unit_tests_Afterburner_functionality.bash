@@ -208,8 +208,8 @@ function Unit_Test__Afterburner-config-consistent-with-sampler()
     touch "${HYBRID_software_configuration_file[Afterburner]}"
     printf '%s:\n  %s:  %s\n' 'General' 'Nevents' "${events_entered}" > \
         "${HYBRID_software_configuration_file[Afterburner]}"
-    Call_Codebase_Function_In_Subshell __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler \
-        &> /dev/null
+    Call_Codebase_Function_In_Subshell \
+        __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler &> /dev/null
     local events_found
     events_found=$(Read_From_YAML_String_Given_Key "$(< "${HYBRID_software_configuration_file[Afterburner]}")" \
         'General.Nevents')
