@@ -63,7 +63,6 @@ function Report_About_Software_Failure_For()
         '\n' --emph "$1" ' run failed.'
 }
 
-
 function Ensure_Input_File_Exists_And_Alert_If_Unfinished()
 {
     local -r \
