@@ -53,7 +53,7 @@ function Unit_Test__Afterburner-create-input-file()
         return 1
     fi
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
-    if [[ $? -ne 110 ]]; then
+    if [[ $? -ne ${HYBRID_fatal_logic_error} ]]; then
         Print_Error 'Preparation of input with existent config did not fail as expected.'
         return 1
     fi
@@ -88,7 +88,7 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
         "${plist_Final}" \
         "${HYBRID_configuration_file}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
-    if [[ $? -ne 110 ]]; then
+    if [[ $? -ne ${HYBRID_fatal_logic_error} ]]; then
         Print_Error \
             'Files preparation did not fail with exit code 110' \
             'even though the final particle list already exists.'
@@ -96,7 +96,7 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/"*
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
-    if [[ $? -ne 110 ]]; then
+    if [[ $? -ne ${HYBRID_fatal_logic_error} ]]; then
         Print_Error \
             'Files preparation did not fail with exit code 110' \
             'even though the config.yaml of the IC does not exist.'
@@ -106,7 +106,7 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
     cp "${HYBRID_default_configurations_folder}/smash_initial_conditions.yaml" \
         "${HYBRID_software_output_directory[IC]}/config.yaml"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
-    if [[ $? -ne 110 ]]; then
+    if [[ $? -ne ${HYBRID_fatal_logic_error} ]]; then
         Print_Error \
             'Files preparation did not fail with exit code 110' \
             'even though the SMASH_IC.oscar does not exist.'

@@ -297,43 +297,43 @@ function Unit_Test__utility-files-existence()
 {
     Call_Codebase_Function Ensure_Given_Files_Do_Not_Exist 'aaa' 'not-existing' 'xcafblskdfa'
     Call_Codebase_Function_In_Subshell Ensure_Given_Files_Do_Not_Exist "${BASH_SOURCE[@]}" &> /dev/null
-    if [[ $? -ne 110 ]]; then
+    if [[ $? -ne ${HYBRID_fatal_logic_error} ]]; then
         Print_Error 'Function to ensure non existent files did not fail as expected.'
         return 1
     fi
     ln -s "${BASH_SOURCE[0]}" link_test
     Call_Codebase_Function Ensure_Given_Files_Exist 'link_test'
     Call_Codebase_Function_In_Subshell Ensure_Given_Files_Exist 'not-existing-file' &> /dev/null
-    if [[ $? -ne 65 ]]; then
+    if [[ $? -ne ${HYBRID_fatal_file_not_found} ]]; then
         Print_Error 'Function to ensure existent files did not fail as expected.'
         return 1
     fi
     Call_Codebase_Function Ensure_Given_Folders_Exist "${HOME}"
     Call_Codebase_Function_In_Subshell Ensure_Given_Folders_Exist 'not-existing-folder' &> /dev/null
-    if [[ $? -ne 65 ]]; then
+    if [[ $? -ne ${HYBRID_fatal_file_not_found} ]]; then
         Print_Error 'Function to ensure existent folders did not fail as expected.'
         return 1
     fi
     Call_Codebase_Function_In_Subshell Ensure_Given_Folders_Exist 'Add-on' 'test' '--' 'link_test' &> /dev/null
-    if [[ $? -ne 65 ]]; then
+    if [[ $? -ne ${HYBRID_fatal_file_not_found} ]]; then
         Print_Error 'Function to ensure existent folders did not fail as expected on a file.'
         return 1
     fi
     Call_Codebase_Function Ensure_Given_Folders_Do_Not_Exist 'not-existing' 'dfadgdsfs'
     Call_Codebase_Function_In_Subshell Ensure_Given_Folders_Do_Not_Exist "${HOME}" &> /dev/null
-    if [[ $? -ne 110 ]]; then
+    if [[ $? -ne ${HYBRID_fatal_logic_error} ]]; then
         Print_Error 'Function to ensure not existent folders did not fail as expected.'
         return 1
     fi
     Call_Codebase_Function Internally_Ensure_Given_Files_Do_Not_Exist 'aaa' 'not-existing' 'xcafblskdfa'
     Call_Codebase_Function_In_Subshell Internally_Ensure_Given_Files_Do_Not_Exist "${BASH_SOURCE[@]}" &> /dev/null
-    if [[ $? -ne 113 ]]; then
+    if [[ $? -ne ${HYBRID_internal_exit_code} ]]; then
         Print_Error 'Function to internally ensure non existent files did not fail as expected.'
         return 1
     fi
     Call_Codebase_Function Internally_Ensure_Given_Files_Exist 'link_test'
     Call_Codebase_Function_In_Subshell Internally_Ensure_Given_Files_Exist 'not-existing-file' &> /dev/null
-    if [[ $? -ne 113 ]]; then
+    if [[ $? -ne ${HYBRID_internal_exit_code} ]]; then
         Print_Error 'Function to internally ensure existent files did not fail as expected.'
         return 1
     fi
