@@ -71,6 +71,7 @@ function Define_Tests_Global_Variables()
     readonly HYBRIDT_folder_to_run_tests=${HYBRIDT_tests_folder}/run_tests
     readonly HYBRIDT_log_file=${HYBRIDT_folder_to_run_tests}/$(basename ${BASH_SOURCE[0]}).log
     readonly HYBRIDT_auxiliary_files_and_folders=("${HYBRIDT_folder_to_run_tests}" "${HYBRIDT_log_file}")
+    readonly HYBRIDT_python_requirements_file_for_testing="${HYBRIDT_tests_folder}/python_requirements.txt"
     HYBRIDT_clean_test_folder='TRUE'
     HYBRIDT_report_level=3 # Report level: 0 = binary, 1 = summary, 2 = short, 3 = detailed
     HYBRIDT_tests_run=0
@@ -78,9 +79,9 @@ function Define_Tests_Global_Variables()
     HYBRIDT_tests_failed=0
     HYBRIDT_which_tests_failed=()
     HYBRIDT_tests_to_be_run=()
-    # These handler global variables are needed for checking system requirements and we define them
-    # here as not global as some tests might source the handler global variables definition and
-    # redefine them. The execution mode is not set to real value.
+    # These handler global variables are needed for checking system requirements in the handler code,
+    # but we define them here as not constant as some tests might source the handler global variables
+    # definition and redefine them. The execution mode is not set to real value.
     HYBRID_top_level_path="${HYBRIDT_repository_top_level_path}"
     HYBRID_execution_mode='test'
     HYBRID_scan_strategy='LHS'
@@ -117,6 +118,30 @@ function Check_System_Requirements_For_Tests()
     if ! Is_Python_Requirement_Satisfied 'packaging' &> /dev/null; then
         exit_code=${HYBRID_fatal_missing_requirement} Print_Fatal_And_Exit \
             'Python ' --emph 'packaging' ' module needed to run tests.'
+    fi
+    local line requirement violations=()
+    while read -r line; do
+        line="${line%#*}"              # Remove in-line comments
+        line="${line##+([[:space:]])}" # Remove leading spaces
+        line="${line%%+([[:space:]])}" # Remove trailing spaces
+        if [[ ${line} =~ ^[[:space:]]*$ ]]; then
+            continue
+        else
+            requirement="${line}"
+        fi
+        if ! Is_Python_Requirement_Satisfied "${requirement}" &> /dev/null; then
+            violations+=("${requirement}")
+        fi
+    done < "${HYBRIDT_python_requirements_file_for_testing}"
+    if [[ "${#violations[@]}" -gt 0 ]]; then
+        Print_Error 'The following Python requirements needed for tests are not satisfied:'
+        for requirement in "${violations[@]}"; do
+            Print_Error -l -- ' - ' --emph "${requirement}"
+        done
+        exit_code=${HYBRID_fatal_missing_requirement} Print_Fatal_And_Exit \
+            '\nUnable to run tests.' \
+            'Consider to run\n' --emph "  pip install -r '${HYBRIDT_python_requirements_file_for_testing}'" \
+            '\nto install missing requirements.'
     fi
 }
 
