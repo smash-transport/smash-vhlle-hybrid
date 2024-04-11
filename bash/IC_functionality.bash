@@ -37,7 +37,8 @@ function Run_Software_IC()
         '-i' "${HYBRID_software_configuration_file[IC]}" \
         '-o' "${HYBRID_software_output_directory[IC]}" \
         '-n' \
-        &>> "${HYBRID_software_output_directory[IC]}/${HYBRID_terminal_output[IC]}"
+        &>> "${HYBRID_software_output_directory[IC]}/${HYBRID_terminal_output[IC]}" \
+        || Report_About_Software_Failure_For 'IC'
 }
 
 Make_Functions_Defined_In_This_File_Readonly

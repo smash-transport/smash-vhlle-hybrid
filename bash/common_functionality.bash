@@ -56,3 +56,9 @@ function Separate_Terminal_Output_For()
         } >> "${HYBRID_software_output_directory[$1]}/${HYBRID_terminal_output[$1]}"
     fi
 }
+
+function Report_About_Software_Failure_For()
+{
+    exit_code=${HYBRID_fatal_software_failed} Print_Fatal_And_Exit \
+        '\n' --emph "$1" ' run failed.'
+}

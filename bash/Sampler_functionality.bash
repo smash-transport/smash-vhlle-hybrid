@@ -42,7 +42,8 @@ function Run_Software_Sampler()
     cd "${HYBRID_software_output_directory[Sampler]}"
     "${HYBRID_software_executable[Sampler]}" 'events' '1' \
         "${sampler_config_file_path}" &>> \
-        "${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}"
+        "${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}" \
+        || Report_About_Software_Failure_For 'Sampler'
 }
 
 #===================================================================================================
