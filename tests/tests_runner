@@ -121,13 +121,15 @@ function Check_System_Requirements_For_Tests()
     fi
     local line requirement violations=()
     while read -r line; do
-        line=${line%#*}              # Remove in-line comments
-        line=${line##+([[:space:]])} # Remove leading spaces
-        line=${line%%+([[:space:]])} # Remove trailing spaces
+        line="${line%#*}"              # Remove in-line comments
+        line="${line##+([[:space:]])}" # Remove leading spaces
+        line="${line%%+([[:space:]])}" # Remove trailing spaces
         if [[ ${line} =~ ^[[:space:]]*$ ]]; then
             continue
+        else
+            requirement="${line}"
         fi
-        if ! Is_Python_Requirement_Satisfied "${line}" &> /dev/null; then
+        if ! Is_Python_Requirement_Satisfied "${requirement}" &> /dev/null; then
             violations+=("${requirement}")
         fi
     done < "${HYBRIDT_python_requirements_file_for_testing}"
