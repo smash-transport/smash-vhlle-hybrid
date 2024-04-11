@@ -223,4 +223,25 @@ function Functional_Test__do-Afterburner-only()
             --emph "${HYBRID_fatal_logic_error}" '.'
         return 1
     fi
+    #Expect failure for unfinished Sampler input
+    printf '
+    Afterburner:
+      Executable: %s/mocks/smash_afterburner_black-box.py
+      Input_file: %s/test/particle_lists_2.oscar
+    ' "${HYBRIDT_tests_folder}" "${HYBRIDT_tests_folder}" > "${config_filename}"
+    touch "Sampler/particle_lists.oscar.unfinished"
+    Print_Info 'Running Hybrid-handler expecting failure'
+    local actual_output expected_output
+    actual_output=$(Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.' 2>&1)
+    expected_output=$(printf '.*ERROR:.*' \
+        'The following file was NOT found but is expected to exist:' \
+        '.*particle_lists.oscar.*' \
+        'Instead of the correct input file, a different file was found:' \
+        '.*particle_lists.oscar.unfinished.*' \
+        'It is possible the previous stage of the simulation failed..*' \
+        'Unable to continue.*')
+    if [[ ! "${actual_output}" =~ ${expected_output} ]]; then
+        Print_Error 'Afterburner finished without the correct warning about unfinished files.'
+        return 1
+    fi
 }

@@ -68,4 +68,30 @@ function Functional_Test__do-Sampler-only()
         return 1
     fi
     mv 'Sampler' 'Sampler-invalid-config'
+    #Expect failure for unfinished Hydro input
+    printf '
+    Hybrid_handler:
+      Run_ID: %s
+    Sampler:
+       Executable: %s/tests/mocks/sampler_black-box.py
+    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config}"
+    rm "Hydro/${run_id}/freezeout.dat"
+    touch "Hydro/${run_id}/freezeout.dat.unfinished"
+    Print_Info 'Running Hybrid-handler expecting failure'
+    local actual_output expected_output
+    actual_output=$(Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' \
+        '-c' "${hybrid_handler_config}" '-o' '.' 2>&1)
+    expected_output=$(printf '.*ERROR:.*' \
+        'The following file was NOT found but is expected to exist:' \
+        '.*freezeout.dat.*' \
+        'Instead of the correct input file, a different file was found:' \
+        '.*freezeout.dat.unfinished.*' \
+        'It is possible the previous stage of the simulation failed..*' \
+        'Unable to continue.*')
+    if [[ ! "${actual_output}" =~ ${expected_output} ]]; then
+        Print_Error 'Sampler finished without the correct warning about unfinished files.'
+        echo "${actual_output}"
+        return 1
+    fi
+    mv 'Sampler' 'Sampler-unfinished-hydro'
 }
