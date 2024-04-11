@@ -47,6 +47,7 @@ markdown_extensions:
   - tables
   - footnotes
   - attr_list
+  - def_list
   - md_in_html
   - pymdownx.critic
   - pymdownx.keys
@@ -87,7 +88,7 @@ markdown_extensions:
 theme:
   name: material
   favicon: images/favicon.png
-  #logo: images/logo.png  # <-- To be added as soon as we have one!
+  logo: images/logo.png
   features:
     - content.code.copy
     - header.autohide
