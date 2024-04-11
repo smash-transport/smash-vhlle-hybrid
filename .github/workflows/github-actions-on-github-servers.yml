@@ -47,9 +47,6 @@ jobs:
     # print the picked Python version
     - name: Display Python version
       run: python -c "import sys; print(sys.version)"
-    # install non-standard packages beyond those requirements file
-    - name: Install Python dependencies to test requirements
-      run: python -m pip install --upgrade pip packaging
     # this Action should follow steps to set up Python build environment
     - name: Install codebase Python dependencies
       uses: py-actions/py-dependency-install@v4
