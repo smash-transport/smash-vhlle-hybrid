@@ -19,6 +19,7 @@ readonly HYBRID_fatal_wrong_config_file=66
 readonly HYBRID_fatal_command_line=67
 readonly HYBRID_fatal_value_error=68
 readonly HYBRID_fatal_missing_requirement=69
+readonly HYBRID_fatal_software_failed=70
 readonly HYBRID_fatal_logic_error=110
 readonly HYBRID_fatal_missing_feature=111
 readonly HYBRID_fatal_variable_unset=112

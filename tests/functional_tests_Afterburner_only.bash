@@ -109,9 +109,11 @@ function Functional_Test__do-Afterburner-only()
             File_Directory: "."
     ' "${run_id}" "${HYBRIDT_tests_folder}" "$(pwd)" > "${config_filename}"
     Print_Info 'Running Hybrid-handler expecting failure when using custom input while also running the sampler'
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.' &> /dev/null
-    if [[ $? -ne 110 ]]; then
-        Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
+    if [[ $? -ne ${HYBRID_fatal_logic_error} ]]; then
+        Print_Error \
+            'Hybrid-handler did not fail as expected with exit code ' \
+            --emph "${HYBRID_fatal_logic_error}" '.'
         return 1
     fi
     # Expect failure when wrongly specifying custom input (I)
@@ -127,9 +129,11 @@ function Functional_Test__do-Afterburner-only()
             Filename: "particle_lists_2.oscar"
     ' "${run_id}" "${HYBRIDT_tests_folder}" > "${config_filename}"
     Print_Info 'Running Hybrid-handler expecting failure when specifying custom input via Software_keys Filename'
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.' &> /dev/null
-    if [[ $? -ne 110 ]]; then
-        Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
+    if [[ $? -ne ${HYBRID_fatal_logic_error} ]]; then
+        Print_Error \
+            'Hybrid-handler did not fail as expected with exit code ' \
+            --emph "${HYBRID_fatal_logic_error}" '.'
         return 1
     fi
     # Expect failure when wrongly specifying custom input (II)
@@ -147,9 +151,11 @@ function Functional_Test__do-Afterburner-only()
     ' "${run_id}" "${HYBRIDT_tests_folder}" > "${config_filename}"
     Print_Info \
         'Running Hybrid-handler expecting failure when specifying custom input via Software_keys Shift_Id/File_Prefix'
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.' &> /dev/null
-    if [[ $? -ne 110 ]]; then
-        Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
+    if [[ $? -ne ${HYBRID_fatal_logic_error} ]]; then
+        Print_Error \
+            'Hybrid-handler did not fail as expected with exit code ' \
+            --emph "${HYBRID_fatal_logic_error}" '.'
         return 1
     fi
     # Expect success and test the add_spectator functionality
@@ -210,9 +216,11 @@ function Functional_Test__do-Afterburner-only()
           List:
             File_Directory: "."
     ' "${HYBRIDT_tests_folder}" "$(pwd)" > "${config_filename}"
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.' &> /dev/null
-    if [[ $? -ne 110 ]]; then
-        Print_Error 'Hybrid-handler did not fail as expected with exit code 110.'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
+    if [[ $? -ne ${HYBRID_fatal_logic_error} ]]; then
+        Print_Error \
+            'Hybrid-handler did not fail as expected with exit code ' \
+            --emph "${HYBRID_fatal_logic_error}" '.'
         return 1
     fi
 }

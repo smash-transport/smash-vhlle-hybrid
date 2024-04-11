@@ -130,5 +130,4 @@ if __name__ == '__main__':
 
     get_initial_nucleons_from_config()
     spectators = extract_spectators()
-    print("Adding spectators to sampled particle list for afterburner.")
     write_full_particle_list(spectators)

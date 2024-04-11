@@ -411,7 +411,13 @@ function __static__Check_Given_Files_With()
     if [[ "${error}" = 'INTERNAL' ]]; then
         Print_Internal_And_Exit '\nThis should not have happened.'
     else
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+        local exit_code_to_use
+        if [[ ${test_to_use} =~ ^! ]]; then
+            exit_code_to_use=${HYBRID_fatal_file_not_found}
+        else
+            exit_code_to_use=${HYBRID_fatal_logic_error}
+        fi
+        exit_code=${exit_code_to_use} Print_Fatal_And_Exit \
             '\nUnable to continue.'
     fi
 }
