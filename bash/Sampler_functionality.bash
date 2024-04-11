@@ -192,11 +192,12 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
     local -r config_sampler="${HYBRID_software_configuration_file[Sampler]}"
     if Element_In_Array_Equals_To 'Hydro' "${HYBRID_given_software_sections[@]}"; then
         local -r config_hydro="${HYBRID_software_configuration_file[Hydro]}"
-        local etaS etaSparam zetaS zetaSparam ecrit_hydro
-        etaS=0
-        etaSparam=0
-        zetaS=0
-        zetaSparam=0
+        local shear_hydro shear_hydro_param bulk_hydro bulk_hydro_param \
+            ecrit_hydro
+        shear_hydro=0
+        shear_hydro_param=0
+        bulk_hydro=0
+        bulk_hydro_param=0
         ecrit_hydro=0.5
         while read key value; do
             case "${key}" in

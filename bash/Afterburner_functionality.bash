@@ -108,7 +108,7 @@ function __static__Create_Sampled_Particles_List_File_Or_Symbolic_Link_With_Or_W
     fi
 }
 
-function __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
+function __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler()
 {
     local -r config_afterburner="${HYBRID_software_configuration_file[Afterburner]}"
     if Element_In_Array_Equals_To 'Sampler' "${HYBRID_given_software_sections[@]}"; then

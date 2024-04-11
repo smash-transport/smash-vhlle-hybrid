@@ -7,7 +7,7 @@
 #
 #===================================================
 
-__static__Do_Preliminary_Setup_Operations()
+__static__Do_Preliminary_Afterburner_Setup_Operations()
 {
     local file_to_be_sourced list_of_files
     list_of_files=(
@@ -31,7 +31,7 @@ __static__Do_Preliminary_Setup_Operations()
 
 function Make_Test_Preliminary_Operations__Afterburner-create-input-file()
 {
-    __static__Do_Preliminary_Setup_Operations
+    __static__Do_Preliminary_Afterburner_Setup_Operations
     HYBRID_optional_feature[Add_spectators_from_IC]='FALSE'
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 }
@@ -69,7 +69,7 @@ function Clean_Tests_Environment_For_Following_Test__Afterburner-create-input-fi
 
 function Make_Test_Preliminary_Operations__Afterburner-create-input-file-with-spectators()
 {
-    __static__Do_Preliminary_Setup_Operations
+    __static__Do_Preliminary_Afterburner_Setup_Operations
     HYBRID_optional_feature[Add_spectators_from_IC]='TRUE'
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 }
@@ -180,6 +180,46 @@ function Unit_Test__Afterburner-check-all-input()
 }
 
 function Clean_Tests_Environment_For_Following_Test__Afterburner-check-all-input()
+{
+    rm -r "${HYBRID_output_directory}"
+}
+
+function Make_Test_Preliminary_Operations__Afterburner-config-consistent-with-sampler()
+{
+    __static__Do_Preliminary_Afterburner_Setup_Operations
+    HYBRID_given_software_sections+=('Sampler')
+    HYBRID_software_executable[Sampler]=$(which echo) # Use command as fake executable
+    HYBRID_optional_feature[Add_spectators_from_IC]='FALSE'
+    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
+}
+
+function Unit_Test__Afterburner-config-consistent-with-sampler()
+{
+    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
+    # Sampler config file with default number_of_events
+    local events_sampler
+    events_sampler=1000
+    touch "${HYBRID_software_configuration_file[Sampler]}"
+    printf '%s   %s\n' "number_of_events" "${events_sampler}" > "${HYBRID_software_configuration_file[Sampler]}"
+    mkdir -p "${HYBRID_software_output_directory[Afterburner]}"
+    # Afterburner config file with higher number_of_events
+    local events_entered
+    events_entered=1500
+    touch "${HYBRID_software_configuration_file[Afterburner]}"
+    printf '%s:\n  %s:  %s\n' 'General' 'Nevents' "${events_entered}" > \
+        "${HYBRID_software_configuration_file[Afterburner]}"
+    Call_Codebase_Function_In_Subshell __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler \
+        &> /dev/null
+    local events_found
+    events_found=$(Read_From_YAML_String_Given_Key "$(< "${HYBRID_software_configuration_file[Afterburner]}")" \
+        'General.Nevents')
+    if [[ "${events_found}" -ne "${events_sampler}" ]]; then
+        Print_Error 'The value of Nevents was not correctly replaced in afterburner config.'
+        return 1
+    fi
+}
+
+function Clean_Tests_Environment_For_Following_Test__Afterburner-config-consistent-with-sampler()
 {
     rm -r "${HYBRID_output_directory}"
 }

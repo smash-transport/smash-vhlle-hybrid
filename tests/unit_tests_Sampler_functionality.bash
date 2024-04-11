@@ -7,7 +7,7 @@
 #
 #===================================================
 
-function Make_Test_Preliminary_Operations__Sampler-create-input-file()
+function __static__Do_Preliminary_Sampler_Setup_Operations()
 {
     local file_to_be_sourced list_of_files
     list_of_files=(
@@ -26,6 +26,11 @@ function Make_Test_Preliminary_Operations__Sampler-create-input-file()
     HYBRID_software_executable[Sampler]="$(which echo)"
     # Touch dummy empty handler config as this is always there in sanity checks
     touch "${HYBRID_configuration_file}"
+}
+
+function Make_Test_Preliminary_Operations__Sampler-create-input-file()
+{
+    __static__Do_Preliminary_Sampler_Setup_Operations
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 }
 
@@ -209,31 +214,35 @@ function Clean_Tests_Environment_For_Following_Test__Sampler-validate-config-fil
 
 function Make_Test_Preliminary_Operations__Sampler-config-consistent-with-hydro()
 {
-    Make_Test_Preliminary_Operations__Sampler-create-input-file
+    __static__Do_Preliminary_Sampler_Setup_Operations
+    HYBRID_given_software_sections+=('Hydro')
+    HYBRID_software_executable[Hydro]="$(which echo)" # Use command as fake executable
+    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 }
 
 function Unit_Test__Sampler-config-consistent-with-hydro()
 {
-    HYBRID_given_software_sections+=('Hydro')
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     # Hydro config file with default ecrit
-    touch "${HYBRID_software_output_directory[Hydro]}/hydro_config.txt"
-    printf '%s   %s\n' "ecrit" "0.5" > "${HYBRID_software_configuration_file[Hydro]}"
+    touch "${HYBRID_software_configuration_file[Hydro]}"
+    local ecrit_hydro
+    ecrit_hydro='0.5'
+    printf '%s   %s\n' "e_crit" "${ecrit_hydro}" > "${HYBRID_software_configuration_file[Hydro]}"
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     # Sampler config file with different ecrit
     local ecrit_entered
-    ecrit_entered=0.3
-    touch "${HYBRID_software_output_directory[Sampler]}/sampler_config.txt"
-    printf '%s   %s\n' "e_crit" "${ecrit_entered}" > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell Check_If_Sampler_Configuration_Is_Consistent_With_Hydro
+    ecrit_entered='0.3'
+    touch "${HYBRID_software_configuration_file[Sampler]}"
+    printf '%s   %s\n' "ecrit" "${ecrit_entered}" > "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro &> /dev/null
     local ecrit_found
     while read key value; do
-        if [[ "${key}" = "e_crit" ]]; then
+        if [[ "${key}" = "ecrit" ]]; then
             ecrit_found="${value}"
         fi
     done < "${HYBRID_software_configuration_file[Sampler]}"
-    if ![[ "${ecrit_found}" = "${ecrit_entered}" ]]; then
-        Print_Error 'The value of e_crit was not correctly replaced in sampler config.'
+    if ! [[ "${ecrit_found}" = "${ecrit_hydro}" ]]; then
+        Print_Error 'The value of ecrit was not correctly replaced in sampler config.'
         return 1
     fi
 }
