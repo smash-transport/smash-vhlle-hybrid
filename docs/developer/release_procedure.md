@@ -47,7 +47,7 @@ Closing the branch means to merge it into `main`, which will be tagged and conta
     git switch -c release/1.2.0 develop
     ```
 
-=== "Create the release branch"
+=== "Close the release branch"
     ```bash
     # Git-flow extension
     git flow release finish 1.2.0
