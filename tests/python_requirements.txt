@@ -1,0 +1,6 @@
+# Even if some requirements here are the same as for the handler, we repeat them
+# as in unit tests the handler code checking requirements does not necessarily run.
+
+DateTime~=5.0
+pyDOE~=0.3.8
+PyYAML~=6.0.1

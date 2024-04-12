@@ -1,0 +1,27 @@
+IC:
+    Executable: /path/to/smash
+    Software_keys:
+        Modi:
+            Collider:
+                Projectile:
+                    Particles: {2212: 82, 2112: 126} #Lead208
+                Target:
+                    Particles: {2212: 82, 2112: 126} #Lead208
+                Sqrtsnn: 6.4
+
+Hydro:
+    Executable: /path/to/vHLLE
+    Software_keys:
+        etaS: 0.2
+        Rg: 1.4
+        Rgz: 1.2
+        # These settings are needed to reproduce the results of Eur.Phys.J.A 58 (2022) 11, 230
+        # nx: 201
+        # ny: 201
+        # nz: 401
+
+Sampler:
+    Executable: /path/to/hadron-sampler
+
+Afterburner:
+    Executable: /path/to/smash
