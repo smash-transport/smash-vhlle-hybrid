@@ -21,7 +21,7 @@
 
 | Other software | Required version |
 | :------------: | :--------------: |
-| [Python](https://www.python.org) | 3.0  or higher |
+| [Python](https://www.python.org) | 3.2 or higher |
 
 </div>
 </div>

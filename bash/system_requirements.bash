@@ -28,7 +28,7 @@ function __static__Declare_System_Requirements()
             [sed]='4.2.1'
             [tput]='5.7'
             [yq]='4.24.2'
-            [python3]='3.0.0'
+            [python3]='3.2.0'
         )
         declare -rga HYBRID_programs_just_required=(
             cat

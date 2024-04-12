@@ -35,6 +35,11 @@ function __static__Inhibit_Commands_Version()
         __static__Fake_Command_Version \
             '--version' "git version ${git_version}" "$@"
     }
+    function python3()
+    {
+        __static__Fake_Command_Version \
+            '--version' "Python ${python_version}" "$@"
+    }
     function sed()
     {
         __static__Fake_Command_Version \
@@ -75,6 +80,7 @@ function Unit_Test__system-requirements()
     gnu='GNU'
     awk_version=4.1
     git_version=2.0
+    python_version=3.2
     sed_version=4.2.1
     tput_version=5.9
     yq_version=4.24.2
@@ -102,6 +108,7 @@ function Unit_Test__system-requirements()
     gnu='BSD'
     awk_version=4.1.0
     git_version=1.8.3
+    python_version=3.1.9
     sed_version=4.2.0
     tput_version=''
     yq_version=3.9.98
