@@ -1,0 +1,47 @@
+/* Extra admonition for configuration keys */
+:root {
+    --md-admonition-icon--config-key: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0 160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17v80c0 13.3 10.7 24 24 24h80c13.3 0 24-10.7 24-24v-40h40c13.3 0 24-10.7 24-24v-40h40c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zm40-256a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"/></svg>')
+  }
+  .md-typeset .admonition.config-key,
+  .md-typeset details.config-key {
+    border-color: rgb(43, 155, 70);
+  }
+  .md-typeset .config-key > .admonition-title,
+  .md-typeset .config-key > summary {
+    background-color: rgba(43, 155, 70, 0.1);
+  }
+  .md-typeset .config-key > .admonition-title::before,
+  .md-typeset .config-key > summary::before {
+    background-color: rgb(43, 155, 70);
+    -webkit-mask-image: var(--md-admonition-icon--config-key);
+            mask-image: var(--md-admonition-icon--config-key);
+  }
+
+/* Extra admonition for utility functions */
+:root {
+    --md-admonition-icon--utility-func: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 19V7H4v12h16m0-16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16m-7 14v-2h5v2h-5m-3.42-4L5.57 9H8.4l3.3 3.3c.39.39.39 1.03 0 1.42L8.42 17H5.59l3.99-4Z"/></svg>')
+  }
+  .md-typeset .admonition.utility-func,
+  .md-typeset details.utility-func {
+    border-color: rgba(255, 255, 255, 0.0);
+  }
+  .md-typeset .utility-func > .admonition-title,
+  .md-typeset .utility-func > summary {
+    background-color: rgba(255, 230, 0, 0.0);
+  }
+  .md-typeset .utility-func > .admonition-title::before,
+  .md-typeset .utility-func > summary::before {
+    background-color: rgb(0, 150, 255);
+    -webkit-mask-image: var(--md-admonition-icon--utility-func);
+            mask-image: var(--md-admonition-icon--utility-func);
+  }
+
+/* Center Markdown Tables (requires md_in_html extension) */
+.center-table {
+  text-align: center;
+}
+
+.md-typeset .center-table :is(td,th):not([align]) {
+  /* Reset alignment for table cells */
+  text-align: initial;
+}
