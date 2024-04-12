@@ -1,6 +1,7 @@
 build*/
 binaries
 python_scripts/*.pyc
+site/
 
 # OS specific auxiliary files
 .vscode
