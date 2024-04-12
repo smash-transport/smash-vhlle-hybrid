@@ -12,8 +12,8 @@
 | Physics Software | Suggested version |
 | :--------------: | :---------------: |
 | [SMASH](https://github.com/smash-transport/smash) | 3.1 or higher[^1] |
-| [vHLLE](https://github.com/yukarpenko/vhlle) | - |
-| [vHLLE parameters](https://github.com/yukarpenko/vhlle_params) | - |
+| [vHLLE](https://github.com/yukarpenko/vhlle) | Commit `37bcdcb` |
+| [vHLLE parameters](https://github.com/yukarpenko/vhlle_params) | Commit `c21a56d` |
 | [Hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | 1.0 or higher |
 
 </div>
