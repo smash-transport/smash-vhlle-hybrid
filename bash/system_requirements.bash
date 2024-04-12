@@ -492,7 +492,7 @@ function __static__Check_Version_Suffices()
     version_found=$(__static__Get_Field_In_System_Information_String "${program}" 1)
     # If the required version contains trailing '.0's we drop them
     if [[ ${version_required} =~ (\.0)*$ ]]; then
-        version_required=${version_required/%${BASH_REMATCH[0]}}
+        version_required=${version_required/%${BASH_REMATCH[0]}/}
     fi
     # If the found version matches the required ones up to trailing '.0's then we are done
     if [[ "${version_found/#${version_required}/}" =~ ^(\.0)*$ ]]; then
