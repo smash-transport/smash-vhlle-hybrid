@@ -12,9 +12,9 @@
 | Physics Software | Suggested version |
 | :--------------: | :---------------: |
 | [SMASH](https://github.com/smash-transport/smash) | 3.1 or higher[^1] |
-| [vHLLE](https://github.com/yukarpenko/vhlle) | Commit `37bcdcb` |
-| [vHLLE parameters](https://github.com/yukarpenko/vhlle_params) | Commit `c21a56d` |
-| [Hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | 1.0 or higher |
+| [vHLLE](https://github.com/yukarpenko/vhlle) | Tag `vhlle-smash-hybrid-1` |
+| [vHLLE parameters](https://github.com/yukarpenko/vhlle_params) | Tag `vhlle-smash-hybrid-1` |
+| [Hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | Same as SMASH[^2] |
 
 </div>
 <div class="center-table" markdown>
@@ -27,6 +27,9 @@
 </div>
 
 [^1]: Version `3.1` is only needed for the afterburner functionality. Otherwise version `1.8` is sufficient.
+[^2]:
+    As SMASH is a dependency of the hadron sampler codebase, different versions of the latter have to be compiled with corresponding given versions of SMASH.
+    However, if you need to use a different version of the hadron sampler software, this is probably not making a difference from the Hybrid handler perspective and it is likely to work.
 
 Instructions on how to compile or install the software above can be found at the provided links either in the official documentation or in the corresponding README files.
 
