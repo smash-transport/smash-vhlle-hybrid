@@ -62,3 +62,23 @@ function Report_About_Software_Failure_For()
     exit_code=${HYBRID_fatal_software_failed} Print_Fatal_And_Exit \
         '\n' --emph "$1" ' run failed.'
 }
+
+function Ensure_Input_File_Exists_And_Alert_If_Unfinished()
+{
+    # NOTE: 'input_file' variables follow symbolic links
+    #       'realpath -m' is used to accept non existing paths
+    local -r \
+        input_file="$(realpath -m "$1")" \
+        input_file_unfinished="$(realpath -m "${1}.unfinished")"
+    if [[ ! -f "${input_file}" ]]; then
+        if [[ -f "${input_file_unfinished}" ]]; then
+            Ensure_Given_Files_Exist \
+                "Instead of the correct input file, a different file was found:\n - " \
+                --emph "${input_file_unfinished}" \
+                "\nIt is possible the previous stage of the simulation failed." \
+                -- "${input_file}"
+        else
+            Ensure_Given_Files_Exist "${input_file}"
+        fi
+    fi
+}

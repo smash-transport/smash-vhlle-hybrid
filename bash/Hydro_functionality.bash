@@ -21,9 +21,10 @@ function Prepare_Software_Input_File_Hydro()
 function Ensure_All_Needed_Input_Exists_Hydro()
 {
     Ensure_Given_Folders_Exist "${HYBRID_software_output_directory[Hydro]}"
-    Ensure_Given_Files_Exist \
-        "${HYBRID_software_configuration_file[Hydro]}" \
+    Ensure_Input_File_Exists_And_Alert_If_Unfinished \
         "${HYBRID_software_input_file[Hydro]}"
+    Ensure_Given_Files_Exist \
+        "${HYBRID_software_configuration_file[Hydro]}"
     Internally_Ensure_Given_Files_Exist "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
 }
 

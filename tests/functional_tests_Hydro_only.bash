@@ -121,4 +121,21 @@ function Functional_Test__do-Hydro-only()
             --emph "${HYBRID_fatal_logic_error}" '.'
         return 1
     fi
+    # Expect failure for unfinished IC input
+    printf '
+    Hybrid_handler:
+      Run_ID: %s
+    Hydro:
+      Executable: %s/vhlle_black-box.py
+      Input_file: %s
+    ' "${run_id}" "$(pwd)" "IC/${run_id}/SMASH_IC.dat" > "${config_filename}"
+    touch "IC/${run_id}/SMASH_IC.dat.unfinished"
+    Print_Info 'Running Hybrid-handler expecting failure'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
+    if [[ $? -ne ${HYBRID_fatal_file_not_found} ]]; then
+        Print_Error \
+            'Hydro finished without exit code ' \
+            --emph "${HYBRID_fatal_file_not_found}" ' finding unfinished files.'
+        return 1
+    fi
 }
