@@ -69,7 +69,7 @@ function Unit_Test__copy-hybrid-handler-config-section()
 
 function Unit_Test__add-section-terminal-output()
 {
-    __static__Do_Preliminary_Afterburner_Setup_Operations
+    Do_Preliminary_Afterburner_Setup_Operations
     HYBRID_software_output_directory[IC]="${HYBRIDT_folder_to_run_tests}/test_dir_IC"
     mkdir -p "${HYBRID_software_output_directory[IC]}"
     local -r filename="${HYBRID_software_output_directory[IC]}/${HYBRID_terminal_output[IC]}"

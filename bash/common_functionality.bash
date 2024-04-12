@@ -65,6 +65,8 @@ function Report_About_Software_Failure_For()
 
 function Ensure_Input_File_Exists_And_Alert_If_Unfinished()
 {
+    # NOTE: 'input_file' variables follow symbolic links
+    #       'realpath -m' is used to accept non existing paths
     local -r \
         input_file="$(realpath -m "$1")" \
         input_file_unfinished="$(realpath -m "${1}.unfinished")"

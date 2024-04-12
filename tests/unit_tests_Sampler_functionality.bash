@@ -224,15 +224,11 @@ function Unit_Test__Sampler-config-consistent-with-hydro()
 {
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     # Hydro config file with default ecrit
-    touch "${HYBRID_software_configuration_file[Hydro]}"
-    local ecrit_hydro
-    ecrit_hydro='0.5'
+    local -r ecrit_hydro='0.5'
     printf '%s   %s\n' "e_crit" "${ecrit_hydro}" > "${HYBRID_software_configuration_file[Hydro]}"
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     # Sampler config file with different ecrit
-    local ecrit_entered
-    ecrit_entered='0.3'
-    touch "${HYBRID_software_configuration_file[Sampler]}"
+    local -r ecrit_entered='0.3'
     printf '%s   %s\n' "ecrit" "${ecrit_entered}" > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell \
         __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro &> /dev/null
