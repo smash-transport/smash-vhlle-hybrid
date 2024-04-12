@@ -1,0 +1,135 @@
+#===================================================
+#
+#    Copyright (c) 2024
+#      SMASH Hybrid Team
+#
+#    GNU General Public License (GPLv3 or later)
+#
+#===================================================
+
+# Refer to https://squidfunk.github.io/mkdocs-material/ for the documentation
+# of most of the setup done here (cf. in particular the 'Setup' and 'Reference'
+# tabs in the documentation).
+
+site_name: SMASH-vHLLE-Hybrid
+copyright: Copyright &copy; 2024 - SMASH team
+
+repo_url: https://github.com/smash-transport/smash-vhlle-hybrid
+repo_name: 'Repository'
+site_url: 'https://smash-transport.github.io/smash-vhlle-hybrid/'  # Trailing slash is recommended
+
+nav:
+  - Home: index.md
+  - User Guide:
+    - user/index.md
+    - Getting started:
+       - Prerequisites: user/prerequisites.md
+       - Execution modes: user/execution_modes.md
+       - Handler configuration file: user/configuration_file.md
+       - Predefined configuration files: user/predefined_configs.md
+    - Parameters scan:
+       - Scan syntax: user/scans_syntax.md
+       - Types of scans: user/scans_types.md
+    - FAQ:
+       - user/FAQ/index.md
+  - Developer Guide:
+    - developer/index.md
+    - General aspects:
+      - Contributing: developer/contributing.md
+      - The testing framework: developer/testing_framework.md
+      - Building the documentation: developer/building_docs.md
+      - Releasing procedure: developer/release_procedure.md
+    - Code design and technicalities:
+      - Parameters scan: developer/parameters_scan.md
+      - Utility functions: developer/utility_functions.md
+
+markdown_extensions:
+  # More markdown functionality
+  - tables
+  - footnotes
+  - attr_list
+  - def_list
+  - md_in_html
+  - pymdownx.critic
+  - pymdownx.keys
+  # Collapsible admonitions
+  - admonition
+  - pymdownx.details
+  # Emojis
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  # For LaTeX and maths
+  - pymdownx.arithmatex:
+      generic: true
+  # For rendered checklists
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  # For code highlights and related aspects plus diagrams
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  # Customize tables of contents
+  - toc:
+      permalink: true
+      permalink_title: "Link to this section"
+      toc_depth: 4
+
+
+theme:
+  name: material
+  favicon: images/favicon.png
+  logo: images/logo.png
+  features:
+    - content.code.copy
+    - header.autohide
+    - navigation.indexes
+    - navigation.sections
+    - navigation.tabs
+    - navigation.top
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: orange
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+extra:
+  social:
+    - icon: fontawesome/solid/link
+      link: https://github.com/smash-transport
+      name: SMASH transport organization
+  version:
+    provider: mike
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

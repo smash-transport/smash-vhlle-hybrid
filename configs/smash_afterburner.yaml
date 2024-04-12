@@ -1,4 +1,3 @@
-Version: 1.8
 Logging:
     default: INFO
 
@@ -8,14 +7,13 @@ General:
     Delta_Time:    0.1
     End_Time:      10000.0    # make sure runtime is long enough for back-propagation
     Randomseed:    -1
-    Nevents:       2000
+    Nevents:       1000
 
 Output:
     Particles:
-        Format:          ["Binary", "Oscar2013"]
+        Format:          ["Oscar2013"]
 
 Modi:
     List:
-        File_Directory: "../build/"
-        File_Prefix: "sampling"
-        Shift_Id: 0
+        File_Directory: "."
+        Filename: "sampled_particles_list.oscar"

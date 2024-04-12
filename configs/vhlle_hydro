@@ -1,13 +1,15 @@
 eosType       1
 eosTypeHadron 1
 
-etaS      0.2     # to be updated
-zetaS     0.0
-e_crit    0.5
+etaS       0.2
+etaSparam  0
+zetaS      0.0
+zetaSparam 0
+e_crit     0.5
 
-nx        201
-ny        201
-nz        401
+nx        161
+ny        161
+nz        71
 xmin     -20.0
 xmax      20.0
 ymin     -20.0
@@ -18,9 +20,11 @@ etamax    5.0
 tauGridResize 20.0
 
 icModel    6
-Rg      1.4      # to be updated
-Rgz     1.0      # to be updated
+Rg         1.4
+Rgz        1.0
 
 tau0       2.7842
 tauMax     25.0
 dtau       0.05
+
+freezeoutOnly 1
