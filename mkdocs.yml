@@ -16,6 +16,7 @@ copyright: Copyright &copy; 2024 - SMASH team
 
 repo_url: https://github.com/smash-transport/smash-vhlle-hybrid
 repo_name: 'Repository'
+site_url: 'https://smash-transport.github.io/smash-vhlle-hybrid/'  # Trailing slash is recommended
 
 nav:
   - Home: index.md
