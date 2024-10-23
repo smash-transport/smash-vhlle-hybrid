@@ -17,12 +17,33 @@ function Validate_And_Parse_Configuration_File()
         "${HYBRID_configuration_file}"
     __static__Abort_If_Configuration_File_Is_Not_A_Valid_YAML_File
     __static__Abort_If_Sections_Are_Violating_Any_Requirement
+    __static__Exchange_Modules
     __static__Abort_If_Invalid_Keys_Were_Used
     __static__Parse_Section 'Hybrid_handler'
     __static__Parse_Section 'IC'
     __static__Parse_Section 'Hydro'
     __static__Parse_Section 'Sampler'
     __static__Parse_Section 'Afterburner'
+}
+
+function __static__Exchange_Modules()
+{
+    local yaml_section valid_key
+    local -r yaml_config="$(< "${HYBRID_configuration_file}")"
+    if Has_YAML_String_Given_Key "${yaml_config}" "Hybrid_handler"; then
+        echo "1"
+        yaml_section="$(Read_From_YAML_String_Given_Key "${yaml_config}" "Hybrid_handler")"
+        if Has_YAML_String_Given_Key "${yaml_section}" 'Sampler_module'; then
+            echo "2"
+            __static__Exchange_Sampler_Module
+        else
+            echo "3"
+            Copy_Associative_Array HYBRID_smash_hadron_sampler_valid_keys HYBRID_sampler_valid_keys
+        fi
+    else 
+        echo "4"
+        Copy_Associative_Array HYBRID_smash_hadron_sampler_valid_keys HYBRID_sampler_valid_keys
+    fi
 }
 
 function __static__Abort_If_Configuration_File_Is_Not_A_Valid_YAML_File()
@@ -162,6 +183,26 @@ function __static__Parse_Section()
             __static__Parse_Key_And_Store_It "${valid_key}" "${reference_to_map[${valid_key}]}"
         done
         __static__YAML_section_must_be_empty "${yaml_section}" "${section_label}"
+    fi
+}
+
+function __static__Exchange_Sampler_Module()
+{
+    HYBRID_handler_section_modus['Sampler']=$(Read_From_YAML_String_Given_Key "${yaml_section}" 'Sampler_module')
+    if [[ ${HYBRID_handler_section_modus['Sampler']} != 'smash-hadron-sampler' && ${HYBRID_handler_section_modus['Sampler']} != 'FIST-sampler' ]]; then
+        echo "A"
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+            'The ' --emph 'Sampler_module' ' key must be set to ' \
+            --emph 'smash-hadron-sampler' ' or ' --emph 'FIST-sampler' ' in the ' --emph 'Hybrid_handler' \
+            ' section.'
+    fi
+    if [[ ${HYBRID_handler_section_modus['Sampler']} == 'smash-hadron-sampler' ]]; then 
+        echo "B"
+        Copy_Associative_Array HYBRID_smash_hadron_sampler_valid_keys HYBRID_sampler_valid_keys
+    else
+        echo "C"
+        Copy_Associative_Array HYBRID_FIST_sampler_valid_keys HYBRID_sampler_valid_keys
+        HYBRID_software_base_config_file['Sampler']="${HYBRID_default_configurations_folder}/fist_sampler"
     fi
 }
 

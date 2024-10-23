@@ -30,6 +30,7 @@ function Define_Further_Global_Variables()
     readonly HYBRID_python_folder="${HYBRID_top_level_path}/python"
     readonly HYBRID_afterburner_list_filename="sampled_particles_list.oscar"
     readonly HYBRID_default_number_of_samples=0
+    readonly HYBRID_default_sampler_module="smash-hadron-sampler"
     declare -rgA HYBRID_external_python_scripts=(
         [Add_spectators_from_IC]="${HYBRID_python_folder}/add_spectators.py"
         [Latin_hypercube_sampling]="${HYBRID_python_folder}/latin_hypercube_sampling.py"
@@ -59,6 +60,9 @@ function Define_Further_Global_Variables()
         [Sampler]='Hybrid_handler_Sampler_config.yaml'
         [Afterburner]='Hybrid_handler_Afterburner_config.yaml'
     )
+    declare -rgA HYBRID_handler_section_modus=(
+        [Sampler]='smash-hadron-sampler'
+    )
     # This array specifies a set of YAML lists of keys that define a valid parameter scan.
     # ATTENTION: The keys inside each YAML list must be alphabetically sorted to allow
     #            the validation mechanism to work!
@@ -72,6 +76,7 @@ function Define_Further_Global_Variables()
     declare -rgA HYBRID_hybrid_handler_valid_keys=(
         [Run_ID]='HYBRID_run_id'
         [LHS_scan]='HYBRID_number_of_samples'
+        [Sampler_module]='HYBRID_sampler_module'
     )
     declare -rgA HYBRID_ic_valid_keys=(
         [Executable]='HYBRID_software_executable[IC]'
@@ -86,12 +91,19 @@ function Define_Further_Global_Variables()
         [Scan_parameters]='HYBRID_scan_parameters[Hydro]'
         [Software_keys]='HYBRID_software_new_input_keys[Hydro]'
     )
-    declare -rgA HYBRID_sampler_valid_keys=(
+    declare -rgA HYBRID_smash_hadron_sampler_valid_keys=(
         [Executable]='HYBRID_software_executable[Sampler]'
         [Config_file]='HYBRID_software_base_config_file[Sampler]'
         [Scan_parameters]='HYBRID_scan_parameters[Sampler]'
         [Software_keys]='HYBRID_software_new_input_keys[Sampler]'
     )
+    declare -rgA HYBRID_FIST_sampler_valid_keys=(
+        [Executable]='HYBRID_software_executable[Sampler]'
+        [Config_file]='HYBRID_software_base_config_file[Sampler]'
+        [Scan_parameters]='HYBRID_scan_parameters[Sampler]'
+        [Software_keys]='HYBRID_software_new_input_keys[Sampler]'
+    )
+    
     declare -rgA HYBRID_afterburner_valid_keys=(
         [Executable]='HYBRID_software_executable[Afterburner]'
         [Config_file]='HYBRID_software_base_config_file[Afterburner]'
@@ -121,6 +133,7 @@ function Define_Further_Global_Variables()
     # Variables which can be specified both from command line and from configuration/setup
     HYBRID_run_id="Run_$(date +'%Y-%m-%d_%H%M%S')"
     # Variables to be set (and possibly made readonly) from configuration/setup
+    HYBRID_sampler_module="${HYBRID_default_sampler_module}"
     HYBRID_number_of_samples="${HYBRID_default_number_of_samples}"
     HYBRID_given_software_sections=()
     declare -gA HYBRID_software_executable=(
@@ -176,6 +189,7 @@ function Define_Further_Global_Variables()
         [Spectators]=''
         [Afterburner]=''
     )
+    declare -gA HYBRID_sampler_valid_keys=()
     HYBRID_scan_strategy='Combinations'
 }
 
