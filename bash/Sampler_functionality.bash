@@ -88,8 +88,12 @@ function __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File_Ensuring_I
 function __static__Is_Sampler_Config_Valid()
 {
     local -r config_file="${HYBRID_software_configuration_file[Sampler]}"
+    # Remove comments
+    if ! sed -i 's/#.*//' "${config_file}"; then
+    Print_Internal_And_Exit "Comment removal in ${FUNCNAME} failed."
+    fi
     # Remove empty lines from configuration file
-    if ! sed -i '/^[[:space:]]*$/d' "${config_file}"; then
+        if ! sed -i '/^[[:space:]]*$/d' "${config_file}"; then
         Print_Internal_And_Exit "Empty lines removal in ${FUNCNAME} failed."
     fi
     # Check if the config file is empty
@@ -108,20 +112,41 @@ function __static__Is_Sampler_Config_Valid()
         return 1
     fi
     # Define allowed keys as an array
-    local -r allowed_keys=(
-        'surface'
-        'spectra_dir'
-        'number_of_events'
-        'rescatter'
-        'weakContribution'
-        'shear'
-        'bulk'
-        'ecrit'
-        'Nbins'
-        'q_max'
-        'cs2'
-        'ratio_pressure_energydensity'
-    )
+    if [ "${HYBRID_module[Sampler]}" = 'smash-hadron-sampler' ]; then
+        local -r allowed_keys=(
+            'surface'
+            'spectra_dir'
+            'number_of_events'
+            'rescatter'
+            'weakContribution'
+            'shear'
+            'bulk'
+            'ecrit'
+            'Nbins'
+            'q_max'
+            'cs2'
+            'ratio_pressure_energydensity'
+        )
+    elif [ "${HYBRID_module[Sampler]}" = 'fist-sampler' ]; then
+        local -r allowed_keys=(
+            'surface'
+            'spectra_dir'
+            'number_of_events'
+            'rescatter'
+            'weakContribution'
+            'shear'
+            'bulk'
+            'ecrit'
+            'Nbins'
+            'q_max'
+            'cs2'
+            'ratio_pressure_energydensity'
+            'shear_viscosity'
+            'bulk_viscosity'
+            'shear_viscosity_param'
+            'bulk_viscosity_param'
+        )
+    fi
     local keys_to_be_found
     keys_to_be_found=2
     while read key value; do

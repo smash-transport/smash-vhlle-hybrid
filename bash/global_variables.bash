@@ -60,9 +60,6 @@ function Define_Further_Global_Variables()
         [Sampler]='Hybrid_handler_Sampler_config.yaml'
         [Afterburner]='Hybrid_handler_Afterburner_config.yaml'
     )
-    declare -rgA HYBRID_handler_section_modus=(
-        [Sampler]='smash-hadron-sampler'
-    )
     # This array specifies a set of YAML lists of keys that define a valid parameter scan.
     # ATTENTION: The keys inside each YAML list must be alphabetically sorted to allow
     #            the validation mechanism to work!
@@ -76,7 +73,6 @@ function Define_Further_Global_Variables()
     declare -rgA HYBRID_hybrid_handler_valid_keys=(
         [Run_ID]='HYBRID_run_id'
         [LHS_scan]='HYBRID_number_of_samples'
-        [Sampler_module]='HYBRID_sampler_module'
     )
     declare -rgA HYBRID_ic_valid_keys=(
         [Executable]='HYBRID_software_executable[IC]'
@@ -91,17 +87,12 @@ function Define_Further_Global_Variables()
         [Scan_parameters]='HYBRID_scan_parameters[Hydro]'
         [Software_keys]='HYBRID_software_new_input_keys[Hydro]'
     )
-    declare -rgA HYBRID_smash_hadron_sampler_valid_keys=(
+    declare -rgA HYBRID_sampler_valid_keys=(
         [Executable]='HYBRID_software_executable[Sampler]'
         [Config_file]='HYBRID_software_base_config_file[Sampler]'
         [Scan_parameters]='HYBRID_scan_parameters[Sampler]'
         [Software_keys]='HYBRID_software_new_input_keys[Sampler]'
-    )
-    declare -rgA HYBRID_FIST_sampler_valid_keys=(
-        [Executable]='HYBRID_software_executable[Sampler]'
-        [Config_file]='HYBRID_software_base_config_file[Sampler]'
-        [Scan_parameters]='HYBRID_scan_parameters[Sampler]'
-        [Software_keys]='HYBRID_software_new_input_keys[Sampler]'
+        [Module]='HYBRID_module[Sampler]'
     )
     
     declare -rgA HYBRID_afterburner_valid_keys=(
@@ -167,6 +158,9 @@ function Define_Further_Global_Variables()
         [Sampler]=''
         [Afterburner]=''
     )
+    declare -gA HYBRID_module=(
+        [Sampler]='smash-hadron-sampler'
+    )
     declare -gA HYBRID_optional_feature=(
         [Add_spectators_from_IC]='TRUE'
         [Spectators_source]=''
@@ -189,7 +183,6 @@ function Define_Further_Global_Variables()
         [Spectators]=''
         [Afterburner]=''
     )
-    declare -gA HYBRID_sampler_valid_keys=()
     HYBRID_scan_strategy='Combinations'
 }
 

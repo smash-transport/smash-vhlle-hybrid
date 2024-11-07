@@ -12,6 +12,9 @@ function Functional_Test__do-Sampler-only()
     shopt -s nullglob
     local -r \
         hybrid_handler_config='hybrid_config' \
+        hybrid_handler_config_fist='hybrid_config_fist' \
+        hybrid_handler_config_mixed='hybrid_config_mixed' \
+        hybrid_handler_config_wrong_module='hybrid_config_wrong_module' \
         run_id='Sampler_only'
     local output_files
     mkdir -p "Hydro/${run_id}"
@@ -20,8 +23,33 @@ function Functional_Test__do-Sampler-only()
     Hybrid_handler:
       Run_ID: %s
     Sampler:
+      Module: smash-hadron-sampler
       Executable: %s/tests/mocks/sampler_black-box.py
     ' "${run_id}" "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config}"
+    printf '
+    Hybrid_handler:
+      Run_ID: %s
+    Sampler:
+      Module: FIST-sampler
+      Executable: %s/tests/mocks/sampler_black-box.py
+      Config_file: %s/configs/fist_config
+    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config_fist}"
+    printf '
+    Hybrid_handler:
+      Run_ID: %s
+    Sampler:
+      Module: FIST-sampler
+      Executable: %s/tests/mocks/sampler_black-box.py
+      Config_file: %s/configs/hadron_sampler
+    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config_mixed}"
+    printf '
+    Hybrid_handler:
+      Run_ID: %s
+    Sampler:
+      Module: 42
+      Executable: %s/tests/mocks/sampler_black-box.py
+      Config_file: %s/configs/hadron_sampler
+    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config_wrong_module}"
     # Expect success and test presence of output files
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}" '-o' '.'
@@ -31,6 +59,33 @@ function Functional_Test__do-Sampler-only()
     fi
     Check_If_Software_Produced_Expected_Output 'Sampler' "$(pwd)/Sampler"
     mv 'Sampler' 'Sampler-success'
+    # Expect success with FIST module
+    Print_Info 'Running Hybrid-handler expecting success'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config_fist}" '-o' '.'
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Hybrid-handler unexpectedly failed when running with alternative sampler.'
+        return 1
+    fi
+    Check_If_Software_Produced_Expected_Output 'Sampler' "$(pwd)/Sampler"
+    mv 'Sampler' 'Sampler-success-fist'
+    # Expect failure with config from wrong module
+    Print_Info 'Running Hybrid-handler expecting failure'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config_mixed}" '-o' '.'
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Hybrid-handler unexpectedly succeeded when running with config from wrong module.'
+        return 1
+    fi
+    Check_If_Software_Produced_Expected_Output 'Sampler' "$(pwd)/Sampler"
+    mv 'Sampler' 'Sampler-failure-wrong-config'
+    # Expect failure with wrong module name
+    Print_Info 'Running Hybrid-handler expecting failure'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config_wrong_module}" '-o' '.'
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Hybrid-handler unexpectedly succeeded when running with config from wrong module.'
+        return 1
+    fi
+    Check_If_Software_Produced_Expected_Output 'Sampler' "$(pwd)/Sampler"
+    mv 'Sampler' 'Sampler-failure-wrong-module'
     # Expect failure and test terminal output
     local terminal_output_file error_message
     local -r terminal_output_file="Sampler/${run_id}/Sampler.log"

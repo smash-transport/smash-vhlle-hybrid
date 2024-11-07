@@ -23,6 +23,9 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             __static__Ensure_Executable_Exists "${key}"
             __static__Set_Software_Configuration_File "${key}"
             __static__Set_Software_Input_Data_File_If_Not_Set_By_User "${key}"
+            if [ "${key}" = "Sampler" ]; then
+                __static__Ensure_Valid_Module_Given
+            fi
         fi
     done
     __static__Set_Software_Input_Data_File_If_Not_Set_By_User 'Spectators'
@@ -54,6 +57,16 @@ function Perform_Internal_Sanity_Checks()
 }
 
 #===================================================================================================
+
+function __static__Ensure_Valid_Module_Given()
+{
+    if [ "${HYBRID_module[Sampler]}" != "smash-hadron-sampler" ] && [ "${HYBRID_module[Sampler]}" != "FIST-sampler" ]; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+        'The module specified for the Sampler run is not valid.' \
+        'Valid modules are: ' --emph 'smash-hadron-sampler' ' and ' --emph 'FIST-sampler' '.'
+    fi
+    return 0
+}
 
 function __static__Perform_Command_Line_VS_Configuration_Consistency_Checks()
 {
