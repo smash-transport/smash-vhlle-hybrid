@@ -93,56 +93,6 @@ function Unit_Test__configuration-validate-section-labels()
 
 #-------------------------------------------------------------------------------
 
-function Unit_Test__configuration-exchange-modules()
-{
-    HYBRID_configuration_file=${PWD}/${FUNCNAME}.yaml
-
-    # Test case 1: Hybrid_handler with inexistant option
-    printf '
-    Hybrid_handler:
-      Sampler_module: some_module
-    ' > "${HYBRID_configuration_file}"
-    Call_Codebase_Function_In_Subshell __static__Exchange_Modules
-    if [[ $? -ne 1 ]]; then
-        Print_Error 'Exchange_Modules succeded although failure was exepcted.'
-        return 1
-    fi
-
-    # Test case 2: Hybrid_handler with smash-hadron-sampler
-    printf '
-    Hybrid_handler:
-      Sampler_module: smash-hadron-sampler
-    ' > "${HYBRID_configuration_file}"
-    Call_Codebase_Function_In_Subshell __static__Exchange_Modules
-    if [[ $? -ne 0 ]]; then
-        Print_Error 'Exchange_Modules failed for Hybrid_handler with smash-hadron-sampler.'
-        return 1
-    fi
-    if [[ "${HYBRID_sampler_valid_keys[*]}" != "${HYBRID_smash_hadron_sampler_valid_keys[*]}" ]]; then
-        Print_Error 'Valid keys not set correctly for Hybrid_handler with smash-hadron-sampler.'
-        return 1
-    fi
-
-    # Test case 3: No Hybrid_handler
-    printf '
-    Hybrid_handler:
-      Sampler_module: FIST-sampler
-    ' > "${HYBRID_configuration_file}"
-    Call_Codebase_Function_In_Subshell __static__Exchange_Modules
-    if [[ $? -ne 0 ]]; then
-        Print_Error 'Exchange_Modules failed for configuration with FIST-sampler.'
-        return 1
-    fi
-    if [[ "${HYBRID_sampler_valid_keys[*]}" != "${HYBRID_smash_hadron_sampler_valid_keys[*]}" ]]; then
-        Print_Error 'Valid keys not set correctly for configuration with FIST-sampler.'
-        return 1
-    fi
-
-    rm "${HYBRID_configuration_file}"
-}
-
-#-------------------------------------------------------------------------------
-
 function Make_Test_Preliminary_Operations__configuration-validate-all-keys()
 {
     Make_Test_Preliminary_Operations__configuration-validate-existence
@@ -363,6 +313,7 @@ function Unit_Test__configuration-parse-Sampler-section()
       Executable: foo
       Config_file: bar
       Scan_parameters: [shear]
+      Module: smash-hadron-sampler
       Software_keys:
         shear: 1.2345
     ' > "${HYBRID_configuration_file}"
