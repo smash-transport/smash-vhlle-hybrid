@@ -61,6 +61,8 @@ function Functional_Test__do-Sampler-only()
     mv 'Sampler' 'Sampler-success'
     # Expect success with FIST module
     Print_Info 'Running Hybrid-handler expecting success'
+    touch "./list.dat"
+    touch "./decays.dat"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config_fist}" '-o' '.'
     if [[ $? -ne 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly failed when running with alternative sampler.'

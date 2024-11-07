@@ -1,0 +1,86 @@
+# Input parameters for the FIST sampler using particlization hypersurface for Au-Au 7.7 GeV collision from MUSIC
+# Uses EV-HRG model
+# Format: <parameter-name> <parameter-value>
+# Everything after # is ignored
+
+# The format of the Cooper-Frye hypersurface
+fist_sampler_mode 0   # 0 - Coarse-grained from file, 1 - Siemens-Rasmussen-Hubble, 2 - boost-invariant blast-wave
+
+# The number of events
+nevents 7500
+
+# The random number generator seed
+randomseed 1
+
+# The particle list file (absolute or relative path)
+# If not set, uses the default particle list WITHOUT light nuclei
+# To set a different list, uncomment the line below
+# This list is part of ThermalFIST
+# particle_list_file <path-to-the-particle-list>
+particle_list_file ./list.dat
+
+# The decay channels list file (absolute or relative path)
+# If not set, uses the "decays.dat" file from the same folder where the list file is
+# To use a different file, uncomment the line below
+# This list is part of ThermalFIST
+# decays_list_file <path-to-the-decay-list>
+decays_list_file ./decays.dat
+
+# Global conservation of baryon number
+Bcanonical 1    # 0 - grand-canonical, 1 - canonical
+
+# Global conservation of electric charge
+Qcanonical 1    # 0 - grand-canonical, 1 - canonical
+
+# Global conservation of strangeness
+Scanonical 1    # 0 - grand-canonical, 1 - canonical
+
+# Global conservation of charm
+Ccanonical 0    # 0 - grand-canonical, 1 - canonical
+
+# Finite resonance widths treatment
+finite_widths 0 # 0 - zero-width, 1 - eBW (const BR) (energy-dependent Breit-Wigner spectral functions with constant branching ratios)
+
+# Treatment of decays
+# 0 - no decays (only primordial hadrons)
+# 1 - according to the stability flags in the particle list
+# 2 - strong decays
+# 3 - strong + electromagnetic decays
+# 4 - strong + electromagnetic + weak decays (charged pions and kaons remain stable)
+# 10 - decay only those resonances that are no recognized by UrQMD
+decays 0
+
+# Hypersurface file format
+# 0 - FIST ascii
+# 1 - FIST binary
+# 2 - MUSIC binary
+# 3 - vHLLE ascii
+hypersurface_filetype 3
+
+# The file name with the particlization hypersurface (absolute or relative path)
+hypersurface_file =DEFAULT=
+
+# Whether to recalculate T and \mu along the hypersurface to match energy and baryon density from hydro
+# This part is particularly relevant for EV-HRG because T and \mu were originally computed in MUSIC assuming ideal HRG
+# It is imperative that the Cooper-Frye corresponds to constant energy density of edens (see the next parameter)
+rescaleTmu 0
+
+# The value of energy density corresponding to the Cooper-Frye particlization hypersurface from Hydro (in GeV/fm^3)
+edens 0.5
+
+# The output file name for the generated events (absolute or relative path)
+output_file =DEFAULT=
+
+use_idealHRG_for_means 1
+
+shear_correction 1
+bulk_correction 1
+speed_of_sound_squared 0.15
+
+# The output format
+# 0 - FIST ascii
+# 1 - output tailored for UrQMD afterburner at https://github.com/jbernhard/urqmd-afterburner
+# 2 - output tailored for SMASH afterburner
+# Any other value -- no output
+output_format 2
+

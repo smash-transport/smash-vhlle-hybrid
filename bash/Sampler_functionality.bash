@@ -96,6 +96,10 @@ function __static__Is_Sampler_Config_Valid()
         if ! sed -i '/^[[:space:]]*$/d' "${config_file}"; then
         Print_Internal_And_Exit "Empty lines removal in ${FUNCNAME} failed."
     fi
+    # Remove trailing whitespace from each line
+    if ! sed -i 's/[[:space:]]*$//' "${config_file}"; then
+    Print_Internal_And_Exit "Trailing whitespace removal in ${FUNCNAME} failed."
+    fi
     # Check if the config file is empty
     if [[ ! -s "${config_file}" ]]; then
         Print_Error 'Sampler configuration file is empty.'
@@ -127,24 +131,29 @@ function __static__Is_Sampler_Config_Valid()
             'cs2'
             'ratio_pressure_energydensity'
         )
-    elif [ "${HYBRID_module[Sampler]}" = 'fist-sampler' ]; then
+    elif [ "${HYBRID_module[Sampler]}" = 'FIST-sampler' ]; then
         local -r allowed_keys=(
-            'surface'
-            'spectra_dir'
-            'number_of_events'
-            'rescatter'
-            'weakContribution'
-            'shear'
-            'bulk'
-            'ecrit'
-            'Nbins'
-            'q_max'
-            'cs2'
-            'ratio_pressure_energydensity'
-            'shear_viscosity'
-            'bulk_viscosity'
-            'shear_viscosity_param'
-            'bulk_viscosity_param'
+            'fist_sampler_mode'
+            'nevents'
+            'randomseed'
+            'particle_list_file'
+            'decays_list_file'
+            'Bcanonical'
+            'Qcanonical'
+            'Scanonical'
+            'Ccanonical'
+            'finite_widths'
+            'decays'
+            'hypersurface_filetype'
+            'hypersurface_file'
+            'rescaleTmu'
+            'edens'
+            'output_file'
+            'use_idealHRG_for_means'
+            'shear_correction'
+            'bulk_correction'
+            'speed_of_sound_squared'
+            'output_format'
         )
     fi
     local keys_to_be_found
@@ -155,13 +164,13 @@ function __static__Is_Sampler_Config_Valid()
             return 1
         fi
         case "${key}" in
-            surface | spectra_dir)
+            surface | spectra_dir | hypersurface_file | output_file)
                 if [[ "${value}" = '=DEFAULT=' ]]; then
                     ((keys_to_be_found--))
                     continue
                 fi
                 ;;& # Continue matching other cases below
-            surface)
+            surface | hypersurface_file)
                 cd "${HYBRID_software_output_directory[Sampler]}"
                 if [[ ! -f "${value}" ]]; then
                     cd - > /dev/null
@@ -179,17 +188,40 @@ function __static__Is_Sampler_Config_Valid()
                 fi
                 ((keys_to_be_found--))
                 ;;
-            rescatter | weakContribution | shear | bulk)
+            output_file)
+                cd "${HYBRID_software_output_directory[Sampler]}"
+                dir_value=$(dirname "${value}")
+                if [[ ! -d "${dir_value}" ]]; then
+                    cd - > /dev/null
+                    Print_Error 'Sampler output folder ' --emph "${value}" ' not found!'
+                    return 1
+                fi
+                ((keys_to_be_found--))
+                ;;
+            rescatter | weakContribution | shear | bulk | Bcanonical | Qcanonical | Scanonical | Ccanonical | finite_widths | use_idealHRG_for_means | rescaleTmu | shear_correction | bulk_correction)
                 if [[ ! "${value}" =~ ^[01]$ ]]; then
                     Print_Error 'Key ' --emph "${key}" ' must be either ' \
                         --emph '0' ' or ' --emph '1' '.'
                     return 1
                 fi
                 ;;
-            number_of_events | Nbins)
+            number_of_events | Nbins | nevents)
                 if [[ ! "${value}" =~ ^[1-9][0-9]*$ ]]; then
                     Print_Error 'Found not-integer value ' --emph "${value}" \
                         ' for ' --emph "${key}" ' key.'
+                    return 1
+                fi
+                ;;
+            output_format | randomseed | decays | fist_sampler_mode | hypersurface_filetype)
+                if [[ ! "${value}" =~ ^[0-9]+$ ]]; then
+                    Print_Error 'Found not-integer value ' --emph "${value}" \
+                        ' for ' --emph "${key}" ' key.'
+                    return 1
+                fi
+                ;;
+            particle_list_file | decays_list_file)
+                if [[ ! -f "${value}" ]]; then
+                    Print_Error 'File ' --emph "${value}" ' not found.'
                     return 1
                 fi
                 ;;
@@ -203,10 +235,18 @@ function __static__Is_Sampler_Config_Valid()
         esac
     done < "${config_file}"
     # Check that all required keys were found
-    if [[ ${keys_to_be_found} -gt 0 ]]; then
-        Print_Error 'Either ' --emph 'surface' ' or ' --emph 'spectra_dir' \
-            ' key is missing in sampler configuration file.'
-        return 1
+    if [[ ${HYBRID_module[Sampler]} = 'smash-hadron-sampler' ]]; then
+        if [[ ${keys_to_be_found} -gt 0 ]]; then
+            Print_Error 'Either ' --emph 'surface' ' or ' --emph 'spectra_dir' \
+                ' key is missing in sampler configuration file.'
+            return 1
+        fi
+    elif [[ ${HYBRID_module[Sampler]} = 'FIST-sampler' ]]; then
+        if [[ ${keys_to_be_found} -gt 0 ]]; then
+            Print_Error 'Either ' --emph 'hypersurface_file' ' or ' --emph 'output_file' \
+                ' key is missing in sampler configuration file.'
+            return 1
+        fi
     fi
 }
 
@@ -266,6 +306,15 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
                 ecrit)
                     ecrit_sampler=${value}
                     ;;
+                shear_correction)
+                    is_sampler_shear=${value}
+                    ;;
+                bulk_correction)
+                    is_sampler_bulk=${value}
+                    ;;
+                edens)
+                    ecrit_sampler=${value}
+                    ;;
             esac
         done < "${config_sampler}"
         if [[ "${is_hydro_shear}" -eq 1 && "${is_sampler_shear}" -eq 0 ]]; then
@@ -309,6 +358,12 @@ function __static__Get_Path_Field_From_Sampler_Config_As_Global_Path()
                 ;;
             spectra_dir)
                 printf "${HYBRID_software_output_directory[Sampler]}"
+                ;;
+            hypersurface_file)
+                printf "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+                ;;
+            output_file)
+                printf "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"
                 ;;
         esac
     else
