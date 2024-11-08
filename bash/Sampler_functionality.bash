@@ -41,10 +41,11 @@ function Run_Software_Sampler()
     Separate_Terminal_Output_For 'Sampler'
     local -r sampler_config_file_path="${HYBRID_software_configuration_file[Sampler]}"
     cd "${HYBRID_software_output_directory[Sampler]}"
-    "${HYBRID_software_executable[Sampler]}" 'events' '1' \
-        "${sampler_config_file_path}" &>> \
-        "${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}" \
-        || Report_About_Software_Failure_For 'Sampler'
+    if [[ "${HYBRID_module[Sampler]}" = 'smash-hadron-sampler' ]]; then
+        __static__Run_SMASH_Hadron_Sampler
+    elif [[ "${HYBRID_module[Sampler]}" = 'FIST-sampler' ]]; then
+        __static__Run_FIST_Sampler
+    fi
 }
 
 #===================================================================================================
@@ -59,6 +60,15 @@ function __static__Validate_Sampler_Config_File()
 
 function __static__Transform_Relative_Paths_In_Sampler_Config_File()
 {
+    if [[ "${HYBRID_module[Sampler]}" = 'smash-hadron-sampler' ]]; then
+        __static__Transform_Relative_Paths_In_Sampler_Config_File_For_SMASH
+    elif [[ "${HYBRID_module[Sampler]}" = 'FIST-sampler' ]]; then
+        __static__Transform_Relative_Paths_In_Sampler_Config_File_For_FIST
+    fi
+}
+
+function __static__Transform_Relative_Paths_In_Sampler_Config_File_For_SMASH()
+{
     local freezeout_path output_directory
     freezeout_path=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface')
     output_directory=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'spectra_dir')
@@ -69,13 +79,33 @@ function __static__Transform_Relative_Paths_In_Sampler_Config_File()
             'spectra_dir' "${output_directory}")"
 }
 
+function __static__Transform_Relative_Paths_In_Sampler_Config_File_For_FIST()
+{
+    local hypersurface_path output_file particle_list_file decays_list_file
+    hypersurface_path=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'hypersurface_file')
+    output_file=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'output_file')
+    particle_list_file=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'particle_list_file')
+    decays_list_file=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'decays_list_file')
+    Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
+        'TXT' "${HYBRID_software_configuration_file[Sampler]}" \
+        "$(printf "%s: %s\n" \
+            'hypersurface_file' "${hypersurface_path}" \
+            'output_file' "${output_file}" \
+            'particle_list_file' "${particle_list_file}" \
+            'decays_list_file' "${decays_list_file}")"
+}
+
 # The following symbolic link is not needed by the sampler, as the sampler only refers to information
 # specified in its input file. However, we want to have all input for a software in the output folder
 # for future easier reproducibility (and we do so for all software handled in the codebase).
 function __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File_Ensuring_Its_Existence()
 {
     local freezeout_path
-    freezeout_path=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface')
+    if [[ "${HYBRID_module[Sampler]}" = 'smash-hadron-sampler' ]]; then
+        freezeout_path=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface')
+    elif [[ "${HYBRID_module[Sampler]}" = 'FIST-sampler' ]]; then
+        freezeout_path=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'hypersurface_file')
+    fi
     Ensure_Input_File_Exists_And_Alert_If_Unfinished "${freezeout_path}"
     if [[ "$(dirname "${freezeout_path}")" != "${HYBRID_software_output_directory[Sampler]}" ]]; then
         ln -s "${freezeout_path}" \
@@ -157,14 +187,18 @@ function __static__Is_Sampler_Config_Valid()
         )
     fi
     local keys_to_be_found
-    keys_to_be_found=2
+    if [ "${HYBRID_module[Sampler]}" = 'smash-hadron-sampler' ]; then
+        keys_to_be_found=2
+    elif [ "${HYBRID_module[Sampler]}" = 'FIST-sampler' ]; then
+        keys_to_be_found=4
+    fi
     while read key value; do
         if ! Element_In_Array_Equals_To "${key}" "${allowed_keys[@]}"; then
             Print_Error 'Invalid key ' --emph "${key}" ' found in sampler configuration file.'
             return 1
         fi
         case "${key}" in
-            surface | spectra_dir | hypersurface_file | output_file)
+            surface | spectra_dir | hypersurface_file | output_file | particle_list_file | decays_list_file)
                 if [[ "${value}" = '=DEFAULT=' ]]; then
                     ((keys_to_be_found--))
                     continue
@@ -177,6 +211,12 @@ function __static__Is_Sampler_Config_Valid()
                     Print_Error 'Freeze-out surface file ' --emph "${value}" ' not found!'
                     return 1
                 fi
+                ((keys_to_be_found--))
+                ;;
+            particle_list_file)
+                ((keys_to_be_found--))
+                ;;
+            decays_list_file)
                 ((keys_to_be_found--))
                 ;;
             spectra_dir)
@@ -216,12 +256,6 @@ function __static__Is_Sampler_Config_Valid()
                 if [[ ! "${value}" =~ ^[0-9]+$ ]]; then
                     Print_Error 'Found not-integer value ' --emph "${value}" \
                         ' for ' --emph "${key}" ' key.'
-                    return 1
-                fi
-                ;;
-            particle_list_file | decays_list_file)
-                if [[ ! -f "${value}" ]]; then
-                    Print_Error 'File ' --emph "${value}" ' not found.'
                     return 1
                 fi
                 ;;
@@ -365,6 +399,12 @@ function __static__Get_Path_Field_From_Sampler_Config_As_Global_Path()
             output_file)
                 printf "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"
                 ;;
+            particle_list_file)
+                printf "${HYBRID_fist_module[Particle_file]}"
+                ;;
+            decays_list_file)
+                printf "${HYBRID_fist_module[Decays_file]}"
+                ;;
         esac
     else
         cd "${HYBRID_software_output_directory[Sampler]}" || exit ${HYBRID_fatal_builtin}
@@ -375,6 +415,21 @@ function __static__Get_Path_Field_From_Sampler_Config_As_Global_Path()
         fi
         cd - > /dev/null || exit ${HYBRID_fatal_builtin}
     fi
+}
+
+function __static__Run_SMASH_Hadron_Sampler()
+{
+    "${HYBRID_software_executable[Sampler]}" 'events' '1' \
+        "${sampler_config_file_path}" &>> \
+        "${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}" \
+        || Report_About_Software_Failure_For 'Sampler'
+}
+
+function __static__Run_FIST_Sampler()
+{
+    "${HYBRID_software_executable[Sampler]}" "${sampler_config_file_path}" &>> \
+        "${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}" \
+        || Report_About_Software_Failure_For 'Sampler'
 }
 
 Make_Functions_Defined_In_This_File_Readonly

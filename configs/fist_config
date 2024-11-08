@@ -17,14 +17,14 @@ randomseed 1
 # To set a different list, uncomment the line below
 # This list is part of ThermalFIST
 # particle_list_file <path-to-the-particle-list>
-particle_list_file ./list.dat
+particle_list_file =DEFAULT=
 
 # The decay channels list file (absolute or relative path)
 # If not set, uses the "decays.dat" file from the same folder where the list file is
 # To use a different file, uncomment the line below
 # This list is part of ThermalFIST
 # decays_list_file <path-to-the-decay-list>
-decays_list_file ./decays.dat
+decays_list_file =DEFAULT=
 
 # Global conservation of baryon number
 Bcanonical 1    # 0 - grand-canonical, 1 - canonical

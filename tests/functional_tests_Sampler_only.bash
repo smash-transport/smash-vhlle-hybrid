@@ -15,10 +15,15 @@ function Functional_Test__do-Sampler-only()
         hybrid_handler_config_fist='hybrid_config_fist' \
         hybrid_handler_config_mixed='hybrid_config_mixed' \
         hybrid_handler_config_wrong_module='hybrid_config_wrong_module' \
+        hybrid_handler_config_wrong_fist_file='hybrid_config_wrong_fist_file' \
         run_id='Sampler_only'
     local output_files
     mkdir -p "Hydro/${run_id}"
     touch "Hydro/${run_id}/freezeout.dat"
+    particle_list="./list.dat"
+    decays_list="./decays.dat"
+    touch "${particle_list}"
+    touch "${decays_list}"
     printf '
     Hybrid_handler:
       Run_ID: %s
@@ -31,17 +36,31 @@ function Functional_Test__do-Sampler-only()
       Run_ID: %s
     Sampler:
       Module: FIST-sampler
-      Executable: %s/tests/mocks/sampler_black-box.py
+      Executable: %s/tests/mocks/fist_sampler_black-box.py
       Config_file: %s/configs/fist_config
-    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config_fist}"
+      Particle_file: %s
+      Decays_file: %s
+    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" "${particle_list}" "${decays_list}" > "${hybrid_handler_config_fist}"
     printf '
     Hybrid_handler:
       Run_ID: %s
     Sampler:
       Module: FIST-sampler
-      Executable: %s/tests/mocks/sampler_black-box.py
+      Executable: %s/tests/mocks/fist_sampler_black-box.py
+      Config_file: %s/configs/fist_config
+      Particle_file: %s
+      Decays_file: %s.wrong
+    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" "${particle_list}" "${decays_list}" > "${hybrid_handler_config_wrong_fist_file}"
+    printf '
+    Hybrid_handler:
+      Run_ID: %s
+    Sampler:
+      Module: FIST-sampler
+      Executable: %s/tests/mocks/fist_sampler_black-box.py
       Config_file: %s/configs/hadron_sampler
-    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config_mixed}"
+      Particle_file: %s
+      Decays_file: %s
+    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" "${particle_list}" "${decays_list}" > "${hybrid_handler_config_mixed}"
     printf '
     Hybrid_handler:
       Run_ID: %s
@@ -60,9 +79,7 @@ function Functional_Test__do-Sampler-only()
     Check_If_Software_Produced_Expected_Output 'Sampler' "$(pwd)/Sampler"
     mv 'Sampler' 'Sampler-success'
     # Expect success with FIST module
-    Print_Info 'Running Hybrid-handler expecting success'
-    touch "./list.dat"
-    touch "./decays.dat"
+    Print_Info 'Running Hybrid-handler with FIST expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config_fist}" '-o' '.'
     if [[ $? -ne 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly failed when running with alternative sampler.'
@@ -83,11 +100,20 @@ function Functional_Test__do-Sampler-only()
     Print_Info 'Running Hybrid-handler expecting failure'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config_wrong_module}" '-o' '.'
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Hybrid-handler unexpectedly succeeded when running with config from wrong module.'
+        Print_Error 'Hybrid-handler unexpectedly succeeded when running with wrong module.'
         return 1
     fi
     Check_If_Software_Produced_Expected_Output 'Sampler' "$(pwd)/Sampler"
     mv 'Sampler' 'Sampler-failure-wrong-module'
+    # Expect failure with wrong FIST file
+    Print_Info 'Running Hybrid-handler expecting failure'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config_wrong_fist_file}" '-o' '.'
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Hybrid-handler unexpectedly succeeded when running with wrong module.'
+        return 1
+    fi
+    Check_If_Software_Produced_Expected_Output 'Sampler' "$(pwd)/Sampler"
+    mv 'Sampler' 'Sampler-failure-wrong-fist-file'
     # Expect failure and test terminal output
     local terminal_output_file error_message
     local -r terminal_output_file="Sampler/${run_id}/Sampler.log"

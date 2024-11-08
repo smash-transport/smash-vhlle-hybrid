@@ -25,6 +25,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             __static__Set_Software_Input_Data_File_If_Not_Set_By_User "${key}"
             if [ "${key}" = "Sampler" ]; then
                 __static__Ensure_Valid_Module_Given
+                __static__Ensure_Additional_Paths_Given_For_Sampler
             fi
         fi
     done
@@ -66,6 +67,22 @@ function __static__Ensure_Valid_Module_Given()
         'Valid modules are: ' --emph 'smash-hadron-sampler' ' and ' --emph 'FIST-sampler' '.'
     fi
     return 0
+}
+
+function __static__Ensure_Additional_Paths_Given_For_Sampler()
+{
+    if [ "${HYBRID_module[Sampler]}" = "FIST-sampler" ]; then
+        if [[ ! -f "${HYBRID_fist_module[Particle_file]}" ]]; then
+            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+            'Path to particle list of Thermal-FIST not correctly specified.' \
+                'Not existing path: ' --emph "${HYBRID_fist_module[Particle_file]}"
+        fi
+        if [[ ! -f "${HYBRID_fist_module[Decays_file]}" ]]; then
+            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+            'Path to decays list of Thermal-FIST not correctly specified.' \
+                'Not existing path: ' --emph "${HYBRID_fist_module[Decays_file]}"
+        fi
+    fi
 }
 
 function __static__Perform_Command_Line_VS_Configuration_Consistency_Checks()

@@ -93,6 +93,8 @@ function Define_Further_Global_Variables()
         [Scan_parameters]='HYBRID_scan_parameters[Sampler]'
         [Software_keys]='HYBRID_software_new_input_keys[Sampler]'
         [Module]='HYBRID_module[Sampler]'
+        [Particle_file]='HYBRID_fist_module[Particle_file]'
+        [Decays_file]='HYBRID_fist_module[Decays_file]'
     )
     
     declare -rgA HYBRID_afterburner_valid_keys=(
@@ -164,6 +166,10 @@ function Define_Further_Global_Variables()
     declare -gA HYBRID_optional_feature=(
         [Add_spectators_from_IC]='TRUE'
         [Spectators_source]=''
+    )
+    declare -gA HYBRID_fist_module=(
+        [Particle_file]=''
+        [Decays_file]=''
     )
     # Variables to be set (and possibly made readonly) after all sanity checks on input succeeded
     declare -gA HYBRID_software_output_directory=(
