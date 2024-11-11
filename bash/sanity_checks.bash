@@ -61,10 +61,11 @@ function Perform_Internal_Sanity_Checks()
 
 function __static__Ensure_Valid_Module_Given()
 {
-    if [ "${HYBRID_module[Sampler]}" != "smash-hadron-sampler" ] && [ "${HYBRID_module[Sampler]}" != "FIST-sampler" ]; then
+    if [ "${HYBRID_module[Sampler]}" != "smash-hadron-sampler" ] \
+        && [ "${HYBRID_module[Sampler]}" != "FIST-sampler" ]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-        'The module specified for the Sampler run is not valid.' \
-        'Valid modules are: ' --emph 'smash-hadron-sampler' ' and ' --emph 'FIST-sampler' '.'
+            'The module specified for the Sampler run is not valid.' \
+            'Valid modules are: ' --emph 'smash-hadron-sampler' ' and ' --emph 'FIST-sampler' '.'
     fi
     return 0
 }
@@ -74,12 +75,12 @@ function __static__Ensure_Additional_Paths_Given_For_Sampler()
     if [ "${HYBRID_module[Sampler]}" = "FIST-sampler" ]; then
         if [[ ! -f "${HYBRID_fist_module[Particle_file]}" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            'Path to particle list of Thermal-FIST not correctly specified.' \
+                'Path to particle list of Thermal-FIST not correctly specified.' \
                 'Not existing path: ' --emph "${HYBRID_fist_module[Particle_file]}"
         fi
         if [[ ! -f "${HYBRID_fist_module[Decays_file]}" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            'Path to decays list of Thermal-FIST not correctly specified.' \
+                'Path to decays list of Thermal-FIST not correctly specified.' \
                 'Not existing path: ' --emph "${HYBRID_fist_module[Decays_file]}"
         fi
     fi

@@ -96,7 +96,7 @@ function Define_Further_Global_Variables()
         [Particle_file]='HYBRID_fist_module[Particle_file]'
         [Decays_file]='HYBRID_fist_module[Decays_file]'
     )
-    
+
     declare -rgA HYBRID_afterburner_valid_keys=(
         [Executable]='HYBRID_software_executable[Afterburner]'
         [Config_file]='HYBRID_software_base_config_file[Afterburner]'

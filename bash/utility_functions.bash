@@ -593,7 +593,8 @@ function Make_Functions_Defined_In_This_File_Readonly()
 --8<-- [start:Copy_Associative_Array-desc]
 Copy an associative array
 DOCSTRING
-function Copy_Associative_Array() {
+function Copy_Associative_Array()
+{
     local -n src=$1
     local -n dest=$2
     for key in "${!src[@]}"; do

@@ -20,10 +20,8 @@ function Functional_Test__do-Sampler-only()
     local output_files
     mkdir -p "Hydro/${run_id}"
     touch "Hydro/${run_id}/freezeout.dat"
-    particle_list="./list.dat"
-    decays_list="./decays.dat"
-    touch "${particle_list}"
-    touch "${decays_list}"
+    particle_list="./Sampler/${run_id}/list.dat"
+    decays_list="./Sampler/${run_id}/decays.dat"
     printf '
     Hybrid_handler:
       Run_ID: %s
@@ -38,9 +36,10 @@ function Functional_Test__do-Sampler-only()
       Module: FIST-sampler
       Executable: %s/tests/mocks/fist_sampler_black-box.py
       Config_file: %s/configs/fist_config
-      Particle_file: %s
-      Decays_file: %s
-    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" "${particle_list}" "${decays_list}" > "${hybrid_handler_config_fist}"
+      Particle_file: %s/tests/run_tests/do-Sampler-only/Sampler/Sampler_only/list.dat
+      Decays_file: %s/tests/run_tests/do-Sampler-only/Sampler/Sampler_only/decays.dat
+        ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" \
+        "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config_fist}"
     printf '
     Hybrid_handler:
       Run_ID: %s
@@ -48,9 +47,11 @@ function Functional_Test__do-Sampler-only()
       Module: FIST-sampler
       Executable: %s/tests/mocks/fist_sampler_black-box.py
       Config_file: %s/configs/fist_config
-      Particle_file: %s
-      Decays_file: %s.wrong
-    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" "${particle_list}" "${decays_list}" > "${hybrid_handler_config_wrong_fist_file}"
+      Particle_file: %s/tests/run_tests/do-Sampler-only/Sampler/Sampler_only/list.dat
+      Decays_file: %s/tests/run_tests/do-Sampler-only/Sampler/Sampler_only/decays.dat.wrong
+    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" \
+        "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" \
+        > "${hybrid_handler_config_wrong_fist_file}"
     printf '
     Hybrid_handler:
       Run_ID: %s
@@ -58,9 +59,10 @@ function Functional_Test__do-Sampler-only()
       Module: FIST-sampler
       Executable: %s/tests/mocks/fist_sampler_black-box.py
       Config_file: %s/configs/hadron_sampler
-      Particle_file: %s
-      Decays_file: %s
-    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" "${particle_list}" "${decays_list}" > "${hybrid_handler_config_mixed}"
+      Particle_file: %s/tests/run_tests/do-Sampler-only/Sampler/Sampler_only/list.dat
+      Decays_file: %s/tests/run_tests/do-Sampler-only/Sampler/Sampler_only/decays.dat
+    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" \
+        "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config_mixed}"
     printf '
     Hybrid_handler:
       Run_ID: %s
@@ -68,7 +70,8 @@ function Functional_Test__do-Sampler-only()
       Module: 42
       Executable: %s/tests/mocks/sampler_black-box.py
       Config_file: %s/configs/hadron_sampler
-    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config_wrong_module}"
+    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" \
+        > "${hybrid_handler_config_wrong_module}"
     # Expect success and test presence of output files
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}" '-o' '.'
@@ -79,40 +82,49 @@ function Functional_Test__do-Sampler-only()
     Check_If_Software_Produced_Expected_Output 'Sampler' "$(pwd)/Sampler"
     mv 'Sampler' 'Sampler-success'
     # Expect success with FIST module
+    mkdir -p "Sampler/${run_id}"
+    touch "${particle_list}"
+    touch "${decays_list}"
     Print_Info 'Running Hybrid-handler with FIST expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config_fist}" '-o' '.'
     if [[ $? -ne 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly failed when running with alternative sampler.'
         return 1
     fi
-    Check_If_Software_Produced_Expected_Output 'Sampler' "$(pwd)/Sampler"
+    Check_If_Software_Produced_Expected_Output 'Sampler_FIST' "$(pwd)/Sampler"
     mv 'Sampler' 'Sampler-success-fist'
     # Expect failure with config from wrong module
-    Print_Info 'Running Hybrid-handler expecting failure'
+    mkdir -p "Sampler/${run_id}"
+    touch "${particle_list}"
+    touch "${decays_list}"
+    Print_Info 'Running Hybrid-handler expecting failure when using FIST with smash_hadron_sampler config'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config_mixed}" '-o' '.'
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded when running with config from wrong module.'
         return 1
     fi
-    Check_If_Software_Produced_Expected_Output 'Sampler' "$(pwd)/Sampler"
     mv 'Sampler' 'Sampler-failure-wrong-config'
     # Expect failure with wrong module name
-    Print_Info 'Running Hybrid-handler expecting failure'
+    mkdir -p "Sampler/${run_id}"
+    touch "${particle_list}"
+    touch "${decays_list}"
+    Print_Info 'Running Hybrid-handler expecting failure when running with invalide module'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config_wrong_module}" '-o' '.'
     if [[ $? -eq 0 ]]; then
         Print_Error 'Hybrid-handler unexpectedly succeeded when running with wrong module.'
         return 1
     fi
-    Check_If_Software_Produced_Expected_Output 'Sampler' "$(pwd)/Sampler"
     mv 'Sampler' 'Sampler-failure-wrong-module'
     # Expect failure with wrong FIST file
-    Print_Info 'Running Hybrid-handler expecting failure'
+    mkdir -p "Sampler/${run_id}"
+    touch "${particle_list}"
+    touch "${decays_list}"
+    Print_Info 'Running Hybrid-handler expecting failure with wrong FIST input file'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config_wrong_fist_file}" '-o' '.'
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Hybrid-handler unexpectedly succeeded when running with wrong module.'
+        Print_Error 'Hybrid-handler unexpectedly succeeded when running with wrong FIST input file.'
         return 1
     fi
-    Check_If_Software_Produced_Expected_Output 'Sampler' "$(pwd)/Sampler"
     mv 'Sampler' 'Sampler-failure-wrong-fist-file'
     # Expect failure and test terminal output
     local terminal_output_file error_message

@@ -18,6 +18,9 @@ function Prepare_Software_Input_File_Sampler()
     __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro
     __static__Transform_Relative_Paths_In_Sampler_Config_File
     __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File_Ensuring_Its_Existence
+    if [[ "${HYBRID_module[Sampler]}" = 'FIST-sampler' ]]; then
+        __static__Create_Superfluous_Symbolic_Link_To_FIST_Files_Ensuring_Their_Existence
+    fi
 }
 
 function Ensure_All_Needed_Input_Exists_Sampler()
@@ -113,6 +116,23 @@ function __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File_Ensuring_I
     fi
 }
 
+function __static__Create_Superfluous_Symbolic_Link_To_FIST_Files_Ensuring_Their_Existence()
+{
+    local particle_list_file decays_list_file
+    particle_list_file=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'particle_list_file')
+    decays_list_file=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path 'decays_list_file')
+    Ensure_Input_File_Exists_And_Alert_If_Unfinished "${particle_list_file}"
+    Ensure_Input_File_Exists_And_Alert_If_Unfinished "${decays_list_file}"
+    if [[ "$(dirname "${particle_list_file}")" != "${HYBRID_software_output_directory[Sampler]}" ]]; then
+        ln -s "${particle_list_file}" \
+            "${HYBRID_software_output_directory[Sampler]}/$(basename "${particle_list_file}")"
+    fi
+    if [[ "$(dirname "${decays_list_file}")" != "${HYBRID_software_output_directory[Sampler]}" ]]; then
+        ln -s "${decays_list_file}" \
+            "${HYBRID_software_output_directory[Sampler]}/$(basename "${decays_list_file}")"
+    fi
+}
+
 #===================================================================================================
 
 function __static__Is_Sampler_Config_Valid()
@@ -120,15 +140,15 @@ function __static__Is_Sampler_Config_Valid()
     local -r config_file="${HYBRID_software_configuration_file[Sampler]}"
     # Remove comments
     if ! sed -i 's/#.*//' "${config_file}"; then
-    Print_Internal_And_Exit "Comment removal in ${FUNCNAME} failed."
+        Print_Internal_And_Exit "Comment removal in ${FUNCNAME} failed."
     fi
     # Remove empty lines from configuration file
-        if ! sed -i '/^[[:space:]]*$/d' "${config_file}"; then
+    if ! sed -i '/^[[:space:]]*$/d' "${config_file}"; then
         Print_Internal_And_Exit "Empty lines removal in ${FUNCNAME} failed."
     fi
     # Remove trailing whitespace from each line
     if ! sed -i 's/[[:space:]]*$//' "${config_file}"; then
-    Print_Internal_And_Exit "Trailing whitespace removal in ${FUNCNAME} failed."
+        Print_Internal_And_Exit "Trailing whitespace removal in ${FUNCNAME} failed."
     fi
     # Check if the config file is empty
     if [[ ! -s "${config_file}" ]]; then
@@ -238,7 +258,8 @@ function __static__Is_Sampler_Config_Valid()
                 fi
                 ((keys_to_be_found--))
                 ;;
-            rescatter | weakContribution | shear | bulk | Bcanonical | Qcanonical | Scanonical | Ccanonical | finite_widths | use_idealHRG_for_means | rescaleTmu | shear_correction | bulk_correction)
+            rescatter | weakContribution | shear | bulk | Bcanonical | Qcanonical | Scanonical | Ccanonical | \
+                finite_widths | use_idealHRG_for_means | rescaleTmu | shear_correction | bulk_correction)
                 if [[ ! "${value}" =~ ^[01]$ ]]; then
                     Print_Error 'Key ' --emph "${key}" ' must be either ' \
                         --emph '0' ' or ' --emph '1' '.'

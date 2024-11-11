@@ -18,6 +18,9 @@ function Check_If_Software_Produced_Expected_Output()
         Sampler)
             expected_output_files=5
             ;;
+        Sampler_FIST)
+            expected_output_files=7
+            ;;
         Afterburner)
             expected_output_files=7
             ;;
