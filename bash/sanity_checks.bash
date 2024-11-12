@@ -61,18 +61,18 @@ function Perform_Internal_Sanity_Checks()
 
 function __static__Ensure_Valid_Module_Given()
 {
-    if [ "${HYBRID_module[Sampler]}" != "smash-hadron-sampler" ] \
-        && [ "${HYBRID_module[Sampler]}" != "FIST-sampler" ]; then
+    if [ "${HYBRID_module[Sampler]}" != "SMASH" ] \
+        && [ "${HYBRID_module[Sampler]}" != "FIST" ]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             'The module specified for the Sampler run is not valid.' \
-            'Valid modules are: ' --emph 'smash-hadron-sampler' ' and ' --emph 'FIST-sampler' '.'
+            'Valid modules are: ' --emph 'SMASH' ' and ' --emph 'FIST' '.'
     fi
     return 0
 }
 
 function __static__Ensure_Additional_Paths_Given_For_Sampler()
 {
-    if [ "${HYBRID_module[Sampler]}" = "FIST-sampler" ]; then
+    if [ "${HYBRID_module[Sampler]}" = "FIST" ]; then
         if [[ ! -f "${HYBRID_fist_module[Particle_file]}" ]]; then
             exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
                 'Path to particle list of Thermal-FIST not correctly specified.' \

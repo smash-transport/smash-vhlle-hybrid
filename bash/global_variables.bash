@@ -30,7 +30,7 @@ function Define_Further_Global_Variables()
     readonly HYBRID_python_folder="${HYBRID_top_level_path}/python"
     readonly HYBRID_afterburner_list_filename="sampled_particles_list.oscar"
     readonly HYBRID_default_number_of_samples=0
-    readonly HYBRID_default_sampler_module="smash-hadron-sampler"
+    readonly HYBRID_default_sampler_module="SMASH"
     declare -rgA HYBRID_external_python_scripts=(
         [Add_spectators_from_IC]="${HYBRID_python_folder}/add_spectators.py"
         [Latin_hypercube_sampling]="${HYBRID_python_folder}/latin_hypercube_sampling.py"
@@ -161,7 +161,7 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
     )
     declare -gA HYBRID_module=(
-        [Sampler]='smash-hadron-sampler'
+        [Sampler]='SMASH'
     )
     declare -gA HYBRID_optional_feature=(
         [Add_spectators_from_IC]='TRUE'

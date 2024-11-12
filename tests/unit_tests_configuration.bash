@@ -313,7 +313,7 @@ function Unit_Test__configuration-parse-Sampler-section()
       Executable: foo
       Config_file: bar
       Scan_parameters: [shear]
-      Module: smash-hadron-sampler
+      Module: SMASH
       Software_keys:
         shear: 1.2345
     ' > "${HYBRID_configuration_file}"

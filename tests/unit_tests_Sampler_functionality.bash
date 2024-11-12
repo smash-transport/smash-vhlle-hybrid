@@ -13,6 +13,8 @@ function __static__Do_Preliminary_Sampler_Setup_Operations()
     list_of_files=(
         'common_functionality.bash'
         'Sampler_functionality.bash'
+        'SMASH_sampler_functionality.bash'
+        'FIST_sampler_functionality.bash'
         'global_variables.bash'
         'software_input_functionality.bash'
         'sanity_checks.bash'

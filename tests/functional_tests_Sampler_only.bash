@@ -26,14 +26,14 @@ function Functional_Test__do-Sampler-only()
     Hybrid_handler:
       Run_ID: %s
     Sampler:
-      Module: smash-hadron-sampler
+      Module: SMASH
       Executable: %s/tests/mocks/sampler_black-box.py
     ' "${run_id}" "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config}"
     printf '
     Hybrid_handler:
       Run_ID: %s
     Sampler:
-      Module: FIST-sampler
+      Module: FIST
       Executable: %s/tests/mocks/fist_sampler_black-box.py
       Config_file: %s/configs/fist_config
       Particle_file: %s/tests/run_tests/do-Sampler-only/Sampler/Sampler_only/list.dat
@@ -44,7 +44,7 @@ function Functional_Test__do-Sampler-only()
     Hybrid_handler:
       Run_ID: %s
     Sampler:
-      Module: FIST-sampler
+      Module: FIST
       Executable: %s/tests/mocks/fist_sampler_black-box.py
       Config_file: %s/configs/fist_config
       Particle_file: %s/tests/run_tests/do-Sampler-only/Sampler/Sampler_only/list.dat
@@ -56,7 +56,7 @@ function Functional_Test__do-Sampler-only()
     Hybrid_handler:
       Run_ID: %s
     Sampler:
-      Module: FIST-sampler
+      Module: FIST
       Executable: %s/tests/mocks/fist_sampler_black-box.py
       Config_file: %s/configs/hadron_sampler
       Particle_file: %s/tests/run_tests/do-Sampler-only/Sampler/Sampler_only/list.dat
