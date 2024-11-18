@@ -48,7 +48,7 @@ function Validate_Configuration_File_Of_SMASH()
     )
     local keys_to_be_found
     keys_to_be_found=2
-    while read key value comment; do 
+    while read key value comment; do
         if [[ "${key}" =~ ^# ]]; then
             continue
         fi

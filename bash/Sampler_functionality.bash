@@ -16,10 +16,9 @@ function Prepare_Software_Input_File_Sampler()
     Replace_Keys_In_Configuration_File_If_Needed_For 'Sampler'
     __static__Validate_Sampler_Config_File
     __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro
-    __static__Transform_Relative_Paths_In_Sampler_Config_File_For_${HYBRID_module[Sampler]}
+    Transform_Relative_Paths_In_Sampler_Config_File_For_${HYBRID_module[Sampler]}
     __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File_Ensuring_Its_Existence
-    __static__Create_Superfluous_Symbolic_Link_To_External_Files_Ensuring_Their_Existence_${HYBRID_module[Sampler]}
-
+    Create_Superfluous_Symbolic_Link_To_External_Files_Ensuring_Their_Existence_${HYBRID_module[Sampler]}
 }
 
 function Ensure_All_Needed_Input_Exists_Sampler()
@@ -43,7 +42,27 @@ function Run_Software_Sampler()
     Separate_Terminal_Output_For 'Sampler'
     local -r sampler_config_file_path="${HYBRID_software_configuration_file[Sampler]}"
     cd "${HYBRID_software_output_directory[Sampler]}"
-    __static__Run_Sampler_Software_${HYBRID_module[Sampler]}
+    Run_Sampler_Software_${HYBRID_module[Sampler]}
+}
+
+function Get_Path_Field_From_Sampler_Config_As_Global_Path()
+{
+    local field value
+    field="$1"
+    # We assume here that the configuration file is fine as it was validated before
+    value=$(awk -v name="${field}" '$1 == name {print $2; exit}' \
+        "${HYBRID_software_configuration_file[Sampler]}")
+    if [[ "${value}" = '=DEFAULT=' ]]; then
+        printf "${HYBRID_sampler_input_key_default_paths[${field}]}"
+    else
+        cd "${HYBRID_software_output_directory[Sampler]}" || exit ${HYBRID_fatal_builtin}
+        # If realpath succeeds, it prints the path that is the result of the function
+        if ! realpath "${value}" 2> /dev/null; then
+            exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
+                'Unable to transform relative path ' --emph "${value}" ' into global one.'
+        fi
+        cd - > /dev/null || exit ${HYBRID_fatal_builtin}
+    fi
 }
 
 #===================================================================================================
@@ -62,7 +81,7 @@ function __static__Validate_Sampler_Config_File()
 function __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File_Ensuring_Its_Existence()
 {
     local freezeout_path
-    freezeout_path=$(__static__Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_${HYBRID_module[Sampler]})
+    freezeout_path=$(Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_${HYBRID_module[Sampler]})
     Ensure_Input_File_Exists_And_Alert_If_Unfinished "${freezeout_path}"
     if [[ "$(dirname "${freezeout_path}")" != "${HYBRID_software_output_directory[Sampler]}" ]]; then
         ln -s "${freezeout_path}" \
@@ -72,13 +91,9 @@ function __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File_Ensuring_I
 
 #===================================================================================================
 
-function __static__Process_Config()
+function __static__Preprocess_Configuration()
 {
     local -r config_file="${HYBRID_software_configuration_file[Sampler]}"
-    # Remove comments
-    if ! sed -i 's/#.*//' "${config_file}"; then
-        Print_Internal_And_Exit "Comment removal in ${FUNCNAME} failed."
-    fi
     # Remove empty lines from configuration file
     if ! sed -i '/^[[:space:]]*$/d' "${config_file}"; then
         Print_Internal_And_Exit "Empty lines removal in ${FUNCNAME} failed."
@@ -105,8 +120,8 @@ function __static__Process_Config()
 }
 function __static__Is_Sampler_Config_Valid()
 {
-    __static__Process_Config
-    __static__Check_For_Required_Keys_${HYBRID_module[Sampler]}
+    __static__Preprocess_Configuration
+    Validate_Configuration_File_Of_${HYBRID_module[Sampler]}
 }
 
 function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
@@ -154,22 +169,18 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
         is_sampler_shear=1
         is_sampler_bulk=0
         ecrit_sampler=0.5
+        # As both supported Sampler modules encode the shear correction flags similiar
+        # we can use the same logic for both.
         while read key value; do
             case "${key}" in
-                shear)
+                shear | shear_correction)
                     is_sampler_shear=${value}
                     ;;
-                bulk)
+                bulk | bulk_correction)
                     is_sampler_bulk=${value}
                     ;;
                 ecrit)
                     ecrit_sampler=${value}
-                    ;;
-                shear_correction)
-                    is_sampler_shear=${value}
-                    ;;
-                bulk_correction)
-                    is_sampler_bulk=${value}
                     ;;
                 edens)
                     ecrit_sampler=${value}

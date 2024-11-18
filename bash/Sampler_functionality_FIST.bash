@@ -73,7 +73,7 @@ function Validate_Configuration_File_Of_FIST()
     )
     local keys_to_be_found
     keys_to_be_found=4
-    while read key value comment; do 
+    while read key value comment; do
         if [[ "${key}" =~ ^# ]]; then
             continue
         fi
