@@ -1,22 +1,22 @@
 #===================================================
 #
-#    Copyright (c) 22024
+#    Copyright (c) 2024
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
 #===================================================
 
-function __static__Create_Superfluous_Symbolic_Link_To_External_Files_Ensuring_Their_Existence_SMASH()
+function Create_Superfluous_Symbolic_Link_To_External_Files_Ensuring_Their_Existence_SMASH()
 {
     :
 }
 
-function __static__Transform_Relative_Paths_In_Sampler_Config_File_For_SMASH()
+function Transform_Relative_Paths_In_Sampler_Config_File_For_SMASH()
 {
     local freezeout_path output_directory
-    freezeout_path=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path_SMASH 'surface')
-    output_directory=$(__static__Get_Path_Field_From_Sampler_Config_As_Global_Path_SMASH 'spectra_dir')
+    freezeout_path=$(Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface')
+    output_directory=$(Get_Path_Field_From_Sampler_Config_As_Global_Path 'spectra_dir')
     Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
         'TXT' "${HYBRID_software_configuration_file[Sampler]}" \
         "$(printf "%s: %s\n" \
@@ -24,39 +24,12 @@ function __static__Transform_Relative_Paths_In_Sampler_Config_File_For_SMASH()
             'spectra_dir' "${output_directory}")"
 }
 
-function __static__Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_SMASH()
+function Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_SMASH()
 {
-    __static__Get_Path_Field_From_Sampler_Config_As_Global_Path_SMASH 'surface'
+    Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface'
 }
 
-function __static__Get_Path_Field_From_Sampler_Config_As_Global_Path_SMASH()
-{
-    local field value
-    field="$1"
-    # We assume here that the configuration file is fine as it was validated before
-    value=$(awk -v name="${field}" '$1 == name {print $2; exit}' \
-        "${HYBRID_software_configuration_file[Sampler]}")
-    if [[ "${value}" = '=DEFAULT=' ]]; then
-        case "${field}" in
-            surface)
-                printf "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
-                ;;
-            spectra_dir)
-                printf "${HYBRID_software_output_directory[Sampler]}"
-                ;;
-        esac
-    else
-        cd "${HYBRID_software_output_directory[Sampler]}" || exit ${HYBRID_fatal_builtin}
-        # If realpath succeeds, it prints the path that is the result of the function
-        if ! realpath "${value}" 2> /dev/null; then
-            exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
-                'Unable to transform relative path ' --emph "${value}" ' into global one.'
-        fi
-        cd - > /dev/null || exit ${HYBRID_fatal_builtin}
-    fi
-}
-
-function __static__Check_For_Required_Keys_SMASH()
+function Validate_Configuration_File_Of_SMASH()
 {
     local -r config_file="${HYBRID_software_configuration_file[Sampler]}"
     local -r allowed_keys=(
@@ -75,7 +48,10 @@ function __static__Check_For_Required_Keys_SMASH()
     )
     local keys_to_be_found
     keys_to_be_found=2
-    while read key value; do
+    while read key value comment; do 
+        if [[ "${key}" =~ ^# ]]; then
+            continue
+        fi
         if ! Element_In_Array_Equals_To "${key}" "${allowed_keys[@]}"; then
             Print_Error 'Invalid key ' --emph "${key}" ' found in sampler configuration file.'
             return 1
@@ -136,7 +112,7 @@ function __static__Check_For_Required_Keys_SMASH()
     fi
 }
 
-function __static__Run_Sampler_Software_SMASH()
+function Run_Sampler_Software_SMASH()
 {
     "${HYBRID_software_executable[Sampler]}" 'events' '1' \
         "${sampler_config_file_path}" &>> \

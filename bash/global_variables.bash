@@ -126,7 +126,6 @@ function Define_Further_Global_Variables()
     # Variables which can be specified both from command line and from configuration/setup
     HYBRID_run_id="Run_$(date +'%Y-%m-%d_%H%M%S')"
     # Variables to be set (and possibly made readonly) from configuration/setup
-    HYBRID_sampler_module="${HYBRID_default_sampler_module}"
     HYBRID_number_of_samples="${HYBRID_default_number_of_samples}"
     HYBRID_given_software_sections=()
     declare -gA HYBRID_software_executable=(
@@ -161,7 +160,7 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
     )
     declare -gA HYBRID_module=(
-        [Sampler]='SMASH'
+        [Sampler]="${HYBRID_default_sampler_module}"
     )
     declare -gA HYBRID_optional_feature=(
         [Add_spectators_from_IC]='TRUE'

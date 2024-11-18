@@ -589,17 +589,4 @@ function Make_Functions_Defined_In_This_File_Readonly()
     fi
 }
 
-: << 'DOCSTRING'
---8<-- [start:Copy_Associative_Array-desc]
-Copy an associative array
-DOCSTRING
-function Copy_Associative_Array()
-{
-    local -n src=$1
-    local -n dest=$2
-    for key in "${!src[@]}"; do
-        dest[$key]=${src[$key]}
-    done
-}
-
 Make_Functions_Defined_In_This_File_Readonly
