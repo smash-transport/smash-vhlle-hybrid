@@ -25,6 +25,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             __static__Set_Software_Input_Data_File_If_Not_Set_By_User "${key}"
             if [[ "${key}" = "Sampler" ]]; then
                 __static__Ensure_Valid_Module_Given
+                __static__Choose_Base_Configuration_File_For_Sampler
                 __static__Ensure_Additional_Paths_Given_For_Sampler
                 __static__Set_Sampler_Input_Key_Paths
             fi
@@ -53,9 +54,13 @@ function Perform_Internal_Sanity_Checks()
     Internally_Ensure_Given_Files_Exist \
         'These Python scripts should be shipped within the hybrid handler codebase.' '--' \
         "${HYBRID_external_python_scripts[@]}"
-    Internally_Ensure_Given_Files_Exist \
-        'These base configuration files should be shipped within the hybrid handler codebase.' '--' \
-        "${HYBRID_software_base_config_file[@]}"
+    for key in "${!HYBRID_software_base_config_file[@]}"; do
+        if [[ "$key" != "Sampler" ]]; then
+            Internally_Ensure_Given_Files_Exist \
+                'These base configuration files should be shipped within the hybrid handler codebase.' '--' \
+                "${HYBRID_software_base_config_file[$key]}"
+        fi
+    done
 }
 
 #===================================================================================================
@@ -91,6 +96,13 @@ function __static__Set_Sampler_Input_Key_Paths()
         ['surface']="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
         ['spectra_dir']="${HYBRID_software_output_directory[Sampler]}"
     )
+}
+
+function __static__Choose_Base_Configuration_File_For_Sampler()
+{
+    if [[ "${HYBRID_software_base_config_file[Sampler]}" = '' ]]; then
+        HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[Sampler_"${HYBRID_module[Sampler]}"]}"
+    fi
 }
 
 function __static__Perform_Command_Line_VS_Configuration_Consistency_Checks()
