@@ -101,7 +101,8 @@ function __static__Set_Sampler_Input_Key_Paths()
 function __static__Choose_Base_Configuration_File_For_Sampler()
 {
     if [[ "${HYBRID_software_base_config_file[Sampler]}" = '' ]]; then
-        HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[Sampler_"${HYBRID_module[Sampler]}"]}"
+        sampler_key="Sampler_${HYBRID_module[Sampler]}"
+        HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[$sampler_key]}"
     fi
 }
 

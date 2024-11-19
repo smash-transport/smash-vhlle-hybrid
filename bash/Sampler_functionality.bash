@@ -113,8 +113,9 @@ function __static__Preprocess_Configuration()
         return 1
     fi
     # Check that no key is repeated
-    if [[ $(awk '{print $1}' "${config_file}" | sort | uniq -d) != '' ]]; then
-        Print_Error 'Found repeated key in sampler configuration file.'
+    repeated_keys=$(awk '$1 != "#" {print $1}' "${config_file}" | sort | uniq -d)
+    if [[ -n "$repeated_keys" ]]; then
+        Print_Error 'Found repeated key(s) in sampler configuration file: ' --emph "$repeated_keys"
         return 1
     fi
 }

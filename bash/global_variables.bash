@@ -147,7 +147,7 @@ function Define_Further_Global_Variables()
         [Sampler]=""
         [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"
         # For the Sampler, the default configs depend on the module. The user may
-        # give their own base config, so we have to wait and see if the user chose 
+        # give their own base config, so we have to wait and see if the user chose
         # a base config and only replace it if none was given.
         [Sampler_SMASH]="${HYBRID_default_configurations_folder}/hadron_sampler"
         [Sampler_FIST]="${HYBRID_default_configurations_folder}/fist_config"
@@ -171,16 +171,16 @@ function Define_Further_Global_Variables()
         [Add_spectators_from_IC]='TRUE'
         [Spectators_source]=''
     )
-    declare -gA HYBRID_fist_module=(
-        [Particle_file]=''
-        [Decays_file]=''
-    )
     # Variables to be set (and possibly made readonly) after all sanity checks on input succeeded
     declare -gA HYBRID_software_output_directory=(
         [IC]=''
         [Hydro]=''
         [Sampler]=''
         [Afterburner]=''
+    )
+    declare -gA HYBRID_fist_module=(
+        [Particle_file]="${HYBRID_default_configurations_folder}/particle_file"
+        [Decays_file]="${HYBRID_default_configurations_folder}/decay_file"
     )
     declare -gA HYBRID_software_configuration_file=(
         [IC]=''
