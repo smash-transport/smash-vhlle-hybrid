@@ -102,7 +102,7 @@ function __static__Choose_Base_Configuration_File_For_Sampler()
 {
     if [[ "${HYBRID_software_base_config_file[Sampler]}" = '' ]]; then
         Sampler_key="Sampler_${HYBRID_module[Sampler]}"
-        HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${Sampler_key}\]}"
+        HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${Sampler_key}]}"
     fi
 }
 
