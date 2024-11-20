@@ -163,6 +163,8 @@ Sampler:
         surface: /path/to/custom/freezeout.dat
 ```
 
+For the hadron sampler section, there is the addtional option to use an alternative sampling software, the FIST sampler. By default, the SMASH-hadron-sampler is used. For using the FIST sampler, the additional input key `Module`
+
 ## :fire: &nbsp; The afterburner section
 
 ???+ config-key "`Input_file`"

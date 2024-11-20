@@ -38,6 +38,17 @@ Instructions on how to compile or install the software above can be found at the
     We particularly highlight that the newer versions of ROOT require C++17 bindings or higher, which calls for proper treatment of compiler options in SMASH and the hadron sampler.
     It is also recommended to start from a clean build directory whenever changing the compiler or linking to external libraries that were compiled with different compiler flags.
 
+In principle, the Hybrid handler is agnostic to the physics model used in each state, and is built in a way to support different software with minimal efforts. So far, the following choices exist for different stages:
+
+Sampler:
+<div class="center-table" markdown>
+
+| Supported Software | Required version |
+| :------------: | :--------------: |
+| [Hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | Same as SMASH[^2] |
+| [FIST sampler](https://github.com/vlvovch/fist-sampler) | Commit af99229 and later |
+
+</div>
 ---
 
 ## Unix system requirements
