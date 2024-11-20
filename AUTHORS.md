@@ -2,12 +2,11 @@
 
 | Name  | E-mail |
 | :---: | :----: |
-| Alessandro Sciarra | asciarra@fias.uni-frankfurt.de   |
+| Alessandro Sciarra | sciarra@itp.uni-frankfurt.de     |
 | Gabriele Inghirami | g.inghirami@gsi.de               |
-| Jan Hammelmann     | hammelmann@fias.uni-frankfurt.de |
-| Niklas Götz        | goetz@fias.uni-frankfurt.de      |
-| Nils Saß           | nsass@fias.uni-frankfurt.de      |
-| Renan Hirayama     | hirayama@fias.uni-frankfurt.de   |
+| Niklas Götz        | goetz@itp.uni-frankfurt.de       |
+| Nils Saß           | nsass@itp.uni-frankfurt.de       |
+| Renan Hirayama     | hirayama@itp.uni-frankfurt.de    |
 | Zuzana Paulinyova  | zuzana.paulinyova@upjs.sk        |
 
 ## Past developers
@@ -16,4 +15,5 @@ Please, note that the e-mail address of past developers might not be active any 
 
 |  Name  | E-mail |
 | :----: | :----: |
-| Anna Schäfer | aschaefer@fias.uni-frankfurt.de |
+| Anna Schäfer       | aschaefer@fias.uni-frankfurt.de  |
+| Jan Hammelmann     | hammelmann@itp.uni-frankfurt.de |
