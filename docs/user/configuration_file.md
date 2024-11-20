@@ -163,7 +163,18 @@ Sampler:
         surface: /path/to/custom/freezeout.dat
 ```
 
-For the hadron sampler section, there is the addtional option to use an alternative sampling software, the FIST sampler. By default, the SMASH-hadron-sampler is used. For using the FIST sampler, the additional input key `Module`
+For the hadron sampler section, there is the addtional option to use an alternative sampling software, the FIST sampler. By default, the SMASH-hadron-sampler is used. For using the FIST sampler, the additional input key `Module` has to be set to 'FIST'. This allows also two separate keys `Particle_file` and `Decay_file` to be set, which are the paths to the particle and decay list files respectively, which are shipped with Thermal-FIST. Setting thse keys is compulsory. Additionally, using the FIST sampler changes the names of several of the `Software_keys`. Please refer to the default config for the FIST sampler in :file_folder: ***configs***.
+
+```yaml title="Example"
+Sampler:
+    Executable: /path/to/FIST-sampler
+    Config_file: /path/to/FIST-sampler_config
+    Module: FIST
+    Particle_file: /path/to/list.dat
+    Decays_file: /path/to/decays.dat
+    Software_keys:
+        hypersurface: /path/to/custom/freezeout.dat
+```
 
 ## :fire: &nbsp; The afterburner section
 

@@ -42,6 +42,7 @@ nav:
     - Code design and technicalities:
       - Parameters scan: developer/parameters_scan.md
       - Utility functions: developer/utility_functions.md
+      - Adding new modules: developer/new_module.md
 
 markdown_extensions:
   # More markdown functionality
