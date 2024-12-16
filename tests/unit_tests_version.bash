@@ -14,7 +14,7 @@ function Make_Test_Preliminary_Operations__version()
 
 function Unit_Test__version()
 {
-    HYBRID_codebase_version='SMASH-vHLLE-hybrid-1.0'
+    HYBRID_codebase_version='SMASH-vHLLE-hybrid-[0-9]+([.][0-9]+)?'
     local std_output expected_output
     # Unsetting PATH in the subshell so that 'git' will not be found
     std_output=$(
@@ -28,7 +28,7 @@ function Unit_Test__version()
     fi
     # We want to capture here a logger message that goes to fd 9
     std_output=$(Call_Codebase_Function Print_Software_Version 9>&1)
-    if [[ $? -ne 0 || $(grep -c "${HYBRID_codebase_version}" <<< "${std_output}") -eq 0 ]]; then
+    if [[ $? -ne 0 || $(grep -cE "${HYBRID_codebase_version}" <<< "${std_output}") -eq 0 ]]; then
         Print_Error "Version printing with git failed."
         return 1
     fi
