@@ -15,7 +15,7 @@ function Make_Test_Preliminary_Operations__version()
 function Unit_Test__version()
 {
     HYBRID_codebase_version='SMASH-vHLLE-hybrid-[0-9]+([.][0-9]+)?'
-    local std_output expected_output
+    local std_output
     # Unsetting PATH in the subshell so that 'git' will not be found
     std_output=$(
         PATH=''
