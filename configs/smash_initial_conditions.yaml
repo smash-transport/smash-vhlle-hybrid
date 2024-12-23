@@ -26,3 +26,6 @@ Modi:
         Fermi_Motion: frozen
         Impact:
             Max: 2.3
+        
+        Initial_Conditions:
+            Type: "Constant_Tau"

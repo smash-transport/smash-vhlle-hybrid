@@ -9,6 +9,11 @@ General:
     Randomseed:    -1
     Nevents:       1000
 
+Collision_Term:
+    Strings: True
+    String_Parameters:
+        Use_Monash_Tune: False
+
 Output:
     Particles:
         Format:          ["Oscar2013"]
