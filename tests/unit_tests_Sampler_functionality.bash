@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -75,8 +75,7 @@ function Make_Test_Preliminary_Operations__Sampler-create-input-file-with-FIST()
 {
     __static__Do_Preliminary_Sampler_Setup_Operations
     HYBRID_module[Sampler]='FIST'
-    touch "${HYBRID_fist_module[Particle_file]}"
-    touch "${HYBRID_fist_module[Decays_file]}"
+    touch "${HYBRID_fist_module[Particle_file]}" "${HYBRID_fist_module[Decays_file]}"
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
 
 }
@@ -97,7 +96,6 @@ function Unit_Test__Sampler-create-input-file-with-FIST()
 
 function Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-with-FIST()
 {
-    HYBRID_module[Sampler]='SMASH'
     rm "${HYBRID_fist_module[Decays_file]}"
     rm "${HYBRID_fist_module[Particle_file]}"
     rm -r "${HYBRID_output_directory}"
@@ -250,8 +248,7 @@ function Make_Test_Preliminary_Operations__Sampler-validate-config-file-FIST()
 {
     Make_Test_Preliminary_Operations__Sampler-create-input-file
     HYBRID_module[Sampler]='FIST'
-    touch "${HYBRID_fist_module[Particle_file]}"
-    touch "${HYBRID_fist_module[Decays_file]}"
+    touch "${HYBRID_fist_module[Particle_file]}" "${HYBRID_fist_module[Decays_file]}"
 }
 
 function Unit_Test__Sampler-validate-config-file-FIST()
@@ -287,17 +284,31 @@ function Unit_Test__Sampler-validate-config-file-FIST()
         return 1
     fi
     # Config file missing required key 'hypersurface'
-    printf '%s\n' 'output_file .' > "${HYBRID_software_configuration_file[Sampler]}"
+    printf '%s\n %s\n %s\n' 'output_file .' 'Particle_file .' 'Decay_file .' > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Config validation passed although config file does not contain "hypersurface" key.'
         return 1
     fi
     # Config file missing required key 'output_file'
-    printf '%s\n' "hypersurface $(which ls)" > "${HYBRID_software_configuration_file[Sampler]}"
+    printf '%s\n %s\n %s\n' "hypersurface $(which ls)" 'Particle_file .' 'Decay_file .' > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Config validation passed although config file does not contain "output_file" key.'
+        return 1
+    fi
+    # Config file missing required key 'Particle_file'
+    printf '%s\n %s\n %s\n' "hypersurface $(which ls)" 'output_file .' 'Decay_file .' > "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Config validation passed although config file does not contain "Particle_file" key.'
+        return 1
+    fi
+    # Config file missing required key 'Decay_file'
+    printf '%s\n %s\n %s\n' "hypersurface $(which ls)" 'output_file .' 'Particle_file .' > "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Config validation passed although config file does not contain "Decay_file" key.'
         return 1
     fi
     # Config file with incorrect hypersurface
@@ -417,8 +428,7 @@ function Make_Test_Preliminary_Operations__Sampler-test-run-software_FIST()
 {
     Make_Test_Preliminary_Operations__Sampler-create-input-file
     HYBRID_module[Sampler]='FIST'
-    touch "${HYBRID_fist_module[Particle_file]}"
-    touch "${HYBRID_fist_module[Decays_file]}"
+    touch "${HYBRID_fist_module[Particle_file]}" "${HYBRID_fist_module[Decays_file]}"
 }
 
 function Unit_Test__Sampler-test-run-software_FIST()

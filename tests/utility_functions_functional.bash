@@ -15,7 +15,7 @@ function Check_If_Software_Produced_Expected_Output()
         IC | Hydro)
             expected_output_files=6
             ;;
-        Sampler)
+        Sampler_SMASH)
             expected_output_files=5
             ;;
         Sampler_FIST)

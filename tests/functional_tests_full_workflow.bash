@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -66,7 +66,11 @@ function __static__Check_Outcome_Of_Full_Run()
         return 1
     fi
     local block
-    for block in IC Sampler Hydro Afterburner; do
-        Check_If_Software_Produced_Expected_Output "${block}" "$(pwd)/${block}"
+    for block in IC Sampler_SMASH Hydro Afterburner; do
+        if [[ "$block" == "Sampler_SMASH" ]]; then
+            Check_If_Software_Produced_Expected_Output "${block}" "$(pwd)/Sampler"
+        else
+            Check_If_Software_Produced_Expected_Output "${block}" "$(pwd)/${block}"
+        fi
     done
 }
