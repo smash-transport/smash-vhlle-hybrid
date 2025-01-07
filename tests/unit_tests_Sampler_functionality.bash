@@ -38,6 +38,7 @@ function Make_Test_Preliminary_Operations__Sampler-create-input-file()
 
 function Unit_Test__Sampler-create-input-file()
 {
+    HYBRID_module[Sampler]='SMASH'
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Sampler
@@ -82,6 +83,7 @@ function Make_Test_Preliminary_Operations__Sampler-create-input-file-with-FIST()
 
 function Unit_Test__Sampler-create-input-file-with-FIST()
 {
+    HYBRID_module[Sampler]='FIST'
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Sampler
@@ -108,6 +110,7 @@ function Make_Test_Preliminary_Operations__Sampler-check-all-input()
 
 function Unit_Test__Sampler-check-all-input()
 {
+    HYBRID_module[Sampler]='SMASH'
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Sampler &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of not-existing output directory succeeded.'
@@ -153,6 +156,7 @@ function Make_Test_Preliminary_Operations__Sampler-validate-config-file()
 
 function Unit_Test__Sampler-validate-config-file()
 {
+    HYBRID_module[Sampler]='SMASH'
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     cd "${HYBRID_software_output_directory[Sampler]}"
     # Empty config file
@@ -253,6 +257,7 @@ function Make_Test_Preliminary_Operations__Sampler-validate-config-file-FIST()
 
 function Unit_Test__Sampler-validate-config-file-FIST()
 {
+    HYBRID_module[Sampler]='FIST'
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     cd "${HYBRID_software_output_directory[Sampler]}"
     # Empty config file
@@ -284,28 +289,32 @@ function Unit_Test__Sampler-validate-config-file-FIST()
         return 1
     fi
     # Config file missing required key 'hypersurface'
-    printf '%s\n %s\n %s\n' 'output_file .' 'Particle_file .' 'Decay_file .' > "${HYBRID_software_configuration_file[Sampler]}"
+    printf '%s\n %s\n %s\n' 'output_file .' 'Particle_file .' \
+        'Decay_file .' > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Config validation passed although config file does not contain "hypersurface" key.'
         return 1
     fi
     # Config file missing required key 'output_file'
-    printf '%s\n %s\n %s\n' "hypersurface $(which ls)" 'Particle_file .' 'Decay_file .' > "${HYBRID_software_configuration_file[Sampler]}"
+    printf '%s\n %s\n %s\n' "hypersurface $(which ls)" 'Particle_file .' 'Decay_file .' \
+        > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Config validation passed although config file does not contain "output_file" key.'
         return 1
     fi
     # Config file missing required key 'Particle_file'
-    printf '%s\n %s\n %s\n' "hypersurface $(which ls)" 'output_file .' 'Decay_file .' > "${HYBRID_software_configuration_file[Sampler]}"
+    printf '%s\n %s\n %s\n' "hypersurface $(which ls)" 'output_file .' 'Decay_file .' \
+        > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Config validation passed although config file does not contain "Particle_file" key.'
         return 1
     fi
     # Config file missing required key 'Decay_file'
-    printf '%s\n %s\n %s\n' "hypersurface $(which ls)" 'output_file .' 'Particle_file .' > "${HYBRID_software_configuration_file[Sampler]}"
+    printf '%s\n %s\n %s\n' "hypersurface $(which ls)" 'output_file .' 'Particle_file .' \
+        > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Config validation passed although config file does not contain "Decay_file" key.'
@@ -353,7 +362,6 @@ function Unit_Test__Sampler-validate-config-file-FIST()
 
 function Clean_Tests_Environment_For_Following_Test__Sampler-validate-config-file-FIST()
 {
-    HYBRID_module[Sampler]='SMASH'
     rm "${HYBRID_fist_module[Decays_file]}"
     rm "${HYBRID_fist_module[Particle_file]}"
     rm -r "${HYBRID_output_directory}"
@@ -369,6 +377,7 @@ function Make_Test_Preliminary_Operations__Sampler-config-consistent-with-hydro(
 
 function Unit_Test__Sampler-config-consistent-with-hydro()
 {
+    HYBRID_module[Sampler]='SMASH'
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     # Hydro config file with default ecrit
     local -r ecrit_hydro='0.5'
@@ -403,6 +412,7 @@ function Make_Test_Preliminary_Operations__Sampler-test-run-software()
 
 function Unit_Test__Sampler-test-run-software()
 {
+    HYBRID_module[Sampler]='SMASH'
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     local -r terminal_output="${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output["Sampler"]}"
     local terminal_output_result correct_result
@@ -433,6 +443,7 @@ function Make_Test_Preliminary_Operations__Sampler-test-run-software_FIST()
 
 function Unit_Test__Sampler-test-run-software_FIST()
 {
+    HYBRID_module[Sampler]='FIST'
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     local -r terminal_output="${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output["Sampler"]}"
     local terminal_output_result correct_result

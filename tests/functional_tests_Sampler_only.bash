@@ -10,18 +10,18 @@
 function _static_Execute_FIST_Sampler_Test()
 {
 
-  mkdir -p "Sampler/${run_id}"
-  touch "${particle_list}" "${decays_list}"
-  Print_Info "Running Hybrid-handler expecting ${1}"
-  Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${2}" '-o' '.'
-  if [[ $? -eq "${3}" ]]; then
-      Print_Error "Hybrid-handler ${4}"
-      return 1
-  fi
-  if [[ "${3}" != '0' ]]; then
-      Check_If_Software_Produced_Expected_Output 'Sampler_FIST' "$(pwd)/Sampler"
-  fi
-  mv 'Sampler' "${5}"
+    mkdir -p "Sampler/${run_id}"
+    touch "${particle_list}" "${decays_list}"
+    Print_Info "Running Hybrid-handler expecting ${1}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${2}" '-o' '.'
+    if [[ $? -eq "${3}" ]]; then
+        Print_Error "Hybrid-handler ${4}"
+        return 1
+    fi
+    if [[ "${3}" != '0' ]]; then
+        Check_If_Software_Produced_Expected_Output 'Sampler_FIST' "$(pwd)/Sampler"
+    fi
+    mv 'Sampler' "${5}"
 }
 
 function Functional_Test__do-Sampler-only()
