@@ -1,14 +1,16 @@
 #===================================================
 #
-#    Copyright (c) 2024
+#    Copyright (c) 2024-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
 #===================================================
 
-function Create_Superfluous_Symbolic_Link_To_External_Files_Ensuring_Their_Existence_SMASH()
+function Create_Superfluous_Symbolic_Link_To_External_Files_Ensuring_Their_Existence_For_SMASH()
 {
+    # There is nothing to be done for SMASH, as the only external input file is the freezout surface
+    # which is treated separately.
     :
 }
 
@@ -24,7 +26,7 @@ function Transform_Relative_Paths_In_Sampler_Config_File_For_SMASH()
             'spectra_dir' "${output_directory}")"
 }
 
-function Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_SMASH()
+function Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_For_SMASH()
 {
     Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface'
 }

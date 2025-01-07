@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -18,7 +18,7 @@ function Prepare_Software_Input_File_Sampler()
     __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro
     Transform_Relative_Paths_In_Sampler_Config_File_For_${HYBRID_module[Sampler]}
     __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File_Ensuring_Its_Existence
-    Create_Superfluous_Symbolic_Link_To_External_Files_Ensuring_Their_Existence_${HYBRID_module[Sampler]}
+    Create_Superfluous_Symbolic_Link_To_External_Files_Ensuring_Their_Existence_For_${HYBRID_module[Sampler]}
 }
 
 function Ensure_All_Needed_Input_Exists_Sampler()
@@ -81,7 +81,7 @@ function __static__Validate_Sampler_Config_File()
 function __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File_Ensuring_Its_Existence()
 {
     local freezeout_path
-    freezeout_path=$(Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_${HYBRID_module[Sampler]})
+    freezeout_path=$(Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_For_${HYBRID_module[Sampler]})
     Ensure_Input_File_Exists_And_Alert_If_Unfinished "${freezeout_path}"
     if [[ "$(dirname "${freezeout_path}")" != "${HYBRID_software_output_directory[Sampler]}" ]]; then
         ln -s "${freezeout_path}" \

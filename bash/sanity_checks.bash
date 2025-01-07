@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -24,7 +24,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             __static__Set_Software_Configuration_File "${key}"
             __static__Set_Software_Input_Data_File_If_Not_Set_By_User "${key}"
             if [[ "${key}" = "Sampler" ]]; then
-                __static__Ensure_Valid_Module_Given
+                __static__Ensure_Valid_Module_Given_For_Sampler
                 __static__Choose_Base_Configuration_File_For_Sampler
                 __static__Ensure_Additional_Paths_Given_For_Sampler
                 __static__Set_Sampler_Input_Key_Paths
@@ -55,6 +55,8 @@ function Perform_Internal_Sanity_Checks()
         'These Python scripts should be shipped within the hybrid handler codebase.' '--' \
         "${HYBRID_external_python_scripts[@]}"
     for key in "${!HYBRID_software_base_config_file[@]}"; do
+        # The Sampler entry in the associative array here is still empty and does not point to a
+        # shipped configuration file. It will be chosen later according to the module.
         if [[ "$key" != "Sampler" ]]; then
             Internally_Ensure_Given_Files_Exist \
                 'These base configuration files should be shipped within the hybrid handler codebase.' '--' \
@@ -65,7 +67,7 @@ function Perform_Internal_Sanity_Checks()
 
 #===================================================================================================
 
-function __static__Ensure_Valid_Module_Given()
+function __static__Ensure_Valid_Module_Given_For_Sampler()
 {
     if [[ ! "${HYBRID_module[Sampler]}" =~ ^(SMASH|FIST)$ ]]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
@@ -79,13 +81,15 @@ function __static__Ensure_Additional_Paths_Given_For_Sampler()
 {
     if [[ "${HYBRID_module[Sampler]}" = 'FIST' ]]; then
         Ensure_Given_Files_Exist \
-            'Some needed file for Thermal-FIST sampler was not specified in the configuration file' \
+            'Some needed file for Thermal-FIST sampler was not specified in the configuration file.' \
             -- "${HYBRID_fist_module[Particle_file]}" "${HYBRID_fist_module[Decays_file]}"
     fi
 }
 
 function __static__Set_Sampler_Input_Key_Paths()
 {
+    # As the user may set particle_list_file and decays_list_file through the HYBRID_fist_module
+    # array, we set the input_key_default_path array here and not in global_variables.bash.
     declare -rgA HYBRID_sampler_input_key_default_paths=(
         # FIST input key paths
         ['hypersurface_file']="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
@@ -101,8 +105,8 @@ function __static__Set_Sampler_Input_Key_Paths()
 function __static__Choose_Base_Configuration_File_For_Sampler()
 {
     if [[ "${HYBRID_software_base_config_file[Sampler]}" = '' ]]; then
-        Sampler_key="Sampler_${HYBRID_module[Sampler]}"
-        HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${Sampler_key}]}"
+        local -r sampler_key="Sampler_${HYBRID_module[Sampler]}"
+        HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${sampler_key}]}"
     fi
 }
 

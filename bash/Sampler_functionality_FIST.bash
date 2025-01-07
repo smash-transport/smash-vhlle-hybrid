@@ -1,27 +1,23 @@
 #===================================================
 #
-#    Copyright (c) 2024
+#    Copyright (c) 2024-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
 #===================================================
 
-function Create_Superfluous_Symbolic_Link_To_External_Files_Ensuring_Their_Existence_FIST()
+function Create_Superfluous_Symbolic_Link_To_External_Files_Ensuring_Their_Existence_For_FIST()
 {
-    local particle_list_file decays_list_file
-    particle_list_file=$(Get_Path_Field_From_Sampler_Config_As_Global_Path 'particle_list_file')
-    decays_list_file=$(Get_Path_Field_From_Sampler_Config_As_Global_Path 'decays_list_file')
-    Ensure_Input_File_Exists_And_Alert_If_Unfinished "${particle_list_file}"
-    Ensure_Input_File_Exists_And_Alert_If_Unfinished "${decays_list_file}"
-    if [[ "$(dirname "${particle_list_file}")" != "${HYBRID_software_output_directory[Sampler]}" ]]; then
-        ln -s "${particle_list_file}" \
-            "${HYBRID_software_output_directory[Sampler]}/$(basename "${particle_list_file}")"
-    fi
-    if [[ "$(dirname "${decays_list_file}")" != "${HYBRID_software_output_directory[Sampler]}" ]]; then
-        ln -s "${decays_list_file}" \
-            "${HYBRID_software_output_directory[Sampler]}/$(basename "${decays_list_file}")"
-    fi
+    local label filename
+    for label in 'particle_list_file' 'decays_list_file'; do
+        filename=$(Get_Path_Field_From_Sampler_Config_As_Global_Path "${label}")
+        Ensure_Input_File_Exists_And_Alert_If_Unfinished "${filename}"
+        if [[ "$(dirname "${filename}")" != "${HYBRID_software_output_directory[Sampler]}" ]]; then
+            ln -s "${filename}" \
+                "${HYBRID_software_output_directory[Sampler]}/$(basename "${filename}")"
+        fi
+    done
 }
 
 function Transform_Relative_Paths_In_Sampler_Config_File_For_FIST()
@@ -40,7 +36,7 @@ function Transform_Relative_Paths_In_Sampler_Config_File_For_FIST()
             'decays_list_file' "${decays_list_file}")"
 }
 
-function Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_FIST()
+function Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_For_FIST()
 {
     Get_Path_Field_From_Sampler_Config_As_Global_Path 'hypersurface_file'
 }
