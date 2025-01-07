@@ -170,8 +170,8 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
         is_sampler_shear=1
         is_sampler_bulk=0
         ecrit_sampler=0.5
-        # As both supported Sampler modules encode the shear correction flags similiar
-        # we can use the same logic for both.
+        # As both supported Sampler modules encode the shear correction flags
+        # in a similar way, we can use the same logic for both.
         while read key value; do
             case "${key}" in
                 shear | shear_correction)
