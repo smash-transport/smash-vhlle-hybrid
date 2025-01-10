@@ -149,7 +149,7 @@ function Validate_Configuration_File_Of_FIST()
     fi
 }
 
-function Run_Sampler_Software_FIST()
+function Run_Sampler_Software_For_FIST()
 {
     "${HYBRID_software_executable[Sampler]}" "${sampler_config_file_path}" &>> \
         "${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}" \

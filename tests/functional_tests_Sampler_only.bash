@@ -7,21 +7,26 @@
 #
 #===================================================
 
-function _static_Execute_FIST_Sampler_Test()
+function _static__Execute_FIST_Sampler_Test()
 {
-
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'run_id' 'particle_list' 'decays_list'
+    local -r expectation="${1}" \
+        hybrid_handler_config="${2}" \
+        expected_exit_code="${3}" \
+        error_message="${4}" \
+        output_directory="${5}"
     mkdir -p "Sampler/${run_id}"
     touch "${particle_list}" "${decays_list}"
-    Print_Info "Running Hybrid-handler expecting ${1}"
-    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${2}" '-o' '.'
-    if [[ $? -eq "${3}" ]]; then
-        Print_Error "Hybrid-handler ${4}"
+    Print_Info "Running Hybrid-handler expecting ${expectation}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}" '-o' '.'
+    if [[ $? -eq "${expected_exit_code}" ]]; then
+        Print_Error "Hybrid-handler ${error_message}"
         return 1
     fi
-    if [[ "${3}" != '0' ]]; then
+    if [[ "${expected_exit_code}" != '0' ]]; then
         Check_If_Software_Produced_Expected_Output 'Sampler_FIST' "$(pwd)/Sampler"
     fi
-    mv 'Sampler' "${5}"
+    mv 'Sampler' "${output_directory}"
 }
 
 function Functional_Test__do-Sampler-only()
@@ -98,24 +103,6 @@ function Functional_Test__do-Sampler-only()
     fi
     Check_If_Software_Produced_Expected_Output 'Sampler_SMASH' "$(pwd)/Sampler"
     mv 'Sampler' 'Sampler-success'
-    export BLACK_BOX_TYPE_SAMPLER="FIST"
-    # Expect success with FIST module
-    _static_Execute_FIST_Sampler_Test 'success when running with FIST module' \
-        "${hybrid_handler_config_fist}" 1 'unexpectedly failed when running with FIST module.' \
-        'Sampler-success-fist'
-    # Expect failure with config from wrong module
-    _static_Execute_FIST_Sampler_Test 'failure when running with smash_hadron_sampler config' \
-        "${hybrid_handler_config_mixed}" 0 'unexpectedly succeeded when running with config from wrong module.' \
-        'Sampler-failure-wrong_config'
-    # Expect failure with wrong module name
-    _static_Execute_FIST_Sampler_Test 'failure when running with invalid module' \
-        "${hybrid_handler_config_wrong_module}" 0 'unexpectedly succeeded when running with wrong module.' \
-        'Sampler-failure-wrong-module'
-    # Expect failure with wrong FIST file
-    _static_Execute_FIST_Sampler_Test 'failure when running with wrong FIST file' \
-        "${hybrid_handler_config_wrong_fist_file}" 0 'unexpectedly succeeded when running with wrong FIST file.' \
-        'Sampler-failure-wrong-fist-file'
-    export BLACK_BOX_TYPE_SAMPLER="SMASH"
     # Expect failure and test terminal output
     local terminal_output_file error_message
     local -r terminal_output_file="Sampler/${run_id}/Sampler.log"
@@ -137,7 +124,7 @@ function Functional_Test__do-Sampler-only()
     mv 'Sampler' 'Sampler-crash'
     # Expect Hybrid-handler to crash before calling the Sampler because of invalid config file
     Print_Info 'Running Hybrid-handler expecting invalid config error'
-    BLACK_BOX_FAIL='false'
+    export BLACK_BOX_FAIL='false'
     mkdir -p "Sampler/${run_id}"
     local -r invalid_sampler_config="invalid_hadron_sampler"
     touch "${invalid_sampler_config}"
@@ -171,4 +158,23 @@ function Functional_Test__do-Sampler-only()
         return 1
     fi
     mv 'Sampler' 'Sampler-unfinished-hydro'
+    rm "Hydro/${run_id}/freezeout.dat.unfinished"
+    touch "Hydro/${run_id}/freezeout.dat"
+    export BLACK_BOX_TYPE_SAMPLER="FIST"
+    # Expect success with FIST module
+    _static__Execute_FIST_Sampler_Test 'success when running with FIST module' \
+        "${hybrid_handler_config_fist}" 1 'unexpectedly failed when running with FIST module.' \
+        'Sampler-success-fist'
+    # Expect failure with config from wrong module
+    _static__Execute_FIST_Sampler_Test 'failure when running with smash_hadron_sampler config' \
+        "${hybrid_handler_config_mixed}" 0 'unexpectedly succeeded when running with config from wrong module.' \
+        'Sampler-failure-wrong_config'
+    # Expect failure with wrong module name
+    _static__Execute_FIST_Sampler_Test 'failure when running with invalid module' \
+        "${hybrid_handler_config_wrong_module}" 0 'unexpectedly succeeded when running with wrong module.' \
+        'Sampler-failure-wrong-module'
+    # Expect failure with wrong FIST file
+    _static__Execute_FIST_Sampler_Test 'failure when running with wrong FIST file' \
+        "${hybrid_handler_config_wrong_fist_file}" 0 'unexpectedly succeeded when running with wrong FIST file.' \
+        'Sampler-failure-wrong-fist-file'
 }

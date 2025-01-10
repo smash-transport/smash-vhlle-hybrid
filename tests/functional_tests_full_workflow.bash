@@ -67,7 +67,7 @@ function __static__Check_Outcome_Of_Full_Run()
     fi
     local block
     for block in IC Sampler_SMASH Hydro Afterburner; do
-        if [[ "$block" == "Sampler_SMASH" ]]; then
+        if [[ "${block}" == "Sampler_SMASH" ]]; then
             Check_If_Software_Produced_Expected_Output "${block}" "$(pwd)/Sampler"
         else
             Check_If_Software_Produced_Expected_Output "${block}" "$(pwd)/${block}"

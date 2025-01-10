@@ -114,7 +114,7 @@ function Validate_Configuration_File_Of_SMASH()
     fi
 }
 
-function Run_Sampler_Software_SMASH()
+function Run_Sampler_Software_For_SMASH()
 {
     "${HYBRID_software_executable[Sampler]}" 'events' '1' \
         "${sampler_config_file_path}" &>> \

@@ -42,7 +42,7 @@ function Run_Software_Sampler()
     Separate_Terminal_Output_For 'Sampler'
     local -r sampler_config_file_path="${HYBRID_software_configuration_file[Sampler]}"
     cd "${HYBRID_software_output_directory[Sampler]}"
-    Run_Sampler_Software_${HYBRID_module[Sampler]}
+    Run_Sampler_Software_For_${HYBRID_module[Sampler]}
 }
 
 function Get_Path_Field_From_Sampler_Config_As_Global_Path()
@@ -114,8 +114,8 @@ function __static__Preprocess_Configuration()
     fi
     # Check that no key is repeated
     repeated_keys=$(awk '$1 != "#" {print $1}' "${config_file}" | sort | uniq -d)
-    if [[ -n "$repeated_keys" ]]; then
-        Print_Error 'Found repeated key(s) in sampler configuration file: ' --emph "$repeated_keys"
+    if [[ -n "${repeated_keys}" ]]; then
+        Print_Error 'Found repeated key(s) in sampler configuration file: ' --emph "${repeated_keys}"
         return 1
     fi
 }

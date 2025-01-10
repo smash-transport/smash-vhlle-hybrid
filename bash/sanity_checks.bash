@@ -57,10 +57,10 @@ function Perform_Internal_Sanity_Checks()
     for key in "${!HYBRID_software_base_config_file[@]}"; do
         # The Sampler entry in the associative array here is still empty and does not point to a
         # shipped configuration file. It will be chosen later according to the module.
-        if [[ "$key" != "Sampler" ]]; then
+        if [[ "${key}" != "Sampler" ]]; then
             Internally_Ensure_Given_Files_Exist \
                 'These base configuration files should be shipped within the hybrid handler codebase.' '--' \
-                "${HYBRID_software_base_config_file[$key]}"
+                "${HYBRID_software_base_config_file[${key}]}"
         fi
     done
 }
