@@ -35,6 +35,8 @@ function __static__Source_Codebase_Files()
         'IC_functionality.bash'
         'progress_bar.bash'
         'Sampler_functionality.bash'
+        'Sampler_functionality_FIST.bash'
+        'Sampler_functionality_SMASH.bash'
         'sanity_checks.bash'
         'scan_files_operations.bash'
         'scan_validation.bash'

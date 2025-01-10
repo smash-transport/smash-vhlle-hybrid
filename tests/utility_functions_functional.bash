@@ -15,8 +15,11 @@ function Check_If_Software_Produced_Expected_Output()
         IC | Hydro)
             expected_output_files=6
             ;;
-        Sampler)
+        Sampler_SMASH)
             expected_output_files=5
+            ;;
+        Sampler_FIST)
+            expected_output_files=7
             ;;
         Afterburner)
             expected_output_files=7
@@ -40,7 +43,7 @@ function Check_If_Software_Produced_Expected_Output()
     elif [[ ${#output_files[@]} -ne ${expected_output_files} ]]; then
         exit_code=${HYBRID_failure_exit_code} Print_Fatal_And_Exit \
             'Expected ' --emph "${expected_output_files}" ' output files in ' \
-            --emph "${block}" " folder, but ${#output_files[@]} found."
+            --emph "${folder}" " folder, but ${#output_files[@]} found."
         return 1
     fi
 }
