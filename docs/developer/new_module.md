@@ -18,7 +18,7 @@ The following steps serve as a guidance and will probably be needed. Let's assum
         [Hydro]="${HYBRID_default_hydro_module}"
     )
 ```
-At the same place, add alternative base config files for the stages named `${STAGE_NAME}_${MODULE_NAME}` and add `[Module]` to the valid keys of the stage.
+At the same place, add alternative base config files for the stages named `${STAGE_NAME}_${MODULE_NAME}` (here `Hydro_MUSIC`) and add `[Module]` to the valid keys of the stage.
 ``` {.bash .no-copy title=global_variables.bash}
     declare -rgA HYBRID_hydro_valid_keys=(
         [Executable]='HYBRID_software_executable[Hydro]'
@@ -55,6 +55,6 @@ At the same place, add alternative base config files for the stages named `${STA
 
 * Add versions of the affected stage functionality script for the new module.
 Shared logic stays in the common functionality script, whereas module-specific logic is implemented in the module-specific script.
-The module dependent logic is implemented in functions with the suffix `_${MODULE_NAME}`. Therefore, if-clauses in the main stage script can be avoided.
+The module dependent logic is implemented in functions with the suffix `_${MODULE_NAME}` (here `MUSIC`). Therefore, if-clauses in the main stage script can be avoided.
 * Don't forget to source the new files!
 * Add a mock for the new module in the mocks folder.
