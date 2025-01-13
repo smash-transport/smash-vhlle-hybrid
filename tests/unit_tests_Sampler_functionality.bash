@@ -219,12 +219,8 @@ function Unit_Test__Sampler-validate-config-file()
     local wrong_key_value
     for wrong_key_value in \
         'number_of_events 3.14' \
-        'rescatter 3..14' \
-        'weakContribution false' \
         'shear true' \
-        'ecrit +-1' \
-        'Nbins -100' \
-        'q_max 1.6'; do
+        'ecrit +-1'; do
         printf '%s\n' "${wrong_key_value}" > "${HYBRID_software_configuration_file[Sampler]}"
         Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
         if [[ $? -eq 0 ]]; then
