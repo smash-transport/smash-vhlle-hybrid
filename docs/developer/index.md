@@ -89,5 +89,14 @@ Assumptions that are crucial to know before even getting to the code have a dedi
 
     [:material-arrow-right-box:&nbsp; Read more](parameters_scan.md)
 
+-   :jigsaw:{ .lg .middle } &nbsp; __Adding a new module__
+
+    ---
+
+    You want to replace the software in one or more stages with a different one?
+    Check these notes about what changes are needed.
+
+    [:material-arrow-right-box:&nbsp; Read more](new_module.md)
+
 
 </div>
