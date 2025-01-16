@@ -1,4 +1,6 @@
-# Simulation software
+# Hybrid handler prerequisites
+
+## Simulation software
 
 !!! info "Be aware about the meaning of the version requirements"
     In the following we state a version requirement for the external software needed in the various phases.
@@ -41,14 +43,14 @@ Instructions on how to compile or install the software above can be found at the
 In principle, the Hybrid handler is agnostic to the physics model used in each state, and is built in a way to support different software with minimal efforts.
 Currently, this is realized for some of the different stages and the supported software is reported here below.
 
-## Hadron Sampler
+### Hadron Sampler
 
 <div class="center-table" markdown>
 
 | Supported Software | Required version |
 | :------------: | :--------------: |
 | [Hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | Same as SMASH[^2] |
-| [FIST sampler](https://github.com/vlvovch/fist-sampler) | Commit `af99229` and later |
+| [FIST sampler](https://github.com/vlvovch/fist-sampler) | Commit `af99229` or later |
 
 </div>
 ---

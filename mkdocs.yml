@@ -46,6 +46,7 @@ nav:
 
 markdown_extensions:
   # More markdown functionality
+  - abbr
   - tables
   - footnotes
   - attr_list
@@ -93,6 +94,7 @@ theme:
   logo: images/logo.png
   features:
     - content.code.copy
+    - content.tooltips
     - header.autohide
     - navigation.indexes
     - navigation.sections

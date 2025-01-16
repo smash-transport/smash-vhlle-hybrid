@@ -94,7 +94,7 @@ Assumptions that are crucial to know before even getting to the code have a dedi
     ---
 
     You want to replace the software in one or more stages with a different one?
-    Check these notes on what changes need to be done.
+    Check these notes about what changes are needed.
 
     [:material-arrow-right-box:&nbsp; Read more](new_module.md)
 
