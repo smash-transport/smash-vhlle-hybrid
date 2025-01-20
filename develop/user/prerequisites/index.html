@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#simulation-software" class="md-skip">
+        <a href="#hybrid-handler-prerequisites" class="md-skip">
           Skip to content
         </a>
       
@@ -505,6 +505,30 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#simulation-software" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simulation software
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Simulation software">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hadron-sampler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hadron Sampler
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#unix-system-requirements" class="md-nav__link">
@@ -981,6 +1005,8 @@
       
         
       
+        
+      
     
     
     
@@ -1056,6 +1082,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../developer/new_module/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Adding new modules
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1098,6 +1145,30 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#simulation-software" class="md-nav__link">
+    <span class="md-ellipsis">
+      Simulation software
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Simulation software">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hadron-sampler" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hadron Sampler
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#unix-system-requirements" class="md-nav__link">
     <span class="md-ellipsis">
       Unix system requirements
@@ -1133,7 +1204,8 @@
   
 
 
-<h1 id="simulation-software">Simulation software<a class="headerlink" href="#simulation-software" title="Link to this section">&para;</a></h1>
+<h1 id="hybrid-handler-prerequisites">Hybrid handler prerequisites<a class="headerlink" href="#hybrid-handler-prerequisites" title="Link to this section">&para;</a></h1>
+<h2 id="simulation-software">Simulation software<a class="headerlink" href="#simulation-software" title="Link to this section">&para;</a></h2>
 <div class="admonition info">
 <p class="admonition-title">Be aware about the meaning of the version requirements</p>
 <p>In the following we state a version requirement for the external software needed in the various phases.
@@ -1165,7 +1237,7 @@ Said differently, if you e.g. need to use older versions of some software, expec
 </tr>
 <tr>
 <td style="text-align: center;"><a href="https://github.com/smash-transport/smash-hadron-sampler">Hadron sampler</a></td>
-<td style="text-align: center;">Same as SMASH<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
+<td style="text-align: center;">See below</td>
 </tr>
 </tbody>
 </table>
@@ -1193,6 +1265,29 @@ Said differently, if you e.g. need to use older versions of some software, expec
 <p>The above prerequisites have in general additional dependencies and it is important to be consistent in compiler options when compiling these and the software itself.
 We particularly highlight that the newer versions of ROOT require C++17 bindings or higher, which calls for proper treatment of compiler options in SMASH and the hadron sampler.
 It is also recommended to start from a clean build directory whenever changing the compiler or linking to external libraries that were compiled with different compiler flags.</p>
+</div>
+<p>In principle, the Hybrid handler is agnostic to the physics model used in each state, and is built in a way to support different software with minimal efforts.
+Currently, this is realized for some of the different stages and the supported software is reported here below.</p>
+<h3 id="hadron-sampler">Hadron Sampler<a class="headerlink" href="#hadron-sampler" title="Link to this section">&para;</a></h3>
+<div class="center-table">
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Supported Software</th>
+<th style="text-align: center;">Required version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><a href="https://github.com/smash-transport/smash-hadron-sampler">Hadron sampler</a></td>
+<td style="text-align: center;">Same as SMASH<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://github.com/vlvovch/fist-sampler">FIST sampler</a></td>
+<td style="text-align: center;">Commit <code>af99229</code> or later</td>
+</tr>
+</tbody>
+</table>
 </div>
 <hr />
 <h2 id="unix-system-requirements">Unix system requirements<a class="headerlink" href="#unix-system-requirements" title="Link to this section">&para;</a></h2>
@@ -1311,7 +1406,7 @@ However, if you need to use a different version of the hadron sampler software, 
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "header.autohide", "navigation.indexes", "navigation.sections", "navigation.tabs", "navigation.top", "toc.follow"], "search": "../../assets/javascripts/workers/search.c011b7c0.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.copy", "content.tooltips", "header.autohide", "navigation.indexes", "navigation.sections", "navigation.tabs", "navigation.top", "toc.follow"], "search": "../../assets/javascripts/workers/search.c011b7c0.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.7389ff0e.min.js"></script>
