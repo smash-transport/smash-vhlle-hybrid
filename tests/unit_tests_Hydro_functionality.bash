@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -178,7 +178,6 @@ function Unit_Test__Hydro-test-run-software()
         Print_Error 'The terminal output has not the expected content.'
         return 1
     fi
-
 }
 
 function Clean_Tests_Environment_For_Following_Test__Hydro-test-run-software()
