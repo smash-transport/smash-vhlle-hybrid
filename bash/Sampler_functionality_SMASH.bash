@@ -18,12 +18,12 @@ function Transform_Relative_Paths_In_Sampler_Config_File_For_SMASH()
 {
     local freezeout_path output_directory
     freezeout_path=$(Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface')
-    output_directory=$(Get_Path_Field_From_Sampler_Config_As_Global_Path 'spectra_dir')
+    output_directory=$(Get_Path_Field_From_Sampler_Config_As_Global_Path 'output_dir')
     Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
         'TXT' "${HYBRID_software_configuration_file[Sampler]}" \
         "$(printf "%s: %s\n" \
             'surface' "${freezeout_path}" \
-            'spectra_dir' "${output_directory}")"
+            'output_dir' "${output_directory}")"
 }
 
 function Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_For_SMASH()
@@ -36,13 +36,15 @@ function Validate_Configuration_File_Of_SMASH()
     local -r config_file="${HYBRID_software_configuration_file[Sampler]}"
     local -r allowed_keys=(
         'surface'
-        'spectra_dir'
+        'output_dir'
         'number_of_events'
         'shear'
         'bulk'
         'ecrit'
         'cs2'
         'ratio_pressure_energydensity'
+        'hydro_coordinate_system'
+        'transversal_smearing'
     )
     local keys_to_be_found
     keys_to_be_found=2
@@ -55,7 +57,7 @@ function Validate_Configuration_File_Of_SMASH()
             return 1
         fi
         case "${key}" in
-            surface | spectra_dir)
+            surface | output_dir)
                 if [[ "${value}" = '=DEFAULT=' ]]; then
                     ((keys_to_be_found--))
                     continue
@@ -70,7 +72,7 @@ function Validate_Configuration_File_Of_SMASH()
                 fi
                 ((keys_to_be_found--))
                 ;;
-            spectra_dir)
+            output_dir)
                 cd "${HYBRID_software_output_directory[Sampler]}"
                 if [[ ! -d "${value}" ]]; then
                     cd - > /dev/null
@@ -79,7 +81,14 @@ function Validate_Configuration_File_Of_SMASH()
                 fi
                 ((keys_to_be_found--))
                 ;;
-            shear | bulk)
+            hydro_coordinate_system)
+                if [[ ! "${value,,}" =~ ^("milne"|"cartesian")$ ]]; then
+                    Print_Error 'Key ' --emph "${key}" ' must be either ' \
+                        --emph 'Milne' ' or ' --emph 'Cartesian' '.'
+                    return 1
+                fi
+                ;;
+            shear | bulk | transversal_smearing)
                 if [[ ! "${value}" =~ ^[01]$ ]]; then
                     Print_Error 'Key ' --emph "${key}" ' must be either ' \
                         --emph '0' ' or ' --emph '1' '.'
@@ -104,7 +113,7 @@ function Validate_Configuration_File_Of_SMASH()
     done < "${config_file}"
     # Check that all required keys were found
     if [[ ${keys_to_be_found} -gt 0 ]]; then
-        Print_Error 'Either ' --emph 'surface' ' or ' --emph 'spectra_dir' \
+        Print_Error 'Either ' --emph 'surface' ' or ' --emph 'output_dir' \
             ' key is missing in sampler configuration file.'
         return 1
     fi
@@ -112,7 +121,7 @@ function Validate_Configuration_File_Of_SMASH()
 
 function Run_Sampler_Software_For_SMASH()
 {
-    "${HYBRID_software_executable[Sampler]}" 'events' '1' \
+    "${HYBRID_software_executable[Sampler]}" '--num' '1' '--config' \
         "${sampler_config_file_path}" &>> \
         "${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}" \
         || Report_About_Software_Failure_For 'Sampler'
