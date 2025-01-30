@@ -43,6 +43,7 @@ function Validate_Configuration_File_Of_SMASH()
         'ecrit'
         'cs2'
         'ratio_pressure_energydensity'
+        'createRootOutput'
         'hydro_coordinate_system'
         'transversal_smearing'
     )
@@ -88,7 +89,7 @@ function Validate_Configuration_File_Of_SMASH()
                     return 1
                 fi
                 ;;
-            shear | bulk | transversal_smearing)
+            shear | bulk | createRootOutput | transversal_smearing)
                 if [[ ! "${value}" =~ ^[01]$ ]]; then
                     Print_Error 'Key ' --emph "${key}" ' must be either ' \
                         --emph '0' ' or ' --emph '1' '.'
