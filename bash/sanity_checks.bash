@@ -97,7 +97,7 @@ function __static__Set_Sampler_Input_Key_Paths()
         ['particle_list_file']="${HYBRID_fist_module[Particle_file]}"
         ['decays_list_file']="${HYBRID_fist_module[Decays_file]}"
         # SMASH input key paths
-        ['surface']="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+        ['surface_file']="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
         ['output_dir']="${HYBRID_software_output_directory[Sampler]}"
     )
 }

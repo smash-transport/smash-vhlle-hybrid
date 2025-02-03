@@ -50,12 +50,12 @@ function Unit_Test__Sampler-create-input-file()
         return 1
     fi
     # Ensure that paths in Sampler config were replaced by global paths
-    local surface_path spectra_dir_path
-    surface_path=$(awk '$1 == "surface" {print $2; exit}' \
+    local surface_path output_dir_path
+    surface_path=$(awk '$1 == "surface_file" {print $2; exit}' \
         "${HYBRID_software_configuration_file[Sampler]}")
-    spectra_dir_path=$(awk '$1 == "spectra_dir" {print $2; exit}' \
+    output_dir_path=$(awk '$1 == "output_dir" {print $2; exit}' \
         "${HYBRID_software_configuration_file[Sampler]}")
-    if [[ "${surface_path}" != /* || "${spectra_dir_path}" != /* ]]; then
+    if [[ "${surface_path}" != /* || "${output_dir_path}" != /* ]]; then
         Print_Error 'Freezeout and/or output directory path in Sampler config is not a global path.'
         return 1
     fi
@@ -128,15 +128,15 @@ function Unit_Test__Sampler-check-all-input()
         Print_Error 'Ensuring correctness of empty sampler input file succeeded.'
         return 1
     fi
-    printf 'surface not-existing-file\n' > "${HYBRID_software_configuration_file[Sampler]}"
+    printf 'surface_file not-existing-file\n' > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Sampler &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of not-existing freezeout surface file succeeded.'
         return 1
     fi
     printf '%s\n' \
-        "surface $(which ls)" \
-        "spectra_dir ${HOME}" > "${HYBRID_software_configuration_file[Sampler]}"
+        "surface_file $(which ls)" \
+        "output_dir ${HOME}" > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Sampler
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of all input files unexpectedly failed.'
@@ -167,14 +167,14 @@ function Unit_Test__Sampler-validate-config-file()
         return 1
     fi
     # Too many columns in config file
-    printf '%s\n' 'surface whatever wrong' > "${HYBRID_software_configuration_file[Sampler]}"
+    printf '%s\n' 'surface_file whatever wrong' > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Config validation passed although config file has wrong number of columns.'
         return 1
     fi
     # Repeated key in config file
-    printf '%s\n' 'spectra_dir ~' 'spectra_dir ~' > "${HYBRID_software_configuration_file[Sampler]}"
+    printf '%s\n' 'output_dir ~' 'output_dir ~' > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Config validation passed although config file has repeated lines.'
@@ -187,32 +187,32 @@ function Unit_Test__Sampler-validate-config-file()
         Print_Error 'Config validation passed although config file has invalid key.'
         return 1
     fi
-    # Config file missing required key 'surface'
-    printf '%s\n' 'spectra_dir .' > "${HYBRID_software_configuration_file[Sampler]}"
+    # Config file missing required key 'surface_file'
+    printf '%s\n' 'output_dir .' > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file does not contain "surface" key.'
+        Print_Error 'Config validation passed although config file does not contain "surface_file" key.'
         return 1
     fi
-    # Config file missing required key 'spectra_dir'
-    printf '%s\n' "surface $(which ls)" > "${HYBRID_software_configuration_file[Sampler]}"
+    # Config file missing required key 'output_dir'
+    printf '%s\n' "surface_file $(which ls)" > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file does not contain "spectra_dir" key.'
+        Print_Error 'Config validation passed although config file does not contain "output_dir" key.'
         return 1
     fi
-    # Config file with incorrect surface
-    printf '%s\n' 'surface not-a-file' > "${HYBRID_software_configuration_file[Sampler]}"
+    # Config file with incorrect surface_file
+    printf '%s\n' 'surface_file not-a-file' > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although surface key has no string as value.'
+        Print_Error 'Config validation passed although surface_file key has no string as value.'
         return 1
     fi
-    # Config file with incorrect spectra_dir
-    printf '%s\n' "spectra_dir $(which ls)" > "${HYBRID_software_configuration_file[Sampler]}"
+    # Config file with incorrect output_dir
+    printf '%s\n' "output_dir $(which ls)" > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although spectra_dir key has no directory as value.'
+        Print_Error 'Config validation passed although output_dir key has no directory as value.'
         return 1
     fi
     # Config file with incorrect value type for other keys
@@ -327,7 +327,7 @@ function Unit_Test__Sampler-validate-config-file-FIST()
     printf '%s\n' "output_file $(which ls)" > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although spectra_dir key has no directory as value.'
+        Print_Error 'Config validation passed although output_dir key has no directory as value.'
         return 1
     fi
     # Config file with incorrect value type for other keys

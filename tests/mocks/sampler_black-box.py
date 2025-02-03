@@ -237,13 +237,13 @@ def run_black_box():
         check_if_file_exists(path_to_config, 'SMASH')
         path_to_freezeout = get_value_as_string_from_config_by_keyword(
             path_to_config,
-            'surface',
-            "Keyword 'surface' not in config!"
+            'surface_file',
+            "Keyword 'surface_file' not in config!"
         )
         output_dir = get_value_as_string_from_config_by_keyword(
             path_to_config,
-            'spectra_dir',
-            "Keyword 'spectra_dir' not in config!"
+            'output_dir',
+            "Keyword 'output_dir' not in config!"
         )
         check_if_file_exists(path_to_freezeout, 'SMASH')
         check_if_directory_exists(output_dir)

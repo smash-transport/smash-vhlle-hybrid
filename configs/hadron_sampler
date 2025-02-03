@@ -1,4 +1,4 @@
-surface                 =DEFAULT=
+surface_file            =DEFAULT=
 output_dir              =DEFAULT=
 number_of_events        1000
 shear                   1

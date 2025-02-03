@@ -17,25 +17,25 @@ function Create_Superfluous_Symbolic_Link_To_External_Files_Ensuring_Their_Exist
 function Transform_Relative_Paths_In_Sampler_Config_File_For_SMASH()
 {
     local freezeout_path output_directory
-    freezeout_path=$(Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface')
+    freezeout_path=$(Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface_file')
     output_directory=$(Get_Path_Field_From_Sampler_Config_As_Global_Path 'output_dir')
     Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
         'TXT' "${HYBRID_software_configuration_file[Sampler]}" \
         "$(printf "%s: %s\n" \
-            'surface' "${freezeout_path}" \
+            'surface_file' "${freezeout_path}" \
             'output_dir' "${output_directory}")"
 }
 
 function Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_For_SMASH()
 {
-    Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface'
+    Get_Path_Field_From_Sampler_Config_As_Global_Path 'surface_file'
 }
 
 function Validate_Configuration_File_Of_SMASH()
 {
     local -r config_file="${HYBRID_software_configuration_file[Sampler]}"
     local -r allowed_keys=(
-        'surface'
+        'surface_file'
         'output_dir'
         'number_of_events'
         'shear'
@@ -43,7 +43,7 @@ function Validate_Configuration_File_Of_SMASH()
         'ecrit'
         'cs2'
         'ratio_pressure_energydensity'
-        'createRootOutput'
+        'create_root_output'
         'hydro_coordinate_system'
         'transversal_smearing'
     )
@@ -58,13 +58,13 @@ function Validate_Configuration_File_Of_SMASH()
             return 1
         fi
         case "${key}" in
-            surface | output_dir)
+            surface_file | output_dir)
                 if [[ "${value}" = '=DEFAULT=' ]]; then
                     ((keys_to_be_found--))
                     continue
                 fi
                 ;;& # Continue matching other cases below
-            surface)
+            surface_file)
                 cd "${HYBRID_software_output_directory[Sampler]}"
                 if [[ ! -f "${value}" ]]; then
                     cd - > /dev/null
@@ -89,7 +89,7 @@ function Validate_Configuration_File_Of_SMASH()
                     return 1
                 fi
                 ;;
-            shear | bulk | createRootOutput | transversal_smearing)
+            shear | bulk | create_root_output | transversal_smearing)
                 if [[ ! "${value}" =~ ^[01]$ ]]; then
                     Print_Error 'Key ' --emph "${key}" ' must be either ' \
                         --emph '0' ' or ' --emph '1' '.'
@@ -114,7 +114,7 @@ function Validate_Configuration_File_Of_SMASH()
     done < "${config_file}"
     # Check that all required keys were found
     if [[ ${keys_to_be_found} -gt 0 ]]; then
-        Print_Error 'Either ' --emph 'surface' ' or ' --emph 'output_dir' \
+        Print_Error 'Either ' --emph 'surface_file' ' or ' --emph 'output_dir' \
             ' key is missing in sampler configuration file.'
         return 1
     fi
