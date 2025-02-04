@@ -88,7 +88,7 @@ function Validate_Configuration_File_Of_SMASH()
                 ;;
             number_of_events)
                 if [[ ! "${value}" =~ ^[1-9][0-9]*$ ]]; then
-                    Print_Error 'Found not-integer value ' --emph "${value}" \
+                    Print_Error 'Found non-integer value ' --emph "${value}" \
                         ' for ' --emph "${key}" ' key.'
                     return 1
                 fi
