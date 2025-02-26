@@ -72,7 +72,7 @@ function Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-S
     rm -r "${HYBRID_output_directory}"
 }
 
-function Make_Test_Preliminary_Operations__Sampler-create-input-file-with-FIST()
+function Make_Test_Preliminary_Operations__Sampler-create-input-file-FIST()
 {
     __static__Do_Preliminary_Sampler_Setup_Operations
     HYBRID_module[Sampler]='FIST'
@@ -81,7 +81,7 @@ function Make_Test_Preliminary_Operations__Sampler-create-input-file-with-FIST()
 
 }
 
-function Unit_Test__Sampler-create-input-file-with-FIST()
+function Unit_Test__Sampler-create-input-file-FIST()
 {
     HYBRID_module[Sampler]='FIST'
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
@@ -96,7 +96,7 @@ function Unit_Test__Sampler-create-input-file-with-FIST()
     fi
 }
 
-function Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-with-FIST()
+function Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-FIST()
 {
     rm "${HYBRID_fist_module[Decays_file]}"
     rm "${HYBRID_fist_module[Particle_file]}"
@@ -246,9 +246,7 @@ function Clean_Tests_Environment_For_Following_Test__Sampler-validate-config-fil
 
 function Make_Test_Preliminary_Operations__Sampler-validate-config-file-FIST()
 {
-    Make_Test_Preliminary_Operations__Sampler-create-input-file-SMASH
-    HYBRID_module[Sampler]='FIST'
-    touch "${HYBRID_fist_module[Particle_file]}" "${HYBRID_fist_module[Decays_file]}"
+    Make_Test_Preliminary_Operations__Sampler-create-input-file-FIST
 }
 
 function Unit_Test__Sampler-validate-config-file-FIST()
@@ -358,9 +356,7 @@ function Unit_Test__Sampler-validate-config-file-FIST()
 
 function Clean_Tests_Environment_For_Following_Test__Sampler-validate-config-file-FIST()
 {
-    rm "${HYBRID_fist_module[Decays_file]}"
-    rm "${HYBRID_fist_module[Particle_file]}"
-    rm -r "${HYBRID_output_directory}"
+    Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-FIST
 }
 
 function Make_Test_Preliminary_Operations__Sampler-config-consistent-with-hydro-SMASH()
@@ -430,14 +426,12 @@ function Clean_Tests_Environment_For_Following_Test__Sampler-test-run-software-S
     Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-SMASH
 }
 
-function Make_Test_Preliminary_Operations__Sampler-test-run-software_FIST()
+function Make_Test_Preliminary_Operations__Sampler-test-run-software-FIST()
 {
-    Make_Test_Preliminary_Operations__Sampler-create-input-file-SMASH
-    HYBRID_module[Sampler]='FIST'
-    touch "${HYBRID_fist_module[Particle_file]}" "${HYBRID_fist_module[Decays_file]}"
+    Make_Test_Preliminary_Operations__Sampler-create-input-file-FIST
 }
 
-function Unit_Test__Sampler-test-run-software_FIST()
+function Unit_Test__Sampler-test-run-software-FIST()
 {
     HYBRID_module[Sampler]='FIST'
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
@@ -458,8 +452,5 @@ function Unit_Test__Sampler-test-run-software_FIST()
 
 function Clean_Tests_Environment_For_Following_Test__Sampler-test-run-software-FIST()
 {
-    Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-SMASH
-    rm "${HYBRID_fist_module[Decays_file]}"
-    rm "${HYBRID_fist_module[Particle_file]}"
-    rm -r "${HYBRID_output_directory}"
+    Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-FIST
 }
