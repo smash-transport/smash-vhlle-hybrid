@@ -7,6 +7,7 @@
 | Niklas Götz        | goetz@itp.uni-frankfurt.de       |
 | Nils Saß           | nsass@itp.uni-frankfurt.de       |
 | Renan Hirayama     | hirayama@itp.uni-frankfurt.de    |
+| Robin Sattler      | sattler@itp.uni-frankfurt.de     |
 | Zuzana Paulinyova  | zuzana.paulinyova@upjs.sk        |
 
 ## Past developers
