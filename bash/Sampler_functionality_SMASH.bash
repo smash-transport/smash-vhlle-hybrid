@@ -38,13 +38,9 @@ function Validate_Configuration_File_Of_SMASH()
         'surface'
         'spectra_dir'
         'number_of_events'
-        'rescatter'
-        'weakContribution'
         'shear'
         'bulk'
         'ecrit'
-        'Nbins'
-        'q_max'
         'cs2'
         'ratio_pressure_energydensity'
     )
@@ -83,16 +79,16 @@ function Validate_Configuration_File_Of_SMASH()
                 fi
                 ((keys_to_be_found--))
                 ;;
-            rescatter | weakContribution | shear | bulk)
+            shear | bulk)
                 if [[ ! "${value}" =~ ^[01]$ ]]; then
                     Print_Error 'Key ' --emph "${key}" ' must be either ' \
                         --emph '0' ' or ' --emph '1' '.'
                     return 1
                 fi
                 ;;
-            number_of_events | Nbins)
+            number_of_events)
                 if [[ ! "${value}" =~ ^[1-9][0-9]*$ ]]; then
-                    Print_Error 'Found not-integer value ' --emph "${value}" \
+                    Print_Error 'Found non-integer value ' --emph "${value}" \
                         ' for ' --emph "${key}" ' key.'
                     return 1
                 fi

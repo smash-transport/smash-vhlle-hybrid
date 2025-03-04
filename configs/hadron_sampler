@@ -1,7 +1,8 @@
-surface          =DEFAULT=
-spectra_dir      =DEFAULT=
-number_of_events 1000
-weakContribution 0
-shear            1
-bulk             0
-ecrit            0.5
+surface                       =DEFAULT=
+spectra_dir                   =DEFAULT=
+number_of_events              1000
+ecrit                         0.5
+bulk                          0
+shear                         0
+cs2                           0.15
+ratio_pressure_energydensity  0.15
