@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -18,7 +18,7 @@ function __static__Declare_System_Requirements()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty HYBRID_top_level_path
     if ! declare -p HYBRID_version_regex &> /dev/null; then
-        readonly HYBRID_version_regex='[0-9](.[0-9]+)*'
+        readonly HYBRID_version_regex='[0-9]+(.[0-9]+)*'
         readonly HYBRID_python_requirements_file="${HYBRID_top_level_path}/python/requirements.txt"
         readonly HYBRID_python_test_requirement_tool="${HYBRID_top_level_path}/python/test_requirement.py"
         declare -rgA HYBRID_versions_requirements=(
