@@ -32,6 +32,16 @@ In the following you will find an overview of what is available in the codebase.
         --8<-- "bash/utility_functions.bash:Element_In_Array_Matches-ex"
         ```
 
+## Version comparison utilities
+
+??? utility-func "`Is_Version`"
+    === "Description"
+        --8<-- "bash/utility_functions.bash:Is_Version-desc"
+    === "Call example"
+        ```bash
+        --8<-- "bash/utility_functions.bash:Is_Version-ex"
+        ```
+
 ## Variables- and functions-related utilities
 
 ??? utility-func "`Call_Function_If_Existing_Or_Exit`"

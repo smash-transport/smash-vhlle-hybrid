@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -338,4 +338,42 @@ function Unit_Test__utility-files-existence()
         return 1
     fi
     rm 'link_test'
+}
+
+function Unit_Test__utility-compare-versions()
+{
+    local counter=0 args
+    local -r test_cases=(
+        '1 = 1'
+        '1 -eq 1'
+        '2.1 < 2.2.0'
+        '2.1 -lt 2.2.0'
+        '3.0.4.10 > 3.0.4.2'
+        '3.0.4.10 -gt 3.0.4.2'
+        '4.08 < 4.08.01'
+        '4.08 -lt 4.08.01'
+        '42.1.999 < 42.2'
+        '3.2 < 3.2.0.0.0.1'
+        '1.2 < 2.1'
+        '2.1 > 1.2'
+        '5.6.7 = 5.6.7'
+        '1.01.1 == 1.1.1'
+        '1.1.1 = 1.01.1'
+        '1 = 1.0'
+        '1.0.0 = 001'
+        '1.0.2.0 != 1.0.2.01'
+        '1.0.2.0 -ne 1.0.2.01'
+        '1 >= 1.0'
+        '1 -ge 1.0'
+        '1 <= 1.0'
+        '1 -le 1.0'
+    )
+    for args in "${test_cases[@]}"; do
+        Call_Codebase_Function_In_Subshell Is_Version ${args} # Split args using word splitting!
+        if [[ $? -ne ${HYBRID_success_exit_code} ]]; then
+            Print_Error 'Versions test ' --emph "${args}" ' unexpectedly failed.'
+            ((counter++))
+        fi
+    done
+    return ${counter} # Fine as long as we have less than 256 test clauses! ;)
 }

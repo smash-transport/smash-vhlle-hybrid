@@ -490,20 +490,7 @@ function __static__Check_Version_Suffices()
     program=$1
     version_required="${HYBRID_versions_requirements[${program}]}"
     version_found=$(__static__Get_Field_In_System_Information_String "${program}" 1)
-    # If the required version contains trailing '.0's we drop them
-    if [[ ${version_required} =~ (\.0)*$ ]]; then
-        version_required=${version_required/%${BASH_REMATCH[0]}/}
-    fi
-    # If the found version matches the required ones up to trailing '.0's then we are done
-    if [[ "${version_found/#${version_required}/}" =~ ^(\.0)*$ ]]; then
-        return 0
-    fi
-    newer_version=$(__static__Get_Larger_Version ${version_required} ${version_found})
-    if [[ ${newer_version} = ${version_required} ]]; then
-        return 1
-    else
-        return 0
-    fi
+    Is_Version "${version_found}" -ge "${version_required}"
 }
 
 function __static__Is_Gnu_Version_In_Use()
@@ -520,49 +507,6 @@ function __static__Is_Gnu_Version_In_Use()
 
 #===================================================================================================
 # Third level of Utility functions for functionality above
-
-function __static__Get_Larger_Version()
-{
-    local v1=$1 v2=$2 dots_of_v1 dots_of_v2
-    if [[ ! "${v1}.${v2}" =~ ${HYBRID_version_regex} ]]; then
-        Print_Internal_And_Exit 'Wrong arguments passed to ' --emph "${FUNCNAME}" '.'
-    fi
-    # Ensure versions are of the same length to make following algorithm work
-    dots_of_v1=${v1//[^.]/}
-    dots_of_v2=${v2//[^.]/}
-    if [[ ${#dots_of_v1} -lt ${#dots_of_v2} ]]; then
-        declare -n \
-            shorter_version=v1 dots_of_shorter_version=dots_of_v1 dots_of_longer_version=dots_of_v2
-    else
-        declare -n \
-            shorter_version=v2 dots_of_shorter_version=dots_of_v2 dots_of_longer_version=dots_of_v1
-    fi
-    while [[ ${#dots_of_shorter_version} -ne ${#dots_of_longer_version} ]]; do
-        shorter_version+='.0'        # Add zeroes to shorter string
-        dots_of_shorter_version+='.' # Add dot to keep counting accurate
-    done
-    # If versions are equal, we're done
-    if [[ "${v2}" = "${v1}" ]]; then
-        printf "${v1}"
-        return
-    fi
-    # Split version strings into array of numbers replacing '.' by ' ' and let word splitting do the split
-    local v{1,2}_array index
-    v1_array=(${v1//./ })
-    v2_array=(${v2//./ })
-    # Now version arrays have same number of entries, compare them
-    for index in ${!v1_array[@]}; do
-        if [[ "${v1_array[index]}" -eq "${v2_array[index]}" ]]; then
-            continue
-        elif [[ "${v1_array[index]}" -lt "${v2_array[index]}" ]]; then
-            printf "$2" # Print input version, unchanged
-            return
-        else
-            printf "$1" # Print input version, unchanged
-            return
-        fi
-    done
-}
 
 function __static__Print_Requirement_Version_Report_Line()
 {
