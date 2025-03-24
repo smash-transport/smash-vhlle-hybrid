@@ -60,7 +60,7 @@ Assumptions that are crucial to know before even getting to the code have a dedi
     ---
 
     Tests are the key to be confident that the code works as expected.
-    A testing framework has been developed tailored on the project.
+    A testing framework has been developed tailored to the project.
     Adding new tests is as simple as writing a new function!
 
     [:material-arrow-right-box:&nbsp; Check it out!](testing_framework.md)

@@ -148,8 +148,8 @@ function Is_Version()
             ;;
         *)
             Print_Internal_And_Exit \
-                'Unreachable code reached in function ' --emph "${FUNCNAME}" \
-                ' called with: ' --emph "$1 $2 $3"
+                'Unreachable code (by design) executed in function ' \
+                --emph "${FUNCNAME}" ', called with: ' --emph "$1 $2 $3"
             ;;
     esac
 }
