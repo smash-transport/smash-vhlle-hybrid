@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -40,7 +40,7 @@ function Parse_Tests_Command_Line_Options()
         case $1 in
             -h | --help)
                 __static__Print_Helper
-                exit ${HYBRID_success_exit_code}
+                exit 0
                 shift
                 ;;
             -r | --report-level)
@@ -62,7 +62,7 @@ function Parse_Tests_Command_Line_Options()
                     fi
                 else
                     __static__Print_List_Of_Tests
-                    exit ${HYBRID_success_exit_code}
+                    exit 0
                 fi
                 shift 2
                 ;;
