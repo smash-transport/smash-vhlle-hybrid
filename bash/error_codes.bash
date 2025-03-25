@@ -1,15 +1,15 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
 #===================================================
 
-# Standard bash exit codes
-readonly HYBRID_success_exit_code=0
-readonly HYBRID_failure_exit_code=1
+# Standard bash exit codes (0 for success and 1 for generic failure) are not
+# aliased to a variable here. This is an aware decision because they are so
+# standard that hard-coding them in the codebase where needed is just fine.
 
 # Variables for exit codes (between 64 and 113)
 #   -> http://tldp.org/LDP/abs/html/exitcodes.html

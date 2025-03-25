@@ -370,7 +370,7 @@ function Unit_Test__utility-compare-versions()
     )
     for args in "${test_cases[@]}"; do
         Call_Codebase_Function_In_Subshell Is_Version ${args} # Split args using word splitting!
-        if [[ $? -ne ${HYBRID_success_exit_code} ]]; then
+        if [[ $? -ne 0 ]]; then
             Print_Error 'Versions test ' --emph "${args}" ' unexpectedly failed.'
             ((counter++))
         fi

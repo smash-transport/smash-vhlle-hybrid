@@ -2,7 +2,7 @@
 
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -102,7 +102,7 @@ function Act_And_Exit_If_User_Ran_Auxiliary_Modes()
             Print_Software_Version
             ;;&
         *help | format | version)
-            exit ${HYBRID_success_exit_code}
+            exit 0
             ;;
     esac
 }

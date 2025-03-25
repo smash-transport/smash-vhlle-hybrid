@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -10,8 +10,7 @@
 function __static__Check_Successful_Handler_Run()
 {
     if [[ $1 -ne 0 ]]; then
-        exit_code=${HYBRID_failure_exit_code} Print_Fatal_And_Exit \
-            'Hybrid-handler unexpectedly failed.'
+        exit_code=1 Print_Fatal_And_Exit 'Hybrid-handler unexpectedly failed.'
         return 1
     fi
     Check_If_Software_Produced_Expected_Output 'Afterburner' "$(pwd)/Afterburner"
