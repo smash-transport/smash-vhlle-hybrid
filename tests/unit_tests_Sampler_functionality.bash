@@ -39,6 +39,7 @@ function Make_Test_Preliminary_Operations__Sampler-create-input-file-SMASH()
 function Unit_Test__Sampler-create-input-file-SMASH()
 {
     HYBRID_module[Sampler]='SMASH'
+    HYBRID_software_version[Sampler]='3.1.1'
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Sampler
@@ -111,6 +112,7 @@ function Make_Test_Preliminary_Operations__Sampler-check-all-input-SMASH()
 function Unit_Test__Sampler-check-all-input-SMASH()
 {
     HYBRID_module[Sampler]='SMASH'
+    HYBRID_software_version[Sampler]='3.1.1'
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Sampler &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of not-existing output directory succeeded.'
@@ -136,7 +138,9 @@ function Unit_Test__Sampler-check-all-input-SMASH()
     fi
     printf '%s\n' \
         "surface $(which ls)" \
-        "spectra_dir ${HOME}" > "${HYBRID_software_configuration_file[Sampler]}"
+        "spectra_dir ${HOME}" \
+        'ecrit 0.5' \
+        'number_of_events 42' > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Sampler
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of all input files unexpectedly failed.'
@@ -174,14 +178,17 @@ function __static__Possibly_Fail_Validation_Test()
     fi
 }
 
-function Unit_Test__Sampler-validate-config-file-SMASH()
+function __static__Validate_Config_File_For_Fixed_Version_SMASH()
 {
-    HYBRID_module[Sampler]='SMASH'
-    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
-    cd "${HYBRID_software_output_directory[Sampler]}"
     local surface_key output_dir_key
-    surface_key='surface'
-    output_dir_key='spectra_dir'
+    Print_Debug "${HYBRID_software_version[Sampler]}"
+    if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
+        surface_key='surface'
+        output_dir_key='spectra_dir'
+    else
+        surface_key='surface_file'
+        output_dir_key='output_dir'
+    fi
     # Empty config file
     __static__Validate_Given_Configuration_File_SMASH \
         'config file is empty'
@@ -229,16 +236,41 @@ function Unit_Test__Sampler-validate-config-file-SMASH()
         "'number_of_events' should not be accepted" \
         "${output_dir_key} ." "${surface_key} $(which ls)" 'number_of_events 3.14' 'ecrit 0.5'
     __static__Possibly_Fail_Validation_Test $? || return 1
+}
+
+function Unit_Test__Sampler-validate-config-file-SMASH()
+{
+    HYBRID_module[Sampler]='SMASH'
+    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
+    cd "${HYBRID_software_output_directory[Sampler]}"
+    HYBRID_software_version[Sampler]='3.1.1'
+    __static__Validate_Config_File_For_Fixed_Version_SMASH
+    if [[ $? -ne 0 ]]; then
+        Print_Error \
+            'Validation of sampler configuration file for version ' \
+            --emph "${HYBRID_software_version[Sampler]}" ' failed.'
+        return 1
+    fi
+    HYBRID_software_version[Sampler]='3.2'
+    __static__Validate_Config_File_For_Fixed_Version_SMASH
+    if [[ $? -ne 0 ]]; then
+        Print_Error \
+            'Validation of sampler configuration file for version ' \
+            --emph "${HYBRID_software_version[Sampler]}" ' failed.'
+        return 1
+    fi
     # Config file with incorrect value type for optional keys
     for wrong_key_value in \
         'bulk true' \
         'shear true' \
         'cs2 +-1' \
-        'ratio_pressure_energydensity +-1'; do
+        'ratio_pressure_energydensity +-1' \
+        'create_root_output True'; do
         __static__Validate_Given_Configuration_File_SMASH \
             "'${wrong_key_value}' should not be accepted" "${mandatory_config_keys[@]}" "${wrong_key_value}"
     done
     # Validate base configuration file we ship in the codebase
+    HYBRID_software_version[Sampler]='3.1.1'
     cp "${HYBRID_software_base_config_file[Sampler]}" "${HYBRID_software_configuration_file[Sampler]}"
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
