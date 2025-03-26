@@ -333,85 +333,63 @@ function Make_Test_Preliminary_Operations__Sampler-validate-config-file-FIST()
     Make_Test_Preliminary_Operations__Sampler-create-input-file-FIST
 }
 
+function __static__Validate_Given_Configuration_File_FIST()
+{
+    local -r \
+        failure_reason=$1 \
+        config_lines=("${@:2}")
+    printf '%s\n' "${config_lines[@]}" > "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Config validation passed although ' --emph "${failure_reason}" '.'
+        return 1
+    fi
+}
+
 function Unit_Test__Sampler-validate-config-file-FIST()
 {
     HYBRID_module[Sampler]='FIST'
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     cd "${HYBRID_software_output_directory[Sampler]}"
     # Empty config file
-    touch "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file is empty.'
-        return 1
-    fi
+    __static__Validate_Given_Configuration_File_FIST \
+        'config file is empty'
+    __static__Possibly_Fail_Validation_Test $? || return 1
     # Too many columns in config file
-    printf '%s\n' 'hypersurface whatever wrong' > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file has wrong number of columns.'
-        return 1
-    fi
+    __static__Validate_Given_Configuration_File_FIST \
+        'config file has wrong number of columns' 'hypersurface whatever wrong'
+    __static__Possibly_Fail_Validation_Test $? || return 1
     # Repeated key in config file
-    printf '%s\n' 'output_file ~' 'output_file ~' > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file has repeated lines.'
-        return 1
-    fi
+    __static__Validate_Given_Configuration_File_FIST \
+        'config file has repeated lines' 'output_file ~' 'output_file ~'
+    __static__Possibly_Fail_Validation_Test $? || return 1
     # Config file with invalid key
-    printf '%s\n' 'invalidKey value' > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file has invalid key.'
-        return 1
-    fi
-    # Config file missing required key 'hypersurface_file'
-    printf '%s\n %s\n %s\n' 'output_file .' 'particle_list_file .' \
-        'decays_list_file .' > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file does not contain "hypersurface_file" key.'
-        return 1
-    fi
-    # Config file missing required key 'output_file'
-    printf '%s\n %s\n %s\n' "hypersurface_file $(which ls)" 'particle_list_file .' 'decays_list_file .' \
-        > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file does not contain "output_file" key.'
-        return 1
-    fi
-    # Config file missing required key 'particle_list_file'
-    printf '%s\n %s\n %s\n' "hypersurface_file $(which ls)" 'output_file .' 'decays_list_file .' \
-        > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file does not contain "particle_list_file" key.'
-        return 1
-    fi
-    # Config file missing required key 'decays_list_file'
-    printf '%s\n %s\n %s\n' "hypersurface_file $(which ls)" 'output_file .' 'particle_list_file .' \
-        > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file does not contain "decays_list_file" key.'
-        return 1
-    fi
+    __static__Validate_Given_Configuration_File_FIST \
+        'config file has invalid key' 'invalidKey value'
+    __static__Possibly_Fail_Validation_Test $? || return 1
+    # Config file missing one required key
+    local -r mandatory_config_keys=(
+        "hypersurface_file $(which ls)"
+        'output_file .'
+        'particle_list_file .'
+        'decays_list_file .'
+    )
+    local index aux_copy
+    for index in ${!mandatory_config_keys[@]}; do
+        aux_copy=("${mandatory_config_keys[@]}")
+        unset -v 'aux_copy[index]'
+        __static__Validate_Given_Configuration_File_FIST \
+            "config file does not contain '${mandatory_config_keys[index]}'" "${aux_copy[@]}"
+        __static__Possibly_Fail_Validation_Test $? || return 1
+    done
     # Config file with incorrect hypersurface_file
-    printf '%s\n' 'hypersurface_file not-a-file' > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although hypersurface_file key has no string as value.'
-        return 1
-    fi
-    # Config file with incorrect output_file
-    printf '%s\n' "output_file $(which ls)" > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although output_file key has no string as value.'
-        return 1
-    fi
+    __static__Validate_Given_Configuration_File_FIST \
+        '"hypersurface_file" key has no valid file as value' 'hypersurface_file not-a-file'
+    __static__Possibly_Fail_Validation_Test $? || return 1
+    # Config file with incorrect output_file location
+    __static__Validate_Given_Configuration_File_FIST \
+        '"output_file" key has no valid folder as value' 'output_file /not-a-folder/file.txt'
+    __static__Possibly_Fail_Validation_Test $? || return 1
     # Config file with incorrect value type for other keys
     local wrong_key_value
     for wrong_key_value in \
@@ -426,11 +404,9 @@ function Unit_Test__Sampler-validate-config-file-FIST()
             'particle_list_file .' \
             'decays_list_file .' \
             "${wrong_key_value}" > "${HYBRID_software_configuration_file[Sampler]}"
-        Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-        if [[ $? -eq 0 ]]; then
-            Print_Error "Unexpected success: Key '${wrong_key_value}' accepted."
-            return 1
-        fi
+        __static__Validate_Given_Configuration_File_FIST \
+            "'${wrong_key_value}' should not be accepted" "${mandatory_config_keys[@]}" "${wrong_key_value}"
+        __static__Possibly_Fail_Validation_Test $? || return 1
     done
     # Validate base configuration file we ship in the codebase
     cp "${HYBRID_software_base_config_file[Sampler_FIST]}" "${HYBRID_software_configuration_file[Sampler]}"
