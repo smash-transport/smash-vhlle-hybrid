@@ -154,82 +154,89 @@ function Make_Test_Preliminary_Operations__Sampler-validate-config-file-SMASH()
     Make_Test_Preliminary_Operations__Sampler-create-input-file-SMASH
 }
 
+function __static__Validate_Given_Configuration_File_SMASH()
+{
+    local -r \
+        failure_reason=$1 \
+        config_lines=("${@:2}")
+    printf '%s\n' "${config_lines[@]}" > "${HYBRID_software_configuration_file[Sampler]}"
+    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Config validation passed although ' --emph "${failure_reason}" '.'
+        return 1
+    fi
+}
+
+function __static__Possibly_Fail_Validation_Test()
+{
+    if [[ $1 -ne 0 ]]; then
+        return 1
+    fi
+}
+
 function Unit_Test__Sampler-validate-config-file-SMASH()
 {
     HYBRID_module[Sampler]='SMASH'
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     cd "${HYBRID_software_output_directory[Sampler]}"
+    local surface_key output_dir_key
+    surface_key='surface'
+    output_dir_key='spectra_dir'
     # Empty config file
-    touch "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file is empty.'
-        return 1
-    fi
+    __static__Validate_Given_Configuration_File_SMASH \
+        'config file is empty'
+    __static__Possibly_Fail_Validation_Test $? || return 1
     # Too many columns in config file
-    printf '%s\n' 'surface whatever wrong' > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file has wrong number of columns.'
-        return 1
-    fi
+    __static__Validate_Given_Configuration_File_SMASH \
+        'config file has wrong number of columns' "${surface_key} whatever wrong"
+    __static__Possibly_Fail_Validation_Test $? || return 1
     # Repeated key in config file
-    printf '%s\n' 'spectra_dir ~' 'spectra_dir ~' > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file has repeated lines.'
-        return 1
-    fi
+    __static__Validate_Given_Configuration_File_SMASH \
+        'config file has repeated lines' "${output_dir_key} ~" "${output_dir_key} ~"
+    __static__Possibly_Fail_Validation_Test $? || return 1
     # Config file with invalid key
-    printf '%s\n' 'invalidKey value' > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file has invalid key.'
-        return 1
-    fi
-    # Config file missing required key 'surface'
-    printf '%s\n' 'spectra_dir .' > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file does not contain "surface" key.'
-        return 1
-    fi
-    # Config file missing required key 'spectra_dir'
-    printf '%s\n' "surface $(which ls)" > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file does not contain "spectra_dir" key.'
-        return 1
-    fi
-    # Config file with incorrect surface
-    printf '%s\n' 'surface not-a-file' > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although surface key has no string as value.'
-        return 1
-    fi
-    # Config file with incorrect spectra_dir
-    printf '%s\n' "spectra_dir $(which ls)" > "${HYBRID_software_configuration_file[Sampler]}"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-    if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although spectra_dir key has no directory as value.'
-        return 1
-    fi
-    # Config file with incorrect value type for other keys
-    local wrong_key_value
+    __static__Validate_Given_Configuration_File_SMASH \
+        'config file has invalid key' 'invalidKey value'
+    __static__Possibly_Fail_Validation_Test $? || return 1
+    # Config file missing one required key
+    local -r mandatory_config_keys=(
+        "${output_dir_key} ."
+        "${surface_key} $(which ls)"
+        'ecrit 0.5'
+        'number_of_events 100'
+    )
+    local index aux_copy
+    for index in ${!mandatory_config_keys[@]}; do
+        aux_copy=("${mandatory_config_keys[@]}")
+        unset -v 'aux_copy[index]'
+        __static__Validate_Given_Configuration_File_SMASH \
+            "config file does not contain '${mandatory_config_keys[index]}'" "${aux_copy[@]}"
+    done
+    # Config file with incorrect surface key
+    __static__Validate_Given_Configuration_File_SMASH \
+        "${surface_key} key has no string as value" "${surface_key} not-a-file"
+    __static__Possibly_Fail_Validation_Test $? || return 1
+    # Config file with incorrect output directory
+    __static__Validate_Given_Configuration_File_SMASH \
+        "${output_dir_key} key has no directory as value" "${output_dir_key} $(which ls)"
+    __static__Possibly_Fail_Validation_Test $? || return 1
+    # Config file with incorrect value type for mandatory keys
+    __static__Validate_Given_Configuration_File_SMASH \
+        "'ecrit' should not be accepted" \
+        "${output_dir_key} ." "${surface_key} $(which ls)" 'number_of_events 314' 'ecrit +-1'
+    __static__Possibly_Fail_Validation_Test $? || return 1
+    __static__Validate_Given_Configuration_File_SMASH \
+        "'number_of_events' should not be accepted" \
+        "${output_dir_key} ." "${surface_key} $(which ls)" 'number_of_events 3.14' 'ecrit 0.5'
+    __static__Possibly_Fail_Validation_Test $? || return 1
+    # Config file with incorrect value type for optional keys
     for wrong_key_value in \
-        'number_of_events 3.14' \
         'bulk true' \
         'shear true' \
         'cs2 +-1' \
-        'ecrit +-1' \
         'ratio_pressure_energydensity +-1'; do
-        printf '%s\n' "${wrong_key_value}" > "${HYBRID_software_configuration_file[Sampler]}"
-        Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
-        if [[ $? -eq 0 ]]; then
-            Print_Error "Unexpected success: Key '${wrong_key_value}' accepted."
-            return 1
-        fi
+        __static__Validate_Given_Configuration_File_SMASH \
+            "'${wrong_key_value}' should not be accepted" "${mandatory_config_keys[@]}" "${wrong_key_value}"
     done
     # Validate base configuration file we ship in the codebase
     cp "${HYBRID_software_base_config_file[Sampler]}" "${HYBRID_software_configuration_file[Sampler]}"
