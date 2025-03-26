@@ -219,6 +219,7 @@ function __static__Validate_Config_File_For_Fixed_Version_SMASH()
         unset -v 'aux_copy[index]'
         __static__Validate_Given_Configuration_File_SMASH \
             "config file does not contain '${mandatory_config_keys[index]}'" "${aux_copy[@]}"
+        __static__Possibly_Fail_Validation_Test $? || return 1
     done
     # Config file with incorrect surface key
     __static__Validate_Given_Configuration_File_SMASH \
@@ -269,6 +270,7 @@ function Unit_Test__Sampler-validate-config-file-SMASH()
         'create_root_output True'; do
         __static__Validate_Given_Configuration_File_SMASH \
             "'${wrong_key_value}' should not be accepted" "${mandatory_config_keys[@]}" "${wrong_key_value}"
+        __static__Possibly_Fail_Validation_Test $? || return 1
     done
 }
 
