@@ -28,6 +28,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
                 __static__Ensure_Valid_Module_Given_For_Sampler
                 __static__Choose_Base_Configuration_File_For_Sampler
                 __static__Ensure_Additional_Paths_Given_For_Sampler
+                __static__Set_Sampler_Configuration_Key_Names
                 __static__Set_Sampler_Input_Key_Paths
             fi
         fi
@@ -84,6 +85,23 @@ function __static__Ensure_Additional_Paths_Given_For_Sampler()
         Ensure_Given_Files_Exist \
             'Some needed file for Thermal-FIST sampler was not specified in the configuration file.' \
             -- "${HYBRID_fist_module[Particle_file]}" "${HYBRID_fist_module[Decays_file]}"
+    fi
+}
+
+function __static__Set_Sampler_Configuration_Key_Names()
+{
+    if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
+        if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
+            declare -rgA HYBRID_sampler_input_key_names=(
+                [surface_filename]='surface'
+                [output_folder]='spectra_dir'
+            )
+        else
+            declare -rgA HYBRID_sampler_input_key_names=(
+                [surface_filename]='surface_file'
+                [output_folder]='output_dir'
+            )
+        fi
     fi
 }
 

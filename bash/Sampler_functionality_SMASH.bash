@@ -16,38 +16,29 @@ function Create_Superfluous_Symbolic_Link_To_External_Files_Ensuring_Their_Exist
 
 function Transform_Relative_Paths_In_Sampler_Config_File_For_SMASH()
 {
-    local surface_key output_dir_key freezeout_path output_directory
-    if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
-        surface_key='surface'
-        output_dir_key='spectra_dir'
-    else
-        surface_key='surface_file'
-        output_dir_key='output_dir'
-    fi
-    freezeout_path=$(Get_Path_Field_From_Sampler_Config_As_Global_Path "${surface_key}")
-    output_directory=$(Get_Path_Field_From_Sampler_Config_As_Global_Path "${output_dir_key}")
+    local freezeout_path output_folder
+    freezeout_path=$(Get_Path_Field_From_Sampler_Config_As_Global_Path \
+        "${HYBRID_sampler_input_key_names[surface_filename]}")
+    output_folder=$(Get_Path_Field_From_Sampler_Config_As_Global_Path \
+        "${HYBRID_sampler_input_key_names[output_folder]}")
     Remove_Comments_And_Replace_Provided_Keys_In_Provided_Input_File \
         'TXT' "${HYBRID_software_configuration_file[Sampler]}" \
         "$(printf "%s: %s\n" \
-            "${surface_key}" "${freezeout_path}" \
-            "${output_dir_key}" "${output_directory}")"
+            "${HYBRID_sampler_input_key_names[surface_filename]}" "${freezeout_path}" \
+            "${HYBRID_sampler_input_key_names[output_folder]}" "${output_folder}")"
 }
 
 function Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_For_SMASH()
 {
-    local surface_key
-    if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
-        surface_key='surface'
-    else
-        surface_key='surface_file'
-    fi
-    Get_Path_Field_From_Sampler_Config_As_Global_Path "${surface_key}"
+    Get_Path_Field_From_Sampler_Config_As_Global_Path \
+        "${HYBRID_sampler_input_key_names[surface_filename]}"
 }
 
 function Validate_Configuration_File_Of_SMASH()
 {
     local -r config_file="${HYBRID_software_configuration_file[Sampler]}"
     local allowed_keys=(
+        "${HYBRID_sampler_input_key_names[@]}"
         'number_of_events'
         'shear'
         'bulk'
@@ -55,16 +46,9 @@ function Validate_Configuration_File_Of_SMASH()
         'cs2'
         'ratio_pressure_energydensity'
     )
-    local surface_key output_dir_key
-    if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
-        surface_key='surface'
-        output_dir_key='spectra_dir'
-    else
-        surface_key='surface_file'
-        output_dir_key='output_dir'
+    if Is_Version "${HYBRID_software_version[Sampler]}" -ge '3.2'; then
         allowed_keys+=('create_root_output')
     fi
-    allowed_keys+=("${surface_key}" "${output_dir_key}")
     readonly allowed_keys
     local keys_to_be_found
     keys_to_be_found=4
@@ -77,7 +61,7 @@ function Validate_Configuration_File_Of_SMASH()
             return 1
         fi
         case "${key}" in
-            "${surface_key}" | "${output_dir_key}")
+            "${HYBRID_sampler_input_key_names[surface_filename]}" | "${HYBRID_sampler_input_key_names[output_folder]}")
                 if [[ "${value}" = '=DEFAULT=' ]]; then
                     ((keys_to_be_found--))
                     continue
@@ -86,7 +70,7 @@ function Validate_Configuration_File_Of_SMASH()
             number_of_events | ecrit)
                 ((keys_to_be_found--))
                 ;;&
-            "${surface_key}")
+            "${HYBRID_sampler_input_key_names[surface_filename]}")
                 cd "${HYBRID_software_output_directory[Sampler]}"
                 if [[ ! -f "${value}" ]]; then
                     cd - > /dev/null
@@ -95,7 +79,7 @@ function Validate_Configuration_File_Of_SMASH()
                 fi
                 ((keys_to_be_found--))
                 ;;
-            "${output_dir_key}")
+            "${HYBRID_sampler_input_key_names[output_folder]}")
                 cd "${HYBRID_software_output_directory[Sampler]}"
                 if [[ ! -d "${value}" ]]; then
                     cd - > /dev/null

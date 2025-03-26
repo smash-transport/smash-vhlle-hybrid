@@ -33,9 +33,10 @@ function __static__Do_Preliminary_Sampler_Setup_Operations()
 function Make_Test_Preliminary_Operations__Sampler-create-input-file-SMASH()
 {
     __static__Do_Preliminary_Sampler_Setup_Operations
+    export MOCK_ECHO_VERSION=3.1.1
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
     # Since we use our mock of echo as fake sampler executable the function above will set the
-    # sampler version to 3.1.1 since we do not set the MOCK_ECHO_VERSION environment variable.
+    # sampler version to the MOCK_ECHO_VERSION environment variable value.
 }
 
 function Unit_Test__Sampler-create-input-file-SMASH()
@@ -269,20 +270,28 @@ function Unit_Test__Sampler-validate-config-file-SMASH()
         __static__Validate_Given_Configuration_File_SMASH \
             "'${wrong_key_value}' should not be accepted" "${mandatory_config_keys[@]}" "${wrong_key_value}"
     done
-    # Validate base configuration file we ship in the codebase
-    HYBRID_software_version[Sampler]='3.1.1'
-    cp "${HYBRID_software_base_config_file[Sampler_SMASH_lt_3.2]}" "${HYBRID_software_configuration_file[Sampler]}"
-    mkdir -p "${HYBRID_software_output_directory[Hydro]}"
-    touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
-    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid
-    if [[ $? -ne 0 ]]; then
-        Print_Error \
-            'Shipped sampler configuration for version ' --emph "${HYBRID_software_version[Sampler]}" \
-            ' unexpectedly detected as incorrect.'
-        return 1
-    fi
-    HYBRID_software_version[Sampler]='3.2'
-    cp "${HYBRID_software_base_config_file[Sampler_SMASH_ge_3.2]}" "${HYBRID_software_configuration_file[Sampler]}"
+}
+
+function Clean_Tests_Environment_For_Following_Test__Sampler-validate-config-file-SMASH()
+{
+    Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-SMASH
+}
+
+function Make_Test_Preliminary_Operations__Sampler-validate-shipped-config-file-SMASH-lt-3.2()
+{
+    Make_Test_Preliminary_Operations__Sampler-create-input-file-SMASH
+    readonly HYBRIDT_sampler_base_config_file_label='Sampler_SMASH_lt_3.2'
+}
+
+function Unit_Test__Sampler-validate-shipped-config-file-SMASH-lt-3.2()
+{
+    HYBRID_module[Sampler]='SMASH'
+    Print_Debug 'Sampler version: ' --emph "${HYBRID_software_version[Sampler]}"
+    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
+    cd "${HYBRID_software_output_directory[Sampler]}"
+    cp \
+        "${HYBRID_software_base_config_file["${HYBRIDT_sampler_base_config_file_label}"]}" \
+        "${HYBRID_software_configuration_file[Sampler]}"
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid
@@ -294,7 +303,25 @@ function Unit_Test__Sampler-validate-config-file-SMASH()
     fi
 }
 
-function Clean_Tests_Environment_For_Following_Test__Sampler-validate-config-file-SMASH()
+function Clean_Tests_Environment_For_Following_Test__Sampler-validate-shipped-config-file-SMASH-lt-3.2()
+{
+    Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-SMASH
+}
+
+function Make_Test_Preliminary_Operations__Sampler-validate-shipped-config-file-SMASH-ge-3.2()
+{
+    __static__Do_Preliminary_Sampler_Setup_Operations
+    export MOCK_ECHO_VERSION=3.2
+    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
+    readonly HYBRIDT_sampler_base_config_file_label='Sampler_SMASH_ge_3.2'
+}
+
+function Unit_Test__Sampler-validate-shipped-config-file-SMASH-ge-3.2()
+{
+    Unit_Test__Sampler-validate-shipped-config-file-SMASH-lt-3.2
+}
+
+function Clean_Tests_Environment_For_Following_Test__Sampler-validate-shipped-config-file-SMASH-lt-3.2()
 {
     Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-SMASH
 }
