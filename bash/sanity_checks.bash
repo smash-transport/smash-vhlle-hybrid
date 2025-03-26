@@ -108,7 +108,17 @@ function __static__Set_Sampler_Input_Key_Paths()
 function __static__Choose_Base_Configuration_File_For_Sampler()
 {
     if [[ "${HYBRID_software_base_config_file[Sampler]}" = '' ]]; then
-        local -r sampler_key="Sampler_${HYBRID_module[Sampler]}"
+        local sampler_key
+        if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
+            Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_version[Sampler]'
+            if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
+                sampler_key='Sampler_SMASH_lt_3.2'
+            else
+                sampler_key='Sampler_SMASH_ge_3.2'
+            fi
+        else
+            sampler_key='Sampler_FIST'
+        fi
         HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${sampler_key}]}"
     fi
 }

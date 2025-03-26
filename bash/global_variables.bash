@@ -146,10 +146,11 @@ function Define_Further_Global_Variables()
         [Hydro]="${HYBRID_default_configurations_folder}/vhlle_hydro"
         [Sampler]=""
         [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"
-        # For the Sampler, the default configs depend on the module. The user may
-        # give their own base config, so we have to wait and see if the user chose
-        # a base config and only replace it if none was given.
-        [Sampler_SMASH]="${HYBRID_default_configurations_folder}/hadron_sampler"
+        # For the Sampler, the default configs depend on the module (and possibly on the sampler
+        # version). The user may give their own base config, so we have to wait and see if the
+        # user chose a base config and only replace it if none was given.
+        [Sampler_SMASH_lt_3.2]="${HYBRID_default_configurations_folder}/hadron_sampler_prior_to_version_3.2"
+        [Sampler_SMASH_ge_3.2]="${HYBRID_default_configurations_folder}/hadron_sampler_from_version_3.2_on"
         [Sampler_FIST]="${HYBRID_default_configurations_folder}/fist_config"
     )
     declare -gA HYBRID_scan_parameters=(

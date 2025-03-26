@@ -271,12 +271,25 @@ function Unit_Test__Sampler-validate-config-file-SMASH()
     done
     # Validate base configuration file we ship in the codebase
     HYBRID_software_version[Sampler]='3.1.1'
-    cp "${HYBRID_software_base_config_file[Sampler]}" "${HYBRID_software_configuration_file[Sampler]}"
+    cp "${HYBRID_software_base_config_file[Sampler_SMASH_lt_3.2]}" "${HYBRID_software_configuration_file[Sampler]}"
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid
     if [[ $? -ne 0 ]]; then
-        Print_Error 'Shipped sampler configuration unexpectedly detected as incorrect.'
+        Print_Error \
+            'Shipped sampler configuration for version ' --emph "${HYBRID_software_version[Sampler]}" \
+            ' unexpectedly detected as incorrect.'
+        return 1
+    fi
+    HYBRID_software_version[Sampler]='3.2'
+    cp "${HYBRID_software_base_config_file[Sampler_SMASH_ge_3.2]}" "${HYBRID_software_configuration_file[Sampler]}"
+    mkdir -p "${HYBRID_software_output_directory[Hydro]}"
+    touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+    Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid
+    if [[ $? -ne 0 ]]; then
+        Print_Error \
+            'Shipped sampler configuration for version ' --emph "${HYBRID_software_version[Sampler]}" \
+            ' unexpectedly detected as incorrect.'
         return 1
     fi
 }
@@ -367,7 +380,7 @@ function Unit_Test__Sampler-validate-config-file-FIST()
     printf '%s\n' "output_file $(which ls)" > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although spectra_dir key has no directory as value.'
+        Print_Error 'Config validation passed although output_file key has no string as value.'
         return 1
     fi
     # Config file with incorrect value type for other keys
