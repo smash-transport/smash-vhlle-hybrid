@@ -178,6 +178,9 @@ function Define_Further_Global_Variables()
         [Sampler]=''
         [Afterburner]=''
     )
+    declare -gA HYBRID_software_version=(
+        [Sampler]=''
+    )
     declare -gA HYBRID_fist_module=(
         [Particle_file]="${HYBRID_default_configurations_folder}/particle_file"
         [Decays_file]="${HYBRID_default_configurations_folder}/decay_file"

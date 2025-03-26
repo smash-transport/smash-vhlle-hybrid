@@ -23,6 +23,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             __static__Ensure_Executable_Exists "${key}"
             __static__Set_Software_Configuration_File "${key}"
             __static__Set_Software_Input_Data_File_If_Not_Set_By_User "${key}"
+            __static__Set_Software_Version "${key}"
             if [[ "${key}" = "Sampler" ]]; then
                 __static__Ensure_Valid_Module_Given_For_Sampler
                 __static__Choose_Base_Configuration_File_For_Sampler
@@ -267,6 +268,18 @@ function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
                     "${HYBRID_software_output_directory[IC]}" \
                     "${HYBRID_software_default_input_filename[Spectators]}"
             fi
+        fi
+    fi
+}
+
+function __static__Set_Software_Version()
+{
+    if [[ "${key}" = 'Sampler' && ${HYBRID_module[Sampler]} = 'SMASH' ]]; then
+        if [[ $(${HYBRID_software_executable[Sampler]} --version) =~ ${HYBRID_version_regex} ]]; then
+            HYBRID_software_version[Sampler]="${BASH_REMATCH[0]}"
+        else
+            Print_Debug 'Sampler version not found, setting it to 0.0'
+            HYBRID_software_version[Sampler]='0.0'
         fi
     fi
 }
