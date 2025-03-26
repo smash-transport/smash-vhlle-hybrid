@@ -292,43 +292,43 @@ function Unit_Test__Sampler-validate-config-file-FIST()
         Print_Error 'Config validation passed although config file has invalid key.'
         return 1
     fi
-    # Config file missing required key 'hypersurface'
-    printf '%s\n %s\n %s\n' 'output_file .' 'Particle_file .' \
-        'Decay_file .' > "${HYBRID_software_configuration_file[Sampler]}"
+    # Config file missing required key 'hypersurface_file'
+    printf '%s\n %s\n %s\n' 'output_file .' 'particle_list_file .' \
+        'decays_list_file .' > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file does not contain "hypersurface" key.'
+        Print_Error 'Config validation passed although config file does not contain "hypersurface_file" key.'
         return 1
     fi
     # Config file missing required key 'output_file'
-    printf '%s\n %s\n %s\n' "hypersurface $(which ls)" 'Particle_file .' 'Decay_file .' \
+    printf '%s\n %s\n %s\n' "hypersurface_file $(which ls)" 'particle_list_file .' 'decays_list_file .' \
         > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Config validation passed although config file does not contain "output_file" key.'
         return 1
     fi
-    # Config file missing required key 'Particle_file'
-    printf '%s\n %s\n %s\n' "hypersurface $(which ls)" 'output_file .' 'Decay_file .' \
+    # Config file missing required key 'particle_list_file'
+    printf '%s\n %s\n %s\n' "hypersurface_file $(which ls)" 'output_file .' 'decays_list_file .' \
         > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file does not contain "Particle_file" key.'
+        Print_Error 'Config validation passed although config file does not contain "particle_list_file" key.'
         return 1
     fi
-    # Config file missing required key 'Decay_file'
-    printf '%s\n %s\n %s\n' "hypersurface $(which ls)" 'output_file .' 'Particle_file .' \
+    # Config file missing required key 'decays_list_file'
+    printf '%s\n %s\n %s\n' "hypersurface_file $(which ls)" 'output_file .' 'particle_list_file .' \
         > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although config file does not contain "Decay_file" key.'
+        Print_Error 'Config validation passed although config file does not contain "decays_list_file" key.'
         return 1
     fi
-    # Config file with incorrect hypersurface
-    printf '%s\n' 'hypersurface not-a-file' > "${HYBRID_software_configuration_file[Sampler]}"
+    # Config file with incorrect hypersurface_file
+    printf '%s\n' 'hypersurface_file not-a-file' > "${HYBRID_software_configuration_file[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Config validation passed although hypersurface key has no string as value.'
+        Print_Error 'Config validation passed although hypersurface_file key has no string as value.'
         return 1
     fi
     # Config file with incorrect output_file
@@ -346,7 +346,12 @@ function Unit_Test__Sampler-validate-config-file-FIST()
         'Qcanonical false' \
         'shear_correction true' \
         'edens +-1'; do
-        printf '%s\n' "${wrong_key_value}" > "${HYBRID_software_configuration_file[Sampler]}"
+        printf '%s\n' \
+            "hypersurface_file $(which ls)" \
+            'output_file .' \
+            'particle_list_file .' \
+            'decays_list_file .' \
+            "${wrong_key_value}" > "${HYBRID_software_configuration_file[Sampler]}"
         Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid &> /dev/null
         if [[ $? -eq 0 ]]; then
             Print_Error "Unexpected success: Key '${wrong_key_value}' accepted."

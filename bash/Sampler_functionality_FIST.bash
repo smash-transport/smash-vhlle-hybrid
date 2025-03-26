@@ -143,7 +143,7 @@ function Validate_Configuration_File_Of_FIST()
     # Check that all required keys were found
     if [[ ${keys_to_be_found} -gt 0 ]]; then
         Print_Error 'Either ' --emph 'hypersurface_file' ', ' --emph 'output_file' \
-            ' --emph 'particle_list_file' ' or ' ' --emph 'decays_list_file' \
+            ', ' --emph 'particle_list_file' ' or ' --emph 'decays_list_file' \
             ' key is missing in sampler configuration file.'
         return 1
     fi
