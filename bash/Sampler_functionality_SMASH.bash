@@ -112,8 +112,12 @@ function Validate_Configuration_File_Of_SMASH()
 
 function Run_Sampler_Software_For_SMASH()
 {
-    "${HYBRID_software_executable[Sampler]}" 'events' '1' \
-        "${sampler_config_file_path}" &>> \
+    if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
+        command_line_options=('events' '1' "${sampler_config_file_path}")
+    else
+        command_line_options=('--config' "${sampler_config_file_path}" '--num' '1')
+    fi
+    "${HYBRID_software_executable[Sampler]}" "${command_line_options[@]}" &>> \
         "${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output[Sampler]}" \
         || Report_About_Software_Failure_For 'Sampler'
 }

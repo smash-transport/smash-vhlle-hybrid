@@ -405,23 +405,37 @@ function Make_Test_Preliminary_Operations__Sampler-test-run-software-SMASH()
     Make_Test_Preliminary_Operations__Sampler-create-input-file-SMASH
 }
 
+function __static__Run_Software_Sampler_And_Test_Outcome()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'terminal_output'
+    local -r \
+        version="$1" \
+        reference_value="$2"
+    HYBRID_software_version[Sampler]="${version}"
+    local terminal_output_result
+    Call_Codebase_Function_In_Subshell Run_Software_Sampler
+    if [[ ! -f "${terminal_output}" ]]; then
+        Print_Error 'The terminal output for version ' --emph "${version}" ' was not created.'
+        return 1
+    fi
+    terminal_output_result=$(< "${terminal_output}")
+    if [[ "${terminal_output_result}" != "${reference_value}" ]]; then
+        Print_Error 'The terminal output for version ' --emph "${version}" ' has not the expected content.'
+        Print_Debug "${terminal_output_result}" "${reference_value}"
+        return 1
+    fi
+}
+
 function Unit_Test__Sampler-test-run-software-SMASH()
 {
     HYBRID_module[Sampler]='SMASH'
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     local -r terminal_output="${HYBRID_software_output_directory[Sampler]}/${HYBRID_terminal_output["Sampler"]}"
-    local terminal_output_result correct_result
-    Call_Codebase_Function_In_Subshell Run_Software_Sampler
-    if [[ ! -f "${terminal_output}" ]]; then
-        Print_Error 'The terminal output was not created.'
-        return 1
-    fi
-    terminal_output_result=$(< "${terminal_output}")
-    correct_result="events 1 ${HYBRID_software_configuration_file[Sampler]}"
-    if [[ "${terminal_output_result}" != "${correct_result}" ]]; then
-        Print_Error 'The terminal output has not the expected content.'
-        return 1
-    fi
+    __static__Run_Software_Sampler_And_Test_Outcome \
+        '3.1.1' "events 1 ${HYBRID_software_configuration_file[Sampler]}" || return 1
+    rm "${terminal_output}"
+    __static__Run_Software_Sampler_And_Test_Outcome \
+        '3.2' "--config ${HYBRID_software_configuration_file[Sampler]} --num 1" || return 1
 }
 
 function Clean_Tests_Environment_For_Following_Test__Sampler-test-run-software-SMASH()
