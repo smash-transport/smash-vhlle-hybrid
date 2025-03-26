@@ -45,7 +45,7 @@ function Validate_Configuration_File_Of_SMASH()
         'ratio_pressure_energydensity'
     )
     local keys_to_be_found
-    keys_to_be_found=2
+    keys_to_be_found=4
     while read key value comment; do
         if [[ "${key}" =~ ^# ]]; then
             continue
@@ -61,11 +61,14 @@ function Validate_Configuration_File_Of_SMASH()
                     continue
                 fi
                 ;;& # Continue matching other cases below
+            number_of_events | ecrit)
+                ((keys_to_be_found--))
+                ;;&
             surface)
                 cd "${HYBRID_software_output_directory[Sampler]}"
                 if [[ ! -f "${value}" ]]; then
                     cd - > /dev/null
-                    Print_Error 'Freeze-out surface file ' --emph "${value}" ' not found!'
+                    Print_Error 'Freeze-out surface file ' --emph "'${value}'" ' not found!'
                     return 1
                 fi
                 ((keys_to_be_found--))
@@ -74,7 +77,7 @@ function Validate_Configuration_File_Of_SMASH()
                 cd "${HYBRID_software_output_directory[Sampler]}"
                 if [[ ! -d "${value}" ]]; then
                     cd - > /dev/null
-                    Print_Error 'Sampler output folder ' --emph "${value}" ' not found!'
+                    Print_Error 'Sampler output folder ' --emph "'${value}'" ' not found!'
                     return 1
                 fi
                 ((keys_to_be_found--))
@@ -88,14 +91,14 @@ function Validate_Configuration_File_Of_SMASH()
                 ;;
             number_of_events)
                 if [[ ! "${value}" =~ ^[1-9][0-9]*$ ]]; then
-                    Print_Error 'Found non-integer value ' --emph "${value}" \
+                    Print_Error 'Found non-integer value ' --emph "'${value}'" \
                         ' for ' --emph "${key}" ' key.'
                     return 1
                 fi
                 ;;
             *)
                 if [[ ! "${value}" =~ ^[+-]?[0-9]+(\.[0-9]*)?$ ]]; then
-                    Print_Error 'Found invalid value ' --emph "${value}" \
+                    Print_Error 'Found invalid value ' --emph "'${value}'" \
                         ' for ' --emph "${key}" ' key.'
                     return 1
                 fi
@@ -104,8 +107,7 @@ function Validate_Configuration_File_Of_SMASH()
     done < "${config_file}"
     # Check that all required keys were found
     if [[ ${keys_to_be_found} -gt 0 ]]; then
-        Print_Error 'Either ' --emph 'surface' ' or ' --emph 'spectra_dir' \
-            ' key is missing in sampler configuration file.'
+        Print_Error 'One or more mandatory keys are missing in sampler configuration file.'
         return 1
     fi
 }
