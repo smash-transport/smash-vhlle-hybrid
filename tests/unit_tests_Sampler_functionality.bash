@@ -25,7 +25,7 @@ function __static__Do_Preliminary_Sampler_Setup_Operations()
     Define_Further_Global_Variables
     HYBRID_output_directory="${HYBRIDT_folder_to_run_tests}/test_dir_Sampler"
     HYBRID_given_software_sections=('Sampler')
-    HYBRID_software_executable[Sampler]="$(which echo)"
+    HYBRID_software_executable[Sampler]="${HYBRIDT_tests_folder}/mocks/echo.py"
     # Touch dummy empty handler config as this is always there in sanity checks
     touch "${HYBRID_configuration_file}"
 }
@@ -34,12 +34,13 @@ function Make_Test_Preliminary_Operations__Sampler-create-input-file-SMASH()
 {
     __static__Do_Preliminary_Sampler_Setup_Operations
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
+    # Since we use our mock of echo as fake sampler executable the function above will set the
+    # sampler version to 3.1.1 since we do not set the MOCK_ECHO_VERSION environment variable.
 }
 
 function Unit_Test__Sampler-create-input-file-SMASH()
 {
     HYBRID_module[Sampler]='SMASH'
-    HYBRID_software_version[Sampler]='3.1.1'
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Sampler
@@ -112,7 +113,6 @@ function Make_Test_Preliminary_Operations__Sampler-check-all-input-SMASH()
 function Unit_Test__Sampler-check-all-input-SMASH()
 {
     HYBRID_module[Sampler]='SMASH'
-    HYBRID_software_version[Sampler]='3.1.1'
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Sampler &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of not-existing output directory succeeded.'
