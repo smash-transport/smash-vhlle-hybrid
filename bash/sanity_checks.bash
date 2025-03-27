@@ -109,18 +109,21 @@ function __static__Set_Sampler_Input_Key_Paths()
 {
     # As the user may set particle_list_file and decays_list_file through the HYBRID_fist_module
     # array, we set the input_key_default_path array here and not in global_variables.bash.
-    declare -rgA HYBRID_sampler_input_key_default_paths=(
-        # FIST input key paths
-        ['hypersurface_file']="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
-        ['output_file']="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"
-        ['particle_list_file']="${HYBRID_fist_module[Particle_file]}"
-        ['decays_list_file']="${HYBRID_fist_module[Decays_file]}"
-        # SMASH input key paths
-        ['surface']="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
-        ['surface_file']="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
-        ['spectra_dir']="${HYBRID_software_output_directory[Sampler]}"
-        ['output_dir']="${HYBRID_software_output_directory[Sampler]}"
-    )
+    if [[ "${HYBRID_module[Sampler]}" = 'FIST' ]]; then
+        declare -rgA HYBRID_sampler_input_key_default_paths=(
+            [hypersurface_file]="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+            [output_file]="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"
+            [particle_list_file]="${HYBRID_fist_module[Particle_file]}"
+            [decays_list_file]="${HYBRID_fist_module[Decays_file]}"
+        )
+    else
+        # The following local variable is just meant to keep the array assignment short and make formatter happy
+        local -r freezeout="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+        declare -rgA HYBRID_sampler_input_key_default_paths=(
+            [${HYBRID_sampler_input_key_names[surface_filename]}]="${freezeout}"
+            [${HYBRID_sampler_input_key_names[output_folder]}]="${HYBRID_software_output_directory[Sampler]}"
+        )
+    fi
 }
 
 function __static__Choose_Base_Configuration_File_For_Sampler()
