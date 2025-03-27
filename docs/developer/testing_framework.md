@@ -1,4 +1,29 @@
-# A smart tests runner
+# A hand-crafted testing framework
+
+## A word of caution
+
+Before describing how the framework works and how to run tests, it is worth spending a few words about a Bash technicality, which could bite you at some point and should not be underestimated.
+
+!!! note "The Bash behavior of the tests runner"
+    The shell `errexit` option is not enabled in the tests runner and, therefore, its Bash behavior when running tests is not the same as when running the handler.
+    This is a natural choice in a testing framework where the error handling is wished to be done by hand to e.g. count failures and build up a report about failed tests.
+    However, the `errexit` mode is enabled when running the codebase functions, otherwise the real behavior of the handler code would not be tested!
+
+!!! danger "DANGER: Be aware of contexts that make the shell ignore `errexit` behavior"
+    Although the note above might totally make sense to you, it is important to stress that in tests you really want to run the codebase functions with `errexit` enabled, since the real runs rely on it.
+    You might be wondering: _Sure, what's the danger then?_
+    In tests functions, a `return 1` statement makes the test fail (see further information below on this page).
+    Refactoring code e.g. to reduce duplication, you might want to delegate a task to another function, which runs the handler code under test and for instance returns 1 in case of failure.
+    So far so good.
+    However, you would also like to make the test fail if the called function fails.
+    You might then innocently add a trailing `|| return 1` to the function call.
+    :boom: Gotcha!
+    What did you just do?
+    You made the called function code, and hence the handler code, run in a context were `errexit` is ignored (i.e. on the left of a `||` operator). :melting_face:
+    **Keep this in mind!**
+    If you really want to make the test fail, you have to do so in a different way, for example passing the exit code of your delegated task to a dedicated new function which can then harmlessly support a trailing `|| return 1`.
+
+## Running tests
 
 In the :file_folder: **tests** folder there is a :simple-gnubash: `tests_runner` executable, which shall be used to run tests.
 This can be run with the `--help` command line option to obtain a self-explanatory helper message.
@@ -113,11 +138,6 @@ If such a function exists, the runner will check for existence of the correspond
 !!! tip "Use the framework functionality to invoke code to test"
     * Codebase functions to be invoked in unit tests should be called through the `Call_Codebase_Function` and `Call_Codebase_Function_In_Subshell` interface functions (passing the name of the function to be invoked as first argument and the arguments to be forward afterwards).
     *  In functional tests you'll probably want to run the hybrid handler with some options and this can be easily achieved by using the `Run_Hybrid_Handler_With_Given_Options_In_Subshell` function.
-
-!!! note "The Bash behavior of the tests runner"
-    The shell `errexit` option is not enabled in the tests runner and, therefore, its Bash behavior when running tests is not the same as when running the handler.
-    This is a natural choice in a testing framework where the error handling is wished to be done by hand to e.g. count failures and build up a report about failed tests.
-    However, the `errexit` mode is enabled when running the codebase functions, otherwise the real behavior of the handler code would not be tested!
 
 !!! warning "Each test is run in its own subshell"
     The full test flow, including setup and teardown, is run in a subshell in order to isolate its changes from the external environment.
