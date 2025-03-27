@@ -121,8 +121,8 @@ function __static__Preprocess_Configuration()
 }
 function __static__Is_Sampler_Config_Valid()
 {
-    # Since this function is likely to be called in an if-clause, it makes sense
-    # to explicitly return 1 if the preprocessing of the configuration fails
+    # Since this function is likely to be called in an if-clause where errexit is ignored,
+    # it makes sense to explicitly return 1 if the preprocessing of the configuration fails
     __static__Preprocess_Configuration || return 1
     Validate_Configuration_File_Of_${HYBRID_module[Sampler]}
 }

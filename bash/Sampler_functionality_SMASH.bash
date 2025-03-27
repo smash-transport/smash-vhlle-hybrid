@@ -74,7 +74,7 @@ function Validate_Configuration_File_Of_SMASH()
                 cd "${HYBRID_software_output_directory[Sampler]}"
                 if [[ ! -f "${value}" ]]; then
                     cd - > /dev/null
-                    Print_Error 'Freeze-out surface file ' --emph "'${value}'" ' not found!'
+                    Print_Error 'Freeze-out surface file ' --emph "${value:-''}" ' not found!'
                     return 1
                 fi
                 ((keys_to_be_found--))
@@ -83,7 +83,7 @@ function Validate_Configuration_File_Of_SMASH()
                 cd "${HYBRID_software_output_directory[Sampler]}"
                 if [[ ! -d "${value}" ]]; then
                     cd - > /dev/null
-                    Print_Error 'Sampler output folder ' --emph "'${value}'" ' not found!'
+                    Print_Error 'Sampler output folder ' --emph "${value:-''}" ' not found!'
                     return 1
                 fi
                 ((keys_to_be_found--))
@@ -97,14 +97,14 @@ function Validate_Configuration_File_Of_SMASH()
                 ;;
             number_of_events)
                 if [[ ! "${value}" =~ ^[1-9][0-9]*$ ]]; then
-                    Print_Error 'Found non-integer value ' --emph "'${value}'" \
+                    Print_Error 'Found non-integer value ' --emph "${value:-''}" \
                         ' for ' --emph "${key}" ' key.'
                     return 1
                 fi
                 ;;
             *)
                 if [[ ! "${value}" =~ ^[+-]?[0-9]+(\.[0-9]*)?$ ]]; then
-                    Print_Error 'Found invalid value ' --emph "'${value}'" \
+                    Print_Error 'Found invalid value ' --emph "${value:-''}" \
                         ' for ' --emph "${key}" ' key.'
                     return 1
                 fi
