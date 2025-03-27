@@ -62,4 +62,12 @@ Once cloned the repository, you can simply run the `Hybrid-handler` script[^1].
 
     [:material-arrow-right-box:&nbsp; Frequently asked questions](FAQ/index.md)
 
+-   :whale:{ .lg .middle } &nbsp; __Run it in a Docker container__
+
+    ---
+
+    Check out our Ubuntu-based Docker image to install software and use the handler.
+
+    [:material-arrow-right-box:&nbsp; Shipped Docker image](docker_image.md)
+
 </div>
