@@ -305,11 +305,37 @@ function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
 function __static__Set_Software_Version()
 {
     if [[ "${key}" = 'Sampler' && ${HYBRID_module[Sampler]} = 'SMASH' ]]; then
-        if [[ $(${HYBRID_software_executable[Sampler]} --version) =~ ${HYBRID_version_regex} ]]; then
-            HYBRID_software_version[Sampler]="${BASH_REMATCH[0]}"
+        HYBRID_software_version[Sampler]='0.0'
+        local sampler_version_output
+        # The SMASH hadron sampler might fail because the user is using a correctly compiled older
+        # version which does not support the --version command line option, or because the user
+        # did some mistake, e.g. setting up the environment and the sampler does not find some library.
+        # We want to try here to be user friendly and this is to some extent possible because older
+        # sampler versions exit with code 1 if a command line option is not recognized. Hence, we can
+        # confidently give an error and fail if the sampler fails with an exit code different from 1.
+        #
+        # NOTE: Being errexit option enabled, we need to store the version output in the if-clause
+        #       condition and access the possible exit code at the very beginning of the else-clause.
+        if sampler_version_output=$(${HYBRID_software_executable[Sampler]} --version 2> /dev/null); then
+            if [[ ${sampler_version_output} =~ ${HYBRID_version_regex} ]]; then
+                HYBRID_software_version[Sampler]="${BASH_REMATCH[0]}"
+                Print_Debug 'Sampler version found to be ' --emph "${HYBRID_software_version[Sampler]}" '.'
+            else
+                Print_Internal_And_Exit \
+                    'Sampler ' --emph '--version' ' option returned a string not matching the version regex.' \
+                    'The problem occurred in ' --emph "${FUNCNAME}" ' function.'
+            fi
         else
-            Print_Debug 'Sampler version not found, setting it to 0.0'
-            HYBRID_software_version[Sampler]='0.0'
+            if [[ $? -ne 1 ]]; then
+                ${HYBRID_software_executable[Sampler]} --version
+                exit_code=${HYBRID_fatal_software_failed} Print_Fatal_And_Exit \
+                    'The ' --emph 'Sampler' \
+                    ' executable failed in an unexpected way when trying to retrieve its version.' \
+                    'Try running ' --emph "${HYBRID_software_executable[Sampler]} --version" \
+                    '\nto investigate the issue.'
+            else
+                Print_Debug 'Sampler version not found, setting it to 0.0'
+            fi
         fi
     fi
 }
