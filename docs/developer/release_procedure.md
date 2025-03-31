@@ -28,7 +28,7 @@ Closing the branch means to merge it into `main`, which will be tagged and conta
 ## Release checklist
 
 - [x] Create the `release` branch from `develop` and switch to it.
-- [x] Make sure everything is ready to go.
+- [x] Make sure everything is ready to go (e.g. check copyright statements including in documentation).
 - [x] Bump version number global variable in main script to a **stable state**.
 - [x] Close the `release` branch in the git-flow sense:
       - merge it into the `main` branch;

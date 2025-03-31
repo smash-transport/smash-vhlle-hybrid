@@ -14,7 +14,7 @@ It will speed up the code review and avoid comments about codebase notation.
     Sounds like magic?
     No, it simply means that there are tests for basically every functionality. :innocent:
     You are requested to stick to this existing aspect and, possibly, device and why not write tests for your new code before implementing the code itself.
-    A sufficiently handy testing framework has been developed tailored on this project and you find the needed information about it in a dedicated page [:material-arrow-right-box: testing framework](testing_framework.md).
+    A sufficiently handy testing framework has been developed tailored to this project and you find the needed information about it in a dedicated page [:material-arrow-right-box: testing framework](testing_framework.md).
     **The basic idea is that adding new tests is as simple as adding a new function.**
 
 !!! warning "It's a Bash project!"
@@ -100,6 +100,7 @@ In particular, be aware the the formatter will not enforce the rules explained b
     Before opening a PR, make sure all tests pass.
     One of them will try to check formatting and complain if something has to be adjusted.
     The main script has a `format` execution mode which formats the full codebase and runs the formatting unit test.
+    Use it by running `./Hybrid-handler format`.
     This is meant for developers only and therefore does not appear in the helper description.
 
 !!! info "Some aspects about the codebase"

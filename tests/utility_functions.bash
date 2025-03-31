@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -38,7 +38,7 @@ function Define_Available_Tests_For()
         source "${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
     done
     # Available tests are based on functions in this file whose names begins with "${functions_prefix}"
-    local -r grep_regex='^function[[:space:]]+'"${functions_prefix}"'[-[:alnum:]_:]+\(\)[[:space:]]*$' \
+    local -r grep_regex='^function[[:space:]]+'"${functions_prefix}"'[-[:alnum:]_.:]+\(\)[[:space:]]*$' \
         sed_regex='^function[[:space:]]+'"${functions_prefix}"'([^(]+)\(\)[[:space:]]*$'
     HYBRIDT_tests_to_be_run=(
         # Here word splitting can split names, no space allowed in function name!

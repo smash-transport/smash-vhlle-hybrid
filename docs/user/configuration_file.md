@@ -53,6 +53,12 @@ These are (with the corresponding software to be used):
 As a general comment, whenever a path has to be specified, both an absolute and a relative one are accepted.
 However, **it is strongly encouraged to exclusively use absolute paths** as relative ones should be specified w.r.t. different folders (most of the times relatively to the stage output directory).
 
+!!! tip "You only need the handler configuration file!"
+    Although each software needs a configuration file to be run, you generally do not need to create any.
+    The handler uses a default one if none is explicitly provided.
+    Keys in each software configuration files can be changed from the handler configuration file, without having to create specific configuration files for each software.
+    Refer to the [:material-arrow-right-box: `Software_keys`](configuration_file.md#Software-keys) description for further information.
+
 !!! info "Enforced sanity rules"
     Since the hybrid handler understands which software should be run from the presence of the corresponding section, there are a couple of totally natural rules that are enforced and will make the handler fail if violated.
 
@@ -73,12 +79,14 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
     Path to the software specific configuration file.
     If not specified, the file shipped in the ***configs*** folder is used.
 
+<i id="Software-keys"></i>
 ???+ config-key "`Software_keys`"
 
     The value of this key is a YAML map and should be used to change values of the software configuration file.
     It is not possible to add or remove keys, but only change already existing ones.
     If you need to add a key to the software default configuration file, you should create a custom one and specify it via the `Config_file` key.
     Depending on your needs, you could also create a more complete configuration file and change the values of some keys in your run(s) via this key.
+    [:material-arrow-right-box: How is this achieved in practice?](FAQ/index.md#how-can-i-add-a-software-key-to-a-configuration-file)
 
 <i id="scan-parameters"></i>
 ???+ config-key "`Scan_parameters`"
@@ -161,6 +169,37 @@ Sampler:
     Config_file: /path/to/Hadron-sampler_config
     Software_keys:
         surface: /path/to/custom/freezeout.dat
+```
+
+For the hadron sampler section, there is the additional option to use an alternative sampling software, the FIST sampler. By default, the SMASH-hadron-sampler is used.
+For using the FIST sampler, the additional input key `Module` has to be set to `FIST`.
+This allows also two separate keys `Particle_file` and `Decay_file` to be set, which are the paths to the particle and decay list files respectively, which are shipped with Thermal-FIST.
+Setting these keys is compulsory. Additionally, using the FIST sampler changes the names of several of the `Software_keys`. Please refer to the default config for the FIST sampler in :file_folder: ***configs***.
+
+???+ config-key "`Module`"
+
+    The hadron sampler software to be used.
+    At the moment, only the `SMASH` or `FIST` values are accepted.
+
+???+ config-key "`Particle_file`"
+
+    Path to the particle list file, which is shipped with Thermal-FIST.
+    This key is compulsory when `Module` is set to `FIST`.
+
+???+ config-key "`Decays_file `"
+
+    Path to the decay list file, which is shipped with Thermal-FIST.
+    This key is compulsory when `Module` is set to `FIST`.
+
+```yaml title="Example"
+Sampler:
+    Executable: /path/to/FIST-sampler
+    Config_file: /path/to/FIST-sampler_config
+    Module: FIST
+    Particle_file: /path/to/list.dat
+    Decays_file: /path/to/decays.dat
+    Software_keys:
+        hypersurface: /path/to/custom/freezeout.dat
 ```
 
 ## :fire: &nbsp; The afterburner section

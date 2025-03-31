@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -15,8 +15,11 @@ function Check_If_Software_Produced_Expected_Output()
         IC | Hydro)
             expected_output_files=6
             ;;
-        Sampler)
+        Sampler_SMASH)
             expected_output_files=5
+            ;;
+        Sampler_FIST)
+            expected_output_files=7
             ;;
         Afterburner)
             expected_output_files=7
@@ -27,20 +30,20 @@ function Check_If_Software_Produced_Expected_Output()
     esac
     local -r folder_content=("${folder}"/*)
     if [[ ${#folder_content[@]} -ne 1 || ! -d ${folder_content[0]} ]]; then
-        exit_code=${HYBRID_failure_exit_code} Print_Fatal_And_Exit \
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             'Not exactly one ID folder found in ' --emph "${folder}" '.'
     fi
     unfinished_files=("${folder}"/*/*.{unfinished,lock})
     output_files=("${folder}"/*/*)
     if [[ ${#unfinished_files[@]} -gt 0 ]]; then
-        exit_code=${HYBRID_failure_exit_code} Print_Fatal_And_Exit \
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             'Some unexpected ' --emph '.{unfinished,lock}' ' output file remained' \
-            'in ' --emph "${folder}"
+            'in ' --emph "${folder}" '.'
         return 1
     elif [[ ${#output_files[@]} -ne ${expected_output_files} ]]; then
-        exit_code=${HYBRID_failure_exit_code} Print_Fatal_And_Exit \
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             'Expected ' --emph "${expected_output_files}" ' output files in ' \
-            --emph "${block}" " folder, but ${#output_files[@]} found."
+            --emph "${folder}" " folder, but ${#output_files[@]} found."
         return 1
     fi
 }

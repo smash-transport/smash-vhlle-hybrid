@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -59,6 +59,99 @@ function Element_In_Array_Matches()
         [[ "${element}" =~ $1 ]] && return 0
     done
     return 1
+}
+
+: << 'DOCSTRING'
+--8<-- [start:Is_Version-desc]
+Compare two versions. This function takes two version numbers as first and third
+arguments and a comparison operator among `>`, `<`, `>=`, `<=`, `=`, `==`, `!=`.
+Alternatively to the operator, you can use the test comparison options and namely
+`-gt`, `-lt`, `-ge`, `-le`, `-eq` or `-ne`, respectively.
+The function returns 0 if the comparison is true, 1 otherwise.
+!!! warning "Mind redirection"
+    If you use this function with a comparison operator containing the `>` or
+    the `<` symbol, you need to either quote it or backslash-escape it, otherwise
+    it will be interpreted as redirection.
+--8<-- [end:Is_Version-desc]
+--8<-- [start:Is_Version-ex]
+if Is_Version '3.01' \>= '3.1.0'; then
+    # This if is entered
+fi
+if Is_Version '1.42' '>' '1.42.0.0.1'; then
+    # This if is entered
+fi
+if Is_Version '1.42' -gt '1.42.0.0.1'; then
+    # This if is entered
+fi
+--8<-- [end:Is_Version-ex]
+DOCSTRING
+# NOTE: This function will be used when checking system requirements and hence, we
+#       want to use Bash only here without using external commands (sort, sed, etc.).
+function Is_Version()
+{
+    local -r \
+        version_regex='^[0-9]+(.[0-9]+)*$' \
+        valid_operators=('>' '<' '>=' '<=' '=' '==' '!=' '-gt' '-lt' '-ge' '-le' '-eq' '-ne')
+    if [[ $# -ne 3 ]]; then
+        Print_Internal_And_Exit \
+            'Function ' --emph "${FUNCNAME}" \
+            ' called with wrong number of arguments (' --emph "$#" ' != 3)'
+    elif [[ ! $1 =~ ${version_regex} ]]; then
+        Print_Internal_And_Exit \
+            'Function ' --emph "${FUNCNAME}" \
+            ' called with invalid first argument ' --emph "$1" ' (not a version number).'
+    elif ! Element_In_Array_Equals_To "$2" "${valid_operators[@]}"; then
+        Print_Internal_And_Exit \
+            'Function ' --emph "${FUNCNAME}" \
+            ' called with invalid operator ' --emph "$2" '.'
+    elif [[ ! $3 =~ ${version_regex} ]]; then
+        Print_Internal_And_Exit \
+            'Function ' --emph "${FUNCNAME}" \
+            ' called with invalid third argument ' --emph "$3" ' (not a version number).'
+    fi
+    # Here we know the version regex is fulfilled, split them on dots using word splitting
+    local -r v1=(${1//./ }) v2=(${3//./ })
+    local index smaller_version='' longest_length=${#v1[@]}
+    if [[ ${#v1[@]} -lt ${#v2[@]} ]]; then
+        longest_length=${#v2[@]}
+    fi
+    for ((index = 0; index < longest_length; index++)); do
+        # NOTE: We take advantage of the arithmetic context to deal with leading
+        #       zeros, see https://stackoverflow.com/a/53075130. However, then we
+        #       need to expand variables with explicit parameter expansion and we
+        #       explicitly want to use zero ${var-0} for unset entries of v1 or v2.
+        if ((10#${v1[index]-0} == 10#${v2[index]-0})); then
+            continue
+        elif ((10#${v1[index]-0} > 10#${v2[index]-0})); then
+            smaller_version=$3
+            break
+        else
+            smaller_version=$1
+            break
+        fi
+    done
+    # If smaller_version remained unset the two versions are equal!
+    case "$2" in
+        == | = | '>=' | '<=' | -eq | -ge | -le)
+            if [[ "${smaller_version}" == '' ]]; then
+                return 0
+            fi
+            ;;& # Note that we continue testing the following cases here!
+        != | -ne)
+            [[ "${smaller_version}" != '' ]]
+            ;;
+        '>' | '>=' | -gt | -ge)
+            [[ "${smaller_version}" == "$3" ]]
+            ;;
+        '<' | '<=' | -lt | -le)
+            [[ "${smaller_version}" == "$1" ]]
+            ;;
+        *)
+            Print_Internal_And_Exit \
+                'Unreachable code (by design) executed in function ' \
+                --emph "${FUNCNAME}" ', called with: ' --emph "$1 $2 $3"
+            ;;
+    esac
 }
 
 : << 'DOCSTRING'

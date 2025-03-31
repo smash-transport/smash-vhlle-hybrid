@@ -60,7 +60,7 @@ Assumptions that are crucial to know before even getting to the code have a dedi
     ---
 
     Tests are the key to be confident that the code works as expected.
-    A testing framework has been developed tailored on the project.
+    A testing framework has been developed tailored to the project.
     Adding new tests is as simple as writing a new function!
 
     [:material-arrow-right-box:&nbsp; Check it out!](testing_framework.md)
@@ -88,6 +88,15 @@ Assumptions that are crucial to know before even getting to the code have a dedi
     Since the `prepare-scan` execution mode implementation is not trivial and it required a couple of design decisions, it has been decided to comment on each of these in a dedicated page.
 
     [:material-arrow-right-box:&nbsp; Read more](parameters_scan.md)
+
+-   :jigsaw:{ .lg .middle } &nbsp; __Adding a new module__
+
+    ---
+
+    You want to replace the software in one or more stages with a different one?
+    Check these notes about what changes are needed.
+
+    [:material-arrow-right-box:&nbsp; Read more](new_module.md)
 
 
 </div>

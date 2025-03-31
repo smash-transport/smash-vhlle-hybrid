@@ -25,3 +25,8 @@ Sampler:
 
 Afterburner:
     Executable: /path/to/smash
+    Software_keys:
+        Collision_Term:
+            Strings: True
+            String_Parameters:
+                Use_Monash_Tune: True

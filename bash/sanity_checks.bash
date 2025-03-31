@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -23,6 +23,14 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             __static__Ensure_Executable_Exists "${key}"
             __static__Set_Software_Configuration_File "${key}"
             __static__Set_Software_Input_Data_File_If_Not_Set_By_User "${key}"
+            __static__Set_Software_Version "${key}"
+            if [[ "${key}" = "Sampler" ]]; then
+                __static__Ensure_Valid_Module_Given_For_Sampler
+                __static__Choose_Base_Configuration_File_For_Sampler
+                __static__Ensure_Additional_Paths_Given_For_Sampler
+                __static__Set_Sampler_Configuration_Key_Names
+                __static__Set_Sampler_Input_Key_Paths
+            fi
         fi
     done
     __static__Set_Software_Input_Data_File_If_Not_Set_By_User 'Spectators'
@@ -48,12 +56,93 @@ function Perform_Internal_Sanity_Checks()
     Internally_Ensure_Given_Files_Exist \
         'These Python scripts should be shipped within the hybrid handler codebase.' '--' \
         "${HYBRID_external_python_scripts[@]}"
-    Internally_Ensure_Given_Files_Exist \
-        'These base configuration files should be shipped within the hybrid handler codebase.' '--' \
-        "${HYBRID_software_base_config_file[@]}"
+    for key in "${!HYBRID_software_base_config_file[@]}"; do
+        # The Sampler entry in the associative array here is still empty and does not point to a
+        # shipped configuration file. It will be chosen later according to the module.
+        if [[ "${key}" != "Sampler" ]]; then
+            Internally_Ensure_Given_Files_Exist \
+                'These base configuration files should be shipped within the hybrid handler codebase.' '--' \
+                "${HYBRID_software_base_config_file[${key}]}"
+        fi
+    done
 }
 
 #===================================================================================================
+
+function __static__Ensure_Valid_Module_Given_For_Sampler()
+{
+    if [[ ! "${HYBRID_module[Sampler]}" =~ ^(SMASH|FIST)$ ]]; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+            'The module specified for the Sampler run is not valid.' \
+            'Valid modules are: ' --emph 'SMASH' ' and ' --emph 'FIST' '.'
+    fi
+    return 0
+}
+
+function __static__Ensure_Additional_Paths_Given_For_Sampler()
+{
+    if [[ "${HYBRID_module[Sampler]}" = 'FIST' ]]; then
+        Ensure_Given_Files_Exist \
+            'Some needed file for Thermal-FIST sampler was not specified in the configuration file.' \
+            -- "${HYBRID_fist_module[Particle_file]}" "${HYBRID_fist_module[Decays_file]}"
+    fi
+}
+
+function __static__Set_Sampler_Configuration_Key_Names()
+{
+    if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
+        if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
+            declare -rgA HYBRID_sampler_input_key_names=(
+                [surface_filename]='surface'
+                [output_folder]='spectra_dir'
+            )
+        else
+            declare -rgA HYBRID_sampler_input_key_names=(
+                [surface_filename]='surface_file'
+                [output_folder]='output_dir'
+            )
+        fi
+    fi
+}
+
+function __static__Set_Sampler_Input_Key_Paths()
+{
+    # As the user may set particle_list_file and decays_list_file through the HYBRID_fist_module
+    # array, we set the input_key_default_path array here and not in global_variables.bash.
+    if [[ "${HYBRID_module[Sampler]}" = 'FIST' ]]; then
+        declare -rgA HYBRID_sampler_input_key_default_paths=(
+            [hypersurface_file]="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+            [output_file]="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"
+            [particle_list_file]="${HYBRID_fist_module[Particle_file]}"
+            [decays_list_file]="${HYBRID_fist_module[Decays_file]}"
+        )
+    else
+        # The following local variable is just meant to keep the array assignment short and make formatter happy
+        local -r freezeout="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+        declare -rgA HYBRID_sampler_input_key_default_paths=(
+            [${HYBRID_sampler_input_key_names[surface_filename]}]="${freezeout}"
+            [${HYBRID_sampler_input_key_names[output_folder]}]="${HYBRID_software_output_directory[Sampler]}"
+        )
+    fi
+}
+
+function __static__Choose_Base_Configuration_File_For_Sampler()
+{
+    if [[ "${HYBRID_software_base_config_file[Sampler]}" = '' ]]; then
+        local sampler_key
+        if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
+            Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_version[Sampler]'
+            if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
+                sampler_key='Sampler_SMASH_lt_3.2'
+            else
+                sampler_key='Sampler_SMASH_ge_3.2'
+            fi
+        else
+            sampler_key='Sampler_FIST'
+        fi
+        HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${sampler_key}]}"
+    fi
+}
 
 function __static__Perform_Command_Line_VS_Configuration_Consistency_Checks()
 {
@@ -211,6 +300,44 @@ function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
                 printf -v HYBRID_software_input_file[Spectators] '%s/%s' \
                     "${HYBRID_software_output_directory[IC]}" \
                     "${HYBRID_software_default_input_filename[Spectators]}"
+            fi
+        fi
+    fi
+}
+
+function __static__Set_Software_Version()
+{
+    if [[ "${key}" = 'Sampler' && ${HYBRID_module[Sampler]} = 'SMASH' ]]; then
+        HYBRID_software_version[Sampler]='0.0'
+        local sampler_version_output
+        # The SMASH hadron sampler might fail because the user is using a correctly compiled older
+        # version which does not support the --version command line option, or because the user
+        # did some mistake, e.g. setting up the environment and the sampler does not find some library.
+        # We want to try here to be user friendly and this is to some extent possible because older
+        # sampler versions exit with code 1 if a command line option is not recognized. Hence, we can
+        # confidently give an error and fail if the sampler fails with an exit code different from 1.
+        #
+        # NOTE: Being errexit option enabled, we need to store the version output in the if-clause
+        #       condition and access the possible exit code at the very beginning of the else-clause.
+        if sampler_version_output=$(${HYBRID_software_executable[Sampler]} --version 2> /dev/null); then
+            if [[ ${sampler_version_output} =~ ${HYBRID_version_regex} ]]; then
+                HYBRID_software_version[Sampler]="${BASH_REMATCH[0]}"
+                Print_Debug 'Sampler version found to be ' --emph "${HYBRID_software_version[Sampler]}" '.'
+            else
+                Print_Internal_And_Exit \
+                    'Sampler ' --emph '--version' ' option returned a string not matching the version regex.' \
+                    'The problem occurred in ' --emph "${FUNCNAME}" ' function.'
+            fi
+        else
+            if [[ $? -ne 1 ]]; then
+                ${HYBRID_software_executable[Sampler]} --version
+                exit_code=${HYBRID_fatal_software_failed} Print_Fatal_And_Exit \
+                    'The ' --emph 'Sampler' \
+                    ' executable failed in an unexpected way when trying to retrieve its version.' \
+                    'Try running ' --emph "${HYBRID_software_executable[Sampler]} --version" \
+                    '\nto investigate the issue.'
+            else
+                Print_Debug 'Sampler version not found, setting it to 0.0'
             fi
         fi
     fi

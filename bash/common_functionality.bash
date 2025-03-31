@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2024
+#    Copyright (c) 2024-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -60,7 +60,7 @@ function Separate_Terminal_Output_For()
 function Report_About_Software_Failure_For()
 {
     exit_code=${HYBRID_fatal_software_failed} Print_Fatal_And_Exit \
-        '\n' --emph "$1" ' run failed.'
+        '\n' --emph "$1" ' run failed (look at its output files for more information).'
 }
 
 function Ensure_Input_File_Exists_And_Alert_If_Unfinished()

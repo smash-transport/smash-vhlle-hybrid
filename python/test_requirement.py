@@ -60,7 +60,7 @@ if os.environ.get('HYBRID_TEST_MODE') is not None:
     # Mock pip, useful in handler unit tests
     installed_packages = {"packaging": "24", "numpy": "1.26.4", "pyDOE": "", "PyYAML": "5.0"}
 else:
-    pip_freeze_list = subprocess.check_output([sys.executable, '-m', 'pip', 'freeze'])
+    pip_freeze_list = subprocess.check_output([sys.executable, '-m', 'pip', 'list', '--format=freeze'])
     pip_freeze_list = [line.decode().split('==') for line in pip_freeze_list.split()]
     installed_packages = {}
     for r in pip_freeze_list:

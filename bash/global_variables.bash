@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -30,6 +30,7 @@ function Define_Further_Global_Variables()
     readonly HYBRID_python_folder="${HYBRID_top_level_path}/python"
     readonly HYBRID_afterburner_list_filename="sampled_particles_list.oscar"
     readonly HYBRID_default_number_of_samples=0
+    readonly HYBRID_default_sampler_module="SMASH"
     declare -rgA HYBRID_external_python_scripts=(
         [Add_spectators_from_IC]="${HYBRID_python_folder}/add_spectators.py"
         [Latin_hypercube_sampling]="${HYBRID_python_folder}/latin_hypercube_sampling.py"
@@ -91,7 +92,11 @@ function Define_Further_Global_Variables()
         [Config_file]='HYBRID_software_base_config_file[Sampler]'
         [Scan_parameters]='HYBRID_scan_parameters[Sampler]'
         [Software_keys]='HYBRID_software_new_input_keys[Sampler]'
+        [Module]='HYBRID_module[Sampler]'
+        [Particle_file]='HYBRID_fist_module[Particle_file]'
+        [Decays_file]='HYBRID_fist_module[Decays_file]'
     )
+
     declare -rgA HYBRID_afterburner_valid_keys=(
         [Executable]='HYBRID_software_executable[Afterburner]'
         [Config_file]='HYBRID_software_base_config_file[Afterburner]'
@@ -139,8 +144,14 @@ function Define_Further_Global_Variables()
     declare -gA HYBRID_software_base_config_file=(
         [IC]="${HYBRID_default_configurations_folder}/smash_initial_conditions.yaml"
         [Hydro]="${HYBRID_default_configurations_folder}/vhlle_hydro"
-        [Sampler]="${HYBRID_default_configurations_folder}/hadron_sampler"
+        [Sampler]=""
         [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"
+        # For the Sampler, the default configs depend on the module (and possibly on the sampler
+        # version). The user may give their own base config, so we have to wait and see if the
+        # user chose a base config and only replace it if none was given.
+        [Sampler_SMASH_lt_3.2]="${HYBRID_default_configurations_folder}/hadron_sampler_prior_to_version_3.2"
+        [Sampler_SMASH_ge_3.2]="${HYBRID_default_configurations_folder}/hadron_sampler_from_version_3.2_on"
+        [Sampler_FIST]="${HYBRID_default_configurations_folder}/fist_config"
     )
     declare -gA HYBRID_scan_parameters=(
         [IC]=''
@@ -154,6 +165,9 @@ function Define_Further_Global_Variables()
         [Sampler]=''
         [Afterburner]=''
     )
+    declare -gA HYBRID_module=(
+        [Sampler]="${HYBRID_default_sampler_module}"
+    )
     declare -gA HYBRID_optional_feature=(
         [Add_spectators_from_IC]='TRUE'
         [Spectators_source]=''
@@ -164,6 +178,13 @@ function Define_Further_Global_Variables()
         [Hydro]=''
         [Sampler]=''
         [Afterburner]=''
+    )
+    declare -gA HYBRID_software_version=(
+        [Sampler]=''
+    )
+    declare -gA HYBRID_fist_module=(
+        [Particle_file]="${HYBRID_default_configurations_folder}/particle_file"
+        [Decays_file]="${HYBRID_default_configurations_folder}/decay_file"
     )
     declare -gA HYBRID_software_configuration_file=(
         [IC]=''

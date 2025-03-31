@@ -2,10 +2,10 @@
 
 :simple-gnubash: Bash world is often the realm of the **do it yourself**. :innocent:
 This is belonging to the nature of the language as it is very unusual to have libraries with functionality to be reused.
-However, it is very simple to provide the codebase with some utility function tailored on the needs of the project.
+However, it is very simple to provide the codebase with some utility function tailored to the needs of the project.
 In the following you will find an overview of what is available in the codebase.
 
-!!! warning "These functions are tailored on the project"
+!!! warning "These functions are tailored to the project"
     The following functions should not be considered as a library.
     Actually most of them would not work if copied and pasted in another project.
     Be aware that some of them depend on project-specific aspects (e.g. they use the logger or they assume that the shell used options are on) and, sometimes, make use of other utility functions.
@@ -30,6 +30,16 @@ In the following you will find an overview of what is available in the codebase.
     === "Call example"
         ```bash
         --8<-- "bash/utility_functions.bash:Element_In_Array_Matches-ex"
+        ```
+
+## Version comparison utilities
+
+??? utility-func "`Is_Version`"
+    === "Description"
+        --8<-- "bash/utility_functions.bash:Is_Version-desc"
+    === "Call example"
+        ```bash
+        --8<-- "bash/utility_functions.bash:Is_Version-ex"
         ```
 
 ## Variables- and functions-related utilities

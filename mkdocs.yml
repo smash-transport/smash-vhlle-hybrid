@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2024
+#    Copyright (c) 2024-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -12,7 +12,7 @@
 # tabs in the documentation).
 
 site_name: SMASH-vHLLE-Hybrid
-copyright: Copyright &copy; 2024 - SMASH team
+copyright: Copyright &copy; 2024-2025 - SMASH team
 
 repo_url: https://github.com/smash-transport/smash-vhlle-hybrid
 repo_name: 'Repository'
@@ -24,6 +24,7 @@ nav:
     - user/index.md
     - Getting started:
        - Prerequisites: user/prerequisites.md
+       - A Docker image: user/docker_image.md
        - Execution modes: user/execution_modes.md
        - Handler configuration file: user/configuration_file.md
        - Predefined configuration files: user/predefined_configs.md
@@ -42,9 +43,11 @@ nav:
     - Code design and technicalities:
       - Parameters scan: developer/parameters_scan.md
       - Utility functions: developer/utility_functions.md
+      - Adding new modules: developer/new_module.md
 
 markdown_extensions:
   # More markdown functionality
+  - abbr
   - tables
   - footnotes
   - attr_list
@@ -92,6 +95,7 @@ theme:
   logo: images/logo.png
   features:
     - content.code.copy
+    - content.tooltips
     - header.autohide
     - navigation.indexes
     - navigation.sections
