@@ -417,6 +417,8 @@
       
         
       
+        
+      
     
     
     
@@ -462,6 +464,27 @@
   
   <span class="md-ellipsis">
     Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/docker_image/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    A Docker image
   </span>
   
 
@@ -1041,6 +1064,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#version-comparison-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version comparison utilities
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#variables-and-functions-related-utilities" class="md-nav__link">
     <span class="md-ellipsis">
       Variables- and functions-related utilities
@@ -1166,6 +1198,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#version-comparison-utilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      Version comparison utilities
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#variables-and-functions-related-utilities" class="md-nav__link">
     <span class="md-ellipsis">
       Variables- and functions-related utilities
@@ -1231,10 +1272,10 @@
 <h1 id="bash-utility-functions">Bash utility functions<a class="headerlink" href="#bash-utility-functions" title="Link to this section">&para;</a></h1>
 <p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.038 4.9 13.461.402a2.86 2.86 0 0 0-2.923.001L2.961 4.9A3.023 3.023 0 0 0 1.5 7.503v8.995c0 1.073.557 2.066 1.462 2.603l7.577 4.497a2.86 2.86 0 0 0 2.922 0l7.577-4.497a3.023 3.023 0 0 0 1.462-2.603V7.503A3.021 3.021 0 0 0 21.038 4.9zM15.17 18.946l.013.646c.001.078-.05.167-.111.198l-.383.22c-.061.031-.111-.007-.112-.085l-.007-.635c-.328.136-.66.169-.872.084-.04-.016-.057-.075-.041-.142l.139-.584a.24.24 0 0 1 .069-.121.163.163 0 0 1 .036-.026c.022-.011.043-.014.062-.006.229.077.521.041.802-.101.357-.181.596-.545.592-.907-.003-.328-.181-.465-.613-.468-.55.001-1.064-.107-1.072-.917-.007-.667.34-1.361.889-1.8l-.007-.652c-.001-.08.048-.168.111-.2l.37-.236c.061-.031.111.007.112.087l.006.653c.273-.109.511-.138.726-.088.047.012.067.076.048.151l-.144.578a.255.255 0 0 1-.065.116.161.161 0 0 1-.038.028.083.083 0 0 1-.057.009c-.098-.022-.332-.073-.699.113-.385.195-.52.53-.517.778.003.297.155.387.681.396.7.012 1.003.318 1.01 1.023.007.689-.362 1.433-.928 1.888zm3.973-1.087c0 .06-.008.116-.058.145l-1.916 1.164c-.05.029-.09.004-.09-.056v-.494c0-.06.037-.093.087-.122l1.887-1.129c.05-.029.09-.004.09.056v.436zm1.316-11.062-7.168 4.427c-.894.523-1.553 1.109-1.553 2.187v8.833c0 .645.26 1.063.66 1.184a2.304 2.304 0 0 1-.398.039c-.42 0-.833-.114-1.197-.33L3.226 18.64a2.494 2.494 0 0 1-1.201-2.142V7.503c0-.881.46-1.702 1.201-2.142L10.803.863a2.342 2.342 0 0 1 2.394 0l7.577 4.498a2.479 2.479 0 0 1 1.164 1.732c-.252-.536-.818-.682-1.479-.296z"/></svg></span> Bash world is often the realm of the <strong>do it yourself</strong>. <img alt="😇" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.0.3/assets/svg/1f607.svg" title=":innocent:" />
 This is belonging to the nature of the language as it is very unusual to have libraries with functionality to be reused.
-However, it is very simple to provide the codebase with some utility function tailored on the needs of the project.
+However, it is very simple to provide the codebase with some utility function tailored to the needs of the project.
 In the following you will find an overview of what is available in the codebase.</p>
 <div class="admonition warning">
-<p class="admonition-title">These functions are tailored on the project</p>
+<p class="admonition-title">These functions are tailored to the project</p>
 <p>The following functions should not be considered as a library.
 Actually most of them would not work if copied and pasted in another project.
 Be aware that some of them depend on project-specific aspects (e.g. they use the logger or they assume that the shell used options are on) and, sometimes, make use of other utility functions.</p>
@@ -1280,35 +1321,51 @@ expression, 1 otherwise.</p>
 </div>
 </div>
 </details>
+<h2 id="version-comparison-utilities">Version comparison utilities<a class="headerlink" href="#version-comparison-utilities" title="Link to this section">&para;</a></h2>
+<details class="utility-func">
+<summary><code>Is_Version</code></summary>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Description</label><label for="__tabbed_3_2">Call example</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Compare two versions. This function takes two version numbers as first and third
+arguments and a comparison operator among <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>=</code>, <code>==</code>, <code>!=</code>.
+Alternatively to the operator, you can use the test comparison options and namely
+<code>-gt</code>, <code>-lt</code>, <code>-ge</code>, <code>-le</code>, <code>-eq</code> or <code>-ne</code>, respectively.
+The function returns 0 if the comparison is true, 1 otherwise.</p>
+<div class="admonition warning">
+<p class="admonition-title">Mind redirection</p>
+<p>If you use this function with a comparison operator containing the <code>&gt;</code> or
+the <code>&lt;</code> symbol, you need to either quote it or backslash-escape it, otherwise
+it will be interpreted as redirection.</p>
+</div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">if</span><span class="w"> </span>Is_Version<span class="w"> </span><span class="s1">&#39;3.01&#39;</span><span class="w"> </span><span class="se">\&gt;</span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;3.1.0&#39;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="c1"># This if is entered</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">fi</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="k">if</span><span class="w"> </span>Is_Version<span class="w"> </span><span class="s1">&#39;1.42&#39;</span><span class="w"> </span><span class="s1">&#39;&gt;&#39;</span><span class="w"> </span><span class="s1">&#39;1.42.0.0.1&#39;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="c1"># This if is entered</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="k">fi</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">if</span><span class="w"> </span>Is_Version<span class="w"> </span><span class="s1">&#39;1.42&#39;</span><span class="w"> </span>-gt<span class="w"> </span><span class="s1">&#39;1.42.0.0.1&#39;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="c1"># This if is entered</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="k">fi</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+</details>
 <h2 id="variables-and-functions-related-utilities">Variables- and functions-related utilities<a class="headerlink" href="#variables-and-functions-related-utilities" title="Link to this section">&para;</a></h2>
 <details class="utility-func">
 <summary><code>Call_Function_If_Existing_Or_Exit</code></summary>
-<div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Description</label><label for="__tabbed_3_2">Call example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Description</label><label for="__tabbed_4_2">Call example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Check if the given function exists and if so call it forwarding all arguments.
 Exit with an internal error otherwise.</p>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># These two are equivalent if the function &#39;Mystery_Function&#39; is defined</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Call_Function_If_Existing_Or_Exit<span class="w"> </span><span class="s1">&#39;Mystery_Function&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_1&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_2&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_3&#39;</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>Mystery_Function<span class="w"> </span><span class="s1">&#39;Arg_1&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_2&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_3&#39;</span>
-</span></code></pre></div>
-</div>
-</div>
-</div>
-</details>
-<details class="utility-func">
-<summary><code>Call_Function_If_Existing_Or_No_Op</code></summary>
-<div class="tabbed-set tabbed-alternate" data-tabs="4:2"><input checked="checked" id="__tabbed_4_1" name="__tabbed_4" type="radio" /><input id="__tabbed_4_2" name="__tabbed_4" type="radio" /><div class="tabbed-labels"><label for="__tabbed_4_1">Description</label><label for="__tabbed_4_2">Call example</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<p>Check if the given function exists and if so call it forwarding all arguments.
-This is a no-operation if the function is not defined.</p>
-</div>
-<div class="tabbed-block">
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># These two are equivalent if the function &#39;Mystery_Function&#39; is defined</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Call_Function_If_Existing_Or_No_Op<span class="w"> </span><span class="s1">&#39;Mystery_Function&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_1&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_2&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_3&#39;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Call_Function_If_Existing_Or_Exit<span class="w"> </span><span class="s1">&#39;Mystery_Function&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_1&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_2&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_3&#39;</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>Mystery_Function<span class="w"> </span><span class="s1">&#39;Arg_1&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_2&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_3&#39;</span>
 </span></code></pre></div>
 </div>
@@ -1316,15 +1373,32 @@ This is a no-operation if the function is not defined.</p>
 </div>
 </details>
 <details class="utility-func">
-<summary><code>Ensure_That_Given_Variables_Are_Set</code></summary>
+<summary><code>Call_Function_If_Existing_Or_No_Op</code></summary>
 <div class="tabbed-set tabbed-alternate" data-tabs="5:2"><input checked="checked" id="__tabbed_5_1" name="__tabbed_5" type="radio" /><input id="__tabbed_5_2" name="__tabbed_5" type="radio" /><div class="tabbed-labels"><label for="__tabbed_5_1">Description</label><label for="__tabbed_5_2">Call example</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Check if the given function exists and if so call it forwarding all arguments.
+This is a no-operation if the function is not defined.</p>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># These two are equivalent if the function &#39;Mystery_Function&#39; is defined</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Call_Function_If_Existing_Or_No_Op<span class="w"> </span><span class="s1">&#39;Mystery_Function&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_1&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_2&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_3&#39;</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>Mystery_Function<span class="w"> </span><span class="s1">&#39;Arg_1&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_2&#39;</span><span class="w"> </span><span class="s1">&#39;Arg_3&#39;</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+</details>
+<details class="utility-func">
+<summary><code>Ensure_That_Given_Variables_Are_Set</code></summary>
+<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Description</label><label for="__tabbed_6_2">Call example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Check if the given variables are set, i.e. have been declared.
 Exit with an internal error if at least one variable is not set.</p>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>Ensure_That_Given_Variables_Are_Set<span class="w"> </span><span class="s1">&#39;var_1&#39;</span><span class="w"> </span><span class="s1">&#39;var_2&#39;</span><span class="w"> </span><span class="s1">&#39;var_3&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Ensure_That_Given_Variables_Are_Set<span class="w"> </span><span class="s1">&#39;var_1&#39;</span><span class="w"> </span><span class="s1">&#39;var_2&#39;</span><span class="w"> </span><span class="s1">&#39;var_3&#39;</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -1332,7 +1406,7 @@ Exit with an internal error if at least one variable is not set.</p>
 </details>
 <details class="utility-func">
 <summary><code>Ensure_That_Given_Variables_Are_Set_And_Not_Empty</code></summary>
-<div class="tabbed-set tabbed-alternate" data-tabs="6:2"><input checked="checked" id="__tabbed_6_1" name="__tabbed_6" type="radio" /><input id="__tabbed_6_2" name="__tabbed_6" type="radio" /><div class="tabbed-labels"><label for="__tabbed_6_1">Description</label><label for="__tabbed_6_2">Call example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">Description</label><label for="__tabbed_7_2">Call example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Check if the given variables are set and not empty.
@@ -1344,7 +1418,7 @@ An array is considered empty if it has size equal to 0.</p>
 </details>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Ensure_That_Given_Variables_Are_Set_And_Not_Empty<span class="w"> </span><span class="s1">&#39;var_1&#39;</span><span class="w"> </span><span class="s1">&#39;var_2&#39;</span><span class="w"> </span><span class="s1">&#39;var_3&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Ensure_That_Given_Variables_Are_Set_And_Not_Empty<span class="w"> </span><span class="s1">&#39;var_1&#39;</span><span class="w"> </span><span class="s1">&#39;var_2&#39;</span><span class="w"> </span><span class="s1">&#39;var_3&#39;</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -1352,7 +1426,7 @@ An array is considered empty if it has size equal to 0.</p>
 </details>
 <details class="utility-func">
 <summary><code>Make_Functions_Defined_In_This_File_Readonly</code></summary>
-<div class="tabbed-set tabbed-alternate" data-tabs="7:2"><input checked="checked" id="__tabbed_7_1" name="__tabbed_7" type="radio" /><input id="__tabbed_7_2" name="__tabbed_7" type="radio" /><div class="tabbed-labels"><label for="__tabbed_7_1">Description</label><label for="__tabbed_7_2">Call example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="8:2"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">Description</label><label for="__tabbed_8_2">Call example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Extract all functions defined in the file where called and mark them as <code>readonly</code>.</p>
@@ -1364,7 +1438,7 @@ Accepted symbols in the function name are letters, <code>_</code>, <code>:</code
 </div>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Make_Functions_Defined_In_This_File_Readonly
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Make_Functions_Defined_In_This_File_Readonly
 </span></code></pre></div>
 </div>
 </div>
@@ -1372,13 +1446,13 @@ Accepted symbols in the function name are letters, <code>_</code>, <code>:</code
 </details>
 <details class="utility-func">
 <summary><code>Print_Not_Implemented_Function_Error</code></summary>
-<div class="tabbed-set tabbed-alternate" data-tabs="8:2"><input checked="checked" id="__tabbed_8_1" name="__tabbed_8" type="radio" /><input id="__tabbed_8_2" name="__tabbed_8" type="radio" /><div class="tabbed-labels"><label for="__tabbed_8_1">Description</label><label for="__tabbed_8_2">Call example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="9:2"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><div class="tabbed-labels"><label for="__tabbed_9_1">Description</label><label for="__tabbed_9_2">Call example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Print an error about the caller function using the logger.</p>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Print_Not_Implemented_Function_Error
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Print_Not_Implemented_Function_Error
 </span></code></pre></div>
 </div>
 </div>
@@ -1392,7 +1466,7 @@ As it is assumed everywhere that no key contains a period (or a space), keys can
 </div>
 <details class="utility-func">
 <summary><code>Has_YAML_String_Given_Key</code></summary>
-<div class="tabbed-set tabbed-alternate" data-tabs="9:2"><input checked="checked" id="__tabbed_9_1" name="__tabbed_9" type="radio" /><input id="__tabbed_9_2" name="__tabbed_9" type="radio" /><div class="tabbed-labels"><label for="__tabbed_9_1">Description</label><label for="__tabbed_9_2">Call example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="10:2"><input checked="checked" id="__tabbed_10_1" name="__tabbed_10" type="radio" /><input id="__tabbed_10_2" name="__tabbed_10" type="radio" /><div class="tabbed-labels"><label for="__tabbed_10_1">Description</label><label for="__tabbed_10_2">Call example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Test if a YAML string contains a given key.
@@ -1400,10 +1474,10 @@ If the YAML string is invalid, an error is printed and the function exits.
 The function returns 0 if the key is present in the YAML string, 1 otherwise.</p>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nv">yaml_string</span><span class="o">=</span><span class="s1">$&#39;section:\n  key: 42\n&#39;</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="k">if</span><span class="w"> </span>Has_YAML_String_Given_Key<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">yaml_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="s1">&#39;section&#39;</span><span class="w"> </span><span class="s1">&#39;key&#39;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="c1"># this is executed</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="k">fi</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nv">yaml_string</span><span class="o">=</span><span class="s1">$&#39;section:\n  key: 42\n&#39;</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="k">if</span><span class="w"> </span>Has_YAML_String_Given_Key<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">yaml_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="s1">&#39;section&#39;</span><span class="w"> </span><span class="s1">&#39;key&#39;</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="c1"># this is executed</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="k">fi</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -1411,7 +1485,7 @@ The function returns 0 if the key is present in the YAML string, 1 otherwise.</p
 </details>
 <details class="utility-func">
 <summary><code>Read_From_YAML_String_Given_Key</code></summary>
-<div class="tabbed-set tabbed-alternate" data-tabs="10:2"><input checked="checked" id="__tabbed_10_1" name="__tabbed_10" type="radio" /><input id="__tabbed_10_2" name="__tabbed_10" type="radio" /><div class="tabbed-labels"><label for="__tabbed_10_1">Description</label><label for="__tabbed_10_2">Call example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="11:2"><input checked="checked" id="__tabbed_11_1" name="__tabbed_11" type="radio" /><input id="__tabbed_11_2" name="__tabbed_11" type="radio" /><div class="tabbed-labels"><label for="__tabbed_11_1">Description</label><label for="__tabbed_11_2">Call example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Read a given key from a YAML string.
@@ -1419,11 +1493,11 @@ If the YAML string does not contain the key (or it is invalid) the function exit
 The read key is printed to standard output.</p>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nv">yaml_string</span><span class="o">=</span><span class="s1">$&#39;section:\n  key: 42\n&#39;</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nv">key_value</span><span class="o">=</span><span class="k">$(</span>Read_From_YAML_String_Given_Key<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">yaml_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="s1">&#39;section&#39;</span><span class="w"> </span><span class="s1">&#39;key&#39;</span><span class="k">)</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">key_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># &lt;-- this prints &#39;42&#39;</span>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="nv">key_value</span><span class="o">=</span><span class="k">$(</span>Read_From_YAML_String_Given_Key<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">yaml_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="s1">&#39;section.key&#39;</span><span class="k">)</span>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">key_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># &lt;-- this prints &#39;42&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nv">yaml_string</span><span class="o">=</span><span class="s1">$&#39;section:\n  key: 42\n&#39;</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nv">key_value</span><span class="o">=</span><span class="k">$(</span>Read_From_YAML_String_Given_Key<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">yaml_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="s1">&#39;section&#39;</span><span class="w"> </span><span class="s1">&#39;key&#39;</span><span class="k">)</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">key_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># &lt;-- this prints &#39;42&#39;</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="nv">key_value</span><span class="o">=</span><span class="k">$(</span>Read_From_YAML_String_Given_Key<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">yaml_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="s1">&#39;section.key&#39;</span><span class="k">)</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">key_value</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># &lt;-- this prints &#39;42&#39;</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -1431,7 +1505,7 @@ The read key is printed to standard output.</p>
 </details>
 <details class="utility-func">
 <summary><code>Print_YAML_String_Without_Given_Key</code></summary>
-<div class="tabbed-set tabbed-alternate" data-tabs="11:2"><input checked="checked" id="__tabbed_11_1" name="__tabbed_11" type="radio" /><input id="__tabbed_11_2" name="__tabbed_11" type="radio" /><div class="tabbed-labels"><label for="__tabbed_11_1">Description</label><label for="__tabbed_11_2">Call example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="12:2"><input checked="checked" id="__tabbed_12_1" name="__tabbed_12" type="radio" /><input id="__tabbed_12_2" name="__tabbed_12" type="radio" /><div class="tabbed-labels"><label for="__tabbed_12_1">Description</label><label for="__tabbed_12_2">Call example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Remove a given key from a YAML string.
@@ -1439,9 +1513,9 @@ If the YAML string does not contain the key (or it is invalid) the function exit
 The new YAML string is printed to standard output.</p>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nv">yaml_string</span><span class="o">=</span><span class="s1">$&#39;a: 17\nb: 42\n&#39;</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="nv">yaml_string</span><span class="o">=</span><span class="k">$(</span>Print_YAML_String_Without_Given_Key<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">yaml_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="s1">&#39;b&#39;</span><span class="k">)</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">yaml_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># &lt;-- this prints &#39;a: 17&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nv">yaml_string</span><span class="o">=</span><span class="s1">$&#39;a: 17\nb: 42\n&#39;</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nv">yaml_string</span><span class="o">=</span><span class="k">$(</span>Print_YAML_String_Without_Given_Key<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">yaml_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span><span class="s1">&#39;b&#39;</span><span class="k">)</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">yaml_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="w">  </span><span class="c1"># &lt;-- this prints &#39;a: 17&#39;</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -1450,7 +1524,7 @@ The new YAML string is printed to standard output.</p>
 <h2 id="output-utilities">Output utilities<a class="headerlink" href="#output-utilities" title="Link to this section">&para;</a></h2>
 <details class="utility-func">
 <summary><code>Print_Line_of_Equals</code></summary>
-<div class="tabbed-set tabbed-alternate" data-tabs="12:2"><input checked="checked" id="__tabbed_12_1" name="__tabbed_12" type="radio" /><input id="__tabbed_12_2" name="__tabbed_12" type="radio" /><div class="tabbed-labels"><label for="__tabbed_12_1">Description</label><label for="__tabbed_12_2">Call example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="13:2"><input checked="checked" id="__tabbed_13_1" name="__tabbed_13" type="radio" /><input id="__tabbed_13_2" name="__tabbed_13" type="radio" /><div class="tabbed-labels"><label for="__tabbed_13_1">Description</label><label for="__tabbed_13_2">Call example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Print a line of equal signs to the standard output.
@@ -1462,7 +1536,7 @@ Function interface:</p>
 </ol>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>Print_Line_of_Equals<span class="w"> </span><span class="m">80</span><span class="w"> </span><span class="s1">&#39;\e[96m    &#39;</span><span class="w"> </span><span class="s1">&#39;\e[0m\n&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>Print_Line_of_Equals<span class="w"> </span><span class="m">80</span><span class="w"> </span><span class="s1">&#39;\e[96m    &#39;</span><span class="w"> </span><span class="s1">&#39;\e[0m\n&#39;</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -1470,7 +1544,7 @@ Function interface:</p>
 </details>
 <details class="utility-func">
 <summary><code>Print_Centered_Line</code></summary>
-<div class="tabbed-set tabbed-alternate" data-tabs="13:2"><input checked="checked" id="__tabbed_13_1" name="__tabbed_13" type="radio" /><input id="__tabbed_13_2" name="__tabbed_13" type="radio" /><div class="tabbed-labels"><label for="__tabbed_13_1">Description</label><label for="__tabbed_13_2">Call example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="14:2"><input checked="checked" id="__tabbed_14_1" name="__tabbed_14" type="radio" /><input id="__tabbed_14_2" name="__tabbed_14" type="radio" /><div class="tabbed-labels"><label for="__tabbed_14_1">Description</label><label for="__tabbed_14_2">Call example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Print a string horizontally centered in the terminal or in the provided length.
@@ -1484,7 +1558,7 @@ Function interface:</p>
 </ol>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>Print_Centered_Line<span class="w"> </span><span class="s1">&#39;Hello world!&#39;</span><span class="w"> </span><span class="m">80</span><span class="w"> </span><span class="s1">&#39;\e[96m    &#39;</span><span class="w"> </span><span class="s1">&#39;=&#39;</span><span class="w"> </span><span class="s1">&#39;\e[0m\n&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>Print_Centered_Line<span class="w"> </span><span class="s1">&#39;Hello world!&#39;</span><span class="w"> </span><span class="m">80</span><span class="w"> </span><span class="s1">&#39;\e[96m    &#39;</span><span class="w"> </span><span class="s1">&#39;=&#39;</span><span class="w"> </span><span class="s1">&#39;\e[0m\n&#39;</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -1493,7 +1567,7 @@ Function interface:</p>
 <h2 id="file-utilities">File utilities<a class="headerlink" href="#file-utilities" title="Link to this section">&para;</a></h2>
 <details class="utility-func">
 <summary><code>Remove_Comments_In_File</code></summary>
-<div class="tabbed-set tabbed-alternate" data-tabs="14:2"><input checked="checked" id="__tabbed_14_1" name="__tabbed_14" type="radio" /><input id="__tabbed_14_2" name="__tabbed_14" type="radio" /><div class="tabbed-labels"><label for="__tabbed_14_1">Description</label><label for="__tabbed_14_2">Call example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="15:2"><input checked="checked" id="__tabbed_15_1" name="__tabbed_15" type="radio" /><input id="__tabbed_15_2" name="__tabbed_15" type="radio" /><div class="tabbed-labels"><label for="__tabbed_15_1">Description</label><label for="__tabbed_15_2">Call example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Remove comments starting with a given character (default <code>'#'</code>) in a given file.
@@ -1511,8 +1585,8 @@ For the hybrid handler configuration such a basic implementation is enough.</p>
 </div>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>Remove_Comments_In_File<span class="w"> </span><span class="s1">&#39;config.yaml&#39;</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>Remove_Comments_In_File<span class="w"> </span><span class="s1">&#39;doc.tex&#39;</span><span class="w"> </span><span class="s1">&#39;%&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>Remove_Comments_In_File<span class="w"> </span><span class="s1">&#39;config.yaml&#39;</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>Remove_Comments_In_File<span class="w"> </span><span class="s1">&#39;doc.tex&#39;</span><span class="w"> </span><span class="s1">&#39;%&#39;</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -1539,14 +1613,14 @@ Links resolution is done using <code>realpath -m</code> before testing the entit
 <h2 id="miscellaneous">Miscellaneous<a class="headerlink" href="#miscellaneous" title="Link to this section">&para;</a></h2>
 <details class="utility-func">
 <summary><code>Strip_ANSI_Color_Codes_From_String</code></summary>
-<div class="tabbed-set tabbed-alternate" data-tabs="15:2"><input checked="checked" id="__tabbed_15_1" name="__tabbed_15" type="radio" /><input id="__tabbed_15_2" name="__tabbed_15" type="radio" /><div class="tabbed-labels"><label for="__tabbed_15_1">Description</label><label for="__tabbed_15_2">Call example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="16:2"><input checked="checked" id="__tabbed_16_1" name="__tabbed_16" type="radio" /><input id="__tabbed_16_2" name="__tabbed_16" type="radio" /><div class="tabbed-labels"><label for="__tabbed_16_1">Description</label><label for="__tabbed_16_2">Call example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Remove ANSI color codes from the given string.
 The cleaned up string is printed to standard output.</p>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>Strip_ANSI_Color_Codes_From_String<span class="w"> </span><span class="s1">$&#39;\e[96mHi\e[0m&#39;</span><span class="w"> </span><span class="c1"># &lt;-- this prints &#39;Hi&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>Strip_ANSI_Color_Codes_From_String<span class="w"> </span><span class="s1">$&#39;\e[96mHi\e[0m&#39;</span><span class="w"> </span><span class="c1"># &lt;-- this prints &#39;Hi&#39;</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -1554,13 +1628,13 @@ The cleaned up string is printed to standard output.</p>
 </details>
 <details class="utility-func">
 <summary><code>Print_Option_Specification_Error_And_Exit</code></summary>
-<div class="tabbed-set tabbed-alternate" data-tabs="16:2"><input checked="checked" id="__tabbed_16_1" name="__tabbed_16" type="radio" /><input id="__tabbed_16_2" name="__tabbed_16" type="radio" /><div class="tabbed-labels"><label for="__tabbed_16_1">Description</label><label for="__tabbed_16_2">Call example</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="17:2"><input checked="checked" id="__tabbed_17_1" name="__tabbed_17" type="radio" /><input id="__tabbed_17_2" name="__tabbed_17" type="radio" /><div class="tabbed-labels"><label for="__tabbed_17_1">Description</label><label for="__tabbed_17_2">Call example</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Print a fatal error about the given option using the logger and exits.</p>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>Print_Option_Specification_Error_And_Exit<span class="w"> </span><span class="s1">&#39;--filename&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>Print_Option_Specification_Error_And_Exit<span class="w"> </span><span class="s1">&#39;--filename&#39;</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -1601,7 +1675,7 @@ The cleaned up string is printed to standard output.</p>
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2024 - SMASH team
+      Copyright &copy; 2024-2025 - SMASH team
     </div>
   
   

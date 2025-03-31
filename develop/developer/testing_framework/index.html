@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#a-smart-tests-runner" class="md-skip">
+        <a href="#a-hand-crafted-testing-framework" class="md-skip">
           Skip to content
         </a>
       
@@ -417,6 +417,8 @@
       
         
       
+        
+      
     
     
     
@@ -462,6 +464,27 @@
   
   <span class="md-ellipsis">
     Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user/docker_image/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    A Docker image
   </span>
   
 
@@ -892,6 +915,24 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#a-word-of-caution" class="md-nav__link">
+    <span class="md-ellipsis">
+      A word of caution
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running tests
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-can-i-use-the-test-framework-and-what-should-i-know" class="md-nav__link">
     <span class="md-ellipsis">
       How can I use the test framework and what should I know?
@@ -1112,6 +1153,24 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#a-word-of-caution" class="md-nav__link">
+    <span class="md-ellipsis">
+      A word of caution
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running tests
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-can-i-use-the-test-framework-and-what-should-i-know" class="md-nav__link">
     <span class="md-ellipsis">
       How can I use the test framework and what should I know?
@@ -1138,7 +1197,31 @@
   
 
 
-<h1 id="a-smart-tests-runner">A smart tests runner<a class="headerlink" href="#a-smart-tests-runner" title="Link to this section">&para;</a></h1>
+<h1 id="a-hand-crafted-testing-framework">A hand-crafted testing framework<a class="headerlink" href="#a-hand-crafted-testing-framework" title="Link to this section">&para;</a></h1>
+<h2 id="a-word-of-caution">A word of caution<a class="headerlink" href="#a-word-of-caution" title="Link to this section">&para;</a></h2>
+<p>Before describing how the framework works and how to run tests, it is worth spending a few words about a Bash technicality, which could bite you at some point and should not be underestimated.</p>
+<div class="admonition note">
+<p class="admonition-title">The Bash behavior of the tests runner</p>
+<p>The shell <code>errexit</code> option is not enabled in the tests runner and, therefore, its Bash behavior when running tests is not the same as when running the handler.
+This is a natural choice in a testing framework where the error handling is wished to be done by hand to e.g. count failures and build up a report about failed tests.
+However, the <code>errexit</code> mode is enabled when running the codebase functions, otherwise the real behavior of the handler code would not be tested!</p>
+</div>
+<div class="admonition danger">
+<p class="admonition-title">DANGER: Be aware of contexts that make the shell ignore <code>errexit</code> behavior</p>
+<p>Although the note above might totally make sense to you, it is important to stress that in tests you really want to run the codebase functions with <code>errexit</code> enabled, since the real runs rely on it.
+You might be wondering: <em>Sure, what's the danger then?</em>
+In tests functions, a <code>return 1</code> statement makes the test fail (see further information below on this page).
+Refactoring code e.g. to reduce duplication, you might want to delegate a task to another function, which runs the handler code under test and for instance returns 1 in case of failure.
+So far so good.
+However, you would also like to make the test fail if the called function fails.
+You might then innocently add a trailing <code>|| return 1</code> to the function call.
+<img alt="💥" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.0.3/assets/svg/1f4a5.svg" title=":boom:" /> Gotcha!
+What did you just do?
+You made the called function code, and hence the handler code, run in a context were <code>errexit</code> is ignored (i.e. on the left of a <code>||</code> operator). <img alt="🫠" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.0.3/assets/svg/1fae0.svg" title=":melting_face:" />
+<strong>Keep this in mind!</strong>
+If you really want to make the test fail, you have to do so in a different way, for example passing the exit code of your delegated task to a dedicated new function which can then harmlessly support a trailing <code>|| return 1</code>.</p>
+</div>
+<h2 id="running-tests">Running tests<a class="headerlink" href="#running-tests" title="Link to this section">&para;</a></h2>
 <p>In the <img alt="📁" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.0.3/assets/svg/1f4c1.svg" title=":file_folder:" /> <strong>tests</strong> folder there is a <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21.038 4.9 13.461.402a2.86 2.86 0 0 0-2.923.001L2.961 4.9A3.023 3.023 0 0 0 1.5 7.503v8.995c0 1.073.557 2.066 1.462 2.603l7.577 4.497a2.86 2.86 0 0 0 2.922 0l7.577-4.497a3.023 3.023 0 0 0 1.462-2.603V7.503A3.021 3.021 0 0 0 21.038 4.9zM15.17 18.946l.013.646c.001.078-.05.167-.111.198l-.383.22c-.061.031-.111-.007-.112-.085l-.007-.635c-.328.136-.66.169-.872.084-.04-.016-.057-.075-.041-.142l.139-.584a.24.24 0 0 1 .069-.121.163.163 0 0 1 .036-.026c.022-.011.043-.014.062-.006.229.077.521.041.802-.101.357-.181.596-.545.592-.907-.003-.328-.181-.465-.613-.468-.55.001-1.064-.107-1.072-.917-.007-.667.34-1.361.889-1.8l-.007-.652c-.001-.08.048-.168.111-.2l.37-.236c.061-.031.111.007.112.087l.006.653c.273-.109.511-.138.726-.088.047.012.067.076.048.151l-.144.578a.255.255 0 0 1-.065.116.161.161 0 0 1-.038.028.083.083 0 0 1-.057.009c-.098-.022-.332-.073-.699.113-.385.195-.52.53-.517.778.003.297.155.387.681.396.7.012 1.003.318 1.01 1.023.007.689-.362 1.433-.928 1.888zm3.973-1.087c0 .06-.008.116-.058.145l-1.916 1.164c-.05.029-.09.004-.09-.056v-.494c0-.06.037-.093.087-.122l1.887-1.129c.05-.029.09-.004.09.056v.436zm1.316-11.062-7.168 4.427c-.894.523-1.553 1.109-1.553 2.187v8.833c0 .645.26 1.063.66 1.184a2.304 2.304 0 0 1-.398.039c-.42 0-.833-.114-1.197-.33L3.226 18.64a2.494 2.494 0 0 1-1.201-2.142V7.503c0-.881.46-1.702 1.201-2.142L10.803.863a2.342 2.342 0 0 1 2.394 0l7.577 4.498a2.479 2.479 0 0 1 1.164 1.732c-.252-.536-.818-.682-1.479-.296z"/></svg></span> <code>tests_runner</code> executable, which shall be used to run tests.
 This can be run with the <code>--help</code> command line option to obtain a self-explanatory helper message.</p>
 <p>Using the test runner it is possible to either run <strong>unit</strong> or <strong>functional</strong> tests.
@@ -1251,12 +1334,6 @@ If such a function exists, the runner will check for existence of the correspond
 <li>In functional tests you'll probably want to run the hybrid handler with some options and this can be easily achieved by using the <code>Run_Hybrid_Handler_With_Given_Options_In_Subshell</code> function.</li>
 </ul>
 </div>
-<div class="admonition note">
-<p class="admonition-title">The Bash behavior of the tests runner</p>
-<p>The shell <code>errexit</code> option is not enabled in the tests runner and, therefore, its Bash behavior when running tests is not the same as when running the handler.
-This is a natural choice in a testing framework where the error handling is wished to be done by hand to e.g. count failures and build up a report about failed tests.
-However, the <code>errexit</code> mode is enabled when running the codebase functions, otherwise the real behavior of the handler code would not be tested!</p>
-</div>
 <div class="admonition warning">
 <p class="admonition-title">Each test is run in its own subshell</p>
 <p>The full test flow, including setup and teardown, is run in a subshell in order to isolate its changes from the external environment.
@@ -1303,7 +1380,7 @@ If this is done, the test will not be recognized by the runner.</p>
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2024 - SMASH team
+      Copyright &copy; 2024-2025 - SMASH team
     </div>
   
   

@@ -2,87 +2,92 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/developer/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/developer/building_docs/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/developer/contributing/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/developer/new_module/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/developer/parameters_scan/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/developer/release_procedure/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/developer/testing_framework/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/developer/utility_functions/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/user/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/user/configuration_file/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/user/docker_image/</loc>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/user/execution_modes/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/user/predefined_configs/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/user/prerequisites/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/user/scans_syntax/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/user/scans_types/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://smash-transport.github.io/smash-vhlle-hybrid/develop/user/FAQ/</loc>
-         <lastmod>2025-01-20</lastmod>
+         <lastmod>2025-03-31</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

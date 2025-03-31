@@ -421,6 +421,8 @@
       
         
       
+        
+      
     
     
     
@@ -466,6 +468,27 @@
   
   <span class="md-ellipsis">
     Prerequisites
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docker_image/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    A Docker image
   </span>
   
 
@@ -1303,6 +1326,13 @@ These are (with the corresponding software to be used):</p>
 <p><img alt="🔥" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.0.3/assets/svg/1f525.svg" title=":fire:" /> &nbsp; <code>Afterburner</code> for the last stage (SMASH).</p>
 <p>As a general comment, whenever a path has to be specified, both an absolute and a relative one are accepted.
 However, <strong>it is strongly encouraged to exclusively use absolute paths</strong> as relative ones should be specified w.r.t. different folders (most of the times relatively to the stage output directory).</p>
+<div class="admonition tip">
+<p class="admonition-title">You only need the handler configuration file!</p>
+<p>Although each software needs a configuration file to be run, you generally do not need to create any.
+The handler uses a default one if none is explicitly provided.
+Keys in each software configuration files can be changed from the handler configuration file, without having to create specific configuration files for each software.
+Refer to the <a href="./#Software-keys"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 21a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5m1-8h8.5L11 16.5l1.42 1.42L18.34 12l-5.92-5.92L11 7.5l3.5 3.5H6v2Z"/></svg></span> <code>Software_keys</code></a> description for further information.</p>
+</div>
 <div class="admonition info">
 <p class="admonition-title">Enforced sanity rules</p>
 <p>Since the hybrid handler understands which software should be run from the presence of the corresponding section, there are a couple of totally natural rules that are enforced and will make the handler fail if violated.</p>
@@ -1324,12 +1354,14 @@ This key is <strong>required</strong> for all specified stages.</p>
 <p>Path to the software specific configuration file.
 If not specified, the file shipped in the <strong><em>configs</em></strong> folder is used.</p>
 </details>
+<p><i id="Software-keys"></i></p>
 <details class="config-key" open="open">
 <summary><code>Software_keys</code></summary>
 <p>The value of this key is a YAML map and should be used to change values of the software configuration file.
 It is not possible to add or remove keys, but only change already existing ones.
 If you need to add a key to the software default configuration file, you should create a custom one and specify it via the <code>Config_file</code> key.
-Depending on your needs, you could also create a more complete configuration file and change the values of some keys in your run(s) via this key.</p>
+Depending on your needs, you could also create a more complete configuration file and change the values of some keys in your run(s) via this key.
+<a href="../FAQ/#how-can-i-add-a-software-key-to-a-configuration-file"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 21a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5m1-8h8.5L11 16.5l1.42 1.42L18.34 12l-5.92-5.92L11 7.5l3.5 3.5H6v2Z"/></svg></span> How is this achieved in practice?</a></p>
 </details>
 <p><i id="scan-parameters"></i></p>
 <details class="config-key" open="open">
@@ -1401,9 +1433,9 @@ As a side-effect, it is not possible for the user to name the freezeout surface 
 </span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="nt">Software_keys</span><span class="p">:</span>
 </span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">        </span><span class="nt">surface</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/custom/freezeout.dat</span>
 </span></code></pre></div>
-<p>For the hadron sampler section, there is the additional option to use an alternative sampling software, the FIST sampler. By default, the SMASH-hadron-sampler is used. 
-For using the FIST sampler, the additional input key <code>Module</code> has to be set to <code>FIST</code>. 
-This allows also two separate keys <code>Particle_file</code> and <code>Decay_file</code> to be set, which are the paths to the particle and decay list files respectively, which are shipped with Thermal-FIST. 
+<p>For the hadron sampler section, there is the additional option to use an alternative sampling software, the FIST sampler. By default, the SMASH-hadron-sampler is used.
+For using the FIST sampler, the additional input key <code>Module</code> has to be set to <code>FIST</code>.
+This allows also two separate keys <code>Particle_file</code> and <code>Decay_file</code> to be set, which are the paths to the particle and decay list files respectively, which are shipped with Thermal-FIST.
 Setting these keys is compulsory. Additionally, using the FIST sampler changes the names of several of the <code>Software_keys</code>. Please refer to the default config for the FIST sampler in <img alt="📁" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.0.3/assets/svg/1f4c1.svg" title=":file_folder:" /> <strong><em>configs</em></strong>.</p>
 <details class="config-key" open="open">
 <summary><code>Module</code></summary>
@@ -1519,7 +1551,7 @@ In such a case, it will be needed to either explicitly provide the needed input 
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2024 - SMASH team
+      Copyright &copy; 2024-2025 - SMASH team
     </div>
   
   
