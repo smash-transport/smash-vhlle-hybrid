@@ -24,6 +24,7 @@ nav:
     - user/index.md
     - Getting started:
        - Prerequisites: user/prerequisites.md
+       - A Docker image: user/docker_image.md
        - Execution modes: user/execution_modes.md
        - Handler configuration file: user/configuration_file.md
        - Predefined configuration files: user/predefined_configs.md
