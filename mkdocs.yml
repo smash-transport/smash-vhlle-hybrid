@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2024
+#    Copyright (c) 2024-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -12,7 +12,7 @@
 # tabs in the documentation).
 
 site_name: SMASH-vHLLE-Hybrid
-copyright: Copyright &copy; 2024 - SMASH team
+copyright: Copyright &copy; 2024-2025 - SMASH team
 
 repo_url: https://github.com/smash-transport/smash-vhlle-hybrid
 repo_name: 'Repository'
