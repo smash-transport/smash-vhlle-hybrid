@@ -3,14 +3,17 @@
 # README:
 # If the environment variable BLACK_BOX_TYPE_SAMPLER is set to "FIST", the script is called like:
 #
-#     ./sampler_black_box path_to_config_file
+#     ./sampler_black-box path_to_config_file
 #
 # with:
 # - path_to_config_file: Path to the sampler configuration
 #
 # otherwise
 #
-#     ./sampler_black_box events num path_to_config_file
+#  version < 3.2:
+#     ./sampler_black-box events num path_to_config_file
+#  version >= 3.2:
+#     ./sampler_black-box --config path_to_config_file --num num
 #
 # with:
 # - events: This is not a variable. This must be the string 'events'
@@ -29,12 +32,23 @@
 # If it got everything correctly, it will produce a dummy terminal output and
 # a) particle_lists.oscar in the output directory if the optional argument is not given
 # b) nothing if the BLACK_BOX_FAIL environment variable is set to "true"
+#
+# Use the MOCK_HADRON_SAMPLER_VERSION environment variable to set the sampler version
+# behavior which is mimicking the different real sampler versions.
 
 import sys
 import os
 import time
 import random
 import numpy as np
+from packaging.version import Version
+
+sampler_version = os.environ.get("MOCK_HADRON_SAMPLER_VERSION", "3.1.1")
+
+def print_version_and_exit_if_requested():
+    if sys.argv[1] == '--version':
+        print(sampler_version)
+        sys.exit(0)
 
 def check_input_arguments(mode):
     """
@@ -57,19 +71,31 @@ def check_input_arguments(mode):
             sys.exit(1)
 
     else:
-        calling_instruction = (
-            "Call the sampler black box by:\n\n"
-            "./merged_black_box.py events num path_to_config_file\n\n"
-            "- events: Must be the string 'events'\n"
-            "- num: random number set by the user (e.g., 1)\n"
-            "- path_to_config_file: Path to the sampler configuration\n"
-        )
-        if not (4 <= len(sys.argv) <= 5):
-            print("Invalid number of arguments!\n" + calling_instruction)
-            sys.exit(1)
-        elif sys.argv[1] != 'events':
-            print("Invalid first argument!\nThe first argument must be 'events'\n" + calling_instruction)
-            sys.exit(1)
+        if Version(sampler_version) < Version("3.2"):
+            calling_instruction = (
+                "Call the sampler black box by:\n\n"
+                "./sampler_black-box.py events num path_to_config_file\n\n"
+                "- events: Must be the string 'events'\n"
+                "- num: random number set by the user (e.g., 1)\n"
+                "- path_to_config_file: Path to the sampler configuration\n"
+            )
+            if not (4 <= len(sys.argv) <= 5):
+                print("Invalid number of arguments!\n" + calling_instruction)
+                sys.exit(1)
+            elif sys.argv[1] != 'events':
+                print("Invalid first argument!\nThe first argument must be 'events'\n" + calling_instruction)
+                sys.exit(1)
+        else:
+            calling_instruction = (
+                "Call the sampler black box by:\n\n"
+                "./sampler_black-box.py --config path_to_config_file --num num\n\n"
+                "- --num and --config are literal strings\n"
+                "- num: random number set by the user (e.g., 1)\n"
+                "- path_to_config_file: Path to the sampler configuration\n"
+            )
+            if len(sys.argv) != 5:
+                print("Invalid number of arguments!\n" + calling_instruction)
+                sys.exit(1)
 
 def check_if_file_exists(path, mode, ftype=None):
     """
@@ -125,8 +151,11 @@ def get_value_as_string_from_config_by_keyword(path_to_config, keyword, custom_e
         print(f"Keyword '{keyword}' not found in config file!")
     sys.exit(1)
 
-def make_fake_run():
-    print("\nRunning Sampler:\n")
+def make_fake_run(mode):
+    if mode == 'FIST':
+        print("\nRunning FIST-Sampler:\n")
+    else:
+        print(f"\nRunning SMASH-Sampler v{sampler_version}:\n")
     for i in range(11):
         print('Fake computational progress: ', int(10*i), '%')
         time.sleep(0.1)
@@ -189,6 +218,7 @@ def create_output_file(mode, outpath):
 def run_black_box():
     """
     Main function that:
+      0. If the --version option was given, print it and exit
       1. Detects the mode from BLACK_BOX_TYPE_SAMPLER.
       2. Checks command-line arguments depending on the mode.
       3. Reads config to get freezeout and output info.
@@ -196,6 +226,8 @@ def run_black_box():
       5. Possibly simulates a crash (BLACK_BOX_FAIL='true').
       6. If not crashed, does the fake run and output creation.
     """
+    print_version_and_exit_if_requested()
+
     mode = os.environ.get("BLACK_BOX_TYPE_SAMPLER", "SMASH").upper()
     if mode not in ["FIST", "SMASH"]:
         print("Unknown mode in BLACK_BOX_TYPE! Use 'FIST' or 'SMASH'.")
@@ -233,18 +265,32 @@ def run_black_box():
         outpath = output_file
 
     else:
-        path_to_config = sys.argv[3]
-        check_if_file_exists(path_to_config, 'SMASH')
-        path_to_freezeout = get_value_as_string_from_config_by_keyword(
-            path_to_config,
-            'surface',
-            "Keyword 'surface' not in config!"
-        )
-        output_dir = get_value_as_string_from_config_by_keyword(
-            path_to_config,
-            'spectra_dir',
-            "Keyword 'spectra_dir' not in config!"
-        )
+        if Version(sampler_version) < Version("3.2"):
+            path_to_config = sys.argv[3]
+            check_if_file_exists(path_to_config, 'SMASH')
+            path_to_freezeout = get_value_as_string_from_config_by_keyword(
+                path_to_config,
+                'surface',
+                "Keyword 'surface' not in config!"
+            )
+            output_dir = get_value_as_string_from_config_by_keyword(
+                path_to_config,
+                'spectra_dir',
+                "Keyword 'spectra_dir' not in config!"
+            )
+        else:
+            path_to_config = sys.argv[2]
+            check_if_file_exists(path_to_config, 'SMASH')
+            path_to_freezeout = get_value_as_string_from_config_by_keyword(
+                path_to_config,
+                'surface_file',
+                "Keyword 'surface_file' not in config!"
+            )
+            output_dir = get_value_as_string_from_config_by_keyword(
+                path_to_config,
+                'output_dir',
+                "Keyword 'output_dir' not in config!"
+            )
         check_if_file_exists(path_to_freezeout, 'SMASH')
         check_if_directory_exists(output_dir)
         outpath = output_dir
@@ -255,9 +301,8 @@ def run_black_box():
         sys.exit(1)
 
     # Otherwise proceed with a normal run
-    make_fake_run()
+    make_fake_run(mode)
     create_output_file(mode, outpath)
 
 if __name__ == "__main__":
     run_black_box()
-

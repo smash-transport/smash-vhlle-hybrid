@@ -59,7 +59,7 @@ function Get_Path_Field_From_Sampler_Config_As_Global_Path()
         # If realpath succeeds, it prints the path that is the result of the function
         if ! realpath "${value}" 2> /dev/null; then
             exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
-                'Unable to transform relative path ' --emph "${value}" ' into global one.'
+                'Unable to transform relative path "' --emph "${value}" '" into global one.'
         fi
         cd - > /dev/null || exit ${HYBRID_fatal_builtin}
     fi
@@ -121,7 +121,9 @@ function __static__Preprocess_Configuration()
 }
 function __static__Is_Sampler_Config_Valid()
 {
-    __static__Preprocess_Configuration
+    # Since this function is likely to be called in an if-clause where errexit is ignored,
+    # it makes sense to explicitly return 1 if the preprocessing of the configuration fails
+    __static__Preprocess_Configuration || return 1
     Validate_Configuration_File_Of_${HYBRID_module[Sampler]}
 }
 

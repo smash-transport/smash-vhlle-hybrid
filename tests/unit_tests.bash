@@ -54,7 +54,7 @@ function Call_Codebase_Function()
 
 # NOTE: In the following, if the codebase function call fails, this function will exit
 #       the current shell because of the 'errexit' mode. If this function is called in
-#       a subshell, then the main script will continue without the *errexit options set,
+#       a subshell, then the main script will continue without the errexit options set,
 #       because these were set in the subshell only. However, if this function is called
 #       in the main script shell, then this will exit, too.
 #       Why not to ALWAYS call this function in a subshell? Because the codebase function

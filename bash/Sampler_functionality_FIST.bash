@@ -101,10 +101,11 @@ function Validate_Configuration_File_Of_FIST()
                 ;;
             output_file)
                 cd "${HYBRID_software_output_directory[Sampler]}"
+                local dir_value
                 dir_value=$(dirname "${value}")
                 if [[ ! -d "${dir_value}" ]]; then
                     cd - > /dev/null
-                    Print_Error 'Sampler output folder ' --emph "${value}" ' not found!'
+                    Print_Error 'Sampler output folder ' --emph "${dir_value}" ' not found!'
                     return 1
                 fi
                 ((keys_to_be_found--))
@@ -143,7 +144,7 @@ function Validate_Configuration_File_Of_FIST()
     # Check that all required keys were found
     if [[ ${keys_to_be_found} -gt 0 ]]; then
         Print_Error 'Either ' --emph 'hypersurface_file' ', ' --emph 'output_file' \
-            ' --emph 'particle_list_file' ' or ' ' --emph 'decays_list_file' \
+            ', ' --emph 'particle_list_file' ' or ' --emph 'decays_list_file' \
             ' key is missing in sampler configuration file.'
         return 1
     fi
