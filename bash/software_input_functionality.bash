@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -41,19 +41,11 @@ function __static__Replace_Keys_Into_YAML_File()
         exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
             'Keys to be replaced do not seem to contain valid YAML syntax.'
     fi
-    local initial_number_of_lines
-    initial_number_of_lines=$(wc -l < "${base_input_file}")
-    # Use yq to merge the two "files" into the first one
+    __static__Abort_With_Descriptive_Report_If_YAML_Replacement_Is_Not_Possible
+    # If replacement is possible, use yq to merge the two "files" into the first one
     yq --inplace eval-all '. as $item ireduce ({}; . * $item)' \
         "${base_input_file}" \
         <(printf "${keys_to_be_replaced}\n")
-    # The merge must not have changed the number of lines of input file. If it did,
-    # it means that some key was not present and has been appended => Error!
-    if [[ $(wc -l < "${base_input_file}") -ne ${initial_number_of_lines} ]]; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            'One or more provided software input keys were not found to be replaced' \
-            'in the ' --emph "${base_input_file}" ' file.' 'Please, check your configuration file.'
-    fi
 }
 
 # NOTE: In this function we might try to keep the empty lines, but the YAML library will
@@ -97,6 +89,76 @@ function __static__Replace_Keys_Into_Txt_File()
     # NOTE: Using ':' as field separator, spaces after it will be preserved, hence there
     #       is no worry about having potentially the two fields merged into one in printf.
     awk -i inplace 'BEGIN{FS=":"}{printf("%-20s%s\n", $1, $2)}' "${base_input_file}"
+}
+
+#===================================================================================================
+
+function __static__Abort_With_Descriptive_Report_If_YAML_Replacement_Is_Not_Possible()
+{
+    Ensure_That_Given_Variables_Are_Set base_input_file keys_to_be_replaced
+    # Here the basic idea is to go through the YAML tree and create complete
+    # paths to the values concatenating all keys with a period. Array indices
+    # are replaced by "[]" as we are not interested at tracking them (a key
+    # having an array value can be substituted by another array).
+    #
+    # NOTE: One might think that working with "properties"
+    #         -> https://mikefarah.gitbook.io/yq/usage/properties
+    #       might be simpler. Actually, using -o=props it is not possible
+    #       to distinguish in the output between numeric keys and array
+    #       indices. Hence we did not work with properties.
+    #
+    # NOTE: If a key contains a period, the used method should work, but the
+    #       error message is not totally transparent. We do not want to
+    #       improve on this case for the moment.
+    local base_input_file_as_properties keys_to_be_replaced_as_properties
+    base_input_file_as_properties=$(
+        yq '.. |
+            select(tag != "!!map" and tag != "!!seq") |
+            path |
+            with(.[]; select(tag == "!!int") |= "[]") |
+            join(".")' "${base_input_file}"
+    )
+    keys_to_be_replaced_as_properties=$(
+        yq '.. |
+            select(tag != "!!map" and tag != "!!seq") |
+            path |
+            with(.[]; select(tag == "!!int") |= "[]") |
+            join(".")' <(printf "${keys_to_be_replaced}\n")
+    )
+    # Get list of keys into bash arrays. Since before we replaced array indices
+    # by [], there might be duplicate here, which we remove. We also use sed to
+    # replace any ".[]" by simply "[]". This makes a possible error message more
+    # readable. ASSUMPTION: No space in the keys -> word splitting does the job.
+    local list_of_base_keys list_of_keys_to_be_found key
+    list_of_base_keys=(
+        $(sed -r 's/\.(\[\])/\1/g' <<< "${base_input_file_as_properties}" | sort -u)
+    )
+    list_of_keys_to_be_found=(
+        $(sed -r 's/\.(\[\])/\1/g' <<< "${keys_to_be_replaced_as_properties}" | sort -u)
+    )
+    # Final search and report
+    local list_of_faulty_keys=()
+    for key in "${list_of_keys_to_be_found[@]}"; do
+        if ! Element_In_Array_Equals_To "${key}" "${list_of_base_keys[@]}"; then
+            list_of_faulty_keys+=("${key}")
+        fi
+    done
+    if [[ ${#list_of_faulty_keys[@]} -ne 0 ]]; then
+        # If this function was called from a TXT replacement, drop YAML hint for user
+        local yaml_description=' (YAML map keys concatenated by "." and arrays denoted by "[]")'
+        if [[ ${FUNCNAME[2]-} = *Txt* ]]; then
+            yaml_description=''
+        fi
+        Print_Error -- \
+            'One or more provided software input keys were not found to be replaced' \
+            'in the ' --emph "${base_input_file}" ' file.' \
+            "List of faulty keys${yaml_description}:"
+        for key in "${list_of_faulty_keys[@]}"; do
+            Print_Error -l -- ' - ' --emph "${key}"
+        done
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit -- \
+            'Unable to continue. Please, check your configuration file.'
+    fi
 }
 
 Make_Functions_Defined_In_This_File_Readonly
