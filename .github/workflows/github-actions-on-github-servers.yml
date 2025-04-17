@@ -89,6 +89,8 @@ jobs:
         else
             BASH_EXE=$(which bash)
         fi
+        # we print the yq version for information
+        printf "\n$(yq --version)\n"
         # we print the bash version to check that we used the desired one
         printf "\n$(${BASH_EXE} --version)\n"
         # we set the TERM environment variable (used by utilities exploited in the tests)
