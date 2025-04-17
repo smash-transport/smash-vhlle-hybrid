@@ -110,16 +110,36 @@ function __static__Abort_With_Descriptive_Report_If_YAML_Replacement_Is_Not_Poss
     # NOTE: If a key contains a period, the used method should work, but the
     #       error message is not totally transparent. We do not want to
     #       improve on this case for the moment.
+    #
+    # NOTE: In the yq command below the select(tag == "!!int") statement can
+    #       correctly work on numeric map keys only if these do not have an "!!int"
+    #       tag, otherwise they would be treated as array indices. We enforce them
+    #       to have a "!!str" tag in the first line where we recursively go through
+    #       maps and use with_entries to enforce the "!!str" tag on keys. This
+    #       technique was taken from the official documentation, see how to update
+    #       keys recursively at https://mikefarah.gitbook.io/yq/operators/entries.
+    #       Such an enforcement was not needed before version 4.40, but it is after.
+    #       Till version 4.35.2, numeric map keys retain a "!!str" tag in the path
+    #       operator, while from version 4.40.2 this is not true anymore. Explicitly:
+    #
+    #           $ ./yq-4.35.2 '.. | path | .[] | tag'  <<< $'0: Zero'
+    #           !!str
+    #           $ ./yq-4.40.2 '.. | path | .[] | tag'  <<< $'0: Zero'
+    #           !!int
+    #
+    #       Enforcing the tag makes the code work in all versions.
     local base_input_file_as_properties keys_to_be_replaced_as_properties
     base_input_file_as_properties=$(
-        yq '.. |
+        yq '(.. | select(tag=="!!map")) |= with_entries((.key) tag="!!str") |
+            .. |
             select(tag != "!!map" and tag != "!!seq") |
             path |
             with(.[]; select(tag == "!!int") |= "[]") |
             join(".")' "${base_input_file}"
     )
     keys_to_be_replaced_as_properties=$(
-        yq '.. |
+        yq '(.. | select(tag=="!!map")) |= with_entries((.key) tag="!!str") |
+            .. |
             select(tag != "!!map" and tag != "!!seq") |
             path |
             with(.[]; select(tag == "!!int") |= "[]") |
