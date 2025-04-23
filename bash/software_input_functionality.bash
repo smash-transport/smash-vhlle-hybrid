@@ -99,7 +99,7 @@ function __static__Abort_With_Descriptive_Report_If_YAML_Replacement_Is_Not_Poss
     # Here the basic idea is to go through the YAML tree and create complete
     # paths to the values concatenating all keys with a period. Array indices
     # are replaced by "[]" as we are not interested at tracking them (a key
-    # having an array value can be substituted by another array).
+    # having an array value can be substituted by one with another array value).
     #
     # NOTE: One might think that working with "properties"
     #         -> https://mikefarah.gitbook.io/yq/usage/properties
@@ -165,7 +165,7 @@ function __static__Abort_With_Descriptive_Report_If_YAML_Replacement_Is_Not_Poss
     done
     if [[ ${#list_of_faulty_keys[@]} -ne 0 ]]; then
         # If this function was called from a TXT replacement, drop YAML hint for user
-        local yaml_description=' (YAML map keys concatenated by "." and arrays denoted by "[]")'
+        local yaml_description=' (YAML map keys concatenated by ".")'
         if [[ ${FUNCNAME[2]-} = *Txt* ]]; then
             yaml_description=''
         fi

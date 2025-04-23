@@ -47,7 +47,7 @@ function Unit_Test__replace-in-software-input-YAML()
     keys_to_be_replaced=$'New_key: value\nFoo:\n  Bar: [42, {Map: New}]\n  bar: True\n'
     Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_YAML_File &> /dev/null
     if [[ $? -eq 0 ]]; then
-        Print_Error 'Valid YAML replacement but with non existent keys in valid file succeeded.'
+        Print_Error 'Valid YAML replacement but with non-existent keys in valid file succeeded.'
         return 1
     fi
     #---------------------------------------------------------------------------
