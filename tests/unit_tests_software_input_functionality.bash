@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -40,6 +40,30 @@ function Unit_Test__replace-in-software-input-YAML()
     Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_YAML_File &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Valid YAML replacement but with non existent key in valid file succeeded.'
+        return 1
+    fi
+    #---------------------------------------------------------------------------
+    printf 'Key: Value\nFoo:\n  Bar: [0,1,2]\n' > "${base_input_file}"
+    keys_to_be_replaced=$'New_key: value\nFoo:\n  Bar: [42, {Map: New}]\n  bar: True\n'
+    Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_YAML_File &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Valid YAML replacement but with non-existent keys in valid file succeeded.'
+        return 1
+    fi
+    #---------------------------------------------------------------------------
+    printf 'Key: Value\nFoo:\n  Bar: [0,1,2]\n' > "${base_input_file}"
+    keys_to_be_replaced=$'Key: new_value\nFoo:\n  Bar: 42\n'
+    Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_YAML_File &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Valid YAML replacement but changing array value to scalar in valid file succeeded.'
+        return 1
+    fi
+    #---------------------------------------------------------------------------
+    printf '0: Zero\nRoman:\n  1: I\n' > "${base_input_file}"
+    keys_to_be_replaced=$'0: NULL\nRoman:\n  2: II\n'
+    Call_Codebase_Function_In_Subshell __static__Replace_Keys_Into_YAML_File &> /dev/null
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Valid YAML replacement but changing numeric map key in valid file succeeded.'
         return 1
     fi
     #---------------------------------------------------------------------------

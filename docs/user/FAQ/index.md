@@ -119,6 +119,30 @@ The correct way to fix the problem is to create a new SMASH afterburner configur
     Although this might be a quick way to try out something, you should never prefer to change the base configuration files in the hybrid handler repository.
     Your changes might get in conflict with future releases of the software or simply be undone by accident using Git inside the repository.
 
+### Can I collide particles other than nuclei in the IC stage?
+
+You might have tried to use SMASH as initial-conditions software specifying a pion as the projectile via the following configuration file, but this was not accepted by the hybrid handler.
+
+``` {.yaml .annotate title="Hybrid-handler configuration file"}
+IC:
+    Executable: "/path/to/smash"
+    Software_keys:
+        Modi:
+            Collider:
+                Projectile:
+                    Particles: {211: 1} # (1)!
+```
+
+ 1. :warning: This triggers an error as `Particles` is a YAML map and it contains a sub-map.
+    Since `211` is a map key, which is not present in the base configuration file, this line triggers an error.
+
+The SMASH :cloud_tornado: `IC` base configuration file is set up to collide nuclei and, therefore, both the projectile and the target are made of protons and neutrons.
+These are specified **using PDG codes as YAML map keys** in the configuration file.
+Any attempt to use different particles is a try to use a new key in the configuration file, namely one not present in the base configuration file!
+If you need to collide particles other than protons and nucleons, you need your own base configuration file.
+Check out [this other question](#how-can-i-add-a-software-key-to-a-configuration-file) for detailed instructions.
+
+
 ### How can I repeat the same run in parallel to increase statistics?
 
 The output folder in `do` mode is built by the hybrid handler in a way such that runs with different IDs do not interfere.
