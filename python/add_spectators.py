@@ -12,6 +12,7 @@
 import argparse
 import yaml
 import sys
+import os
 
 '''
     This script adds the spectators of the collision, that were not included in
@@ -31,6 +32,16 @@ def get_initial_nucleons_from_config():
     N_initial_nucleons = 0
     with open(args.smash_config, 'r') as config_file:
         data_config = yaml.safe_load(config_file)
+
+        python_exit_code_string = os.environ.get("python_fatal_value_error")
+        if python_exit_code_string is None:
+            sys.exit(2)
+        python_exit_code = int(python_exit_code_string)
+        nevents_IC = data_config['General']['Nevents']
+        # The add_spectators.py script only supports adding spectators
+        # if just one IC event is run:
+        if nevents_IC != 1:
+            sys.exit(python_exit_code)
 
     try:
         projectile_particles = data_config['Modi']['Collider']['Projectile']['Particles']
@@ -139,3 +150,4 @@ if __name__ == '__main__':
 
     spectators = extract_spectators()
     write_full_particle_list(spectators)
+    sys.exit(0)
