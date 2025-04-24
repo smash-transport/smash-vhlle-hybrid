@@ -1,32 +1,32 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+This project does not strictly adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html), but it uses versioning inspired by it.
+In particular, not all backward incompatible changes lead to a bump in the major version number, but all of these are mentioned and emphasized here.
+Given a version number `X.Y.Z`,
 
-All notable changes to this project will be documented in this file. The format is inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). This project does not adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html), but it uses versioning inspired by it. Given a version number `X.Y.Z`,
+* `X` is incremented for major changes in particular relevant new functionality,
+* `Y` is incremented for minor changes or new minor functionality and
+* `Z` is mainly used for bug fixes.
 
-* `X` is incremented for major changes in particular large backwards incompatible updates,
-* `Y` is incremented for minor changes like an external pull-request that adds one feature and
-* `Z` for the indication of a bug fix or other very small changes that are not backwards incompatible.
+Every entry in this file is prepended with symbols that are meant to draw attention about the type of change:
 
-The major categories to group changes in this log are:
+* :new: for new features;
+* :recycle: for changes in existing functionality;
+* :sos: for fixes of wrong behavior;
+* :x: for removed features;
+* :boom: for breaking changes, i.e. not backward-compatible changes;
+* :fire: for deprecated features, which are likely to be removed in later versions;
+* :warning: for changes that deserve particular attention by the user.
 
-* `Input / Output` for all, in particular breaking, changes, fixes and additions to the in- and output files;
-* `Added` for new features;
-* `Changed` for changes in existing functionality;
-* `Fixed` for any bug fixes;
-* `Removed` for now removed features.
-
-Also possible, but for this project less relevant, is `Deprecated` for soon-to-be removed features.
 
 ## Unreleased
 
 ## SMASH-vHLLE-hybrid-2.1
 Date: 2025-03-31
 
-### Added
-* New sampler module: [FIST sampler](https://github.com/vlvovch/fist-sampler) is now usable addtionally to the SMASH hadron sampler
-
-### Changed
-* New hybrid logo
+* :new: Support for a new sampler module: [FIST sampler](https://github.com/vlvovch/fist-sampler) is now usable additionally to the SMASH hadron sampler
+* :new: The project logo was changed to a fancier, more fantasy version.
 
 [Link to diff from previous version](https://github.com/smash-transport/smash-vhlle-hybrid/compare/SMASH-vHLLE-hybrid-2.0...SMASH-vHLLE-hybrid-2.1)
 
@@ -34,7 +34,8 @@ Date: 2025-03-31
 ## SMASH-vHLLE-hybrid-2.0
 Date: 2024-04-12
 
-Switched from a `CMake` based framework to a `bash` based framework to manage the hybrid approach.
+* :new: :boom: The project approach has totally changed and it switched from a `CMake` based framework to a `Bash` based framework.
+  A detailed documentation web-page has been built to guide both users and developers.
 
 [Link to diff from previous version](https://github.com/smash-transport/smash-vhlle-hybrid/compare/SMASH-vHLLE-hybrid-1.0...SMASH-vHLLE-hybrid-2.0)
 
