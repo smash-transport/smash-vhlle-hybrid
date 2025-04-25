@@ -183,6 +183,7 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
     )
     declare -gA HYBRID_software_version=(
+        [IC]=''
         [Sampler]=''
     )
     declare -gA HYBRID_fist_module=(

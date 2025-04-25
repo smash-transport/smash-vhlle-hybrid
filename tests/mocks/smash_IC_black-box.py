@@ -7,6 +7,13 @@ import sys
 import textwrap
 import time
 
+ic_version = os.environ.get("MOCK_IC_VERSION", "3.2")
+
+def print_version_and_exit_if_requested():
+    if args.version:
+        print(f"SMASH-{ic_version}")
+        sys.exit(0)
+
 def check_config(valid_config):
     if args.i is None:
         args.i = "./config.yaml"
@@ -99,6 +106,8 @@ if __name__ == '__main__':
                                        Use the BLACK_BOX_FAIL environment variable set to either "invalid_config"
                                        or to "smash_crashes" to mimic a particular failure in the black box.
                                      '''))
+    parser.add_argument("--version", required=False, action='store_true',
+                        help="Print version and exit")
     parser.add_argument("-i", required=False,
                         help="File to the config.yaml")
     parser.add_argument("-o", required=False,
@@ -118,6 +127,8 @@ if __name__ == '__main__':
     name_oscar = ".oscar"
     name_dat = ".dat"
     name_particles_file = "SMASH_IC"
+
+    print_version_and_exit_if_requested()
 
     # initialize the system
     check_config(config_is_valid)
