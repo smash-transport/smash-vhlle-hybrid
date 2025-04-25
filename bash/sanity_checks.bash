@@ -24,9 +24,9 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             __static__Set_Software_Configuration_File "${key}"
             __static__Set_Software_Input_Data_File_If_Not_Set_By_User "${key}"
             __static__Set_Software_Version "${key}"
+            __static__Choose_Base_Configuration_File "${key}"
             if [[ "${key}" = "Sampler" ]]; then
                 __static__Ensure_Valid_Module_Given_For_Sampler
-                __static__Choose_Base_Configuration_File_For_Sampler
                 __static__Ensure_Additional_Paths_Given_For_Sampler
                 __static__Set_Sampler_Configuration_Key_Names
                 __static__Set_Sampler_Input_Key_Paths
@@ -126,22 +126,40 @@ function __static__Set_Sampler_Input_Key_Paths()
     fi
 }
 
-function __static__Choose_Base_Configuration_File_For_Sampler()
+function __static__Choose_Base_Configuration_File()
 {
-    if [[ "${HYBRID_software_base_config_file[Sampler]}" = '' ]]; then
-        local sampler_key
-        if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
-            Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_version[Sampler]'
-            if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
-                sampler_key='Sampler_SMASH_lt_3.2'
+    local -r key=$1
+    case "${key}" in
+        IC)
+            Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_version[IC]'
+            local ic_key
+            if Is_Version "${HYBRID_software_version[IC]}" -lt '3.2'; then
+                ic_key='IC_lt_3.2'
             else
-                sampler_key='Sampler_SMASH_ge_3.2'
+                ic_key='IC_ge_3.2'
             fi
-        else
-            sampler_key='Sampler_FIST'
-        fi
-        HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${sampler_key}]}"
-    fi
+            HYBRID_software_base_config_file[IC]="${HYBRID_software_base_config_file[${ic_key}]}"
+            ;;
+        Sampler)
+            if [[ "${HYBRID_software_base_config_file[Sampler]}" = '' ]]; then
+                local sampler_key
+                if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
+                    Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_version[Sampler]'
+                    if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
+                        sampler_key='Sampler_SMASH_lt_3.2'
+                    else
+                        sampler_key='Sampler_SMASH_ge_3.2'
+                    fi
+                else
+                    sampler_key='Sampler_FIST'
+                fi
+                HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${sampler_key}]}"
+            fi
+            ;;
+        *)
+            # Nothing to do for other cases
+            ;;
+    esac
 }
 
 function __static__Perform_Command_Line_VS_Configuration_Consistency_Checks()
@@ -307,40 +325,65 @@ function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
 
 function __static__Set_Software_Version()
 {
-    if [[ "${key}" = 'Sampler' && ${HYBRID_module[Sampler]} = 'SMASH' ]]; then
-        HYBRID_software_version[Sampler]='0.0'
-        local sampler_version_output
-        # The SMASH hadron sampler might fail because the user is using a correctly compiled older
-        # version which does not support the --version command line option, or because the user
-        # did some mistake, e.g. setting up the environment and the sampler does not find some library.
-        # We want to try here to be user friendly and this is to some extent possible because older
-        # sampler versions exit with code 1 if a command line option is not recognized. Hence, we can
-        # confidently give an error and fail if the sampler fails with an exit code different from 1.
-        #
-        # NOTE: Being errexit option enabled, we need to store the version output in the if-clause
-        #       condition and access the possible exit code at the very beginning of the else-clause.
-        if sampler_version_output=$(${HYBRID_software_executable[Sampler]} --version 2> /dev/null); then
-            if [[ ${sampler_version_output} =~ ${HYBRID_version_regex} ]]; then
-                HYBRID_software_version[Sampler]="${BASH_REMATCH[0]}"
-                Print_Debug 'Sampler version found to be ' --emph "${HYBRID_software_version[Sampler]}" '.'
+    case "$1" in
+        IC)
+            local ic_version_output
+            if ic_version_output=$(${HYBRID_software_executable[IC]} --version 2> /dev/null); then
+                if [[ ${ic_version_output} =~ ${HYBRID_version_regex} ]]; then
+                    HYBRID_software_version[IC]="${BASH_REMATCH[0]}"
+                    Print_Debug 'IC version found to be ' --emph "${HYBRID_software_version[IC]}" '.'
+                else
+                    Print_Internal_And_Exit \
+                        'IC ' --emph '--version' ' option returned a string not matching the version regex.' \
+                        'The problem occurred in ' --emph "${FUNCNAME}" ' function.'
+                fi
             else
-                Print_Internal_And_Exit \
-                    'Sampler ' --emph '--version' ' option returned a string not matching the version regex.' \
-                    'The problem occurred in ' --emph "${FUNCNAME}" ' function.'
-            fi
-        else
-            if [[ $? -ne 1 ]]; then
-                ${HYBRID_software_executable[Sampler]} --version
                 exit_code=${HYBRID_fatal_software_failed} Print_Fatal_And_Exit \
-                    'The ' --emph 'Sampler' \
+                    'The ' --emph 'IC' \
                     ' executable failed in an unexpected way when trying to retrieve its version.' \
-                    'Try running ' --emph "${HYBRID_software_executable[Sampler]} --version" \
+                    'Try running ' --emph "${HYBRID_software_executable[IC]} --version" \
                     '\nto investigate the issue.'
-            else
-                Print_Debug 'Sampler version not found, setting it to 0.0'
             fi
-        fi
-    fi
+            ;;
+        Sampler)
+            if [[ ${HYBRID_module[Sampler]} = 'SMASH' ]]; then
+                HYBRID_software_version[Sampler]='0.0'
+                local sampler_version_output
+                # The SMASH hadron sampler might fail because the user is using a correctly compiled older
+                # version which does not support the --version command line option, or because the user
+                # did some mistake, e.g. setting up the environment and the sampler does not find some library.
+                # We want to try here to be user friendly and this is to some extent possible because older
+                # sampler versions exit with code 1 if a command line option is not recognized. Hence, we can
+                # confidently give an error and fail if the sampler fails with an exit code different from 1.
+                #
+                # NOTE: Being errexit option enabled, we need to store the version output in the if-clause
+                #       condition and access the possible exit code at the very beginning of the else-clause.
+                if sampler_version_output=$(${HYBRID_software_executable[Sampler]} --version 2> /dev/null); then
+                    if [[ ${sampler_version_output} =~ ${HYBRID_version_regex} ]]; then
+                        HYBRID_software_version[Sampler]="${BASH_REMATCH[0]}"
+                        Print_Debug 'Sampler version found to be ' --emph "${HYBRID_software_version[Sampler]}" '.'
+                    else
+                        Print_Internal_And_Exit \
+                            'Sampler ' --emph '--version' ' option returned a string not matching the version regex.' \
+                            'The problem occurred in ' --emph "${FUNCNAME}" ' function.'
+                    fi
+                else
+                    if [[ $? -ne 1 ]]; then
+                        exit_code=${HYBRID_fatal_software_failed} Print_Fatal_And_Exit \
+                            'The ' --emph 'Sampler' \
+                            ' executable failed in an unexpected way when trying to retrieve its version.' \
+                            'Try running ' --emph "${HYBRID_software_executable[Sampler]} --version" \
+                            '\nto investigate the issue.'
+                    else
+                        Print_Debug 'Sampler version not found, setting it to 0.0'
+                    fi
+                fi
+            fi
+            ;;
+        *)
+            # Nothing to do in the other cases
+            ;;
+    esac
 }
 
 Make_Functions_Defined_In_This_File_Readonly
