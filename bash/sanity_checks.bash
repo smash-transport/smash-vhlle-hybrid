@@ -57,9 +57,9 @@ function Perform_Internal_Sanity_Checks()
         'These Python scripts should be shipped within the hybrid handler codebase.' '--' \
         "${HYBRID_external_python_scripts[@]}"
     for key in "${!HYBRID_software_base_config_file[@]}"; do
-        # The Sampler entry in the associative array here is still empty and does not point to a
-        # shipped configuration file. It will be chosen later according to the module.
-        if [[ "${key}" != "Sampler" ]]; then
+        # The IC/Sampler entry in the associative array here is still empty and does not point to a
+        # shipped configuration file. It will be chosen later according to the verion or module.
+        if [[ ! ${key} =~ ^(IC|Sampler)$ ]]; then
             Internally_Ensure_Given_Files_Exist \
                 'These base configuration files should be shipped within the hybrid handler codebase.' '--' \
                 "${HYBRID_software_base_config_file[${key}]}"
@@ -335,7 +335,8 @@ function __static__Set_Software_Version()
                 else
                     Print_Internal_And_Exit \
                         'IC ' --emph '--version' ' option returned a string not matching the version regex.' \
-                        'The problem occurred in ' --emph "${FUNCNAME}" ' function.'
+                        'The problem occurred in ' --emph "${FUNCNAME}" ' function.' \
+                        'The returned string was ' --emph "${ic_version_output}" '.'
                 fi
             else
                 exit_code=${HYBRID_fatal_software_failed} Print_Fatal_And_Exit \
