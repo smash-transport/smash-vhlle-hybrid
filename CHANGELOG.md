@@ -6,7 +6,7 @@ In particular, not all backward incompatible changes lead to a bump in the major
 Given a version number `X.Y.Z`,
 
 * `X` is incremented for major changes in particular relevant new functionality,
-* `Y` is incremented for minor changes or new minor functionality and
+* `Y` is incremented for minor changes or new minor functionality, and
 * `Z` is mainly used for bug fixes.
 
 Every entry in this file is prepended with symbols that are meant to draw attention about the type of change:
@@ -22,10 +22,13 @@ Every entry in this file is prepended with symbols that are meant to draw attent
 
 ## Unreleased
 
+* :recycle: Renamed the copied/linked afterburner inputfile containing the sampled particles (and possibly spectators) from _sampled_particles_list.oscar_ to _sampled_particles.oscar_.
+
+
 ## SMASH-vHLLE-hybrid-2.1
 Date: 2025-03-31
 
-* :new: Support for a new sampler module: [FIST sampler](https://github.com/vlvovch/fist-sampler) is now usable additionally to the SMASH hadron sampler
+* :new: Support for a new sampler module: [FIST sampler](https://github.com/vlvovch/fist-sampler) is now usable additionally to the SMASH hadron sampler.
 * :new: The project logo was changed to a fancier, more fantasy version.
 
 [Link to diff from previous version](https://github.com/smash-transport/smash-vhlle-hybrid/compare/SMASH-vHLLE-hybrid-2.0...SMASH-vHLLE-hybrid-2.1)

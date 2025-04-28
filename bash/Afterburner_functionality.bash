@@ -15,7 +15,7 @@ function Prepare_Software_Input_File_Afterburner()
     Ensure_Given_Files_Exist "${HYBRID_software_base_config_file[Afterburner]}"
     Copy_Base_Configuration_To_Output_Folder_For 'Afterburner'
     Replace_Keys_In_Configuration_File_If_Needed_For 'Afterburner'
-    __static__Create_Sampled_Particles_List_File_Or_Symbolic_Link_With_Or_Without_Spectators
+    __static__Create_Sampled_Particles_File_Or_Symbolic_Link_With_Or_Without_Spectators
     __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
 }
 
@@ -77,7 +77,7 @@ function __static__Ensure_Consistency_Of_Afterburner_Input()
     fi
 }
 
-function __static__Create_Sampled_Particles_List_File_Or_Symbolic_Link_With_Or_Without_Spectators()
+function __static__Create_Sampled_Particles_File_Or_Symbolic_Link_With_Or_Without_Spectators()
 {
     local -r target_link_name="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
     if [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
