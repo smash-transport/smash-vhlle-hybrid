@@ -54,7 +54,7 @@ The following setup would not work, as the `Use_Grid` key in the `General` secti
     Modi:
         List:
             File_Directory: "."
-            Filename: "sampled_particles_list.oscar"
+            Filename: "sampled_particles.oscar"
     ```
 
 The correct way to fix the problem is to create a new SMASH afterburner configuration file, having all the keys that need to be modified and then modify them from the hybrid handler configuration file **after having specified that a custom configuration file should be used for the afterburner stage**.
