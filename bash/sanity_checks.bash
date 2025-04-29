@@ -274,7 +274,7 @@ function __static__Ensure_Executable_Exists()
 
 function __static__Set_Software_Configuration_File()
 {
-    local label=$1
+    local -r label=$1
     printf -v HYBRID_software_configuration_file[${label}] \
         "${HYBRID_software_output_directory[${label}]}/${HYBRID_software_configuration_filename[${label}]}"
 }
@@ -325,7 +325,8 @@ function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
 
 function __static__Set_Software_Version()
 {
-    case "$1" in
+    local -r key=$1
+    case "${key}" in
         IC)
             local ic_version_output
             if ic_version_output=$(${HYBRID_software_executable[IC]} --version 2> /dev/null); then
@@ -366,7 +367,8 @@ function __static__Set_Software_Version()
                     else
                         Print_Internal_And_Exit \
                             'Sampler ' --emph '--version' ' option returned a string not matching the version regex.' \
-                            'The problem occurred in ' --emph "${FUNCNAME}" ' function.'
+                            'The problem occurred in ' --emph "${FUNCNAME}" ' function.' \
+                            'The returned string was ' --emph "${sampler_version_output}" '.'
                     fi
                 else
                     if [[ $? -ne 1 ]]; then
