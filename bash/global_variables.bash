@@ -146,7 +146,7 @@ function Define_Further_Global_Variables()
         [Hydro]="${HYBRID_default_configurations_folder}/vhlle_hydro"
         [Sampler]=""
         [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"
-        # For IC, the default base configuration file depends on SMASH version
+        # For the IC, the default base configuration file depends on the SMASH version
         [IC_lt_3.2]="${HYBRID_default_configurations_folder}/smash_initial_conditions__lt_v3.2.yaml"
         [IC_ge_3.2]="${HYBRID_default_configurations_folder}/smash_initial_conditions__ge_v3.2.yaml"
         # For the Sampler, the default configs depend on the module (and possibly on the sampler

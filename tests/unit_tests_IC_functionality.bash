@@ -33,7 +33,7 @@ function Make_Test_Preliminary_Operations__IC-pick-correct-base-config()
     __static__Do_Preliminary_IC_Setup_Operations
 }
 
-function __static__Is_Picked_IC_Base_Config_For_Version()
+function __static__Is_Picked_IC_Base_Config_Correct_For_Version()
 {
     export MOCK_ECHO_VERSION="$1"
     local -r expected_filename="$2"
@@ -45,11 +45,11 @@ function __static__Is_Picked_IC_Base_Config_For_Version()
 function Unit_Test__IC-pick-correct-base-config()
 {
     # Call the function above in a sub-shell to avoid exiting the test in case of failure
-    if ! (__static__Is_Picked_IC_Base_Config_For_Version '3.2' 'smash_initial_conditions__ge_v3.2.yaml'); then
+    if ! (__static__Is_Picked_IC_Base_Config_Correct_For_Version '3.2' 'smash_initial_conditions__ge_v3.2.yaml'); then
         Print_Error 'The base configuration file was not properly picked for version ' --emph '3.2' '.'
         return 1
     fi
-    if ! (__static__Is_Picked_IC_Base_Config_For_Version '3.1' 'smash_initial_conditions__lt_v3.2.yaml'); then
+    if ! (__static__Is_Picked_IC_Base_Config_Correct_For_Version '3.1' 'smash_initial_conditions__lt_v3.2.yaml'); then
         Print_Error 'The base configuration file was not properly picked for version ' --emph '3.1' '.'
         return 1
     fi
@@ -65,8 +65,8 @@ function Make_Test_Preliminary_Operations__IC-create-input-file()
     __static__Do_Preliminary_IC_Setup_Operations
     export MOCK_ECHO_VERSION=3.1
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
-    # Since we use our mock of echo as fake sampler executable the function above will set the
-    # sampler version to the MOCK_ECHO_VERSION environment variable value.
+    # Since we use our mock of echo as fake IC executable the function above will set the
+    # IC version to the MOCK_ECHO_VERSION environment variable value.
 }
 
 function Unit_Test__IC-create-input-file()
