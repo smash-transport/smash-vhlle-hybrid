@@ -158,7 +158,7 @@ function Functional_Test__do-Sampler-only()
     Sampler:
       Module: FIST
       Executable: %s/tests/mocks/sampler_black-box.py
-      Config_file: %s/configs/hadron_sampler_from_version_3.2_on
+      Config_file: %s/configs/hadron_sampler__ge_v3.2
       Particle_file: %s/tests/run_tests/do-Sampler-only/Sampler/Sampler_only/list.dat
       Decays_file: %s/tests/run_tests/do-Sampler-only/Sampler/Sampler_only/decays.dat
     ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${HYBRIDT_repository_top_level_path}" \

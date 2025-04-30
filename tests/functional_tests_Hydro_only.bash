@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -108,11 +108,11 @@ function Functional_Test__do-Hydro-only()
     Hybrid_handler:
       Run_ID: %s
     IC:
-      Executable: echo
+      Executable: %s/echo.py
     Hydro:
       Executable: %s/vhlle_black-box.py
       Input_file: %s/test/input
-    ' "${run_id}" "$(pwd)" "$(pwd)" > "${config_filename}"
+    ' "${run_id}" "${HYBRIDT_tests_folder}/mocks" "$(pwd)" "$(pwd)" > "${config_filename}"
     Print_Info 'Running Hybrid-handler expecting failure'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     if [[ $? -ne ${HYBRID_fatal_logic_error} ]]; then
