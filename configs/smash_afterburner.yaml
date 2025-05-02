@@ -21,4 +21,4 @@ Output:
 Modi:
     List:
         File_Directory: "."
-        Filename: "sampled_particles_list.oscar"
+        Filename: "sampled_particles.oscar"
