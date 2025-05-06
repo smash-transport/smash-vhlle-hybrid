@@ -177,6 +177,39 @@ function Functional_Test__do-Afterburner-only()
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     __static__Check_Successful_Handler_Run $?
     mv 'Afterburner' 'Afterburner-success-with-spectators'
+    # Expect failure and test the add_spectator functionality combined with more than one IC event
+    Print_Info 'Running Hybrid-handler expecting failure with the add_spectator option and more than one IC event'
+    mkdir -p "IC/${run_id}"
+    touch "IC/${run_id}/config.yaml" "IC/${run_id}/SMASH_IC.oscar" "Sampler/${run_id}/particle_lists.oscar"
+    printf '
+    General:
+      Nevents: 42
+    Modi:
+      Collider:
+        Projectile:
+          Particles: {2212: 79, 2112: 118}
+        Target:
+          Particles: {2212: 79, 2112: 118}
+    ' > "IC/${run_id}/config.yaml"
+    printf '
+    Hybrid_handler:
+      Run_ID: %s
+    Afterburner:
+      Executable: %s/smash_afterburner_black-box.py
+      Add_spectators_from_IC: true
+      Software_keys:
+        Modi:
+          List:
+            File_Directory: "."
+    ' "${run_id}" "${mocks_folder}" > "${config_filename}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
+    if [[ $? -ne ${HYBRID_fatal_value_error} ]]; then
+        Print_Error \
+            'Hybrid-handler did not fail as expected with exit code ' \
+            --emph "${HYBRID_fatal_value_error}" '.'
+        return 1
+    fi
+    mv 'Afterburner' 'Afterburner-invalid-IC-events-with-spectators'
     # Expect success and test the add_spectator functionality with custom spectator input
     Print_Info 'Running Hybrid-handler expecting success with the custom add_spectator option'
     rm -r "IC"/*
@@ -197,7 +230,7 @@ function Functional_Test__do-Afterburner-only()
     ' "${run_id}" "${mocks_folder}" "$(pwd)" > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     __static__Check_Successful_Handler_Run $? || return 1
-    mv 'Afterburner' 'Afterburner-success-with-spectators'
+    mv 'Afterburner' 'Afterburner-success-custom-spectators-input'
     # Expect failure when combining custom spectator lists and running IC
     Print_Info 'Running Hybrid-handler expecting failure with the add_spectator option and IC at the same time'
     printf '
