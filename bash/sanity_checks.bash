@@ -22,7 +22,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
         if Element_In_Array_Equals_To "${key}" "${HYBRID_given_software_sections[@]}"; then
             __static__Ensure_Executable_Exists "${key}"
             __static__Set_Software_Configuration_File "${key}"
-            __static__Set_Software_Input_Data_File_If_Not_Set_By_User "${key}"
+            __static__Set_Software_Input_Data_File "${key}"
             __static__Set_Software_Version "${key}"
             __static__Choose_Base_Configuration_File "${key}"
             if [[ "${key}" = "Sampler" ]]; then
@@ -33,7 +33,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             fi
         fi
     done
-    __static__Set_Software_Input_Data_File_If_Not_Set_By_User 'Spectators'
+    __static__Set_Software_Input_Data_File 'Spectators'
     __static__Set_Global_Variables_As_Readonly
 }
 
@@ -279,7 +279,7 @@ function __static__Set_Software_Configuration_File()
         "${HYBRID_software_output_directory[${label}]}/${HYBRID_software_configuration_filename[${label}]}"
 }
 
-function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
+function __static__Set_Software_Input_Data_File()
 {
     local key=$1
     if [[ ${key} =~ ^(Hydro|Afterburner)$ ]]; then
@@ -297,12 +297,16 @@ function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
             printf -v filename '%s/%s' \
                 "${HYBRID_software_output_directory[${relative_key}]}" \
                 "${HYBRID_software_default_input_filename[${key}]}"
-        else
+        elif [[ "${filename}" =~ / ]]; then
             if Element_In_Array_Equals_To "${relative_key}" "${HYBRID_given_software_sections[@]}"; then
                 exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
                     'Requesting custom ' --emph "${key}" ' input file although executing ' \
                     --emph "${relative_key}" ' with default output name.'
             fi
+        else
+            printf -v filename '%s/%s' \
+                "${HYBRID_software_output_directory[${relative_key}]}" \
+                "${filename}"
         fi
         HYBRID_software_input_file[${key}]="${filename}"
     elif [[ "${key}" = 'Spectators' ]]; then
