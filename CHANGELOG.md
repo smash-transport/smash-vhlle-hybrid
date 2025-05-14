@@ -1,4 +1,3 @@
-# Changelog
+# CHANGELOG
 
-The changelog can be found in the documentation of the project.
-Just click [here](https://smash-transport.github.io/smash-vhlle-hybrid/latest/user/changelog).
+The CHANGELOG can be found [here](https://smash-transport.github.io/smash-vhlle-hybrid/latest/user/CHANGELOG/) in the documentation of the project.
