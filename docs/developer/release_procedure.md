@@ -30,6 +30,10 @@ Closing the branch means to merge it into `main`, which will be tagged and conta
 - [x] Create the `release` branch from `develop` and switch to it.
 - [x] Make sure everything is ready to go (e.g. check copyright statements including in documentation).
 - [x] Bump version number global variable in main script to a **stable state**.
+- [x] Change the `Unreleased` box in the CHANGELOG file to a new release section by
+      - adding the new section title;
+      - changing the type of box;
+      - adding release date and link to changes from previous version.
 - [x] Close the `release` branch in the git-flow sense:
       - merge it into the `main` branch;
       - switch to `main` and tag the last commit;
