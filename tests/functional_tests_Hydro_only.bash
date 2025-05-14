@@ -34,6 +34,26 @@ function Functional_Test__do-Hydro-only()
     fi
     Check_If_Software_Produced_Expected_Output 'Hydro' "$(pwd)/Hydro"
     mv 'Hydro' 'Hydro-success'
+    #Expect success with custom input file name from IC
+    custom_input="hydro_input.dat"
+    mkdir -p "IC/${run_id}"
+    touch "IC/${run_id}/${custom_input}"
+    printf '
+    Hybrid_handler:
+      Run_ID: %s
+    Hydro:
+      Executable: %s/vhlle_black-box.py
+      Input_file: %s
+    ' "${run_id}" "$(pwd)" "${custom_input}" > "${config_filename}"
+    # Run the hydro stage and check if freezeout is successfully generated
+    Print_Info 'Running Hybrid-handler expecting success'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
+    if [[ $? -ne 0 ]]; then
+        Print_Error 'Hybrid-handler unexpectedly failed.'
+        return 1
+    fi
+    Check_If_Software_Produced_Expected_Output 'Hydro' "$(pwd)/Hydro"
+    mv 'Hydro' 'Hydro-success-custom-input-file-name'
     # Expect failure when giving an invalid IC output
     Print_Info 'Running Hybrid-handler expecting invalid IC argument'
     local -r terminal_output_file="Hydro/${run_id}/Hydro.log"
@@ -52,7 +72,7 @@ function Functional_Test__do-Hydro-only()
         return 1
     fi
     mv 'Hydro' 'Hydro-invalid-input'
-    #Expect success with custom input file name
+    #Expect success with custom path to input file
     printf '
     Hybrid_handler:
       Run_ID: %s
@@ -71,7 +91,7 @@ function Functional_Test__do-Hydro-only()
         return 1
     fi
     Check_If_Software_Produced_Expected_Output 'Hydro' "$(pwd)/Hydro"
-    mv 'Hydro' 'Hydro-success-custom-input'
+    mv 'Hydro' 'Hydro-success-custom-path-to-input'
     # Expect failure when an invalid config was supplied
     Print_Info 'Running Hybrid-handler expecting invalid config argument'
     BLACK_BOX_FAIL='invalid_config' \
@@ -103,7 +123,7 @@ function Functional_Test__do-Hydro-only()
         return 1
     fi
     mv 'Hydro' 'Hydro-crash'
-    #Expect failure  with custom input file name while also using IC
+    #Expect failure  with custom path to input file while also using IC
     printf '
     Hybrid_handler:
       Run_ID: %s
