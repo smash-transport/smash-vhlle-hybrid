@@ -142,15 +142,18 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
     )
     declare -gA HYBRID_software_base_config_file=(
-        [IC]="${HYBRID_default_configurations_folder}/smash_initial_conditions.yaml"
+        [IC]=""
         [Hydro]="${HYBRID_default_configurations_folder}/vhlle_hydro"
         [Sampler]=""
         [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"
+        # For the IC, the default base configuration file depends on the SMASH version
+        [IC_lt_3.2]="${HYBRID_default_configurations_folder}/smash_initial_conditions__lt_v3.2.yaml"
+        [IC_ge_3.2]="${HYBRID_default_configurations_folder}/smash_initial_conditions__ge_v3.2.yaml"
         # For the Sampler, the default configs depend on the module (and possibly on the sampler
         # version). The user may give their own base config, so we have to wait and see if the
         # user chose a base config and only replace it if none was given.
-        [Sampler_SMASH_lt_3.2]="${HYBRID_default_configurations_folder}/hadron_sampler_prior_to_version_3.2"
-        [Sampler_SMASH_ge_3.2]="${HYBRID_default_configurations_folder}/hadron_sampler_from_version_3.2_on"
+        [Sampler_SMASH_lt_3.2]="${HYBRID_default_configurations_folder}/hadron_sampler__lt_v3.2"
+        [Sampler_SMASH_ge_3.2]="${HYBRID_default_configurations_folder}/hadron_sampler__ge_v3.2"
         [Sampler_FIST]="${HYBRID_default_configurations_folder}/fist_config"
     )
     declare -gA HYBRID_scan_parameters=(
@@ -180,6 +183,7 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
     )
     declare -gA HYBRID_software_version=(
+        [IC]=''
         [Sampler]=''
     )
     declare -gA HYBRID_fist_module=(

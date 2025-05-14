@@ -48,6 +48,8 @@ Given a version number `X.Y.Z`,
 
     **Changes:**
 
+    :sos: &nbsp; Make the handler select the correct default base configuration file for the `IC` stage depending on the SMASH version. This was needed because `SMASH-3.2` changed some configuration keys about initial conditions setup.
+
     :sos: &nbsp; Fix how spectators are added from the `IC` output into the `Afterburner` input file. This now works for all SMASH versions. The spectators from the target were not properly considered beforehand. Additionally, the adding of spectators is currently only allowed if only one `IC` event was run.
 
     :recycle: &nbsp; Renamed the copied/linked afterburner inputfile containing the sampled particles (and possibly spectators) from :material-file: _sampled_particles_list.oscar_ to :material_file: _sampled_particles.oscar_. Note that this is not a breaking change because this file is created into the :file_folder: **Afterburner** folder at the beginning of such a stage.
@@ -56,6 +58,8 @@ Given a version number `X.Y.Z`,
 ### SMASH-vHLLE-hybrid-2.1
 
 ???+ success "&nbsp; :date: &nbsp; Release date: 2025-03-31 &emsp; :left_right_arrow: &nbsp; [Compare changes to previous version](https://github.com/smash-transport/smash-vhlle-hybrid/compare/SMASH-vHLLE-hybrid-2.0...SMASH-vHLLE-hybrid-2.1)"
+
+    :sos: &nbsp; Make the handler select the correct default base configuration file for the `Sampler` stage depending on the SMASH hadron sampler version. This was needed because `SMASH-hadron-sampler-3.2` refactored the user interface.
 
     :new: &nbsp; Support for a new sampler module: [FIST sampler](https://github.com/vlvovch/fist-sampler) is now usable additionally to the SMASH hadron sampler.
 
