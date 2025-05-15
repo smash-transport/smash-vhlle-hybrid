@@ -357,6 +357,8 @@
       
         
       
+        
+      
     
     
     
@@ -691,6 +693,65 @@
           
           
           <div class="md-nav__link md-nav__container">
+            <a href="../../user/CHANGELOG/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    CHANGELOG
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            CHANGELOG
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
             <a href="../../user/FAQ/" class="md-nav__link ">
               
   
@@ -703,8 +764,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
             <span class="md-nav__icon md-icon"></span>
             FAQ
           </label>
@@ -1321,11 +1382,28 @@ The command will also update the <code>latest</code> alias to point to the new r
 <p>Omitting the <code>--push</code> option, nothing will be pushed and you have the possibility to check the changes on the <code>gh-pages</code> branch, which must be then manually pushed to publish the changes.</p>
 </details>
 <h4 id="at-new-patches">At new patches<a class="headerlink" href="#at-new-patches" title="Link to this section">&para;</a></h4>
-<p>When a new patch is released, it is usually worth adjusting the documentation title via <code>make retitle --push X.Y &lt;new_title&gt;</code>, where new title might simply be <code>X.Y.Z</code>, i.e. the complete new version string.</p>
+<p>When a new patch is released, it is usually worth adjusting the documentation title via <code>mike retitle --push X.Y &lt;new_title&gt;</code>, where new title might simply be <code>X.Y.Z</code>, i.e. the complete new version string.
+This however does not rebuild the documentation and, therefore, it is needed to run a deploy command, too.
+Two alternatives are possible:</p>
+<ol>
+<li>First the already deployed version is retitled and then the documentation updated
+   <div class="language-console highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="gp">$ </span>mike<span class="w"> </span>retitle<span class="w"> </span>--push<span class="w"> </span>X.Y<span class="w"> </span>&lt;new_title&gt;
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="gp">$ </span>mike<span class="w"> </span>deploy<span class="w"> </span>--push<span class="w"> </span>X.Y
+</span></code></pre></div></li>
+<li>or the documentation is updated first and then retitled.
+   <div class="language-console highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="gp">$ </span>mike<span class="w"> </span>deploy<span class="w"> </span>--push<span class="w"> </span>--update-aliases<span class="w"> </span>X.Y<span class="w"> </span>latest
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="gp">$ </span>mike<span class="w"> </span>retitle<span class="w"> </span>--push<span class="w"> </span>X.Y<span class="w"> </span>&lt;new_title&gt;
+</span></code></pre></div></li>
+</ol>
+<div class="admonition danger">
+<p class="admonition-title">Do not deploy using the patch version as identifier!</p>
+<p>If you use the new title like <code>X.Y.Z</code> as identifier to deploy, a new documentation version will be created and the old one not simply updated.
+<strong>This is not desired!</strong></p>
+</div>
 <h4 id="the-development-documentation">The development documentation<a class="headerlink" href="#the-development-documentation" title="Link to this section">&para;</a></h4>
 <p>Documentation between releases will naturally evolve and, whenever it makes sense, changes to the documentation should be deployed, too.
 For this purpose, developers should run
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>mike deploy --push develop
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>mike deploy --push develop
 </span></code></pre></div>
 reasonably often, since this documentation is thought to reflect the state of the <span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M9.5 3.25a2.25 2.25 0 1 1 3 2.122V6A2.5 2.5 0 0 1 10 8.5H6a1 1 0 0 0-1 1v1.128a2.251 2.251 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.5 0v1.836A2.493 2.493 0 0 1 6 7h4a1 1 0 0 0 1-1v-.628A2.25 2.25 0 0 1 9.5 3.25Zm-6 0a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Zm8.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5ZM4.25 12a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z"/></svg></span> <code>develop</code> branch.</p>
 

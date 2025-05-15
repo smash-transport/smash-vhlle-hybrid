@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://smash-transport.github.io/smash-vhlle-hybrid/develop/user/FAQ/">
       
       
-        <link rel="prev" href="../scans_types/">
+        <link rel="prev" href="../CHANGELOG/">
       
       
         <link rel="next" href="../../developer/">
@@ -359,6 +359,8 @@
       
         
       
+        
+      
     
     
     
@@ -667,6 +669,65 @@
                 
   
   
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../CHANGELOG/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    CHANGELOG
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            CHANGELOG
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -690,7 +751,7 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" checked>
         
           
           
@@ -707,8 +768,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_2_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_5">
             <span class="md-nav__icon md-icon"></span>
             FAQ
           </label>
@@ -1095,6 +1156,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#can-i-collide-particles-other-than-nuclei-in-the-ic-stage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Can I collide particles other than nuclei in the IC stage?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#how-can-i-repeat-the-same-run-in-parallel-to-increase-statistics" class="md-nav__link">
     <span class="md-ellipsis">
       How can I repeat the same run in parallel to increase statistics?
@@ -1172,7 +1242,7 @@ The following setup would not work, as the <code>Use_Grid</code> key in the <cod
 </span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="nt">Modi</span><span class="p">:</span>
 </span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span><span class="nt">List</span><span class="p">:</span>
 </span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">        </span><span class="nt">File_Directory</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;.&quot;</span>
-</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">        </span><span class="nt">Filename</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;sampled_particles_list.oscar&quot;</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">        </span><span class="nt">Filename</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;sampled_particles.oscar&quot;</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -1238,6 +1308,25 @@ Of course, you will need to point to your custom base configuration files from w
 <p>Although this might be a quick way to try out something, you should never prefer to change the base configuration files in the hybrid handler repository.
 Your changes might get in conflict with future releases of the software or simply be undone by accident using Git inside the repository.</p>
 </div>
+<h3 id="can-i-collide-particles-other-than-nuclei-in-the-ic-stage">Can I collide particles other than nuclei in the IC stage?<a class="headerlink" href="#can-i-collide-particles-other-than-nuclei-in-the-ic-stage" title="Link to this section">&para;</a></h3>
+<p>You might have tried to use SMASH as initial-conditions software specifying a pion as the projectile via the following configuration file, but this was not accepted by the hybrid handler.</p>
+<div class="language-yaml annotate highlight"><span class="filename">Hybrid-handler configuration file</span><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nt">IC</span><span class="p">:</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="nt">Executable</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/path/to/smash&quot;</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nt">Software_keys</span><span class="p">:</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">        </span><span class="nt">Modi</span><span class="p">:</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">            </span><span class="nt">Collider</span><span class="p">:</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">                </span><span class="nt">Projectile</span><span class="p">:</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">                    </span><span class="nt">Particles</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">211</span><span class="p">:</span><span class="w"> </span><span class="nv">1</span><span class="p p-Indicator">}</span><span class="w"> </span><span class="c1"># (1)!</span>
+</span></code></pre></div>
+<ol>
+<li><img alt="⚠" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.0.3/assets/svg/26a0.svg" title=":warning:" /> This triggers an error as <code>Particles</code> is a YAML map and it contains a sub-map.
+    Since <code>211</code> is a map key, which is not present in the base configuration file, this line triggers an error.</li>
+</ol>
+<p>The SMASH <img alt="🌪" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.0.3/assets/svg/1f32a.svg" title=":cloud_tornado:" /> <code>IC</code> base configuration file is set up to collide nuclei and, therefore, both the projectile and the target are made of protons and neutrons.
+These are specified <strong>using PDG codes as YAML map keys</strong> in the configuration file.
+Any attempt to use different particles is a try to use a new key in the configuration file, namely one not present in the base configuration file!
+If you need to collide particles other than protons and nucleons, you need your own base configuration file.
+Check out <a href="#how-can-i-add-a-software-key-to-a-configuration-file">this other question</a> for detailed instructions.</p>
 <h3 id="how-can-i-repeat-the-same-run-in-parallel-to-increase-statistics">How can I repeat the same run in parallel to increase statistics?<a class="headerlink" href="#how-can-i-repeat-the-same-run-in-parallel-to-increase-statistics" title="Link to this section">&para;</a></h3>
 <p>The output folder in <code>do</code> mode is built by the hybrid handler in a way such that runs with different IDs do not interfere.
 Therefore, the same run can be repeated as many times as desired, on constraint that the user specifies a different run ID for each run.
@@ -1247,12 +1336,12 @@ This can be exploited to easily start the same run several times with different 
 <div class="tabbed-set tabbed-alternate" data-tabs="3:2"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">Using the default run ID</label><label for="__tabbed_3_2">Specifying the run ID</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-bash annotate highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">cd</span><span class="w"> </span>Project_folder
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">for</span><span class="w"> </span><span class="o">((</span><span class="nv">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w"> </span>index<span class="w"> </span>&lt;<span class="w"> </span><span class="si">${</span><span class="nv">SLURM_CPUS_ON_NODE</span><span class="si">}</span><span class="p">;</span><span class="w"> </span>index++<span class="w"> </span><span class="o">))</span><span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="c1"># (1)!</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span>Hybrid_handler<span class="w"> </span><span class="k">do</span><span class="w"> </span>-c<span class="w"> </span>experiment.yaml<span class="w"> </span><span class="p">&amp;</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span>sleep<span class="w"> </span><span class="m">1</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="k">done</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="nb">wait</span>
+<div class="language-bash annotate highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">cd</span><span class="w"> </span>Project_folder
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">for</span><span class="w"> </span><span class="o">((</span><span class="nv">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w"> </span>index<span class="w"> </span>&lt;<span class="w"> </span><span class="si">${</span><span class="nv">SLURM_CPUS_ON_NODE</span><span class="si">}</span><span class="p">;</span><span class="w"> </span>index++<span class="w"> </span><span class="o">))</span><span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="c1"># (1)!</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span>Hybrid_handler<span class="w"> </span><span class="k">do</span><span class="w"> </span>-c<span class="w"> </span>experiment.yaml<span class="w"> </span><span class="p">&amp;</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span>sleep<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="k">done</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="nb">wait</span>
 </span></code></pre></div>
 <ol>
 <li>The <code>SLURM_CPUS_ON_NODE</code> variable is peculiar to <a href="https://slurm.schedmd.com/sbatch.html">slurm scheduler</a>.
@@ -1261,13 +1350,13 @@ This can be exploited to easily start the same run several times with different 
 </ol>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">cd</span><span class="w"> </span>Project_folder
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">for</span><span class="w"> </span><span class="o">((</span><span class="nv">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w"> </span>index<span class="w"> </span>&lt;<span class="w"> </span><span class="si">${</span><span class="nv">SLURM_CPUS_ON_NODE</span><span class="si">}</span><span class="p">;</span><span class="w"> </span>index++<span class="w"> </span><span class="o">))</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span>Hybrid_handler<span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">        </span>-c<span class="w"> </span>experiment.yaml<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">        </span>--id<span class="w"> </span><span class="s2">&quot;Run_</span><span class="k">$(</span><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%0d&quot;</span><span class="w"> </span><span class="si">${</span><span class="nv">index</span><span class="si">}</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">&amp;</span>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="k">done</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="nb">wait</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">cd</span><span class="w"> </span>Project_folder
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">for</span><span class="w"> </span><span class="o">((</span><span class="nv">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span><span class="w"> </span>index<span class="w"> </span>&lt;<span class="w"> </span><span class="si">${</span><span class="nv">SLURM_CPUS_ON_NODE</span><span class="si">}</span><span class="p">;</span><span class="w"> </span>index++<span class="w"> </span><span class="o">))</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span>Hybrid_handler<span class="w"> </span><span class="k">do</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">        </span>-c<span class="w"> </span>experiment.yaml<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">        </span>--id<span class="w"> </span><span class="s2">&quot;Run_</span><span class="k">$(</span><span class="nb">printf</span><span class="w"> </span><span class="s2">&quot;%0d&quot;</span><span class="w"> </span><span class="si">${</span><span class="nv">index</span><span class="si">}</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">&amp;</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="k">done</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="nb">wait</span>
 </span></code></pre></div>
 </div>
 </div>
