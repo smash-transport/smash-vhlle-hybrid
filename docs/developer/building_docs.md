@@ -60,6 +60,23 @@ The command will also update the `latest` alias to point to the new release docu
 #### At new patches
 
 When a new patch is released, it is usually worth adjusting the documentation title via `mike retitle --push X.Y <new_title>`, where new title might simply be `X.Y.Z`, i.e. the complete new version string.
+This however does not rebuild the documentation and, therefore, it is needed to run a deploy command, too.
+Two alternatives are possible:
+
+1. First the already deployed version is retitled and then the documentation updated
+   ```console
+   $ mike retitle --push X.Y <new_title>
+   $ mike deploy --push X.Y
+   ```
+2. or the documentation is updated first and then retitled.
+   ```console
+   $ mike deploy --push --update-aliases X.Y latest
+   $ mike retitle --push X.Y <new_title>
+   ```
+
+!!! danger "Do not deploy using the patch version as identifier!"
+    If you use the new title like `X.Y.Z` as identifier to deploy, a new documentation version will be created and the old one not simply updated.
+    **This is not desired!**
 
 #### The development documentation
 
