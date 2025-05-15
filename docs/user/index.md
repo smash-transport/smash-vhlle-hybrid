@@ -54,6 +54,14 @@ Once cloned the repository, you can simply run the `Hybrid-handler` script[^1].
 
     [:material-arrow-right-box:&nbsp; Specifying parameters scans](scans_syntax.md)
 
+-   :clipboard:{ .lg .middle } &nbsp; __Notable changes__
+
+    ---
+
+    Check out the CHANGELOG to get insights on the changes between versions.
+
+    [:material-arrow-right-box:&nbsp; The CHANGELOG](CHANGELOG/index.md)
+
 -   :question:{ .lg .middle } &nbsp; __Questions?__
 
     ---

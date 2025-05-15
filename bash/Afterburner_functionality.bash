@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -15,7 +15,7 @@ function Prepare_Software_Input_File_Afterburner()
     Ensure_Given_Files_Exist "${HYBRID_software_base_config_file[Afterburner]}"
     Copy_Base_Configuration_To_Output_Folder_For 'Afterburner'
     Replace_Keys_In_Configuration_File_If_Needed_For 'Afterburner'
-    __static__Create_Sampled_Particles_List_File_Or_Symbolic_Link_With_Or_Without_Spectators
+    __static__Create_Sampled_Particles_File_Or_Symbolic_Link_With_Or_Without_Spectators
     __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
 }
 
@@ -77,7 +77,20 @@ function __static__Ensure_Consistency_Of_Afterburner_Input()
     fi
 }
 
-function __static__Create_Sampled_Particles_List_File_Or_Symbolic_Link_With_Or_Without_Spectators()
+function __static__Run_Add_Spectators_Python_Script()
+{
+    local python_fatal_value_error
+    # NOTE: To extract the right error code in the python script, it has to be handed to it right
+    #       before calling the script since the error codes are not exported by default.
+    python_fatal_value_error=${HYBRID_fatal_value_error} \
+        "${HYBRID_external_python_scripts[Add_spectators_from_IC]}" \
+        '--sampled_particle_list' "${HYBRID_software_input_file[Afterburner]}" \
+        '--initial_particle_list' "${HYBRID_software_input_file[Spectators]}" \
+        '--output_file' "${target_link_name}" \
+        '--smash_config' "${HYBRID_software_output_directory[IC]}/config.yaml" 2> /dev/null
+}
+
+function __static__Create_Sampled_Particles_File_Or_Symbolic_Link_With_Or_Without_Spectators()
 {
     local -r target_link_name="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
     if [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
@@ -92,11 +105,29 @@ function __static__Create_Sampled_Particles_List_File_Or_Symbolic_Link_With_Or_W
             "${HYBRID_software_input_file[Afterburner]}" \
             "${HYBRID_software_input_file[Spectators]}"
         # Run Python script to add spectators
-        "${HYBRID_external_python_scripts[Add_spectators_from_IC]}" \
-            '--sampled_particle_list' "${HYBRID_software_input_file[Afterburner]}" \
-            '--initial_particle_list' "${HYBRID_software_input_file[Spectators]}" \
-            '--output_file' "${target_link_name}" \
-            '--smash_config' "${HYBRID_software_output_directory[IC]}/config.yaml"
+        # NOTE: Since the errexit option enabled, the python script to add the spectators is run in the if-statement
+        #       and the possible exit code is accessed at the very beginning of the else-clause.
+        local python_exit_code
+        if __static__Run_Add_Spectators_Python_Script; then
+            # BE AWARE: The negation of the if-clause does not work because then the exit code cannot
+            #           be extracted properly (it will always be 0 because of the true if-statement).
+            :
+        else
+            python_exit_code=$?
+            if [[ ${python_exit_code} -eq ${HYBRID_fatal_value_error} ]]; then
+                exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
+                    'It was attempted to add spectators from multiple IC events to the sampled particles file. Only' \
+                    'running one IC event is supported when using the Afterburner config key ' \
+                    --emph "Add_spectators_from_IC: true" '.'
+            elif [[ ${python_exit_code} -eq 2 ]]; then
+                Print_Internal_And_Exit \
+                    'The handing over of the ' --emph "python_fatal_value_error" \
+                    ' to the Python script that adds spectators from the IC did not work.'
+            else
+                Print_Fatal_And_Exit \
+                    'Adding spectators from the IC particles to the sampled particles file failed.'
+            fi
+        fi
     else
         if [[ ! -f "${target_link_name}" || -L "${target_link_name}" ]]; then
             ln -s -f "${HYBRID_software_input_file[Afterburner]}" "${target_link_name}"
