@@ -357,6 +357,8 @@
       
         
       
+        
+      
     
     
     
@@ -691,6 +693,65 @@
           
           
           <div class="md-nav__link md-nav__container">
+            <a href="../../user/CHANGELOG/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    CHANGELOG
+  </span>
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            CHANGELOG
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
             <a href="../../user/FAQ/" class="md-nav__link ">
               
   
@@ -703,8 +764,8 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
             <span class="md-nav__icon md-icon"></span>
             FAQ
           </label>
@@ -1181,8 +1242,24 @@ Analogously, it should be bumped into a dirt state<sup id="fnref:2"><a class="fo
 </div>
 <h2 id="release-checklist">Release checklist<a class="headerlink" href="#release-checklist" title="Link to this section">&para;</a></h2>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Create the <code>release</code> branch from <code>develop</code> and switch to it.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Make sure everything is ready to go (e.g. check copyright statements including in documentation).</li>
+<li class="task-list-item">
+<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Create the <code>release</code> branch from <code>develop</code> and switch to it.</p>
+<details class="danger">
+<summary>If you are doing a hot-fix, an extra step is needed here!</summary>
+<p>For hot-fixes, you will branch off <code>main</code> and the repository will be in a stable state.
+Hence, you need to immediately bump the version to the hot-fix one adding e.g. a <code>-start</code> suffix.
+Before closing the branch you will remove such a suffix.</p>
+</details>
+</li>
+<li class="task-list-item">
+<p><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Make sure everything is ready to go (e.g. check copyright statements including in documentation).</p>
+</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Change the <code>Unreleased</code> box in the CHANGELOG file to a new release section by<ul>
+<li>adding the new section title;</li>
+<li>changing the type of box;</li>
+<li>adding release date and link to changes from previous version.</li>
+</ul>
+</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Bump version number global variable in main script to a <strong>stable state</strong>.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Close the <code>release</code> branch in the git-flow sense:<ul>
 <li>merge it into the <code>main</code> branch;</li>
@@ -1192,7 +1269,7 @@ Analogously, it should be bumped into a dirt state<sup id="fnref:2"><a class="fo
 </li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Publish the new release by pushing the changes and the new tag on <code>main</code>.</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> From <code>main</code> <a href="../building_docs/">build and deploy the documentation</a>.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> From <code>develop</code> bump version number global variable in main script to an <strong>unstable state</strong>.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> From <code>develop</code> bump version number global variable in main script to an <strong>unstable state</strong> and prepare a <code>!!! work-in-progress "Unreleased"</code> box in the CHANGELOG file.</li>
 </ul>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Create the release branch</label><label for="__tabbed_1_2">Close the release branch</label><label for="__tabbed_1_3">Publish new release</label></div>
 <div class="tabbed-content">
