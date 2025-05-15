@@ -28,7 +28,17 @@ Closing the branch means to merge it into `main`, which will be tagged and conta
 ## Release checklist
 
 - [x] Create the `release` branch from `develop` and switch to it.
+
+    ??? danger "If you are doing a hot-fix, an extra step is needed here!"
+        For hot-fixes, you will branch off `main` and the repository will be in a stable state.
+        Hence, you need to immediately bump the version to the hot-fix one adding e.g. a `-start` suffix.
+        Before closing the branch you will remove such a suffix.
+
 - [x] Make sure everything is ready to go (e.g. check copyright statements including in documentation).
+- [x] Change the `Unreleased` box in the CHANGELOG file to a new release section by
+      - adding the new section title;
+      - changing the type of box;
+      - adding release date and link to changes from previous version.
 - [x] Bump version number global variable in main script to a **stable state**.
 - [x] Close the `release` branch in the git-flow sense:
       - merge it into the `main` branch;
@@ -36,7 +46,7 @@ Closing the branch means to merge it into `main`, which will be tagged and conta
       - switch to `develop` and merge the `release` back into it[^3].
 - [x] Publish the new release by pushing the changes and the new tag on `main`.
 - [x] From `main` [build and deploy the documentation](building_docs.md).
-- [x] From `develop` bump version number global variable in main script to an **unstable state**.
+- [x] From `develop` bump version number global variable in main script to an **unstable state** and prepare a `!!! work-in-progress "Unreleased"` box in the CHANGELOG file.
 
 === "Create the release branch"
     ```bash
