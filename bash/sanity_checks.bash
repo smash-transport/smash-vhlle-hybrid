@@ -131,14 +131,16 @@ function __static__Choose_Base_Configuration_File()
     local -r key=$1
     case "${key}" in
         IC)
-            Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_version[IC]'
-            local ic_key
-            if Is_Version "${HYBRID_software_version[IC]}" -lt '3.2'; then
-                ic_key='IC_lt_3.2'
-            else
-                ic_key='IC_ge_3.2'
+            if [[ "${HYBRID_software_base_config_file[IC]}" == '' ]]; then
+                Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_version[IC]'
+                local ic_key
+                if Is_Version "${HYBRID_software_version[IC]}" -lt '3.2'; then
+                    ic_key='IC_lt_3.2'
+                else
+                    ic_key='IC_ge_3.2'
+                fi
+                HYBRID_software_base_config_file[IC]="${HYBRID_software_base_config_file[${ic_key}]}"
             fi
-            HYBRID_software_base_config_file[IC]="${HYBRID_software_base_config_file[${ic_key}]}"
             ;;
         Sampler)
             if [[ "${HYBRID_software_base_config_file[Sampler]}" = '' ]]; then
