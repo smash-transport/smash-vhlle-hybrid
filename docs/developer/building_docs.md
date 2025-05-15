@@ -59,7 +59,7 @@ The command will also update the `latest` alias to point to the new release docu
 
 #### At new patches
 
-When a new patch is released, it is usually worth adjusting the documentation title via `make retitle --push X.Y <new_title>`, where new title might simply be `X.Y.Z`, i.e. the complete new version string.
+When a new patch is released, it is usually worth adjusting the documentation title via `mike retitle --push X.Y <new_title>`, where new title might simply be `X.Y.Z`, i.e. the complete new version string.
 
 #### The development documentation
 
