@@ -34,6 +34,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
         fi
     done
     __static__Set_Software_Input_Data_File 'Spectators'
+    __static__Set_Software_Input_Data_File 'Corona'
     __static__Set_Global_Variables_As_Readonly
 }
 
@@ -141,7 +142,7 @@ function __static__Set_Base_Configuration_File_If_Unset()
             else
                 ic_key='IC_ge_3.2'
             fi
-            HYBRID_software_base_config_file[IC]="${HYBRID_software_base_config_file[${ic_key}]}"
+#            HYBRID_software_base_config_file[IC]="${HYBRID_software_base_config_file[${ic_key}]}"
             ;;
         Sampler)
             local sampler_key
@@ -155,7 +156,7 @@ function __static__Set_Base_Configuration_File_If_Unset()
             else
                 sampler_key='Sampler_FIST'
             fi
-            HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${sampler_key}]}"
+#            HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${sampler_key}]}"
             ;;
         *)
             Print_Internal_And_Exit 'Base configuration file unset for ' --emph "${key}" \
@@ -324,6 +325,33 @@ function __static__Set_Software_Input_Data_File()
                 printf -v HYBRID_software_input_file[Spectators] '%s/%s' \
                     "${HYBRID_software_output_directory[IC]}" \
                     "${HYBRID_software_default_input_filename[Spectators]}"
+            fi
+        fi
+    elif [[ "${key}" = 'Corona' ]]; then
+        if [[ "${HYBRID_optional_feature[Add_corona_from_IC_and_Hydro]}" = 'TRUE' ]]; then
+            if [[ "${HYBRID_optional_feature[IC_corona_source]}" != '' ]]; then
+                HYBRID_software_input_file['IC_corona']="${HYBRID_optional_feature[IC_corona_source]}"
+                if Element_In_Array_Equals_To "IC" "${HYBRID_given_software_sections[@]}"; then
+                    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                        'Requesting custom ' --emph 'IC_corona' ' input file although executing ' \
+                        --emph 'IC' ' with default output name.'
+                fi
+            else
+                printf -v HYBRID_software_input_file[IC_corona] '%s/%s' \
+                    "${HYBRID_software_output_directory[IC]}" \
+                    "${HYBRID_software_default_input_filename[IC_corona]}"
+            fi
+            if [[ "${HYBRID_optional_feature[Hydro_corona_source]}" != '' ]]; then
+                HYBRID_software_input_file['Hydro_corona']="${HYBRID_optional_feature[Hydro_corona_source]}"
+                if Element_In_Array_Equals_To "Hydro" "${HYBRID_given_software_sections[@]}"; then
+                    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                        'Requesting custom ' --emph 'Hydro_corona' ' input file although executing ' \
+                        --emph 'Hydro' ' with default output name.'
+                fi
+            else
+                printf -v HYBRID_software_input_file[Hydro_corona] '%s/%s' \
+                    "${HYBRID_software_output_directory[Hydro]}" \
+                    "${HYBRID_software_default_input_filename[Hydro_corona]}"
             fi
         fi
     fi

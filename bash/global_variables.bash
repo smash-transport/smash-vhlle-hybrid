@@ -33,6 +33,7 @@ function Define_Further_Global_Variables()
     readonly HYBRID_default_sampler_module="SMASH"
     declare -rgA HYBRID_external_python_scripts=(
         [Add_spectators_from_IC]="${HYBRID_python_folder}/add_spectators.py"
+        [Add_corona_from_IC_and_Hydro]="${HYBRID_python_folder}/add_corona.py"
         [Latin_hypercube_sampling]="${HYBRID_python_folder}/latin_hypercube_sampling.py"
     )
     declare -rgA HYBRID_software_default_input_filename=(
@@ -41,6 +42,8 @@ function Define_Further_Global_Variables()
         [Sampler]="freezeout.dat" # Not used at the moment for how the sampler works
         [Spectators]="SMASH_IC.oscar"
         [Afterburner]="particle_lists.oscar"
+        [IC_corona]="particle_lists.oscar"
+        [Hydro_corona]="particle_lists.oscar"
     )
     declare -rgA HYBRID_software_configuration_filename=(
         [IC]='IC_config.yaml'
@@ -104,13 +107,17 @@ function Define_Further_Global_Variables()
         [Scan_parameters]='HYBRID_scan_parameters[Afterburner]'
         [Software_keys]='HYBRID_software_new_input_keys[Afterburner]'
         [Add_spectators_from_IC]='HYBRID_optional_feature[Add_spectators_from_IC]'
+        [Add_corona_from_IC_and_Hydro]='HYBRID_optional_feature[Add_corona_from_IC_and_Hydro]'
         [Spectators_source]='HYBRID_optional_feature[Spectators_source]'
+        [IC_corona_source]='HYBRID_optional_feature[IC_corona_source]'
+        [Hydro_corona_source]='HYBRID_optional_feature[Hydro_corona_source]'
     )
     # This array declares a list of boolean keys. Here we do not keep track of sections
     # as it would be strange to use the same key name in different sections once as
     # boolean and once as something else.
     declare -rg HYBRID_boolean_keys=(
         'Add_spectators_from_IC'
+        'Add_corona_from_IC_and_Hydro'
     )
     # This array will be filled by the parser as option-to-value(s) map and it is intended
     # to track information given on the command line. For information like the run ID that
@@ -139,6 +146,8 @@ function Define_Further_Global_Variables()
         [Hydro]=''
         [Sampler]=''
         [Spectators]=''
+        [IC_corona]=''
+        [Hydro_corona]=''
         [Afterburner]=''
     )
     declare -gA HYBRID_software_base_config_file=(
@@ -172,8 +181,11 @@ function Define_Further_Global_Variables()
         [Sampler]="${HYBRID_default_sampler_module}"
     )
     declare -gA HYBRID_optional_feature=(
-        [Add_spectators_from_IC]='TRUE'
+        [Add_spectators_from_IC]='FALSE'
+        [Add_corona_from_IC_and_Hydro]='TRUE'
         [Spectators_source]=''
+        [IC_corona_source]=''
+        [Hydro_corona_source]=''
     )
     # Variables to be set (and possibly made readonly) after all sanity checks on input succeeded
     declare -gA HYBRID_software_output_directory=(
@@ -200,6 +212,8 @@ function Define_Further_Global_Variables()
         [Hydro]=''
         [Spectators]=''
         [Afterburner]=''
+        [IC_corona]=''
+        [Hydro_corona]=''
     )
     HYBRID_scan_strategy='Combinations'
 }
