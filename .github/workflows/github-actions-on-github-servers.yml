@@ -13,6 +13,8 @@ on:
     branches:
       - main
       - develop
+      - release*
+      - hotfix*/*
 
 jobs:
   run_tests:
@@ -97,6 +99,9 @@ jobs:
         cd ${main_dir}/tests
         ${BASH_EXE} tests_runner unit -r 3 -k ||\
         { printf "\nDetailed output of unit tests for debugging purposes:\n"; cat run_tests/tests_runner.log; exit 1; }
+        rm -rf run_tests
+        ${BASH_EXE} tests_runner integration -r 3 -k ||\
+        { printf "\nDetailed output of integration tests for debugging purposes:\n"; cat run_tests/tests_runner.log; exit 1; }
         rm -rf run_tests
         ${BASH_EXE} tests_runner functional -r 3 -k ||\
         { printf "\nDetailed output of functional tests for debugging purposes:\n"; cat run_tests/tests_runner.log; exit 1; }
