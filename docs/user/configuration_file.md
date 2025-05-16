@@ -141,7 +141,8 @@ IC:
 
     The hydrodynamics simulation needs an additional input file which contains the system's initial conditions.
     This is the main output of the previous stage and, therefore, if not specified, a :material-file: *SMASH_IC.dat* file is expected to exist in the :file_folder: ***IC*** output sub-folder with the same `Run_ID`.
-    However, using this key, any file can be specified and used.
+
+    However, using this key, any file can be specified and used. If the key is a simple file name (without any '/'), the hybrid handler looks for this name in the corresponding :file_folder: ***IC*** output sub-folder, but if it is a specific path (containing '/'), that specific file will be used.
 
 ```yaml title="Example"
 Hydro:
@@ -208,7 +209,9 @@ Sampler:
 
     As other stages, the afterburner run needs an additional input file as well, one which contains the sampled particles list.
     This is the main output of the previous sampler stage and, therefore, if not specified, a *particle_lists.oscar* file is expected to exist in the ***Sampler*** output sub-folder with the same `Run_ID`.
-    However, using this key, any file can be specified and used.
+
+    However, using this key, any file can be specified and used. If the key is a simple file name (without any '/'), the hybrid handler looks for this name in the corresponding :file_folder: ***Sampler*** output sub-folder, but if it is a specific path (containing a '/'), that specific file will be used.
+
     Note that although it is possible to specify the input for the list modus in SMASH via the `Software_keys`, this is not allowed here and will result in an error.
     Always specify the customized input file for the afterburner stage using this key, if needed.
 

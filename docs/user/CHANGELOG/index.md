@@ -48,6 +48,8 @@ Given a version number `X.Y.Z`,
 
     **Changes:**
 
+    - `Input_file` in the `Hydro` and `Afterburner` modules now can be used to modify the expected file names from the appropriate :file_folder: ***IC*** and :file_folder: ***Sampler*** sub-folders, when a string without a "/" character is given.
+
 
 ### SMASH-vHLLE-hybrid-2.1.2
 
