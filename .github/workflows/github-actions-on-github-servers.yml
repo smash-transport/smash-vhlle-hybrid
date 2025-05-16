@@ -13,6 +13,8 @@ on:
     branches:
       - main
       - develop
+      - release*
+      - hotfix*/*
 
 jobs:
   run_tests:
