@@ -21,7 +21,7 @@ function Make_Test_Preliminary_Operations__set-base-config-file-from-user()
     Define_Further_Global_Variables
 }
 
-function Unit_Test__set-base-config-file-from-user()
+function Integration_Test__set-base-config-file-from-user()
 {
     local -r functions_to_call=(
         'Validate_And_Parse_Configuration_File'
