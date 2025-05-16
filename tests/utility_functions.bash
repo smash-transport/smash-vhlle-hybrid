@@ -14,6 +14,10 @@ function Define_Available_Tests_For()
             local -r files_prefix='unit_tests_'
             local -r functions_prefix='Unit_Test__'
             ;;
+        integration_tests)
+            local -r files_prefix='integration_tests'
+            local -r functions_prefix='Integration_Test__'
+            ;;
         functional_tests)
             local -r files_prefix='functional_tests_'
             local -r functions_prefix='Functional_Test__'
