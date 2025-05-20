@@ -24,7 +24,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             __static__Set_Software_Configuration_File "${key}"
             __static__Set_Software_Input_Data_File "${key}"
             __static__Set_Software_Version "${key}"
-            __static__Choose_Base_Configuration_File "${key}"
+            __static__Set_Base_Configuration_File_If_Unset "${key}"
             if [[ "${key}" = "Sampler" ]]; then
                 __static__Ensure_Valid_Module_Given_For_Sampler
                 __static__Ensure_Additional_Paths_Given_For_Sampler
@@ -126,9 +126,12 @@ function __static__Set_Sampler_Input_Key_Paths()
     fi
 }
 
-function __static__Choose_Base_Configuration_File()
+function __static__Set_Base_Configuration_File_If_Unset()
 {
     local -r key=$1
+    if [[ "${HYBRID_software_base_config_file[${key}]}" != '' ]]; then
+        return
+    fi
     case "${key}" in
         IC)
             Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_version[IC]'
@@ -141,23 +144,22 @@ function __static__Choose_Base_Configuration_File()
             HYBRID_software_base_config_file[IC]="${HYBRID_software_base_config_file[${ic_key}]}"
             ;;
         Sampler)
-            if [[ "${HYBRID_software_base_config_file[Sampler]}" = '' ]]; then
-                local sampler_key
-                if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
-                    Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_version[Sampler]'
-                    if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
-                        sampler_key='Sampler_SMASH_lt_3.2'
-                    else
-                        sampler_key='Sampler_SMASH_ge_3.2'
-                    fi
+            local sampler_key
+            if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
+                Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_version[Sampler]'
+                if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
+                    sampler_key='Sampler_SMASH_lt_3.2'
                 else
-                    sampler_key='Sampler_FIST'
+                    sampler_key='Sampler_SMASH_ge_3.2'
                 fi
-                HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${sampler_key}]}"
+            else
+                sampler_key='Sampler_FIST'
             fi
+            HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${sampler_key}]}"
             ;;
         *)
-            # Nothing to do for other cases
+            Print_Internal_And_Exit 'Base configuration file unset for ' --emph "${key}" \
+                '\nstage, although this should not be the case!'
             ;;
     esac
 }
@@ -304,6 +306,10 @@ function __static__Set_Software_Input_Data_File()
                     --emph "${relative_key}" ' with default output name.'
             fi
         else
+            if [[ "${filename}" =~ ^('.'|'..')$ ]]; then
+                exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
+                    'Input_File of ' --emph "${key}" ' cannot be ' "${filename}"                
+            fi
             printf -v filename '%s/%s' \
                 "${HYBRID_software_output_directory[${relative_key}]}" \
                 "${filename}"

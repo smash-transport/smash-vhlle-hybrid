@@ -47,9 +47,15 @@ Given a version number `X.Y.Z`,
 !!! work-in-progress "Unreleased"
 
     **Changes:**
+    
+    :new: The `Input_file` configuration key in the `Hydro` and `Afterburner` modules can now be used to modify the expected file names from the appropriate :file_folder: ***IC*** and :file_folder: ***Sampler*** sub-folders, when a string without a `/` character is given.
 
-    - `Input_file` in the `Hydro` and `Afterburner` modules now can be used to modify the expected file names from the appropriate :file_folder: ***IC*** and :file_folder: ***Sampler*** sub-folders, when a string without a "/" character is given.
 
+### SMASH-vHLLE-hybrid-2.1.2
+
+???+ success "&nbsp; :date: &nbsp; Release date: 2025-05-16 &emsp; :left_right_arrow: &nbsp; [Compare changes to previous version](https://github.com/smash-transport/smash-vhlle-hybrid/compare/SMASH-vHLLE-hybrid-2.1.1...SMASH-vHLLE-hybrid-2.1.2)"
+
+    :sos: &nbsp; The previous hot-fix introduced a subtle bug, making the hybrid handler ignore a user-customized base configuration file for the `IC` stage. This is fixed now.
 
 
 ### SMASH-vHLLE-hybrid-2.1.1

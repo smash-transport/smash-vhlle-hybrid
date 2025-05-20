@@ -38,7 +38,7 @@ function __static__Is_Picked_IC_Base_Config_Correct_For_Version()
     export MOCK_ECHO_VERSION="$1"
     local -r expected_filename="$2"
     Call_Codebase_Function __static__Set_Software_Version 'IC'
-    Call_Codebase_Function __static__Choose_Base_Configuration_File 'IC'
+    Call_Codebase_Function __static__Set_Base_Configuration_File_If_Unset 'IC'
     [[ $(basename "${HYBRID_software_base_config_file[IC]}") == ${expected_filename} ]]
 }
 

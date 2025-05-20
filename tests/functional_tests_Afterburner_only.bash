@@ -39,12 +39,12 @@ function Functional_Test__do-Afterburner-only()
             File_Directory: "."
     ' "${run_id}" "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
     # Expect success and test absence of "SMASH" unfinished file
-    Print_Info 'Running Hybrid-handler expecting success'
+    Print_Info 'Running Hybrid-handler with custom input filename expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     __static__Check_Successful_Handler_Run $?
     mv 'Afterburner' 'Afterburner-success'
     # Expect success with custom input file name from Sampler
-    custom_input="afterburner_input.dat"
+    local -r custom_input="afterburner_input.dat"
     mkdir -p "Sampler/${run_id}"
     touch "Sampler/${run_id}/${custom_input}"
     printf '
@@ -58,10 +58,7 @@ function Functional_Test__do-Afterburner-only()
     # Run the hydro stage and check if freezeout is successfully generated
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
-    if [[ $? -ne 0 ]]; then
-        Print_Error 'Hybrid-handler unexpectedly failed.'
-        return 1
-    fi
+    __static__Check_Successful_Handler_Run $?
     mv 'Afterburner' 'Afterburner-success-custom-input-file-name'
     # Expect failure and test "SMASH" message
     Print_Info 'Running Hybrid-handler expecting invalid Afterburner input file failure'

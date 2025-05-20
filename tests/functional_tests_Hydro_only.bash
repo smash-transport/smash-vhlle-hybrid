@@ -35,7 +35,7 @@ function Functional_Test__do-Hydro-only()
     Check_If_Software_Produced_Expected_Output 'Hydro' "$(pwd)/Hydro"
     mv 'Hydro' 'Hydro-success'
     #Expect success with custom input file name from IC
-    custom_input="hydro_input.dat"
+    local -r custom_input="hydro_input.dat"
     mkdir -p "IC/${run_id}"
     touch "IC/${run_id}/${custom_input}"
     printf '

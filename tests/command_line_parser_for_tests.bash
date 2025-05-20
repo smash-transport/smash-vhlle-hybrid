@@ -11,10 +11,10 @@ function Parse_Tests_Suite_Parameter_And_Source_Specific_Code()
 {
     local suite_name code_filename
     suite_name="$1"
-    if [[ ! ${suite_name} =~ ^(functional|unit)$ ]]; then
+    if [[ ! ${suite_name} =~ ^(functional|integration|unit)$ ]]; then
         exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
             'Invalid tests type ' --emph "${suite_name:-<no value>}" '. Valid values: ' \
-            --emph 'unit' ' or ' --emph 'functional' '.' \
+            --emph 'unit' ', ' --emph 'integration' ' or ' --emph 'functional' '.' \
             'Use the ' --emph '--help' ' option to get more information.'
     fi
     code_filename="${HYBRIDT_tests_folder}/${suite_name}_tests.bash"
@@ -88,8 +88,9 @@ function __static__Print_Helper()
     default_color='\e[0m'
     printf " USAGE: ${options_color}tests_runner <tests_type> [-h|--help] [<options>...]${default_color}\n\n"
     printf " ${emph_color}Name of available types of tests:${default_color}\n\n"
-    __static__Add_Option_To_Helper "functional" "Tests of the handler as whole script."
     __static__Add_Option_To_Helper "unit" "Unit tests of the codebase."
+    __static__Add_Option_To_Helper "integration" "Integration tests of the codebase."
+    __static__Add_Option_To_Helper "functional" "Tests of the handler as whole script."
     printf " ${emph_color}Execute tests with the following optional arguments:${default_color}\n\n"
     __static__Add_Option_To_Helper "-r | --report-level" \
         "Verbosity of test report (default value ${HYBRIDT_report_level})." \
