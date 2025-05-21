@@ -306,9 +306,9 @@ function __static__Set_Software_Input_Data_File()
                     --emph "${relative_key}" ' with default output name.'
             fi
         else
-            if [[ "${filename}" =~ ^('.'|'..')$ ]]; then
+            if [[ "${filename}" =~ ^[.][.]?$ ]]; then
                 exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
-                    'Input_File of ' --emph "${key}" ' cannot be ' "${filename}"
+                    'Input_File of ' --emph "${key}" ' cannot be ' --emph "${filename}" '.'
             fi
             printf -v filename '%s/%s' \
                 "${HYBRID_software_output_directory[${relative_key}]}" \
