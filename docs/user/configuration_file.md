@@ -141,7 +141,9 @@ IC:
 
     The hydrodynamics simulation needs an additional input file which contains the system's initial conditions.
     This is the main output of the previous stage and, therefore, if not specified, a :material-file: *SMASH_IC.dat* file is expected to exist in the :file_folder: ***IC*** output sub-folder with the same `Run_ID`.
+
     However, using this key, any file can be specified and used.
+    If the key is a simple file name (without any `/`), the hybrid handler looks for this name in the corresponding :file_folder: ***IC*** output sub-folder, but if it is a path (i.e. it contains a `/`), that specific file will be used.
 
 ```yaml title="Example"
 Hydro:
@@ -149,8 +151,10 @@ Hydro:
     Config_file: /path/to/vHLLE_config
     Software_keys:
         etaS: 0.42
-    Input_file: /path/to/IC_output.dat
+    Input_file: /path/to/IC_output.dat # Path or single file (1)
 ```
+
+1. :bulb: If this key does not contain a `/` and is for example specified as `My_IC.out`, then the `IC` stage output file will take the specified name and it will be used as input for the `Hydro` stage.
 
 ## :seedling: &nbsp; The hadron sampler section
 
@@ -208,8 +212,10 @@ Sampler:
 
     As other stages, the afterburner run needs an additional input file as well, one which contains the sampled particles list.
     This is the main output of the previous sampler stage and, therefore, if not specified, a *particle_lists.oscar* file is expected to exist in the ***Sampler*** output sub-folder with the same `Run_ID`.
-    However, using this key, any file can be specified and used.
-    Note that although it is possible to specify the input for the list modus in SMASH via the `Software_keys`, this is not allowed here and will result in an error.
+
+    However, using this key, any file can be specified and used. If the key is a simple file name (without any `/`), the hybrid handler looks for this name in the corresponding :file_folder: ***Sampler*** output sub-folder, but if it is a path (i.e. it contains a `/`), that specific file will be used.
+
+    :warning: Note that although it is possible to specify the input for the list modus in SMASH via the `Software_keys`, this is not allowed here and will result in an error.
     Always specify the customized input file for the afterburner stage using this key, if needed.
 
 ???+ config-key "`Add_spectators_from_IC`"
@@ -230,9 +236,12 @@ Afterburner:
     Software_keys:
         General:
             Delta_Time: 0.25
+    Input_file: /path/to/Sampler_output.dat # Path or single file (1)
     Add_spectators_from_IC: true
     Spectators_source: /path/to/spectators-file.oscar
 ```
+
+1. :bulb: If this key does not contain a `/` and is for example specified as `My_Sampler.out`, then the `Sampler` stage output file will take the specified name and it will be used as input for the `Afterburner` stage.
 
 ## An example of a complete hybrid handler configuration file
 

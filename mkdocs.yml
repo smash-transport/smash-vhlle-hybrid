@@ -97,6 +97,7 @@ theme:
   logo: images/logo.png
   features:
     - content.code.copy
+    - content.code.annotate
     - content.tooltips
     - header.autohide
     - navigation.indexes
