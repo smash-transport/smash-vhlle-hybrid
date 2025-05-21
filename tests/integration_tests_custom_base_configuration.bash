@@ -48,7 +48,7 @@ function Integration_Test__set-custom-base-config-file()
                 "${custom_base_config[${key}]}" \
                 "${HYBRIDT_repository_top_level_path}" > "${HYBRID_configuration_file}"
             for my_function in "${functions_to_call[@]}"; do
-                Call_Codebase_Function "${my_function}" #&> /dev/null
+                Call_Codebase_Function "${my_function}"
             done
             if [[ "${HYBRID_software_base_config_file[${key}]}" != "${custom_base_config[${key}]}" ]]; then
                 Print_Error 'Wrong base config file ' --emph "${HYBRID_software_base_config_file[${key}]}" \

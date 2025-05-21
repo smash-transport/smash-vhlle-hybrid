@@ -46,7 +46,7 @@ function Integration_Test__set-custom-inputfile()
                 "${HYBRIDT_repository_top_level_path}" \
                 "${custom_inputfile[${key}]}" > "${HYBRID_configuration_file}"
             for my_function in "${functions_to_call[@]}"; do
-                Call_Codebase_Function "${my_function}" #&> /dev/null
+                Call_Codebase_Function "${my_function}"
             done
             case "${key}" in
                 Hydro)
