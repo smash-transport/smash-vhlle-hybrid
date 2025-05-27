@@ -179,7 +179,13 @@ function __static__Create_Sampled_Particles_File_Or_Symbolic_Link()
             fi
         fi
     else
-        __static_Create_Symbolic_Link
+        if [[ ! -f "${target_link_name}" || -L "${target_link_name}" ]]; then
+            ln -s -f "${HYBRID_software_input_file[Afterburner]}" "${target_link_name}"
+        elif [[ ! "${target_link_name}" -ef "${HYBRID_software_input_file[Afterburner]}" ]]; then
+            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                'File ' --emph "${target_link_name}" ' exists but it is not the Afterburner input file ' \
+                --emph "${HYBRID_software_input_file[Afterburner]}" ' to be used.'
+        fi
     fi
 }
 
