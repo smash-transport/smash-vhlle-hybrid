@@ -144,8 +144,14 @@ function __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
     local -r config_afterburner="${HYBRID_software_configuration_file[Afterburner]}"
     if Element_In_Array_Equals_To 'Sampler' "${HYBRID_given_software_sections[@]}"; then
         local -r config_sampler="${HYBRID_software_configuration_file[Sampler]}"
+        local number_of_events_config_key_sampler
+        if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
+            number_of_events_config_key_sampler='number_of_events'
+        elif [[ "${HYBRID_module[Sampler]}" = 'FIST' ]]; then
+            number_of_events_config_key_sampler='nevents'
+        fi
         while read key value; do
-            if [[ "${key}" = 'number_of_events' ]]; then
+            if [[ "${key}" = "${number_of_events_config_key_sampler}" ]]; then
                 local events_sampler
                 events_sampler="${value}"
             fi

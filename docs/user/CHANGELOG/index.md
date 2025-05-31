@@ -47,8 +47,10 @@ Given a version number `X.Y.Z`,
 !!! work-in-progress "Unreleased"
 
     **Changes:**
-    
-    :new: The `Input_file` configuration key in the `Hydro` and `Afterburner` modules can now be used to modify the expected file names from the appropriate :file_folder: ***IC*** and :file_folder: ***Sampler*** sub-folders, when a string without a `/` character is given.
+
+    :sos: &nbsp; Fix handler crash due to the consistency check of the number of events of the `Sampler` and the `Afterburner` stage when using the FIST sampler.
+
+    :new: &nbsp; The `Input_file` configuration key in the `Hydro` and `Afterburner` modules can now be used to modify the expected file names from the appropriate :file_folder: ***IC*** and :file_folder: ***Sampler*** sub-folders, when a string without a `/` character is given.
 
 
 ### SMASH-vHLLE-hybrid-2.1.2
