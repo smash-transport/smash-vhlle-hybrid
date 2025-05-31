@@ -210,7 +210,7 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
 
 function __static__State_Inconsistency_Of_Sampler_With_Hydro()
 {
-    PrintAttention 'The sampler and hydrodynamics parameters' \
+    Print_Attention 'The sampler and hydrodynamics parameters' \
         'are inconsistent in values for ' --emph "$1" ' correction.' \
         'Viscous corrections are present in hydrodynamic stage,' \
         'but will not be applied in the Cooper-Frye sampling,' \
