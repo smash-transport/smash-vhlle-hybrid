@@ -44,12 +44,11 @@ Given a version number `X.Y.Z`,
     This symbol indicates _changes that deserve particular attention by the user_.
 
 
-!!! work-in-progress "Unreleased"
+### SMASH-vHLLE-hybrid-2.1.3
 
-    **Changes:**
+???+ success "&nbsp; :date: &nbsp; Release date: 2025-06-05 &emsp; :left_right_arrow: &nbsp; [Compare changes to previous version](https://github.com/smash-transport/smash-vhlle-hybrid/compare/SMASH-vHLLE-hybrid-2.1.2...SMASH-vHLLE-hybrid-2.1.3)"
 
     :sos: &nbsp; Fix hybrid handler crash due to accessing an unbound variable when trying to run both the `Sampler` and the `Afterburner` stages using the FIST sampler.
-
 
 
 ### SMASH-vHLLE-hybrid-2.1.2
