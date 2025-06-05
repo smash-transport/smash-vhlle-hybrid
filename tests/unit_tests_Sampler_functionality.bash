@@ -267,7 +267,8 @@ function Unit_Test__Sampler-validate-config-file-SMASH()
         'shear true' \
         'cs2 +-1' \
         'ratio_pressure_energydensity +-1' \
-        'create_root_output True'; do
+        'create_root_output True' \
+        'hydro_coordinate_system +-1'; do
         __static__Validate_Given_Configuration_File_SMASH \
             "'${wrong_key_value}' should not be accepted" "${mandatory_config_keys[@]}" "${wrong_key_value}"
         __static__Possibly_Fail_Validation_Test $? || return 1
