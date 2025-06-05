@@ -47,7 +47,7 @@ function Validate_Configuration_File_Of_SMASH()
         'ratio_pressure_energydensity'
     )
     if Is_Version "${HYBRID_software_version[Sampler]}" -ge '3.2'; then
-        allowed_keys+=('create_root_output')
+        allowed_keys+=('create_root_output' 'hydro_coordinate_system')
     fi
     readonly allowed_keys
     local keys_to_be_found
@@ -99,6 +99,14 @@ function Validate_Configuration_File_Of_SMASH()
                 if [[ ! "${value}" =~ ^[1-9][0-9]*$ ]]; then
                     Print_Error 'Found non-integer value ' --emph "${value:-''}" \
                         ' for ' --emph "${key}" ' key.'
+                    return 1
+                fi
+                ;;
+            hydro_coordinate_system)
+                if [[ ! "${value,,}" =~ ^(tau-eta|cartesian)$ ]]; then
+                    Print_Error 'Found invalid value ' --emph "${value:-''}" \
+                        ' for key ' --emph "${key}" '.\nAllowed are only ' \
+                        --emph 'tau-eta' ' or ' --emph 'Cartesian' '.'
                     return 1
                 fi
                 ;;
