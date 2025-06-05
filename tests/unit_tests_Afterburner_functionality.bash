@@ -186,23 +186,20 @@ function Clean_Tests_Environment_For_Following_Test__Afterburner-check-all-input
     rm -r "${HYBRID_output_directory}"
 }
 
-function Make_Test_Preliminary_Operations__Afterburner-config-consistent-with-sampler()
+function __static__Set_Events_Config_Key_For_Sampler_And_Run_Consistency_Check()
 {
-    Do_Preliminary_Afterburner_Setup_Operations
-    HYBRID_given_software_sections+=('Sampler')
-    HYBRID_software_executable[Sampler]=$(which echo) # Use command as fake executable
-    HYBRID_optional_feature[Add_spectators_from_IC]='FALSE'
-    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
-}
-
-function Unit_Test__Afterburner-config-consistent-with-sampler()
-{
-    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
-    # Sampler config file with default number_of_events
+    local number_of_events_config_key_sampler
     local -r events_sampler=1000
-    printf '%s   %s\n' "number_of_events" "${events_sampler}" > "${HYBRID_software_configuration_file[Sampler]}"
+    if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
+        number_of_events_config_key_sampler='number_of_events'
+    elif [[ "${HYBRID_module[Sampler]}" = 'FIST' ]]; then
+        number_of_events_config_key_sampler='nevents'
+    fi
+    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
+    printf '%s   %s\n' "${number_of_events_config_key_sampler}" "${events_sampler}" > \
+        "${HYBRID_software_configuration_file[Sampler]}"
     mkdir -p "${HYBRID_software_output_directory[Afterburner]}"
-    # Afterburner config file with higher number_of_events
+    # Afterburner config file with higher number of events
     local -r events_entered=1500
     printf '%s:\n  %s:  %s\n' 'General' 'Nevents' "${events_entered}" > \
         "${HYBRID_software_configuration_file[Afterburner]}"
@@ -217,8 +214,46 @@ function Unit_Test__Afterburner-config-consistent-with-sampler()
     fi
 }
 
-function Clean_Tests_Environment_For_Following_Test__Afterburner-config-consistent-with-sampler()
+function Make_Test_Preliminary_Operations__Afterburner-config-consistent-with-sampler-SMASH()
 {
+    Do_Preliminary_Afterburner_Setup_Operations
+    HYBRID_module[Sampler]='SMASH'
+    HYBRID_given_software_sections+=('Sampler')
+    HYBRID_software_executable[Sampler]="${HYBRIDT_tests_folder}/mocks/echo.py"
+    HYBRID_optional_feature[Add_spectators_from_IC]='FALSE'
+    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
+}
+
+function Unit_Test__Afterburner-config-consistent-with-sampler-SMASH()
+{
+    __static__Set_Events_Config_Key_For_Sampler_And_Run_Consistency_Check
+}
+
+function Clean_Tests_Environment_For_Following_Test__Afterburner-config-consistent-with-sampler-SMASH()
+{
+    rm -r "${HYBRID_output_directory}"
+}
+
+function Make_Test_Preliminary_Operations__Afterburner-config-consistent-with-sampler-FIST()
+{
+    Do_Preliminary_Afterburner_Setup_Operations
+    HYBRID_module[Sampler]='FIST'
+    touch "${HYBRID_fist_module[Particle_file]}" "${HYBRID_fist_module[Decays_file]}"
+    HYBRID_given_software_sections+=('Sampler')
+    HYBRID_software_executable[Sampler]="${HYBRIDT_tests_folder}/mocks/echo.py"
+    HYBRID_optional_feature[Add_spectators_from_IC]='FALSE'
+    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
+}
+
+function Unit_Test__Afterburner-config-consistent-with-sampler-FIST()
+{
+    __static__Set_Events_Config_Key_For_Sampler_And_Run_Consistency_Check
+}
+
+function Clean_Tests_Environment_For_Following_Test__Afterburner-config-consistent-with-sampler-FIST()
+{
+    rm "${HYBRID_fist_module[Decays_file]}"
+    rm "${HYBRID_fist_module[Particle_file]}"
     rm -r "${HYBRID_output_directory}"
 }
 

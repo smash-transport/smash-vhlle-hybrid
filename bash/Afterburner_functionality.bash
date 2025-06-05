@@ -144,8 +144,18 @@ function __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
     local -r config_afterburner="${HYBRID_software_configuration_file[Afterburner]}"
     if Element_In_Array_Equals_To 'Sampler' "${HYBRID_given_software_sections[@]}"; then
         local -r config_sampler="${HYBRID_software_configuration_file[Sampler]}"
+        local number_of_events_config_key_sampler
+        if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
+            number_of_events_config_key_sampler='number_of_events'
+        elif [[ "${HYBRID_module[Sampler]}" = 'FIST' ]]; then
+            number_of_events_config_key_sampler='nevents'
+        else
+            Print_Internal_And_Exit 'The used sampler module ' --emph "${HYBRID_module[Sampler]}" \
+                ' is not recognized by the function\n' --emph "${FUNCNAME}" \
+                '. This should not have happened.'
+        fi
         while read key value; do
-            if [[ "${key}" = 'number_of_events' ]]; then
+            if [[ "${key}" = "${number_of_events_config_key_sampler}" ]]; then
                 local events_sampler
                 events_sampler="${value}"
             fi
@@ -153,7 +163,7 @@ function __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
         local events_afterburner
         events_afterburner=$(Read_From_YAML_String_Given_Key "$(< "${config_afterburner}")" 'General.Nevents')
         if [[ "${events_afterburner}" -gt "${events_sampler}" ]]; then
-            PrintAttention 'The number of events set to run in the afterburner (' \
+            Print_Attention 'The number of events set to run in the afterburner (' \
                 --emph "${events_afterburner}" ')\nis greater than the number of events sampled (' \
                 --emph "${events_sampler}" ').\n' \
                 --emph 'Nevents' ' in the afterburner configuration file is reset to ' --emph "${events_sampler}" '!'
@@ -161,7 +171,7 @@ function __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
                 'YAML' "${config_afterburner}" \
                 "$(printf "%s:\n  %s:  %s\n" 'General' 'Nevents' "${events_sampler}")"
         elif [[ "${events_afterburner}" -lt "${events_sampler}" ]]; then
-            PrintAttention 'The number of events set to run in the afterburner (' \
+            Print_Attention 'The number of events set to run in the afterburner (' \
                 --emph "${events_afterburner}" ')\nis smaller than the number of events sampled (' \
                 --emph "${events_sampler}" ').' \
                 'Excess sampled events remain unused.' \

@@ -203,7 +203,7 @@ Sampler:
     Particle_file: /path/to/list.dat
     Decays_file: /path/to/decays.dat
     Software_keys:
-        hypersurface: /path/to/custom/freezeout.dat
+        hypersurface_file: /path/to/custom/freezeout.dat
 ```
 
 ## :fire: &nbsp; The afterburner section
