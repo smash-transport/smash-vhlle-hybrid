@@ -90,8 +90,12 @@ def gather_corona_particles():
         and from vHLLE oscar output and join particles into one array
     '''
     particles_corona = extract_particles(args.initial_particle_list)
-    particles_hydro = extract_particles(args.hydro_particle_list)
-    particles_corona = np.append(particles_corona, particles_hydro, axis=0)
+    hydro_path = args.hydro_particle_list
+    if hydro_path:
+        if os.path.exists(hydro_path):
+            particles_hydro = extract_particles(hydro_path)
+            particles_corona = np.append(particles_corona, particles_hydro, axis=0)
+
     return particles_corona
 
 def get_sampled_particles():
