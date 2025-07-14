@@ -1,20 +1,4 @@
-## Present developers and maintainers
+## The developers team
 
-| Name  | E-mail |
-| :---: | :----: |
-| Alessandro Sciarra | sciarra@itp.uni-frankfurt.de     |
-| Gabriele Inghirami | g.inghirami@gsi.de               |
-| Niklas Götz        | goetz@itp.uni-frankfurt.de       |
-| Nils Saß           | nsass@itp.uni-frankfurt.de       |
-| Renan Hirayama     | hirayama@itp.uni-frankfurt.de    |
-| Robin Sattler      | sattler@itp.uni-frankfurt.de     |
-| Zuzana Paulinyova  | zuzana.paulinyova@upjs.sk        |
-
-## Past developers
-
-Please, note that the e-mail address of past developers might not be active any more.
-
-|  Name  | E-mail |
-| :----: | :----: |
-| Anna Schäfer       | aschaefer@fias.uni-frankfurt.de  |
-| Jan Hammelmann     | hammelmann@itp.uni-frankfurt.de |
+Please refer to the [CITATION.cff](CITATION.cff) file for a complete list of authors.
+Note that an email address is only provided there for active developers.
