@@ -172,7 +172,7 @@ Sampler:
     Executable: /path/to/Hadron-sampler
     Config_file: /path/to/Hadron-sampler_config
     Software_keys:
-        surface: /path/to/custom/freezeout.dat
+        surface_file: /path/to/custom/freezeout.dat
 ```
 
 For the hadron sampler section, there is the additional option to use an alternative sampling software, the FIST sampler. By default, the SMASH-hadron-sampler is used.
