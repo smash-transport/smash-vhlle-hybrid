@@ -48,7 +48,7 @@ requirement = package_name + version_specifier
 
 try:
     from packaging.requirements import Requirement
-except:
+except ImportError:
     if package_name == 'packaging':
         print('---|---|---')
         exit(1)
