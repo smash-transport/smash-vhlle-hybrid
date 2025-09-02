@@ -7,16 +7,17 @@
     Strictly speaking, this is not a requirement for the Hybrid-handler, which most likely will correctly work even if different versions of the physics software are used.
     However, the Hybrid-handler makes use of some default configuration files for each software and this does rely on the version of the given software.
     Said differently, if you e.g. need to use older versions of some software, expect to have to specify a different base configuration for that given software [:material-arrow-right-box: configuration keys documentation](configuration_file.md#Config-file).
+    Be aware that the mentioned physics software is merely the default and other options for a certain stage might be available, e.g. for the [sampler stage](#hadron-sampler).
 
 <div class="grid" markdown>
 <div class="center-table" markdown>
 
-| Physics Software | Suggested version |
-| :--------------: | :---------------: |
+| Physics software (default options) | Suggested version |
+| :--------------------------------: | :---------------: |
 | [SMASH](https://github.com/smash-transport/smash) | 3.1 or higher[^1] |
 | [vHLLE](https://github.com/yukarpenko/vhlle) | Tag `vhlle-smash-hybrid-1` |
 | [vHLLE parameters](https://github.com/yukarpenko/vhlle_params) | Tag `vhlle-smash-hybrid-1` |
-| [Hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | See below |
+| [SMASH hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | [See below](#hadron-sampler) |
 
 </div>
 <div class="center-table" markdown>
@@ -43,13 +44,13 @@ Instructions on how to compile or install the software above can be found at the
 In principle, the Hybrid-handler is agnostic to the physics model used in each state, and is built in a way to support different software with minimal efforts.
 Currently, this is realized for some of the different stages and the supported software is reported here below.
 
-### Hadron Sampler
+### Hadron sampler
 
 <div class="center-table" markdown>
 
-| Supported Software | Required version |
-| :------------: | :--------------: |
-| [Hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | Same as SMASH[^2] |
+| Supported software | Required version |
+| :----------------: | :--------------: |
+| [SMASH hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | Same as SMASH[^2] |
 | [FIST sampler](https://github.com/vlvovch/fist-sampler) | Commit `af99229` or later |
 
 </div>
