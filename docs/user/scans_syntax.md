@@ -1,10 +1,10 @@
 # The parameters scan syntax
 
-In order to properly run the hybrid handler in `prepare-scan` mode, the configuration file must be properly created and fulfil few additional constraints.
+In order to properly run the Hybrid-handler in `prepare-scan` mode, the configuration file must be properly created and fulfil few additional constraints.
 
 !!! danger "Do not forget to declare scan parameters as such!"
     Each parameter which must be scanned has to be declared so by using the `Scan_parameters` key in the corresponding stage section [:material-arrow-right-box: key description](configuration_file.md#scan-parameters).
-    **If a parameter is not declared to be scanned** and is specified as a scan in the `Software_keys` section, this will probably not be caught by the hybrid handler and **the produced configurations are likely to be wrong**.
+    **If a parameter is not declared to be scanned** and is specified as a scan in the `Software_keys` section, this will probably not be caught by the Hybrid-handler and **the produced configurations are likely to be wrong**.
 
 !!! warning "Only scanning numerical parameters is possible"
     At the moment, it is not possible to scan parameters whose value is not numerical.

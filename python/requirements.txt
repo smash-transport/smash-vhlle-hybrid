@@ -1,4 +1,4 @@
-# This file contains all python requirements that the hybrid handler needs in
+# This file contains all python requirements that the Hybrid-handler needs in
 # all its functionality. Some of them are not always needed and, therefore, the
 # system requirements check does not always require them all. Note that python
 # code is also used hard-coded via 'python -c' in some places in Bash code and

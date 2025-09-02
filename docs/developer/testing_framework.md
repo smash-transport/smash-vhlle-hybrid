@@ -137,7 +137,7 @@ If such a function exists, the runner will check for existence of the correspond
 
 !!! tip "Use the framework functionality to invoke code to test"
     * Codebase functions to be invoked in unit tests should be called through the `Call_Codebase_Function` and `Call_Codebase_Function_In_Subshell` interface functions (passing the name of the function to be invoked as first argument and the arguments to be forward afterwards).
-    *  In functional tests you'll probably want to run the hybrid handler with some options and this can be easily achieved by using the `Run_Hybrid_Handler_With_Given_Options_In_Subshell` function.
+    *  In functional tests you'll probably want to run the Hybrid-handler with some options and this can be easily achieved by using the `Run_Hybrid_Handler_With_Given_Options_In_Subshell` function.
 
 !!! warning "Each test is run in its own subshell"
     The full test flow, including setup and teardown, is run in a subshell in order to isolate its changes from the external environment.

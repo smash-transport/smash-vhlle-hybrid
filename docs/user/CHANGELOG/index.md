@@ -1,4 +1,4 @@
-# Hybrid handler CHANGELOG
+# Hybrid-handler CHANGELOG
 
 All notable changes to this project will be documented in this changelog.
 This project does not strictly adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html), but it uses versioning inspired by it.
@@ -58,14 +58,14 @@ Given a version number `X.Y.Z`,
 
 ???+ success "&nbsp; :date: &nbsp; Release date: 2025-06-05 &emsp; :left_right_arrow: &nbsp; [Compare changes to previous version](https://github.com/smash-transport/smash-vhlle-hybrid/compare/SMASH-vHLLE-hybrid-2.1.2...SMASH-vHLLE-hybrid-2.1.3)"
 
-    :sos: &nbsp; Fix hybrid handler crash due to accessing an unbound variable when trying to run both the `Sampler` and the `Afterburner` stages using the FIST sampler.
+    :sos: &nbsp; Fix Hybrid-handler crash due to accessing an unbound variable when trying to run both the `Sampler` and the `Afterburner` stages using the FIST sampler.
 
 
 ### SMASH-vHLLE-hybrid-2.1.2
 
 ???+ success "&nbsp; :date: &nbsp; Release date: 2025-05-16 &emsp; :left_right_arrow: &nbsp; [Compare changes to previous version](https://github.com/smash-transport/smash-vhlle-hybrid/compare/SMASH-vHLLE-hybrid-2.1.1...SMASH-vHLLE-hybrid-2.1.2)"
 
-    :sos: &nbsp; The previous hot-fix introduced a subtle bug, making the hybrid handler ignore a user-customized base configuration file for the `IC` stage. This is fixed now.
+    :sos: &nbsp; The previous hot-fix introduced a subtle bug, making the Hybrid-handler ignore a user-customized base configuration file for the `IC` stage. This is fixed now.
 
 
 ### SMASH-vHLLE-hybrid-2.1.1

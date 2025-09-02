@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -13,7 +13,7 @@
 function Validate_And_Parse_Configuration_File()
 {
     Ensure_Given_Files_Exist \
-        'A configuration file is needed to run the hybrid handler.' '--' \
+        'A configuration file is needed to run the Hybrid-handler.' '--' \
         "${HYBRID_configuration_file}"
     __static__Abort_If_Configuration_File_Is_Not_A_Valid_YAML_File
     __static__Abort_If_Sections_Are_Violating_Any_Requirement

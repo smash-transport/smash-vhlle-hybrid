@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2024
+#    Copyright (c) 2024-2025
 #      SMASH Hybrid Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -53,11 +53,11 @@ function Validate_And_Store_Scan_Parameters()
     done
     if [[ ${counter} -ne 0 ]]; then
         exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
-            '\nThe hybrid handler configuration file contains ' \
+            '\nThe Hybrid-handler configuration file contains ' \
             --emph "${counter}" ' invalid scan specifications.'
     elif [[ ${#list_of_parameters_values[@]} -eq 0 ]]; then
         exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
-            'The hybrid handler configuration file does not properly specify scan parameters.' \
+            'The Hybrid-handler configuration file does not properly specify scan parameters.' \
             'Make sure to specify the ' --emph 'Scan_parameters' ' key in the appropriate sections.'
     fi
 }

@@ -60,7 +60,7 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
     Refer to the [:material-arrow-right-box: `Software_keys`](configuration_file.md#Software-keys) description for further information.
 
 !!! info "Enforced sanity rules"
-    Since the hybrid handler understands which software should be run from the presence of the corresponding section, there are a couple of totally natural rules that are enforced and will make the handler fail if violated.
+    Since the Hybrid-handler understands which software should be run from the presence of the corresponding section, there are a couple of totally natural rules that are enforced and will make the handler fail if violated.
 
     1. At least one software section must be present in the configuration file.
     2. Software sections must be specified in order and without gaps.
@@ -143,7 +143,7 @@ IC:
     This is the main output of the previous stage and, therefore, if not specified, a :material-file: *SMASH_IC.dat* file is expected to exist in the :file_folder: ***IC*** output sub-folder with the same `Run_ID`.
 
     However, using this key, any file can be specified and used.
-    If the key is a simple file name (without any `/`), the hybrid handler looks for this name in the corresponding :file_folder: ***IC*** output sub-folder, but if it is a path (i.e. it contains a `/`), that specific file will be used.
+    If the key is a simple file name (without any `/`), the Hybrid-handler looks for this name in the corresponding :file_folder: ***IC*** output sub-folder, but if it is a path (i.e. it contains a `/`), that specific file will be used.
 
 ```yaml title="Example"
 Hydro:
@@ -159,11 +159,11 @@ Hydro:
 ## :seedling: &nbsp; The hadron sampler section
 
 Also the hadron sampler needs in input the freezeout surface file, which is produced at the previous hydrodynamics stage.
-However, there is no dedicated `Input_file` key in the hadron sampler section of the hybrid handler configuration file, because the hadron sampler must receive the path to this file in its own configuration file already.
+However, there is no dedicated `Input_file` key in the hadron sampler section of the Hybrid-handler configuration file, because the hadron sampler must receive the path to this file in its own configuration file already.
 Therefore, the user can set any path to the freezeout surface file by specifying it in the `Software_keys` subsection, as shown in the example below.
 
-By default, if the user does not use a custom configuration file for the hadron sampler and does not specify the path to the freezeout surface file via `Software_keys`, the hybrid handler will use the configuration file for the hadron sampler which is contained in the :file_folder: ***configs*** folder and in which the path to the freezeout surface is set to `=DEFAULT=`.
-This will be internally resolved by the hybrid handler to the path of a :material-file: *freezeout.dat* file in the :file_folder: ***Hydro*** output sub-folder with the same `Run_ID`,  which is expected to exist.
+By default, if the user does not use a custom configuration file for the hadron sampler and does not specify the path to the freezeout surface file via `Software_keys`, the Hybrid-handler will use the configuration file for the hadron sampler which is contained in the :file_folder: ***configs*** folder and in which the path to the freezeout surface is set to `=DEFAULT=`.
+This will be internally resolved by the Hybrid-handler to the path of a :material-file: *freezeout.dat* file in the :file_folder: ***Hydro*** output sub-folder with the same `Run_ID`,  which is expected to exist.
 A mechanism like this one is technically needed to be able by default to refer to the same run ID and pick up the correct file from the previous stage.
 As a side-effect, it is not possible for the user to name the freezeout surface file as `=DEFAULT=`, which anyways would not probably be a very clever choice. :sweat_smile:
 
@@ -213,7 +213,7 @@ Sampler:
     As other stages, the afterburner run needs an additional input file as well, one which contains the sampled particles list.
     This is the main output of the previous sampler stage and, therefore, if not specified, a *particle_lists.oscar* file is expected to exist in the ***Sampler*** output sub-folder with the same `Run_ID`.
 
-    However, using this key, any file can be specified and used. If the key is a simple file name (without any `/`), the hybrid handler looks for this name in the corresponding :file_folder: ***Sampler*** output sub-folder, but if it is a path (i.e. it contains a `/`), that specific file will be used.
+    However, using this key, any file can be specified and used. If the key is a simple file name (without any `/`), the Hybrid-handler looks for this name in the corresponding :file_folder: ***Sampler*** output sub-folder, but if it is a path (i.e. it contains a `/`), that specific file will be used.
 
     :warning: Note that although it is possible to specify the input for the list modus in SMASH via the `Software_keys`, this is not allowed here and will result in an error.
     Always specify the customized input file for the afterburner stage using this key, if needed.
@@ -249,9 +249,9 @@ Afterburner:
 
 1. :bulb: If this key does not contain a `/` and is for example specified as `My_Sampler.out`, then the `Sampler` stage output file will take the specified name and it will be used as input for the `Afterburner` stage.
 
-## An example of a complete hybrid handler configuration file
+## An example of a complete Hybrid-handler configuration file
 
-If you wish to run a simulation of the full model using the default behavior of all the stages of the hybrid handler, then the following configuration file can be used.
+If you wish to run a simulation of the full model using the default behavior of all the stages of the Hybrid-handler, then the following configuration file can be used.
 
 ```yaml title="Example"
 IC:

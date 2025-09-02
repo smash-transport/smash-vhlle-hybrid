@@ -1,7 +1,7 @@
 # The predefined configuration files
 
 ## Configuring the collision setups
-There are several complete handler configuration files prepared for the user to run the hybrid handler in its entirety for different collision systems and energies. They follow the setup chosen in [:newspaper: *Schäfer et al.: Eur.Phys.J.A 58 (2022) 11, 230*](https://link.springer.com/article/10.1140/epja/s10050-022-00872-x). However, the finer hydrodynamic grid is by default commented out and has to be uncommented to reproduce the same setup as in the publication.
+There are several complete handler configuration files prepared for the user to run the Hybrid-handler in its entirety for different collision systems and energies. They follow the setup chosen in [:newspaper: *Schäfer et al.: Eur.Phys.J.A 58 (2022) 11, 230*](https://link.springer.com/article/10.1140/epja/s10050-022-00872-x). However, the finer hydrodynamic grid is by default commented out and has to be uncommented to reproduce the same setup as in the publication.
 The shear viscosities applied are taken from [:newspaper: *Karpenko et al.: Phys.Rev.C 91 (2015)*](https://journals.aps.org/prc/abstract/10.1103/PhysRevC.91.014906) and the longitudinal and transversal smearing parameters are adjusted to improve agreement with experimental data.
 The supported collision systems are listed in the following table.
 
@@ -22,7 +22,7 @@ The supported collision systems are listed in the following table.
 They can be found in :file_folder: **configs/predef_configs** folder and the user is only required to insert the paths of the executables in the individual software sections.
 They can be executed in the standard manner using `-c` option in the execution mode of the handler.
 
-``` title="Example about running hybrid handler for a predefined setup: Au+Au collision @ 4.3 GeV"
+``` title="Example about running Hybrid-handler for a predefined setup: Au+Au collision @ 4.3 GeV"
 ./Hybrid-handler do -c configs/predef_configs/config_AuAu_4.3.yaml
 ```
 
@@ -38,7 +38,7 @@ They can be executed in the standard manner using `-c` option in the execution m
 
 ## Running a test setup
 
-To test the functionality and to also run it on a local computer, there is the possibility to execute a test setup of the hybrid handler, which is a Au+Au collision at $\small\sqrt{s} = 7.7\;\mathrm{GeV}$.
+To test the functionality and to also run it on a local computer, there is the possibility to execute a test setup of the Hybrid-handler, which is a Au+Au collision at $\small\sqrt{s} = 7.7\;\mathrm{GeV}$.
 The statistics are significantly reduced and the grid for the hydrodynamic evolution is characterized by large cells, too large for a realistic simulation scenario.
 
 !!! danger "Don't use this setup for production!"
@@ -46,6 +46,6 @@ The statistics are significantly reduced and the grid for the hydrodynamic evolu
 
 To execute the test, a predefined configuration file is prepared in the same :file_folder: **predef_configs** folder. Again, the user needs to insert the paths to the executables in all the software sections.
 
-``` title="Example about running the test setup of the hybrid handler"
+``` title="Example about running the test setup of the Hybrid-handler"
 ./Hybrid-handler do -c configs/predef_configs/config_TEST.yaml
 ```

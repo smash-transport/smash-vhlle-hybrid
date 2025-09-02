@@ -96,7 +96,7 @@ Any developer should be aware that, because of the nature of the Bash scripting 
 Therefore, it is crucial for the developer to stay consistent with the existing style and, more importantly, to take some minutes to read the following lists.
 In particular, be aware the the formatter will not enforce the rules explained below.
 
-!!! tip "The main hybrid handler script can format the codebase!"
+!!! tip "The main Hybrid-handler script can format the codebase!"
     Before opening a PR, make sure all tests pass.
     One of them will try to check formatting and complain if something has to be adjusted.
     The main script has a `format` execution mode which formats the full codebase and runs the formatting unit test.

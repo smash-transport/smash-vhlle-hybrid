@@ -56,14 +56,14 @@ function __static__Set_Global_Variables_As_Readonly()
 function Perform_Internal_Sanity_Checks()
 {
     Internally_Ensure_Given_Files_Exist \
-        'These Python scripts should be shipped within the hybrid handler codebase.' '--' \
+        'These Python scripts should be shipped within the Hybrid-handler codebase.' '--' \
         "${HYBRID_external_python_scripts[@]}"
     for key in "${!HYBRID_software_base_config_file[@]}"; do
         # The IC/Sampler entry in the associative array here is still empty and does not point to a
         # shipped configuration file. It will be chosen later according to the verion or module.
         if [[ ! ${key} =~ ^(IC|Sampler)$ ]]; then
             Internally_Ensure_Given_Files_Exist \
-                'These base configuration files should be shipped within the hybrid handler codebase.' '--' \
+                'These base configuration files should be shipped within the Hybrid-handler codebase.' '--' \
                 "${HYBRID_software_base_config_file[${key}]}"
         fi
     done
