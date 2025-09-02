@@ -1,7 +1,7 @@
 #===================================================
 #
 #    Copyright (c) 2024-2025
-#      SMASH Hybrid Team
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #

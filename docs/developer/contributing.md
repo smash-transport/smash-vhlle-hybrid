@@ -51,7 +51,7 @@ Some guidance for authors is also provided here, in order to reach a coherent st
     #===================================================
     #
     #    Copyright (c) 2024
-    #      SMASH Hybrid Team
+    #      Hybrid-handler Team
     #
     #    GNU General Public License (GPLv3 or later)
     #

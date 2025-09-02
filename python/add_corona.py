@@ -3,7 +3,7 @@
 #===================================================
 #
 #    Copyright (c) 2025
-#      SMASH Hybrid Team
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -122,8 +122,8 @@ def read_sampled_and_write_full_particle_list(args, corona_particles, n_events_i
                 corona_filter = corona_particles[corona_particles[:, 0] == str(event_c)]
                 particle_number = len(corona_filter)+len(sampled_particles)
                 with open(output_file, 'a') as f:
-                    f.write("# event {} out {}\n".format(event_s,particle_number)) 
-                    np.savetxt(f, sampled_particles, delimiter=' ', fmt='%s')   # write sampled 
+                    f.write("# event {} out {}\n".format(event_s,particle_number))
+                    np.savetxt(f, sampled_particles, delimiter=' ', fmt='%s')   # write sampled
                     np.savetxt(f, corona_filter[:,1:], delimiter=' ', fmt='%s') # write corona
                     f.write("# event {} end\n".format(event_s))
                 # reset relevant variables
