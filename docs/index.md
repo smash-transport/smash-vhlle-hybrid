@@ -4,7 +4,7 @@ hide:
   - toc
 ---
 
-# SMASH-vHLLE-Hybrid
+# Hybrid-handler
 
 ![Image title](images/logo.png){ width="25%", align=right }
 
@@ -22,5 +22,5 @@ Event-by-event hybrid model for the description of relativistic heavy-ion collis
 
 !!! info "Give credit appropriately"
 
-    If you are using the SMASH-vHLLE-hybrid, please cite [Eur.Phys.J.A 58(2022)11,230](https://arxiv.org/abs/2112.08724).
+    If you are using the Hybrid-handler, please cite [Eur.Phys.J.A 58(2022)11,230](https://arxiv.org/abs/2112.08724).
     You may also consult this reference for further details about the hybrid approach.

@@ -48,6 +48,8 @@ Given a version number `X.Y.Z`,
 
     **Changes:**
 
+    :new: &nbsp; The name of the framework is changed from SMASH-vHLLE-hybrid to Hybrid-handler. Since the handler is a tool to facilitate running hybrid simulations and the underlying stage modules can be varied, this generic name is more precise. Nevertheless, the SMASH-vHLLE-hybrid approach is still part of this framework.
+
     :new: &nbsp; Added `Add_corona_from_IC_and_Hydro` configuration key in the `Afterburner` module, which merges the files containing corona particles from :file_folder: ***IC*** and :file_folder: ***Hydro*** into the particle lists sampled in :file_folder: ***Sampler***.
 
     :new: &nbsp; Added new valid config key `hydro_coordinate_system` for SMASH sampler to handle hydrodynamic simulations in Cartesian coordinates properly, additional to the runs in tau-eta frame.

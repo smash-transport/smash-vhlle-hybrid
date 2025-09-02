@@ -1,4 +1,4 @@
-# Contributing to SMASH-vHLLE-Hybrid
+# Contributing to the Hybrid-handler
 
 If you landed here, you might be thinking of contributing to the codebase: **Excellent decision!** :upside_down_face:
 

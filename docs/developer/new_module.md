@@ -1,6 +1,6 @@
 # Adding a new module
 
-Although the SMASH-vHLLE-hybrid, as implied in the name, was built with a defined set of software modules, it is designed to be easily extensible with new modules.
+Although the Hybrid-handler was built with a defined set of software modules, it is designed to be easily extensible with new modules.
 This allows, amongst other things, to test new algorithms and study model dependency.
 
 !!! tip "Take inspiration from the existing modules"
@@ -14,7 +14,7 @@ This allows, amongst other things, to test new algorithms and study model depend
     In this case the mentioned snippets of code are unlikely to be invalid at some point, but you should keep in mind that something might have to be done in a slightly different way.
     If so, you can take the opportunity to refine these instructions. :wink:
 
-Adding a new module to the SMASH-vHLLE-hybrid is a straightforward process.
+Adding a new module to the Hybrid-handler is a straightforward process.
 The following steps serve as a guidance and will probably be needed. Let's assume we want to add [MUSIC](https://github.com/MUSIC-fluid/MUSIC) as an alternative for the hydrodynamic stage:
 
 * In case the stage has no other modules, add a field to the `HYBRID_module` array in the :material-file: *global_variables.bash* script for the respective stage :material-information-outline:{ title="Here <mark style='background-color: #F0F0F0;'><tt>Hydro</tt></mark>"}.

@@ -11,7 +11,7 @@
 # of most of the setup done here (cf. in particular the 'Setup' and 'Reference'
 # tabs in the documentation).
 
-site_name: SMASH-vHLLE-Hybrid
+site_name: Hybrid-handler
 copyright: Copyright &copy; 2024-2025 - SMASH team
 
 repo_url: https://github.com/smash-transport/smash-vhlle-hybrid
