@@ -669,7 +669,7 @@ function Make_Functions_Defined_In_This_File_Readonly()
     #
     # NOTE: The file from which this function is called is ${BASH_SOURCE[1]}
     local declared_functions
-    declared_functions=( # Here word splitting can split names, no space allowed in function name!
+    declared_functions=(# Here word splitting can split names, no space allowed in function name!
         $(grep -E '^[[:space:]]*function[[:space:]]+[-[:alnum:]_:]+\(\)[[:space:]]*$' "${BASH_SOURCE[1]}" \
             | sed -E 's/^[[:space:]]*function[[:space:]]+([^(]+)\(\)[[:space:]]*$/\1/')
     )

@@ -142,7 +142,7 @@ function __static__Set_Base_Configuration_File_If_Unset()
             else
                 ic_key='IC_ge_3.2'
             fi
-#            HYBRID_software_base_config_file[IC]="${HYBRID_software_base_config_file[${ic_key}]}"
+            HYBRID_software_base_config_file[IC]="${HYBRID_software_base_config_file[${ic_key}]}"
             ;;
         Sampler)
             local sampler_key
@@ -156,7 +156,7 @@ function __static__Set_Base_Configuration_File_If_Unset()
             else
                 sampler_key='Sampler_FIST'
             fi
-#            HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${sampler_key}]}"
+            HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${sampler_key}]}"
             ;;
         *)
             Print_Internal_And_Exit 'Base configuration file unset for ' --emph "${key}" \

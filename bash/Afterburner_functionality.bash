@@ -92,14 +92,12 @@ function __static__Run_Add_Spectators_Python_Script()
 
 function __static__Run_Add_Corona_Python_Script()
 {
-    local python_fatal_value_error
-    # NOTE: To extract the right error code in the python script, it has to be handed to it right
-    #       before calling the script since the error codes are not exported by default.
-    python_fatal_value_error=${HYBRID_fatal_value_error} \
-        "${HYBRID_external_python_scripts[Add_corona_from_IC_and_Hydro]}" \
+    "${HYBRID_external_python_scripts[Add_corona_from_IC_and_Hydro]}" \
         '--sampled_particle_list' "${HYBRID_software_input_file[Afterburner]}" \
-        '--corona_particle_lists' "${HYBRID_software_input_file[IC_corona]}" "${HYBRID_software_input_file[Hydro_corona]}" \
+        '--corona_particle_lists' "${HYBRID_software_input_file[IC_corona]}" \
+        "${HYBRID_software_input_file[Hydro_corona]}" \
         '--output_file' "${target_link_name}" 2> /dev/null
+    Print_Info $?
 }
 
 function __static__Create_Symbolic_Link()
@@ -158,20 +156,17 @@ function __static__Create_Sampled_Particles_File_Or_Symbolic_Link()
             "${HYBRID_software_input_file[IC_corona]}"
         local python_exit_code
         if __static__Run_Add_Corona_Python_Script; then
-            # BE AWARE: The negation of the if-clause does not work because then the exit code cannot
-            #           be extracted properly (it will always be 0 because of the true if-statement).
             :
         else
             python_exit_code=$?
-            if [[ ${python_exit_code} -eq ${HYBRID_fatal_value_error} ]]; then
-                exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
-                    'Something is wrong with ' \
-                    --emph "Add_corona_from_IC_and_Hydro: true" '.'
-            elif [[ ${python_exit_code} -eq 2 ]]; then
+            Print_Info \
+                'Exit code:' "${python_exit_code}"
+            if [[ ${python_exit_code} -eq 3 ]]; then
                 Print_Internal_And_Exit \
-                    'The handing over of the ' --emph "python_fatal_value_error" \
-                    ' to the Python script that adds corona from the IC and Hydro did not work.'
-            elif [[ ${python_exit_code} -eq 9 ]]; then
+                    'Internal error:' "${target_link_name}" 'found to exist even if it was ensured not to.'
+            elif [[ ${python_exit_code} -eq 4 ]]; then
+                Print_Warning \
+                    'No corona particles were found, making a symbolic link for the sampled particles.'
                 __static__Create_Symbolic_Link
             else
                 Print_Fatal_And_Exit \

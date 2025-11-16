@@ -45,8 +45,6 @@ function Validate_Configuration_File_Of_SMASH()
         'ecrit'
         'cs2'
         'ratio_pressure_energydensity'
-        'hydro_coordinate_system'
-        'transversal_smearing'
     )
     if Is_Version "${HYBRID_software_version[Sampler]}" -ge '3.2'; then
         allowed_keys+=('create_root_output' 'hydro_coordinate_system')
@@ -90,7 +88,7 @@ function Validate_Configuration_File_Of_SMASH()
                 fi
                 ((keys_to_be_found--))
                 ;;
-            shear | bulk | create_root_output | transversal_smearing)
+            shear | bulk | create_root_output)
                 if [[ ! "${value}" =~ ^[01]$ ]]; then
                     Print_Error 'Key ' --emph "${key}" ' must be either ' \
                         --emph '0' ' or ' --emph '1' '.'

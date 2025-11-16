@@ -181,8 +181,8 @@ function Define_Further_Global_Variables()
         [Sampler]="${HYBRID_default_sampler_module}"
     )
     declare -gA HYBRID_optional_feature=(
-        [Add_spectators_from_IC]='FALSE'
-        [Add_corona_from_IC_and_Hydro]='TRUE'
+        [Add_spectators_from_IC]='TRUE'
+        [Add_corona_from_IC_and_Hydro]='FALSE'
         [Spectators_source]=''
         [IC_corona_source]=''
         [Hydro_corona_source]=''
