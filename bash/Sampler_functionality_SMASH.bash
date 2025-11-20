@@ -95,13 +95,6 @@ function Validate_Configuration_File_Of_SMASH()
                     return 1
                 fi
                 ;;
-            hydro_coordinate_system)
-                if [[ ! "${value,,}" =~ ^("tau-eta"|"milne"|"cartesian")$ ]]; then
-                    Print_Error 'Key ' --emph "${key}" ' must be either ' \
-                        --emph 'Milne' ' or ' --emph 'Cartesian' '.'
-                    return 1
-                fi
-                ;;
             number_of_events)
                 if [[ ! "${value}" =~ ^[1-9][0-9]*$ ]]; then
                     Print_Error 'Found non-integer value ' --emph "${value:-''}" \

@@ -229,6 +229,10 @@ Sampler:
     However, using this key any file path can be specified.
     This key is ignored if `Add_spectators_from_IC` is set to `false`.
 
+???+ config-key "`Add_corona_from_IC_and_Hydro`"
+
+    Append the corona particles from the `IC` and `Hydro` stages to the particles sampled in the `Sampler` in an event using dynamic fluidization. If `true`, a :material-file: *particle_lists.oscar* file is expected to exist in the :file_folder: ***IC*** output sub-folder with the same `Run_ID`. The :file_folder: ***Hydro*** folder may contain it or not.
+
 ```yaml title="Example"
 Afterburner:
     Executable: /path/to/smash

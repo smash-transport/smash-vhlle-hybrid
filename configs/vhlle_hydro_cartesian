@@ -1,0 +1,40 @@
+icModel              9
+Gaussian_Sigma       0.7
+smearing_mode        fixed
+
+nx                   86
+ny                   86
+nz                   121
+xmin                 -15
+xmax                 15
+ymin                 -15
+ymax                 15
+etamin               -20
+etamax               20
+
+tauMax               25.0
+dtau                 0.08
+tauGridResize        15.0
+
+freezeoutOnly        1
+eosType              4
+eosTypeHadron        1
+
+e_crit               0.3339
+
+etaSparam            3
+ah                   -10.9149
+al                   -10.5116
+T0                   0.1480
+etaSMin              0.2214
+etaSShiftMuB         0.1379
+etaSScaleMuB         2.8399
+
+zetaSparam           4
+zetaS                0.0816
+zetaSScaleBeta       0.103
+zetaSPeakEpsilon     24.039
+zetaSSigmaMinus      0.0725
+zetaSSigmaPlus       0.0378
+
+minParticlesFO       15

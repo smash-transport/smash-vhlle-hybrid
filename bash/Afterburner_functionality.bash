@@ -97,7 +97,6 @@ function __static__Run_Add_Corona_Python_Script()
         '--corona_particle_lists' "${HYBRID_software_input_file[IC_corona]}" \
         "${HYBRID_software_input_file[Hydro_corona]}" \
         '--output_file' "${target_link_name}" 2> /dev/null
-    Print_Info $?
 }
 
 function __static__Create_Symbolic_Link()
@@ -159,28 +158,28 @@ function __static__Create_Sampled_Particles_File_Or_Symbolic_Link()
             :
         else
             python_exit_code=$?
-            Print_Info \
-                'Exit code:' "${python_exit_code}"
-            if [[ ${python_exit_code} -eq 3 ]]; then
+            if [[ ${python_exit_code} -eq 2 ]]; then
                 Print_Internal_And_Exit \
-                    'Internal error:' "${target_link_name}" 'found to exist even if it was ensured not to.'
+                    --emph "${HYBRID_software_input_file[IC_corona]}" \
+                    'or' --emph "${HYBRID_software_input_file[Afterburner]}" \
+                    'not found even if it was ensured to exist.'
+            elif [[ ${python_exit_code} -eq 3 ]]; then
+                Print_Fatal_And_Exit \
+                    'Could not determine number of events from last line of some input file.'
             elif [[ ${python_exit_code} -eq 4 ]]; then
                 Print_Warning \
                     'No corona particles were found, making a symbolic link for the sampled particles.'
                 __static__Create_Symbolic_Link
+            elif [[ ${python_exit_code} -eq 5 ]]; then
+                Print_Internal_And_Exit \
+                    --emph "${target_link_name}" 'already exists even if it was ensured not to.'
             else
                 Print_Fatal_And_Exit \
                     'Adding corona from IC and Hydro to the sampled particles file failed.'
             fi
         fi
     else
-        if [[ ! -f "${target_link_name}" || -L "${target_link_name}" ]]; then
-            ln -s -f "${HYBRID_software_input_file[Afterburner]}" "${target_link_name}"
-        elif [[ ! "${target_link_name}" -ef "${HYBRID_software_input_file[Afterburner]}" ]]; then
-            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                'File ' --emph "${target_link_name}" ' exists but it is not the Afterburner input file ' \
-                --emph "${HYBRID_software_input_file[Afterburner]}" ' to be used.'
-        fi
+        __static__Create_Symbolic_Link
     fi
 }
 
