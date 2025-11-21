@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+#===================================================
+#
+#    Copyright (c) 2023-2025
+#      SMASH Hybrid Team
+#
+#    GNU General Public License (GPLv3 or later)
+#
+#===================================================
+
 # README:
 # If the environment variable BLACK_BOX_TYPE_SAMPLER is set to "FIST", the script is called like:
 #
