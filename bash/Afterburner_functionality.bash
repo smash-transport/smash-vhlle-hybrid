@@ -113,7 +113,37 @@ function __static__Create_Symbolic_Link()
 function __static__Create_Sampled_Particles_File_Or_Symbolic_Link()
 {
     local -r target_link_name="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
-    if [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
+    if [[ "${HYBRID_optional_feature[Add_corona_from_IC_and_Hydro]}" = 'TRUE' ]]; then
+        Ensure_Given_Files_Do_Not_Exist "${target_link_name}"
+        Ensure_Given_Files_Exist \
+            "${HYBRID_software_input_file[Afterburner]}" \
+            "${HYBRID_software_input_file[IC_corona]}"
+        local python_exit_code
+        if __static__Run_Add_Corona_Python_Script; then
+            :
+        else
+            python_exit_code=$?
+            if [[ ${python_exit_code} -eq 2 ]]; then
+                Print_Internal_And_Exit \
+                    --emph "${HYBRID_software_input_file[IC_corona]}" \
+                    'or' --emph "${HYBRID_software_input_file[Afterburner]}" \
+                    'not found even if it was ensured to exist.'
+            elif [[ ${python_exit_code} -eq 3 ]]; then
+                Print_Fatal_And_Exit \
+                    'Could not determine number of events from last line of at least one input file.'
+            elif [[ ${python_exit_code} -eq 4 ]]; then
+                Print_Warning \
+                    'No corona particles were found, creating a symbolic link for the sampled particles.'
+                __static__Create_Symbolic_Link
+            elif [[ ${python_exit_code} -eq 5 ]]; then
+                Print_Internal_And_Exit \
+                    --emph "${target_link_name}" 'already exists even if it was ensured not to.'
+            else
+                Print_Fatal_And_Exit \
+                    'Adding corona from IC and Hydro to the sampled particles file failed.'
+            fi
+        fi
+    elif [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
         Ensure_Given_Files_Do_Not_Exist "${target_link_name}"
         # Here the config.yaml file is expected to be produced by SMASH in the output folder
         # during the IC run. It is used to determine the initial number of particles.
@@ -146,36 +176,6 @@ function __static__Create_Sampled_Particles_File_Or_Symbolic_Link()
             else
                 Print_Fatal_And_Exit \
                     'Adding spectators from the IC particles to the sampled particles file failed.'
-            fi
-        fi
-    elif [[ "${HYBRID_optional_feature[Add_corona_from_IC_and_Hydro]}" = 'TRUE' ]]; then
-        Ensure_Given_Files_Do_Not_Exist "${target_link_name}"
-        Ensure_Given_Files_Exist \
-            "${HYBRID_software_input_file[Afterburner]}" \
-            "${HYBRID_software_input_file[IC_corona]}"
-        local python_exit_code
-        if __static__Run_Add_Corona_Python_Script; then
-            :
-        else
-            python_exit_code=$?
-            if [[ ${python_exit_code} -eq 2 ]]; then
-                Print_Internal_And_Exit \
-                    --emph "${HYBRID_software_input_file[IC_corona]}" \
-                    'or' --emph "${HYBRID_software_input_file[Afterburner]}" \
-                    'not found even if it was ensured to exist.'
-            elif [[ ${python_exit_code} -eq 3 ]]; then
-                Print_Fatal_And_Exit \
-                    'Could not determine number of events from last line of some input file.'
-            elif [[ ${python_exit_code} -eq 4 ]]; then
-                Print_Warning \
-                    'No corona particles were found, making a symbolic link for the sampled particles.'
-                __static__Create_Symbolic_Link
-            elif [[ ${python_exit_code} -eq 5 ]]; then
-                Print_Internal_And_Exit \
-                    --emph "${target_link_name}" 'already exists even if it was ensured not to.'
-            else
-                Print_Fatal_And_Exit \
-                    'Adding corona from IC and Hydro to the sampled particles file failed.'
             fi
         fi
     else

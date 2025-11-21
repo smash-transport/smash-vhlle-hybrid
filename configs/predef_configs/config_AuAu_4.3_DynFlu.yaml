@@ -11,14 +11,14 @@ IC:
                 Target:
                     Particles: {2212: 79, 2112: 118} #Gold197
                 Sqrtsnn: 4.3
-            Impact:
-                Range: [0.0,3.3] # 0-5%
-            Initial_Conditions:
-                Type: "Dynamic"
-                Energy_Density_Threshold: 0.5
-                Formation_Time_Fraction: 0.2
-                Fluidizable_Processes: ["All"]
-                Delay_Initial_Elastic: true
+                Impact:
+                    Range: [0.0,3.3] # 0-5%
+                Initial_Conditions:
+                    Type: "Dynamic"
+                    Energy_Density_Threshold: 0.5
+                    Formation_Time_Fraction: 0.2
+                    Fluidizable_Processes: ["All"]
+                    Delay_Initial_Elastic: true
 
 Hydro:
     Executable: /path/to/vHLLE

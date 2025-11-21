@@ -16,8 +16,8 @@ import os
 import subprocess
 
 '''
-    This script adds the corona particles from the initial SMASH run
-    and possibly others to the sampled particle list.
+    This script adds the corona particles from the IC and possibly the
+    Hydro stage to the sampled particle list.
 '''
 
 def find_out_event_number(filepath):
@@ -51,20 +51,19 @@ def extract_particles(filename):
     '''
     particles = np.empty(shape=[0, 13])
     n_event = 0
-
-    for line in open(filename, "r"):
-        line = line.split()
-        # event end line
-        if "end" in line:
-            n_event += 1
-        # ignore header
-        elif "#" in line or "#!OSCAR2013" in line or "#!OSCAR2013Extended" in line:
-            continue
-        # particle line
-        else:
-            particle = np.array(line[:12])
-            particle = np.append(int(n_event), particle)
-            particles = np.append(particles,[particle], axis=0)
+    with open(filename, "r") as open_file:
+        for line in open_file:
+            line = line.split()
+            # event end line
+            if "end" in line:
+                n_event += 1
+            # ignore header
+            elif len(line) == 0 or line[0].startswith("#"):
+                continue
+            # particle line
+            else:
+                particle = np.array([int(n_event), *line[:12]])
+                particles = np.append(particles,[particle], axis=0)
     return(particles)
 
 def gather_corona_particles(corona_lists):
@@ -78,23 +77,24 @@ def gather_corona_particles(corona_lists):
     for file in corona_lists:
         if os.path.isfile(file):
             is_any_corona_file_present = True
-            more_corona_particles = extract_particles(file)
-            corona_particles = np.append(corona_particles, more_corona_particles, axis=0)
-    if len(corona_particles) == 0:
-        print("No corona particles!", file=sys.stderr)
-        sys.exit(4)
+            corona_particles_in_file = extract_particles(file)
+            corona_particles = np.append(corona_particles, corona_particles_in_file, axis=0)
     if not is_any_corona_file_present:
         print("Corona files not found!", file=sys.stderr)
         sys.exit(2)
+    if len(corona_particles) == 0:
+        print("No corona particles found!", file=sys.stderr)
+        sys.exit(4)
     return corona_particles
 
 def copy_header(input_file, output_file):
     header = ""
-    for line in open(input_file, "r"):
-        if line.startswith('# event'):
-            break
-        else:
-            header += line
+    with open(input_file, "r") as open_input:
+        for line in open_input:
+            if line.startswith('# event') or not line.startswith('#'):
+                break
+            else:
+                header += line
     with open(output_file, 'w') as f:
         f.write(header)
 
@@ -103,45 +103,43 @@ def read_sampled_and_write_full_particle_list(args, corona_particles, n_events_i
         Corona particles are distributed among sampled events
     '''
     output_file = args.output_file
-    copy_header(args.sampled_particle_list,output_file)
+    sampled_file = args.sampled_particle_list
+    if not os.path.isfile(sampled_file):
+        print("Sampled particles file not found!", file=sys.stderr)
+        sys.exit(2)
+
+    copy_header(sampled_file,output_file)
 
     sampled_particles = np.empty(shape=[0, 12])
     event_s = 0
     event_c = 0
 
-    for line in open(args.sampled_particle_list, "r"):
-        line = line.split()
-        # event end line
-        if "end" in line:
-            corona_filter = corona_particles[corona_particles[:, 0] == str(event_c)]
-            particle_number = len(corona_filter)+len(sampled_particles)
-            with open(output_file, 'a') as f:
-                f.write("# event {} out {}\n".format(event_s,particle_number))
-            # write sampled
-            with open(output_file, 'a') as f:
-                np.savetxt(f, sampled_particles, delimiter=' ', fmt='%s')
-            # write corona
-            with open(output_file, 'a') as f:
-                np.savetxt(f, corona_filter[:,1:], delimiter=' ', fmt='%s')
-            with open(output_file, 'a') as f:
-                f.write("# event {} end \n".format(event_s))
-
-            if event_s % 100 == 0:
-                print("read and write event "+str(event_s))
-            # reset relevant variables
-            if event_c < (n_events_ic-1):
-                event_c += 1
+    with open(sampled_file, "r") as open_sampled:
+        for line in open_sampled:
+            line = line.split()
+            # event end line
+            if "end" in line:
+                corona_filter = corona_particles[corona_particles[:, 0] == str(event_c)]
+                particle_number = len(corona_filter)+len(sampled_particles)
+                with open(output_file, 'a') as f:
+                    f.write("# event {} out {}\n".format(event_s,particle_number)) 
+                    np.savetxt(f, sampled_particles, delimiter=' ', fmt='%s')   # write sampled 
+                    np.savetxt(f, corona_filter[:,1:], delimiter=' ', fmt='%s') # write corona
+                    f.write("# event {} end\n".format(event_s))
+                # reset relevant variables
+                if event_c < (n_events_ic-1):
+                    event_c += 1
+                else:
+                    event_c = 0
+                event_s += 1
+                sampled_particles = np.empty(shape=[0, 12])
+            # ignore event headers
+            elif len(line) == 0 or "#" in line[0]:
+                continue
+            # particle line
             else:
-                event_c = 0
-            event_s += 1
-            sampled_particles = np.empty(shape=[0, 12])
-        # ignore event headers
-        elif "#" in line[0]:
-            continue
-        # particle line
-        else:
-            particle = np.array(line[:12])
-            sampled_particles = np.append(sampled_particles,[particle], axis=0)
+                particle = np.array(line[:12])
+                sampled_particles = np.append(sampled_particles,[particle], axis=0)
 
 if __name__ == '__main__':
     # pass arguments from the command line to the script
@@ -154,7 +152,7 @@ if __name__ == '__main__':
                         help="Resulting particle list containing " \
                         "sampled and spectator particles.")
     parser.add_argument("-f", "--force", action='store_true',
-                        help = "Ignore pre-existing output file")
+                        help = "Ignore pre-existing output file.")
     args = parser.parse_args()
 
     output = args.output_file
