@@ -44,7 +44,7 @@ def read_parameters(configFile):
         "etaSMin": ["etaSMin", 0],
         "T0": ["T0", 0],
         "eEtaSmin": ["eEtaSmin", 0],
-        "zetaS": ["zeta/s" , 0],
+        "zetaS": ["zeta/s", 0],
         "epsilon0": ["epsilon0", 0],
         "Rg": ["Rgt", 0],
         "Rgz": ["Rgz", 0],
@@ -60,7 +60,8 @@ def read_parameters(configFile):
         for line in open(configFile, "r"):
             line = line.split()
             for key in parameters:
-                if key in line: parameters[key][1] = line[1]
+                if key in line:
+                    parameters[key][1] = line[1]
     return parameters
 
 def print_parameters():
@@ -146,7 +147,7 @@ Init time = 9 [sec]"""
     if os.path.exists(args.ISinput) and input_is_valid:
         print(messageExample)
     else:
-        print("I/O error with",args.ISinput)
+        print("I/O error with", args.ISinput)
         sys.exit(1)
 
 def print_timestep(timestep):
@@ -163,14 +164,15 @@ def print_timestep(timestep):
 def run_hydro(outputDirSpecified):
     # create freezout hypersurface file
     # only if output directory is specified
-    if outputDirSpecified: freezeout = open(args.outputDir+"freezeout.dat", "w")
+    if outputDirSpecified:
+        freezeout = open(args.outputDir+"freezeout.dat", "w")
     variableList = ["tau", "E", "Efull", "Nb", "Sfull", "EtotSurf", "elements", "susp.", "%cut"]
     # run the black box
     print("{: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10}".format(*variableList))
     if crash:
         print("Crash happened in vHLLE")
         sys.exit(1)
-    for ts in range(1,13):
+    for ts in range(1, 13):
         print_timestep(ts)
         time.sleep(0.1)
     if outputDirSpecified:

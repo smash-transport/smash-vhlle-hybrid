@@ -59,10 +59,10 @@ def run_smash(finalize,SMASH_input_file_with_participants_and_spectators,sampler
     # create smash.lock file
     f = open(args.o+file_name_is_running, "w")
     try:
-        f_in=open(sampler_dir+SMASH_input_file_with_participants_and_spectators,"r")
+        f_in = open(sampler_dir+SMASH_input_file_with_participants_and_spectators, "r")
         f_in.close()
         print("File read")
-    except:
+    except OSError:
         print(fatal_error+"Sampled particle list could not be opened")
         sys.exit(1)
     f.close()
@@ -106,25 +106,16 @@ def parse_command_line_config_options():
         data_config = yaml.safe_load(file)
 
     sampler_dir=""
-    dir_config=False
-    n_events_config=False
 
     try:
-        n_events=data_config['General']['Nevents']
-        n_events_config=True
-    except:
-        print("Nevents could not be parsed")
-        sys.exit(1)
-    try:
         sampler_dir=data_config['Modi']['List']['File_Directory']
-        dir_config=True
-    except:
+    except KeyError:
         print("File directory could not be parsed")
         sys.exit(1)
 
     try:
         file=data_config['Modi']['List']['Filename']
-    except:
+    except KeyError:
         print("Filename could not be parsed")
         sys.exit(1)
 
