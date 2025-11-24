@@ -1,7 +1,7 @@
 #===================================================
 #
 #    Copyright (c) 2023-2025
-#      SMASH Hybrid Team
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -351,7 +351,7 @@ In particular:
     This function considers as comments anything coming after _any_ occurrence of
     the specified comment character and **you should not use it if there might
     be occurrences of that character that do not start a comment!**
-    For the hybrid handler configuration such a basic implementation is enough.
+    For the Hybrid-handler configuration such a basic implementation is enough.
 --8<-- [end:Remove_Comments_In_File-desc]
 --8<-- [start:Remove_Comments_In_File-ex]
 Remove_Comments_In_File 'config.yaml'

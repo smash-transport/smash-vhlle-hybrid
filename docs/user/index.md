@@ -6,7 +6,7 @@ hide:
 
 # A unique wonderful tool
 
-The hybrid handler is a :simple-gnubash: **Bash script** and therefore it does not need any installation.
+The Hybrid-handler is a :simple-gnubash: **Bash script** and therefore it does not need any installation.
 Once cloned the repository, you can simply run the `Hybrid-handler` script[^1].
 
 [^1]: Be aware, that this might not work straightaway if only a very old Bash installation is available on your OS.
@@ -28,13 +28,13 @@ Once cloned the repository, you can simply run the `Hybrid-handler` script[^1].
 
     Everything can be done using a handy script with different execution modes.
 
-    [:material-arrow-right-box:&nbsp; The hybrid handler main script](execution_modes.md)
+    [:material-arrow-right-box:&nbsp; The Hybrid-handler main script](execution_modes.md)
 
 -   :screwdriver:{ .lg .middle } &nbsp; __Wanna run?__
 
     ---
 
-    Build your configuration file to use the hybrid handler according to your needs.
+    Build your configuration file to use the Hybrid-handler according to your needs.
 
     [:material-arrow-right-box:&nbsp; The configuration file](configuration_file.md)
 

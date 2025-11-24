@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2025
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -89,14 +89,14 @@ function __static__Create_Symbolic_Link_To_EOS_Folder()
                 exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
                     'A ' --emph 'eos' ' folder called already exists at ' \
                     --emph "${HYBRID_software_output_directory[Hydro]}" \
-                    '.' 'Please remove it and run the hybrid handler again.'
+                    '.' 'Please remove it and run the Hybrid-handler again.'
             fi
         fi
     elif [[ -e "${link_to_eos_folder}" ]]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             'A ' --emph 'eos' ' file already exists at ' \
             --emph "${HYBRID_software_output_directory[Hydro]}" \
-            '.' 'Please remove it and run the hybrid handler again.'
+            '.' 'Please remove it and run the Hybrid-handler again.'
     else
         ln -s "${eos_folder}" "${link_to_eos_folder}"
     fi

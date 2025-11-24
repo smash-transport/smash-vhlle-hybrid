@@ -1,7 +1,7 @@
 #===================================================
 #
 #    Copyright (c) 2024-2025
-#      SMASH Hybrid Team
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -11,8 +11,8 @@
 # of most of the setup done here (cf. in particular the 'Setup' and 'Reference'
 # tabs in the documentation).
 
-site_name: SMASH-vHLLE-Hybrid
-copyright: Copyright &copy; 2024-2025 - SMASH team
+site_name: Hybrid-handler
+copyright: Copyright &copy; 2024-2025 - Hybrid-handler Team
 
 repo_url: https://github.com/smash-transport/smash-vhlle-hybrid
 repo_name: 'Repository'

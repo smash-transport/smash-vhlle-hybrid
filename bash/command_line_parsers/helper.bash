@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2025
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -142,7 +142,7 @@ function __static__Print_Given_Command_Line_Option_Help()
             __static__Print_Command_Line_Option_Help \
                 '--id' "${HYBRID_run_id}" \
                 'Run ID to be used by the handler. The timestamp in the' \
-                'default value refers to when the hybrid handler is run.'
+                'default value refers to when the Hybrid-handler is run.'
             ;;
         *)
             Print_Internal_And_Exit \
