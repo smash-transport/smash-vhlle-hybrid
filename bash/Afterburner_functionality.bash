@@ -15,7 +15,7 @@ function Prepare_Software_Input_File_Afterburner()
     Ensure_Given_Files_Exist "${HYBRID_software_base_config_file[Afterburner]}"
     Copy_Base_Configuration_To_Output_Folder_For 'Afterburner'
     Replace_Keys_In_Configuration_File_If_Needed_For 'Afterburner'
-    __static__Create_Sampled_Particles_File_Or_Symbolic_Link_With_Or_Without_Spectators
+    __static__Create_Sampled_Particles_File_Or_Symbolic_Link
     __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
 }
 
@@ -90,10 +90,68 @@ function __static__Run_Add_Spectators_Python_Script()
         '--smash_config' "${HYBRID_software_output_directory[IC]}/config.yaml" 2> /dev/null
 }
 
-function __static__Create_Sampled_Particles_File_Or_Symbolic_Link_With_Or_Without_Spectators()
+function __static__Run_Add_Corona_Python_Script()
+{
+    "${HYBRID_external_python_scripts[Add_corona_from_IC_and_Hydro]}" \
+        '--sampled_particle_list' "${HYBRID_software_input_file[Afterburner]}" \
+        '--corona_particle_lists' "${HYBRID_software_input_file[IC_corona]}" \
+        "${HYBRID_software_input_file[Hydro_corona]}" \
+        '--output_file' "${target_link_name}" 2> /dev/null
+}
+
+function __static__Create_Symbolic_Link()
+{
+    if [[ ! -f "${target_link_name}" || -L "${target_link_name}" ]]; then
+        ln -s -f "${HYBRID_software_input_file[Afterburner]}" "${target_link_name}"
+    elif [[ ! "${target_link_name}" -ef "${HYBRID_software_input_file[Afterburner]}" ]]; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+            'File ' --emph "${target_link_name}" ' exists but it is not the Afterburner input file ' \
+            --emph "${HYBRID_software_input_file[Afterburner]}" ' to be used.'
+    fi
+}
+
+function __static__Create_Sampled_Particles_File_Or_Symbolic_Link()
 {
     local -r target_link_name="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
-    if [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
+    if [[ "${HYBRID_optional_feature[Add_corona_from_IC_and_Hydro]}" = 'TRUE' ]]; then
+        Ensure_Given_Files_Do_Not_Exist "${target_link_name}"
+        Ensure_Given_Files_Exist \
+            "${HYBRID_software_input_file[Afterburner]}" \
+            "${HYBRID_software_input_file[IC_corona]}"
+        # NOTE: Since the errexit option enabled, the python script to add the spectators is run in the if-statement
+        #       and the possible exit code is accessed at the very beginning of the else-clause.
+        if __static__Run_Add_Corona_Python_Script; then
+            # BE AWARE: The negation of the if-clause does not work because then the exit code cannot
+            #           be extracted properly (it will always be 0 because of the true if-statement).
+            :
+        else
+            case $? in
+                2)
+                    Print_Internal_And_Exit \
+                        --emph "${HYBRID_software_input_file[IC_corona]}" \
+                        'or' --emph "${HYBRID_software_input_file[Afterburner]}" \
+                        'not found even if it was ensured to exist.'
+                    ;;
+                3)
+                    Print_Fatal_And_Exit \
+                        'Could not determine number of events from last line of at least one input file.'
+                    ;;
+                4)
+                    Print_Warning \
+                        'No corona particles were found, creating a symbolic link for the sampled particles.'
+                    __static__Create_Symbolic_Link
+                    ;;
+                5)
+                    Print_Internal_And_Exit \
+                        --emph "${target_link_name}" 'already exists even if it was ensured not to.'
+                    ;;
+                *)
+                    Print_Fatal_And_Exit \
+                        'Adding corona from IC and Hydro to the sampled particles file failed.'
+                    ;;
+            esac
+        fi
+    elif [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
         Ensure_Given_Files_Do_Not_Exist "${target_link_name}"
         # Here the config.yaml file is expected to be produced by SMASH in the output folder
         # during the IC run. It is used to determine the initial number of particles.
@@ -107,35 +165,31 @@ function __static__Create_Sampled_Particles_File_Or_Symbolic_Link_With_Or_Withou
         # Run Python script to add spectators
         # NOTE: Since the errexit option enabled, the python script to add the spectators is run in the if-statement
         #       and the possible exit code is accessed at the very beginning of the else-clause.
-        local python_exit_code
         if __static__Run_Add_Spectators_Python_Script; then
             # BE AWARE: The negation of the if-clause does not work because then the exit code cannot
             #           be extracted properly (it will always be 0 because of the true if-statement).
             :
         else
-            python_exit_code=$?
-            if [[ ${python_exit_code} -eq ${HYBRID_fatal_value_error} ]]; then
-                exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
-                    'It was attempted to add spectators from multiple IC events to the sampled particles file. Only' \
-                    'running one IC event is supported when using the Afterburner config key ' \
-                    --emph "Add_spectators_from_IC: true" '.'
-            elif [[ ${python_exit_code} -eq 2 ]]; then
-                Print_Internal_And_Exit \
-                    'The handing over of the ' --emph "python_fatal_value_error" \
-                    ' to the Python script that adds spectators from the IC did not work.'
-            else
-                Print_Fatal_And_Exit \
-                    'Adding spectators from the IC particles to the sampled particles file failed.'
-            fi
+            case $? in
+                ${HYBRID_fatal_value_error})
+                    exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
+                        'It was attempted to add spectators from multiple IC events to the sampled particles file. ' \
+                        'Only running one IC event is supported when using the Afterburner config key ' \
+                        --emph "Add_spectators_from_IC: true" '.'
+                    ;;
+                2)
+                    Print_Internal_And_Exit \
+                        'The handing over of the ' --emph "python_fatal_value_error" \
+                        ' to the Python script that adds spectators from the IC did not work.'
+                    ;;
+                *)
+                    Print_Fatal_And_Exit \
+                        'Adding spectators from the IC particles to the sampled particles file failed.'
+                    ;;
+            esac
         fi
     else
-        if [[ ! -f "${target_link_name}" || -L "${target_link_name}" ]]; then
-            ln -s -f "${HYBRID_software_input_file[Afterburner]}" "${target_link_name}"
-        elif [[ ! "${target_link_name}" -ef "${HYBRID_software_input_file[Afterburner]}" ]]; then
-            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                'File ' --emph "${target_link_name}" ' exists but it is not the Afterburner input file ' \
-                --emph "${HYBRID_software_input_file[Afterburner]}" ' to be used.'
-        fi
+        __static__Create_Symbolic_Link
     fi
 }
 

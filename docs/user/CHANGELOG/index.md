@@ -48,10 +48,11 @@ Given a version number `X.Y.Z`,
 
     **Changes:**
 
+    :new: &nbsp; Added `Add_corona_from_IC_and_Hydro` configuration key in the `Afterburner` module, which merges the files containing corona particles from :file_folder: ***IC*** and :file_folder: ***Hydro*** into the particle lists sampled in :file_folder: ***Sampler***.
+
     :new: &nbsp; Added new valid config key `hydro_coordinate_system` for SMASH sampler to handle hydrodynamic simulations in Cartesian coordinates properly, additional to the runs in tau-eta frame.
 
     :new: &nbsp; The `Input_file` configuration key in the `Hydro` and `Afterburner` modules can now be used to modify the expected file names from the appropriate :file_folder: ***IC*** and :file_folder: ***Sampler*** sub-folders, when a string without a `/` character is given.
-
 
 ### SMASH-vHLLE-hybrid-2.1.3
 
