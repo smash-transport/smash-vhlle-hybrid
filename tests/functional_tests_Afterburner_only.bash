@@ -206,7 +206,6 @@ function Functional_Test__do-Afterburner-only()
             --emph "${HYBRID_fatal_logic_error}" '.'
         return 1
     fi
-    mv 'Afterburner' 'Afterburner-failure-both-corona-and-spectator'
     # Expect success and test the add_spectator functionality
     Print_Info 'Running Hybrid-handler expecting success with the add_spectator option'
     mkdir -p "IC/${run_id}"
@@ -307,7 +306,6 @@ function Functional_Test__do-Afterburner-only()
             --emph "${HYBRID_fatal_logic_error}" '.'
         return 1
     fi
-    mv 'Afterburner' 'Afterburner-failure-combine-IC-and-custom-spectators'
     # Expect failure for unfinished Sampler output
     printf '
     Afterburner:

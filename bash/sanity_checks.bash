@@ -217,7 +217,7 @@ function __static__Perform_Logic_Checks_For_Exclusive_Options()
         && [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             'The Afterburner keys ' --emph 'Add_spectators_from_IC' ' and ' --emph 'Add_corona_from_IC_and_Hydro' \
-            ' cannot both be true simultaneously.'
+            ' cannot both be set to true simultaneously.'
     fi
 }
 

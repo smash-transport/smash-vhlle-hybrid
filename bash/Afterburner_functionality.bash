@@ -118,30 +118,38 @@ function __static__Create_Sampled_Particles_File_Or_Symbolic_Link()
         Ensure_Given_Files_Exist \
             "${HYBRID_software_input_file[Afterburner]}" \
             "${HYBRID_software_input_file[IC_corona]}"
-        local python_exit_code
+        # NOTE: Since the errexit option enabled, the python script to add the spectators is run in the if-statement
+        #       and the possible exit code is accessed at the very beginning of the else-clause.
         if __static__Run_Add_Corona_Python_Script; then
+            # BE AWARE: The negation of the if-clause does not work because then the exit code cannot
+            #           be extracted properly (it will always be 0 because of the true if-statement).
             :
         else
-            python_exit_code=$?
-            if [[ ${python_exit_code} -eq 2 ]]; then
-                Print_Internal_And_Exit \
-                    --emph "${HYBRID_software_input_file[IC_corona]}" \
-                    'or' --emph "${HYBRID_software_input_file[Afterburner]}" \
-                    'not found even if it was ensured to exist.'
-            elif [[ ${python_exit_code} -eq 3 ]]; then
-                Print_Fatal_And_Exit \
-                    'Could not determine number of events from last line of at least one input file.'
-            elif [[ ${python_exit_code} -eq 4 ]]; then
-                Print_Warning \
-                    'No corona particles were found, creating a symbolic link for the sampled particles.'
-                __static__Create_Symbolic_Link
-            elif [[ ${python_exit_code} -eq 5 ]]; then
-                Print_Internal_And_Exit \
-                    --emph "${target_link_name}" 'already exists even if it was ensured not to.'
-            else
-                Print_Fatal_And_Exit \
-                    'Adding corona from IC and Hydro to the sampled particles file failed.'
-            fi
+            case $? in
+                2)
+                    Print_Internal_And_Exit \
+                        --emph "${HYBRID_software_input_file[IC_corona]}" \
+                        'or' --emph "${HYBRID_software_input_file[Afterburner]}" \
+                        'not found even if it was ensured to exist.'
+                    ;;
+                3)
+                    Print_Fatal_And_Exit \
+                        'Could not determine number of events from last line of at least one input file.'
+                    ;;
+                4)
+                    Print_Warning \
+                        'No corona particles were found, creating a symbolic link for the sampled particles.'
+                    __static__Create_Symbolic_Link
+                    ;;
+                5)
+                    Print_Internal_And_Exit \
+                        --emph "${target_link_name}" 'already exists even if it was ensured not to.'
+                    ;;
+                *)
+                    Print_Fatal_And_Exit \
+                        'Adding corona from IC and Hydro to the sampled particles file failed.'
+                    ;;
+            esac
         fi
     elif [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
         Ensure_Given_Files_Do_Not_Exist "${target_link_name}"
@@ -157,26 +165,28 @@ function __static__Create_Sampled_Particles_File_Or_Symbolic_Link()
         # Run Python script to add spectators
         # NOTE: Since the errexit option enabled, the python script to add the spectators is run in the if-statement
         #       and the possible exit code is accessed at the very beginning of the else-clause.
-        local python_exit_code
         if __static__Run_Add_Spectators_Python_Script; then
             # BE AWARE: The negation of the if-clause does not work because then the exit code cannot
             #           be extracted properly (it will always be 0 because of the true if-statement).
             :
         else
-            python_exit_code=$?
-            if [[ ${python_exit_code} -eq ${HYBRID_fatal_value_error} ]]; then
-                exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
-                    'It was attempted to add spectators from multiple IC events to the sampled particles file. Only' \
-                    'running one IC event is supported when using the Afterburner config key ' \
-                    --emph "Add_spectators_from_IC: true" '.'
-            elif [[ ${python_exit_code} -eq 2 ]]; then
-                Print_Internal_And_Exit \
-                    'The handing over of the ' --emph "python_fatal_value_error" \
-                    ' to the Python script that adds spectators from the IC did not work.'
-            else
-                Print_Fatal_And_Exit \
-                    'Adding spectators from the IC particles to the sampled particles file failed.'
-            fi
+            case $? in
+                ${HYBRID_fatal_value_error})
+                    exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
+                        'It was attempted to add spectators from multiple IC events to the sampled particles file. ' \
+                        'Only running one IC event is supported when using the Afterburner config key ' \
+                        --emph "Add_spectators_from_IC: true" '.'
+                    ;;
+                2)
+                    Print_Internal_And_Exit \
+                        'The handing over of the ' --emph "python_fatal_value_error" \
+                        ' to the Python script that adds spectators from the IC did not work.'
+                    ;;
+                *)
+                    Print_Fatal_And_Exit \
+                        'Adding spectators from the IC particles to the sampled particles file failed.'
+                    ;;
+            esac
         fi
     else
         __static__Create_Symbolic_Link
