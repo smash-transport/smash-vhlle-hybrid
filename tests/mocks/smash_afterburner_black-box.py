@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+#===================================================
+#
+#    Copyright (c) 2023-2025
+#      SMASH Hybrid Team
+#
+#    GNU General Public License (GPLv3 or later)
+#
+#===================================================
+
 import argparse
 import os
 import sys
