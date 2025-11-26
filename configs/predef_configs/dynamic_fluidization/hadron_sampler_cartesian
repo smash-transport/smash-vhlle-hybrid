@@ -1,7 +1,7 @@
 surface_file                  =DEFAULT=
 output_dir                    =DEFAULT=
 number_of_events              1000
-shear                         1 
+shear                         1
 bulk                          1
 ecrit                         0.3339
 hydro_coordinate_system       cartesian
