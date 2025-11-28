@@ -60,7 +60,7 @@ function Perform_Internal_Sanity_Checks()
         "${HYBRID_external_python_scripts[@]}"
     for key in "${!HYBRID_software_base_config_file[@]}"; do
         # The IC/Sampler entry in the associative array here is still empty and does not point to a
-        # shipped configuration file. It will be chosen later according to the verion or module.
+        # shipped configuration file. It will be chosen later according to the version or module.
         if [[ ! ${key} =~ ^(IC|Sampler)$ ]]; then
             Internally_Ensure_Given_Files_Exist \
                 'These base configuration files should be shipped within the Hybrid-handler codebase.' '--' \
@@ -134,36 +134,34 @@ function __static__Set_Base_Configuration_File_If_Unset()
     if [[ "${HYBRID_software_base_config_file[${key}]}" != '' ]]; then
         return
     fi
+    local prefix extension path
+    prefix="${HYBRID_default_configurations_folder}/"
+    extension=''
+    path=''
     case "${key}" in
         IC)
-            Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_version[IC]'
-            local ic_key
-            if Is_Version "${HYBRID_software_version[IC]}" -lt '3.2'; then
-                ic_key='IC_lt_3.2'
-            else
-                ic_key='IC_ge_3.2'
-            fi
-            HYBRID_software_base_config_file[IC]="${HYBRID_software_base_config_file[${ic_key}]}"
+            prefix+="smash_IC__v"
+            extension='.yaml'
             ;;
         Sampler)
-            local sampler_key
-            if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
-                Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_version[Sampler]'
-                if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
-                    sampler_key='Sampler_SMASH_lt_3.2'
-                else
-                    sampler_key='Sampler_SMASH_ge_3.2'
-                fi
-            else
-                sampler_key='Sampler_FIST'
+            if [[ "${HYBRID_module[Sampler]}" = 'FIST' ]]; then
+                path="${HYBRID_software_base_config_file[Sampler_FIST]}"
             fi
-            HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${sampler_key}]}"
+            prefix+="hadron_sampler__v"
             ;;
         *)
             Print_Internal_And_Exit 'Base configuration file unset for ' --emph "${key}" \
                 '\nstage, although this should not be the case!'
             ;;
     esac
+    readonly prefix extension
+    # If path is still unset, it means the decision is to be taken based on software version
+    if [[ ${path} = '' ]]; then
+        Ensure_That_Given_Variables_Are_Set_And_Not_Empty "HYBRID_software_version[${key}]"
+        path="$(__static__Pick_Base_Config_To_Be_Used \
+            "${key}" "${prefix}" "${extension}" "${HYBRID_software_version[${key}]}")"
+    fi
+    HYBRID_software_base_config_file[${key}]="${path}"
 }
 
 function __static__Perform_Command_Line_VS_Configuration_Consistency_Checks()
@@ -436,6 +434,43 @@ function __static__Set_Software_Version()
             # Nothing to do in the other cases
             ;;
     esac
+}
+
+#===================================================================================================
+
+function __static__Pick_Base_Config_To_Be_Used()
+{
+    local -r \
+        key=$1 \
+        prefix=$2 \
+        extension=$3 \
+        software_version=$4
+    local list_of_versions version selected_version
+    local -r string_to_restore_nullglob=$(shopt -p nullglob || true)
+    shopt -s nullglob
+    list_of_versions=("${prefix}"*)
+    eval "${string_to_restore_nullglob}" # NOTE: This eval usage is fine
+    if [[ ${#list_of_versions[@]} -eq 0 ]]; then
+        Print_Internal_And_Exit \
+            'Unable to find any base configuration file for ' --emph "${key}" \
+            ' matching ' --emph "$(basename ${prefix})*" '.'
+    fi
+    list_of_versions=("${list_of_versions[@]//${prefix}/}")
+    list_of_versions=("${list_of_versions[@]//${extension}/}")
+    # Sort array w.r.t. versions list of files matching the prefix
+    readarray -t -d $'\0' list_of_versions < <(printf '%s\0' "${list_of_versions[@]}" | sort -z -V)
+    if Is_Version "${software_version}" -lt "${list_of_versions[0]}"; then
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
+            'Unable to find base configuration file for ' --emph "${key}" \
+            ' stage compatible with software version ' --emph "${software_version}" '.'
+    fi
+    for version in "${list_of_versions[@]}"; do
+        if Is_Version "${software_version}" -lt "${version}"; then
+            break
+        fi
+        selected_version=${version}
+    done
+    printf "${prefix}${selected_version}${extension}"
 }
 
 Make_Functions_Defined_In_This_File_Readonly

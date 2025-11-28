@@ -107,7 +107,7 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
         return 1
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/"*
-    cp "${HYBRID_default_configurations_folder}/smash_initial_conditions__ge_v3.2.yaml" \
+    cp "${HYBRID_default_configurations_folder}/smash_IC__v3.2.yaml" \
         "${HYBRID_software_output_directory[IC]}/config.yaml"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
     if [[ $? -ne ${HYBRID_fatal_file_not_found} ]]; then
