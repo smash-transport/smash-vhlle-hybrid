@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2025
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -19,14 +19,24 @@ function Format_Codebase()
     fi
 }
 
-function Run_Formatting_Unit_Test()
+function Run_Formatting_Unit_Tests()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty HYBRID_top_level_path
     source "${HYBRID_top_level_path}/tests/unit_tests_formatting.bash" || exit ${HYBRID_fatal_builtin}
     # The following variable definition is just a patch to be able to reuse the test code from here
     HYBRIDT_repository_top_level_path="${HYBRID_top_level_path}"
-    if Unit_Test__codebase-formatting; then
-        Print_Info 'The codebase was correctly formatted and the formatting test passes.'
+    local bash_format_correct='FALSE'
+    local python_format_correct='FALSE'
+    if Unit_Test__codebase-formatting-Bash; then
+        bash_format_correct='TRUE'
+    else
+        printf '\n'
+    fi
+    if Unit_Test__codebase-formatting-Python; then
+        python_format_correct='TRUE'
+    fi
+    if [[ "${bash_format_correct}" = 'TRUE' ]] && [[ "${python_format_correct}" = 'TRUE' ]]; then
+        Print_Info 'The codebase was correctly formatted and the formatting tests pass.'
     fi
 }
 
