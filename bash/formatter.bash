@@ -9,13 +9,34 @@
 
 function Format_Codebase()
 {
+    local bash_formatter_found='TRUE'
+    local python_formatter_found='TRUE'
     if ! hash shfmt &> /dev/null; then
-        Print_Fatal_And_Exit \
-            'Command ' --emph 'shfmt' ' not available, unable to format codebase.' \
-            'Please, install it (https://github.com/mvdan/sh#shfmt) and run the formatting again.'
-    else
+        Print_Error \
+            'Command ' --emph 'shfmt' ' not available.' \
+            'Please install it (https://github.com/mvdan/sh#shfmt).\n'
+        bash_formatter_found='FALSE'
+    fi
+    if ! hash autopep8 &> /dev/null; then
+        Print_Error \
+            'Command ' --emph 'autopep8' ' not available.' \
+            'Please install it (https://pypi.org/project/autopep8).\n'
+        python_formatter_found='FALSE'
+    fi
+    if [[ "${bash_formatter_found}" = 'TRUE' ]] && [[ "${python_formatter_found}" = 'TRUE' ]]; then
         Ensure_That_Given_Variables_Are_Set_And_Not_Empty HYBRID_top_level_path
         shfmt -w -ln bash -i 4 -bn -ci -sr -fn "${HYBRID_top_level_path}"
+        local list_of_python_files=(
+            "${HYBRID_python_folder}/"*.py
+            "${HYBRID_top_level_path}/tests/"**/*.py
+        )
+        for file in ${list_of_python_files[@]}; do
+            # Ignoring rule E26, i.e. not enforcing a single whitespace after the # of inline comments
+            autopep8 --ignore "E26" -i "${file}"
+        done
+    else
+        Print_Fatal_And_Exit 'Unable to format the codebase. ' \
+            'Please install the missing requirements and run the formatting again.'
     fi
 }
 
