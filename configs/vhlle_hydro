@@ -28,3 +28,6 @@ tauMax     25.0
 dtau       0.05
 
 freezeoutOnly 1
+
+freezeoutExtend 0
+vorticity       0

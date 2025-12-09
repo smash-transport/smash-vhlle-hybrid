@@ -45,6 +45,8 @@ function Validate_Configuration_File_Of_SMASH()
         'ecrit'
         'cs2'
         'ratio_pressure_energydensity'
+        'sample_spin'
+        'vorticity_vector'
     )
     if Is_Version "${HYBRID_software_version[Sampler]}" -ge '3.2'; then
         allowed_keys+=('create_root_output' 'hydro_coordinate_system')
