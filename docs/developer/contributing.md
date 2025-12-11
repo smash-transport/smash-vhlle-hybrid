@@ -73,7 +73,7 @@ Please, refer to their README file for more information.
 ## Used Bash behavior
 
 After long consideration, it has been decided to use some stricter Bash mode.
-In particular, the harmless `pipefail`, `nounset` and `extglob` options are enabled, together with the more controversial `errexit` one (and its sibling `inherit_errexit`).
+In particular, the harmless `pipefail`, `nounset`, `extglob`, and `globstar` options are enabled, together with the more controversial `errexit` one (and its sibling `inherit_errexit`).
 We are aware that the `errexit` option leads to many corner cases and that there are controversial opinions around.
 The advantage is its useful semantics and, more importantly, it can protect from dangerous situations (`cd NotExistingFolder; rm -r *`).
 But beware of possible gotchas.

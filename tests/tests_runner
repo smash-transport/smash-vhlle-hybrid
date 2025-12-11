@@ -2,7 +2,7 @@
 
 #===================================================
 #
-#    Copyright (c) 2023
+#    Copyright (c) 2023,2025
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -55,7 +55,7 @@ function Setup_Initial_And_Final_Output_Space()
 function Enable_Global_Needed_Shell_Options()
 {
     # See developer guide for explanation about why globally
-    shopt -s extglob
+    shopt -s extglob globstar
     set -o pipefail -o nounset
     # NOTE: The behavior about 'errexit' mode here is not the same as in the handler, i.e. we do
     #       not enable such a mode globally. This is because we want to easily have access to exit
