@@ -132,6 +132,6 @@ In particular, be aware that the Bash formatter will not enforce the rules expla
     * Loops and conditional clauses are started on a single line, i.e. the `do` and `then` keywords are **NOT** put on a separate line.
 
 !!! info "Good to know about formatting Python files"
-    * `autopep8` is set up to intentionally ignore rule `E26`, i.e. not enforcing a single whitespace after the `#` of inline comments as recommended by the [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008/#inline-comments).
+    * `autopep8` is set up to intentionally ignore rule `E265`, i.e. not enforcing a single whitespace after the `#` of block comments as recommended by the [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008/#inline-comments).
       This is done to have unified copyright statements for Bash and Python files.
       Apart from the copyright statements, developers are encouraged to use a space after the `#` of comments.
