@@ -20,15 +20,16 @@ import subprocess
     Hydro stage to the sampled particle list.
 '''
 
+
 def find_out_event_number(filepath):
     '''
         Look into the last line of the file and find the number of events
     '''
     if not os.path.isfile(filepath):
-        print(filepath+" does not exist!", file=sys.stderr)
+        print(filepath + " does not exist!", file=sys.stderr)
         sys.exit(2)
     tail = subprocess.run(['tail', '-n', '1', filepath],
-                          stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     last_line = tail.stdout.decode().strip().split()
     n_events = 0
     error = False
@@ -41,9 +42,10 @@ def find_out_event_number(filepath):
         error = True
     if error:
         print("The number of events cannot be found for " + filepath,
-                file=sys.stderr)
+              file=sys.stderr)
         sys.exit(3)
-    return n_events+1
+    return n_events + 1
+
 
 def extract_particles(filename):
     '''
@@ -63,8 +65,9 @@ def extract_particles(filename):
             # particle line
             else:
                 particle = np.array([int(n_event), *line[:12]])
-                particles = np.append(particles,[particle], axis=0)
-    return(particles)
+                particles = np.append(particles, [particle], axis=0)
+    return (particles)
+
 
 def gather_corona_particles(corona_lists):
     '''
@@ -87,6 +90,7 @@ def gather_corona_particles(corona_lists):
         sys.exit(4)
     return corona_particles
 
+
 def copy_header(input_file, output_file):
     header = ""
     with open(input_file, "r") as open_input:
@@ -98,6 +102,7 @@ def copy_header(input_file, output_file):
     with open(output_file, 'w') as f:
         f.write(header)
 
+
 def read_sampled_and_write_full_particle_list(args, corona_particles, n_events_ic):
     '''
         Corona particles are distributed among sampled events
@@ -108,7 +113,7 @@ def read_sampled_and_write_full_particle_list(args, corona_particles, n_events_i
         print("Sampled particles file not found!", file=sys.stderr)
         sys.exit(2)
 
-    copy_header(sampled_file,output_file)
+    copy_header(sampled_file, output_file)
 
     sampled_particles = np.empty(shape=[0, 12])
     event_s = 0
@@ -120,14 +125,14 @@ def read_sampled_and_write_full_particle_list(args, corona_particles, n_events_i
             # event end line
             if "end" in line:
                 corona_filter = corona_particles[corona_particles[:, 0] == str(event_c)]
-                particle_number = len(corona_filter)+len(sampled_particles)
+                particle_number = len(corona_filter) + len(sampled_particles)
                 with open(output_file, 'a') as f:
-                    f.write("# event {} out {}\n".format(event_s,particle_number))
+                    f.write("# event {} out {}\n".format(event_s, particle_number))
                     np.savetxt(f, sampled_particles, delimiter=' ', fmt='%s')   # write sampled
-                    np.savetxt(f, corona_filter[:,1:], delimiter=' ', fmt='%s') # write corona
+                    np.savetxt(f, corona_filter[:, 1:], delimiter=' ', fmt='%s')  # write corona
                     f.write("# event {} end\n".format(event_s))
                 # reset relevant variables
-                if event_c < (n_events_ic-1):
+                if event_c < (n_events_ic - 1):
                     event_c += 1
                 else:
                     event_c = 0
@@ -139,25 +144,26 @@ def read_sampled_and_write_full_particle_list(args, corona_particles, n_events_i
             # particle line
             else:
                 particle = np.array(line[:12])
-                sampled_particles = np.append(sampled_particles,[particle], axis=0)
+                sampled_particles = np.append(sampled_particles, [particle], axis=0)
+
 
 if __name__ == '__main__':
     # pass arguments from the command line to the script
     parser = argparse.ArgumentParser()
-    parser.add_argument("-s","--sampled_particle_list", required = True,
+    parser.add_argument("-s", "--sampled_particle_list", required=True,
                         help="File containing the sampled particle lists.")
-    parser.add_argument("-c","--corona_particle_lists", nargs='+', required = True,
+    parser.add_argument("-c", "--corona_particle_lists", nargs='+', required=True,
                         help="Particle list from the initial conditions SMASH run.")
-    parser.add_argument("-o","--output_file", required = True,
-                        help="Resulting particle list containing " \
+    parser.add_argument("-o", "--output_file", required=True,
+                        help="Resulting particle list containing "
                         "sampled and spectator particles.")
     parser.add_argument("-f", "--force", action='store_true',
-                        help = "Ignore pre-existing output file.")
+                        help="Ignore pre-existing output file.")
     args = parser.parse_args()
 
     output = args.output_file
     if os.path.isfile(output):
-        print(output+" already exists!", file=sys.stderr)
+        print(output + " already exists!", file=sys.stderr)
         if not args.force:
             sys.exit(5)
 

@@ -2,7 +2,7 @@
 
 #===================================================
 #
-#    Copyright (c) 2023-2025
+#    Copyright (c) 2023,2025
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -17,9 +17,11 @@ import time
 import datetime
 import textwrap
 
+
 def print_terminal_start():
     print("\nRunning Hydro:\n")
     return
+
 
 def read_parameters(configFile):
     # list of possible parameters
@@ -73,6 +75,7 @@ def read_parameters(configFile):
                     parameters[key][1] = line[1]
     return parameters
 
+
 def print_parameters():
     print("vhlle: reading parameters from ", args.params)
     print("vhlle: command line parameters are:")
@@ -87,6 +90,7 @@ def print_parameters():
     print("======= end parameters =======")
     return
 
+
 def create_folder(outputDirSpecified):
     # create path if needed
     if outputDirSpecified:
@@ -100,6 +104,7 @@ def create_folder(outputDirSpecified):
         print("mkdir: missing operand")
     return
 
+
 def check_command_line():
     # check if there are command# check if there is a config file
     if len(sys.argv) < 2:
@@ -112,6 +117,7 @@ def check_command_line():
             sys.exit(1)
     return
 
+
 def check_eos():
     # no real check at this point we assume the eos folder exists
     # where hlle_visc executable is
@@ -122,11 +128,13 @@ def check_eos():
     if eosExists:
         print("EoSaux: table eos/chiraleos.dat read, [emin,emax,nmin,nmax] = 0  146  0  6")
         print("EoSaux: table eos/chiralsmall.dat read, [emin,emax,nmin,nmax] = 0  1.46  0  0.3")
-        print("EoSSMASH: table eos/hadgas_eos_SMASH.dat read, [emin,emax,nbmin,nbmax,qmin,qmax] = 0  1  0  0.5 -0.1  0.4")
+        print(
+            "EoSSMASH: table eos/hadgas_eos_SMASH.dat read, [emin,emax,nbmin,nbmax,qmin,qmax] = 0  1  0  0.5 -0.1  0.4")
     else:
         print("I/O error with eos/chiraleos.dat")
         sys.exit(1)
     return
+
 
 def exit_without_config(outputDirSpecified):
     if args.params == "":
@@ -142,6 +150,7 @@ Init time = 6 [sec]""")
         print("{: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10}".format(*valueList))
         sys.exit(1)
     return
+
 
 def read_initial_state():
     messageExample = """particle E = 1442.11  Nbar = 367  Ncharge = 148 Ns = 0
@@ -159,6 +168,7 @@ Init time = 9 [sec]"""
         print("I/O error with", args.ISinput)
         sys.exit(1)
 
+
 def print_timestep(timestep):
     randomList = []
     for i in range(1, 10):
@@ -174,7 +184,7 @@ def run_hydro(outputDirSpecified):
     # create freezout hypersurface file
     # only if output directory is specified
     if outputDirSpecified:
-        freezeout = open(args.outputDir+"freezeout.dat", "w")
+        freezeout = open(args.outputDir + "freezeout.dat", "w")
     variableList = ["tau", "E", "Efull", "Nb", "Sfull", "EtotSurf", "elements", "susp.", "%cut"]
     # run the black box
     print("{: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10}".format(*variableList))

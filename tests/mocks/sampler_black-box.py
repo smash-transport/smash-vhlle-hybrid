@@ -2,7 +2,7 @@
 
 #===================================================
 #
-#    Copyright (c) 2023-2025
+#    Copyright (c) 2023,2025
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -54,10 +54,12 @@ from packaging.version import Version
 
 sampler_version = os.environ.get("MOCK_HADRON_SAMPLER_VERSION", "3.1.1")
 
+
 def print_version_and_exit_if_requested():
     if sys.argv[1] == '--version':
         print(sampler_version)
         sys.exit(0)
+
 
 def check_input_arguments(mode):
     """
@@ -106,6 +108,7 @@ def check_input_arguments(mode):
                 print("Invalid number of arguments!\n" + calling_instruction)
                 sys.exit(1)
 
+
 def check_if_file_exists(path, mode, ftype=None):
     """
     Checks if the file (path) exists. In FIST mode, prints specialized error messages
@@ -114,7 +117,7 @@ def check_if_file_exists(path, mode, ftype=None):
     if mode == 'FIST':
         if not os.path.isfile(path):
             if ftype == "hypersurface":
-                print(f"Hypersurface file  {path} not found! \n Empty hypersurface! Aborting...")
+                print(f"Hypersurface file {path} not found! \n Empty hypersurface! Aborting...")
             elif ftype == "decays":
                 print("**WARNING** rho0 (113): Particle marked unstable but no decay channels found!")
                 sys.exit(1)
@@ -130,19 +133,22 @@ def check_if_file_exists(path, mode, ftype=None):
             print(f"File not found at given path: {path}")
             sys.exit(1)
 
+
 def check_if_directory_exists(path):
     if not os.path.isdir(path):
         err_msg = path + ' is not a valid directory or does not exist!'
         print(err_msg)
         sys.exit(1)
 
+
 def get_first_two_fields_in_line(line_in_config):
     #deleting the last character to omit the newline character '\n'
     line_in_config = line_in_config[:-1].split(' ')
     splitted_line_in_config = list(filter(None, line_in_config))
-    splitted_line_in_config[0]=str(splitted_line_in_config[0])
-    splitted_line_in_config[1]=str(splitted_line_in_config[1])
+    splitted_line_in_config[0] = str(splitted_line_in_config[0])
+    splitted_line_in_config[1] = str(splitted_line_in_config[1])
     return splitted_line_in_config
+
 
 def get_value_as_string_from_config_by_keyword(path_to_config, keyword, custom_error=None):
     """
@@ -160,14 +166,16 @@ def get_value_as_string_from_config_by_keyword(path_to_config, keyword, custom_e
         print(f"Keyword '{keyword}' not found in config file!")
     sys.exit(1)
 
+
 def make_fake_run(mode):
     if mode == 'FIST':
         print("\nRunning FIST-Sampler:\n")
     else:
         print(f"\nRunning SMASH-Sampler v{sampler_version}:\n")
     for i in range(11):
-        print('Fake computational progress: ', int(10*i), '%')
+        print('Fake computational progress: ', int(10 * i), '%')
         time.sleep(0.1)
+
 
 def create_output_file(mode, outpath):
     """
@@ -223,6 +231,7 @@ def create_output_file(mode, outpath):
             f_out.write(f'# event {counter_event} end 0 impact   0.000 scattering_projectile_target yes\n')
 
 ####################   End Definitions   ####################
+
 
 def run_black_box():
     """
@@ -312,6 +321,7 @@ def run_black_box():
     # Otherwise proceed with a normal run
     make_fake_run(mode)
     create_output_file(mode, outpath)
+
 
 if __name__ == "__main__":
     run_black_box()

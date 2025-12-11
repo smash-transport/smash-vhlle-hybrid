@@ -18,10 +18,12 @@ import time
 
 ic_version = os.environ.get("MOCK_IC_VERSION", "3.2")
 
+
 def print_version_and_exit_if_requested():
     if args.version:
         print(f"SMASH-{ic_version}")
         sys.exit(0)
+
 
 def check_config(valid_config):
     if args.i is None:
@@ -34,9 +36,11 @@ def check_config(valid_config):
         sys.exit(1)
     return
 
+
 def print_terminal_start():
     print("\nRunning SMASH IC:\n")
     return
+
 
 def create_folders_structure():
     # if no path is given, create folder structure
@@ -60,25 +64,28 @@ def create_folders_structure():
         args.o += "/"
     return
 
+
 def validate_output_folder():
     f_config = args.o + "config.yaml"
     if os.path.exists(f_config):
-        print(fatal_error + "Output directory would get overwritten. Select a different output directory, clean up, or tell SMASH to ignore existing files.")
+        print(fatal_error + "Output directory would get overwritten." +
+              "Select a different output directory, clean up, or tell SMASH to ignore existing files.")
         sys.exit(1)
     else:
         # create config file copying input one to output folder
         shutil.copy(args.i, f_config)
     return
 
+
 def run_smash(finalize):
     # create smash.lock file
-    f = open(args.o+file_name_is_running, "w")
+    f = open(args.o + file_name_is_running, "w")
     f.close()
     # open unfinished particle files
-    particles_out_oscar = open(SMASH_output_file_with_participants_and_spectators+name_unfinished, "w")
-    particles_out_dat = open(SMASH_special_output_file_for_vHLLE_with_participants_only+name_unfinished, "w")
+    particles_out_oscar = open(SMASH_output_file_with_participants_and_spectators + name_unfinished, "w")
+    particles_out_dat = open(SMASH_special_output_file_for_vHLLE_with_participants_only + name_unfinished, "w")
     # run the black box
-    for ts in range(1,11):
+    for ts in range(1, 11):
         print("running t = {} fm".format(ts))
         time.sleep(0.1)
     particles_out_oscar.close()
@@ -87,27 +94,31 @@ def run_smash(finalize):
     if finalize:
         finish()
     else:
-        print(fatal_error+"crash")
+        print(fatal_error + "crash")
         sys.exit(1)
     return
 
+
 def finish():
     # rename output by removing the .unfinished file ending
-    if os.path.exists(SMASH_output_file_with_participants_and_spectators+name_unfinished):
-        os.rename(SMASH_output_file_with_participants_and_spectators+name_unfinished, SMASH_output_file_with_participants_and_spectators)
+    if os.path.exists(SMASH_output_file_with_participants_and_spectators + name_unfinished):
+        os.rename(SMASH_output_file_with_participants_and_spectators +
+                  name_unfinished, SMASH_output_file_with_participants_and_spectators)
     else:
         print("somehow the output (.oscar) file was not properly written")
         sys.exit(1)
 
-    if os.path.exists(SMASH_special_output_file_for_vHLLE_with_participants_only+name_unfinished):
-        os.rename(SMASH_special_output_file_for_vHLLE_with_participants_only+name_unfinished, SMASH_special_output_file_for_vHLLE_with_participants_only)
+    if os.path.exists(SMASH_special_output_file_for_vHLLE_with_participants_only + name_unfinished):
+        os.rename(SMASH_special_output_file_for_vHLLE_with_participants_only +
+                  name_unfinished, SMASH_special_output_file_for_vHLLE_with_participants_only)
     else:
         print("somehow the output file (.dat) was not properly written")
         sys.exit(1)
 
     # remove smash.lock file
-    os.remove(args.o+file_name_is_running)
+    os.remove(args.o + file_name_is_running)
     return
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter,
@@ -144,8 +155,8 @@ if __name__ == '__main__':
     create_folders_structure()
     validate_output_folder()
 
-    SMASH_output_file_with_participants_and_spectators = args.o+name_particles_file+name_oscar
-    SMASH_special_output_file_for_vHLLE_with_participants_only = args.o+name_particles_file+name_dat
+    SMASH_output_file_with_participants_and_spectators = args.o + name_particles_file + name_oscar
+    SMASH_special_output_file_for_vHLLE_with_participants_only = args.o + name_particles_file + name_dat
 
     # smash is now ready to run
     print_terminal_start()
