@@ -73,7 +73,7 @@ Please, refer to their README file for more information.
 ## Used Bash behavior
 
 After long consideration, it has been decided to use some stricter Bash mode.
-In particular, the harmless `pipefail`, `nounset` and `extglob` options are enabled, together with the more controversial `errexit` one (and its sibling `inherit_errexit`).
+In particular, the harmless `pipefail`, `nounset`, `extglob`, and `globstar` options are enabled, together with the more controversial `errexit` one (and its sibling `inherit_errexit`).
 We are aware that the `errexit` option leads to many corner cases and that there are controversial opinions around.
 The advantage is its useful semantics and, more importantly, it can protect from dangerous situations (`cd NotExistingFolder; rm -r *`).
 But beware of possible gotchas.
@@ -87,14 +87,14 @@ Finally, a short remark about `extglob` option. To motivate why we decided to en
 > An unpleasant workaround could be to use a _subshell command_ list as the function body.
 
 
-## Bash notation in the codebase
+## Conventions used and formatting the codebase
 
 The general advice is pretty trivial: **Be consistent with what you find**.
 
-The codebase is formatted using [`shfmt`](https://github.com/mvdan/sh#shfmt).
+The Bash part of the codebase is formatted using [`shfmt`](https://github.com/mvdan/sh#shfmt), while [`autopep8`](https://pypi.org/project/autopep8/) is used for the Python files.
 Any developer should be aware that, because of the nature of the Bash scripting language, it is probably impossible to have a perfect formatter, which ensure rules in all details (as e.g. `clang-format` does for C++).
 Therefore, it is crucial for the developer to stay consistent with the existing style and, more importantly, to take some minutes to read the following lists.
-In particular, be aware the the formatter will not enforce the rules explained below.
+In particular, be aware that the Bash formatter will not enforce the rules explained below.
 
 !!! tip "The main Hybrid-handler script can format the codebase!"
     Before opening a PR, make sure all tests pass.
@@ -103,7 +103,7 @@ In particular, be aware the the formatter will not enforce the rules explained b
     Use it by running `./Hybrid-handler format`.
     This is meant for developers only and therefore does not appear in the helper description.
 
-!!! info "Some aspects about the codebase"
+!!! info "Some aspects about the Bash conventions in the codebase"
     * Lines of code are split around 100 characters and should never be longer than 120.
       This is a hard limit and tests will fail if longer lines exist.
     * Bash functions use **both** the `function` keyword **and** parenthesis (with the enclosing braces on separate lines).
@@ -130,3 +130,8 @@ In particular, be aware the the formatter will not enforce the rules explained b
 
     * Indentation is done _exclusively with spaces_ and **no** <kbd>Tab</kbd> should be used.
     * Loops and conditional clauses are started on a single line, i.e. the `do` and `then` keywords are **NOT** put on a separate line.
+
+!!! info "Good to know about formatting Python files"
+    * `autopep8` is set up to intentionally ignore rule `E265`, i.e. not enforcing a single whitespace after the `#` of block comments as recommended by the [PEP 8 – Style Guide for Python Code](https://peps.python.org/pep-0008/#inline-comments).
+      This is done to have unified copyright statements for Bash and Python files.
+      Apart from the copyright statements, developers are encouraged to use a space after the `#` of comments.

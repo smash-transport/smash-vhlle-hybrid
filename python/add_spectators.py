@@ -138,16 +138,15 @@ def write_full_particle_list(spectator_list):
 if __name__ == '__main__':
     # pass arguments from the command line to the script
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sampled_particle_list", required = True,
+    parser.add_argument("--sampled_particle_list", required=True,
                         help="File containing the sampled particle lists.")
-    parser.add_argument("--initial_particle_list", required = True,
+    parser.add_argument("--initial_particle_list", required=True,
                         help="Particle list from the initial conditions SMASH run.")
-    parser.add_argument("--output_file", required = True,
+    parser.add_argument("--output_file", required=True,
                         help="Resulting particle list containing sampled and spectator particles.")
-    parser.add_argument("--smash_config", required = True,
+    parser.add_argument("--smash_config", required=True,
                         help="SMASH config file employed for the initial conditions.")
     args = parser.parse_args()
-
 
     spectators = extract_spectators()
     write_full_particle_list(spectators)

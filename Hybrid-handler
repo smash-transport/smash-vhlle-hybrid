@@ -40,7 +40,7 @@ function Enable_Desired_Shell_Behavior()
 {
     # Set stricter bash mode (see CONTRIBUTING for more information)
     set -o pipefail -o nounset -o errexit
-    shopt -s extglob inherit_errexit
+    shopt -s extglob globstar inherit_errexit
 }
 
 function Setup_Initial_And_Final_Output_Space()
@@ -96,7 +96,6 @@ function Act_And_Exit_If_User_Ran_Auxiliary_Modes()
             ;;&
         format)
             Format_Codebase
-            Run_Formatting_Unit_Test
             ;;&
         version)
             Print_Software_Version
