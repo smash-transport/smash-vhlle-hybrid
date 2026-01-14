@@ -283,7 +283,7 @@ function Clean_Tests_Environment_For_Following_Test__Sampler-validate-config-fil
 function Make_Test_Preliminary_Operations__Sampler-validate-shipped-config-file-SMASH-lt-3.2()
 {
     Make_Test_Preliminary_Operations__Sampler-create-input-file-SMASH
-    readonly HYBRIDT_sampler_base_config_file_label='Sampler_SMASH_lt_3.2'
+    readonly HYBRIDT_sampler_base_config_filename='hadron_sampler__v0.0'
 }
 
 function Unit_Test__Sampler-validate-shipped-config-file-SMASH-lt-3.2()
@@ -293,7 +293,7 @@ function Unit_Test__Sampler-validate-shipped-config-file-SMASH-lt-3.2()
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     cd "${HYBRID_software_output_directory[Sampler]}"
     cp \
-        "${HYBRID_software_base_config_file["${HYBRIDT_sampler_base_config_file_label}"]}" \
+        "${HYBRID_default_configurations_folder}/${HYBRIDT_sampler_base_config_filename}" \
         "${HYBRID_software_configuration_file[Sampler]}"
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
     touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
@@ -316,7 +316,7 @@ function Make_Test_Preliminary_Operations__Sampler-validate-shipped-config-file-
     __static__Do_Preliminary_Sampler_Setup_Operations
     export MOCK_ECHO_VERSION=3.2
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
-    readonly HYBRIDT_sampler_base_config_file_label='Sampler_SMASH_ge_3.2'
+    readonly HYBRIDT_sampler_base_config_filename='hadron_sampler__v3.2'
 }
 
 function Unit_Test__Sampler-validate-shipped-config-file-SMASH-ge-3.2()

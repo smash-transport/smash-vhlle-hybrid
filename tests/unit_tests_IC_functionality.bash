@@ -28,38 +28,6 @@ function __static__Do_Preliminary_IC_Setup_Operations()
     touch "${HYBRID_configuration_file}"
 }
 
-function Make_Test_Preliminary_Operations__IC-pick-correct-base-config()
-{
-    __static__Do_Preliminary_IC_Setup_Operations
-}
-
-function __static__Is_Picked_IC_Base_Config_Correct_For_Version()
-{
-    export MOCK_ECHO_VERSION="$1"
-    local -r expected_filename="$2"
-    Call_Codebase_Function __static__Set_Software_Version 'IC'
-    Call_Codebase_Function __static__Set_Base_Configuration_File_If_Unset 'IC'
-    [[ $(basename "${HYBRID_software_base_config_file[IC]}") == ${expected_filename} ]]
-}
-
-function Unit_Test__IC-pick-correct-base-config()
-{
-    # Call the function above in a sub-shell to avoid exiting the test in case of failure
-    if ! (__static__Is_Picked_IC_Base_Config_Correct_For_Version '3.2' 'smash_initial_conditions__ge_v3.2.yaml'); then
-        Print_Error 'The base configuration file was not properly picked for version ' --emph '3.2' '.'
-        return 1
-    fi
-    if ! (__static__Is_Picked_IC_Base_Config_Correct_For_Version '3.1' 'smash_initial_conditions__lt_v3.2.yaml'); then
-        Print_Error 'The base configuration file was not properly picked for version ' --emph '3.1' '.'
-        return 1
-    fi
-}
-
-function Clean_Tests_Environment_For_Following_Test__IC-pick-correct-base-config()
-{
-    :
-}
-
 function Make_Test_Preliminary_Operations__IC-create-input-file()
 {
     __static__Do_Preliminary_IC_Setup_Operations

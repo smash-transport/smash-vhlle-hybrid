@@ -17,9 +17,10 @@ Before describing how the framework works and how to run tests, it is worth spen
     So far so good.
     However, you would also like to make the test fail if the called function fails.
     You might then innocently add a trailing `|| return 1` to the function call.
+    Or call your function as command of an `if` clause.
     :boom: Gotcha!
     What did you just do?
-    You made the called function code, and hence the handler code, run in a context were `errexit` is ignored (i.e. on the left of a `||` operator). :melting_face:
+    You made the called function code, and hence the handler code, run in a context were `errexit` is ignored (i.e. on the left of a `||` operator or as command of an `if` clause). :melting_face:
     **Keep this in mind!**
     If you really want to make the test fail, you have to do so in a different way, for example passing the exit code of your delegated task to a dedicated new function which can then harmlessly support a trailing `|| return 1`.
 

@@ -213,7 +213,7 @@ function __static__Analyze_System_Properties()
         system_information["${program}"]="$(Is_Python_Requirement_Satisfied "${program}" || true)"
     done
     for program in "${!system_information[@]}"; do
-        Print_Debug "${program} -> ${system_information[${program}]}"
+        Print_Trace "${program} -> ${system_information[${program}]}"
     done
 }
 
