@@ -131,6 +131,7 @@ extra:
       name: SMASH transport organization
   version:
     provider: mike
+    alias: true
 
 extra_css:
   - stylesheets/extra.css
