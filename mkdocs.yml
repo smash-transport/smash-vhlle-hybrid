@@ -123,6 +123,7 @@ theme:
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
+  custom_dir: docs/overrides
 
 extra:
   social:
@@ -131,6 +132,9 @@ extra:
       name: SMASH transport organization
   version:
     provider: mike
+    default:
+      - latest
+      - develop
     alias: true
 
 extra_css:
