@@ -60,16 +60,18 @@ Closing the branch means to merge it into `main`, which will be tagged and conta
 === "Close the release branch"
     ```bash
     # Git-flow extension
-    git flow release finish 1.2.0
+    git flow release finish 1.2.0 # (1)!
 
     # Vanilla Git commands
     git switch main
     git merge --no-ff release/1.2.0
-    git tag -a 1.2.0
+    git tag -a Hybrid-handler-1.2.0
     git switch develop
     git merge --no-ff release/1.2.0
     git branch -d release/1.2.0
     ```
+
+    1. This assumes that the tag prefix `Hybrid-handler` has been set at initialisation time in the Git-flow extension!
 
 === "Publish new release"
     ```bash
