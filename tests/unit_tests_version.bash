@@ -20,7 +20,9 @@ function Unit_Test__version()
     # be used as the repository is locally checked out effectively as a
     # black-box archive. Testing using a regex should cover all cases.
     HYBRID_codebase_version='Hybrid-handler-42.666.1'
-    HYBRID_codebase_version_regex='Hybrid-handler-[0-9]+([.][0-9]+)?'
+    # The regex includes 'SMASH-vHLLE-hybrid' to make this test 'backward-compatible'
+    # until the next release version 2.2. Afterward, this should be removed.
+    HYBRID_codebase_version_regex='(Hybrid-handler|SMASH-vHLLE-hybrid)-[0-9]+([.][0-9]+)?'
     local std_output
     # Unsetting PATH in the subshell so that 'git' will not be found
     std_output=$(
