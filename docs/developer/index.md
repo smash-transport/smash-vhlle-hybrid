@@ -7,7 +7,7 @@ hide:
 # From great power comes great responsibility
 
 The Hybrid-handler has been developed trying to make the entry point of a newbie developer as low as possible.
-Although :simple-gnubash: **Bash** can be sometimes not that simple to read[^1], the integration-operation segregation principle ([IOSP](https://clean-code-developer.com/grades/grade-1-red/)) has been used most of the times at the the top-level to allow the reader to get a first understanding of what the main functions are doing, having then the possibility to deepen into lower levels if needed.
+Although :simple-gnubash: **Bash** can be sometimes not that simple to read[^1], the integration-operation segregation principle ([IOSP](https://clean-code-developer.de/en/the-straight/red-degree/)) has been used most of the times at the the top-level to allow the reader to get a first understanding of what the main functions are doing, having then the possibility to deepen into lower levels if needed.
 Said differently, reading the code top-down should be straightforward, as the most top-level function is a series of function calls only, whose names should clearly describe what is done.
 
 Therefore, this guide is not meant to document any possible implementation detail, but rather provide the reader with important information, which might be difficult to grasp by reading the codebase.
