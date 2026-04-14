@@ -146,7 +146,13 @@ if __name__ == '__main__':
     name_unfinished = ".unfinished"
     name_oscar = ".oscar"
     name_dat = ".dat"
+
     name_particles_file = "SMASH_IC"
+    from packaging.version import Version
+    if Version(ic_version) >= Version("3.3"):
+        name_particles_file = "SMASH_IC_For_vHLLE"
+    else:
+        name_particles_file = "SMASH_IC"
 
     print_version_and_exit_if_requested()
 
