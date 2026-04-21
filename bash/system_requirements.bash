@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
+#    Copyright (c) 2023-2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -365,7 +365,7 @@ function __static__Print_Report_Of_Requirements_With_Minimum_version()
     else
         Print_Internal_And_Exit 'Unexpected call of ' --emph "${FUNCNAME}" ' function.'
     fi
-    if hash sort &> /dev/null; then
+    if type sort &> /dev/null; then
         # The sorting column must take into account hidden color codes seen by sort and
         # here we want to sort using either the program/module name; remember that the
         # the 'here-string' adds a newline to the string when feeding it into the command.
@@ -434,7 +434,10 @@ function __static__Print_Formatted_Binary_Report()
 
 function __static__Try_Find_Requirement()
 {
-    if hash "$1" 2> /dev/null; then
+    # since hash builtin unconditionally returns 0 if a name with a slash is passed to
+    # it (https://stackoverflow.com/a/42362142), prefer using type builtin here. Hash
+    # might also fail if a command was hashed but PATH changed afterwards.
+    if type "$1" &> /dev/null; then
         return 0
     else
         return 1
@@ -444,7 +447,7 @@ function __static__Try_Find_Requirement()
 function __static__Try_Find_Version()
 {
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty "system_information[$1]"
-    if ! hash grep &> /dev/null && [[ $1 != 'bash' ]]; then
+    if ! type grep &> /dev/null && [[ $1 != 'bash' ]]; then
         system_information["$1"]+='?|---'
         return 1
     fi
@@ -496,7 +499,7 @@ function __static__Check_Version_Suffices()
 function __static__Is_Gnu_Version_In_Use()
 {
     # This follows apparently common sense -> https://stackoverflow.com/a/61767587/14967071
-    if ! hash grep &> /dev/null || ! "$1" --version &> /dev/null; then
+    if ! type grep &> /dev/null || ! "$1" --version &> /dev/null; then
         return 2
     elif [[ $("$1" --version | grep -c 'GNU') -gt 0 ]]; then
         return 0
