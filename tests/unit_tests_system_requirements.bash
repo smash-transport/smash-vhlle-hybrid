@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
+#    Copyright (c) 2023-2024,2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -57,6 +57,16 @@ function __static__Inhibit_Commands_Version()
     }
 }
 
+function __static__Make_Grep_Independent_From_Environment_Path_Search()
+{
+    # We want to mimic a bad system later to mimic failures in the system requirements report, but
+    # grep is used to extract versions and we want to keep it "findable" when we unset PATH entries.
+    function grep()
+    {
+        ${stored_grep_command} "$@"
+    }
+}
+
 function Make_Test_Preliminary_Operations__system-requirements()
 {
     local file_to_be_sourced list_of_files
@@ -74,6 +84,8 @@ function Unit_Test__system-requirements()
     # find only the always required python packages, independently from OS installation.
     # Note that it needs to be set to a value to be visible from the python script.
     export HYBRID_TEST_MODE='set'
+    local -r stored_grep_command="$(type -P grep)"
+    __static__Make_Grep_Independent_From_Environment_Path_Search
     __static__Inhibit_Commands_Version
     local gnu {awk,git,sed,tput,yq}_version
     # Prepare mocked good system
@@ -121,6 +133,7 @@ function Unit_Test__system-requirements()
     printf '\n'
     (
         unset -v 'TERM'
+        export PATH=${PATH/\/usr\/bin/} # Remove /usr/bin from PATH
         Call_Codebase_Function_In_Subshell Check_System_Requirements_And_Make_Report
     )
     if [[ $? -ne 0 ]]; then
