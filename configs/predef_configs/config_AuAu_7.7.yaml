@@ -8,9 +8,13 @@ IC:
                 Target:
                     Particles: {2212: 79, 2112: 118} #Gold197
                 Sqrtsnn: 7.7
+                Initial_Conditions:
+                    Type: "Constant_Tau"
+                    Proper_Time_Scaling: 1
 
 Hydro:
     Executable: /path/to/vHLLE
+    Config_file: /path/to/handler/configs/predef_configs/vhlle_hydro_EPJA_58-11-230
     Software_keys:
         etaS: 0.2
         Rg: 1.4
@@ -22,6 +26,12 @@ Hydro:
 
 Sampler:
     Executable: /path/to/hadron-sampler
+    Software_keys:
+        bulk: 0
+        ecrit: 0.5
 
 Afterburner:
     Executable: /path/to/smash
+    Software_keys:
+        Collision_Term:
+            Cross_Section_Scaling: 1
