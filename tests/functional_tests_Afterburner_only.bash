@@ -270,10 +270,10 @@ function Functional_Test__do-Afterburner-only()
             File_Directory: "."
     ' "${run_id}" "${mocks_folder}" > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
-    if [[ $? -ne ${HYBRID_fatal_value_error} ]]; then
+    if [[ $? -ne ${HYBRID_internal_exit_code} ]]; then
         Print_Error \
             'Hybrid-handler did not fail as expected with exit code ' \
-            --emph "${HYBRID_fatal_value_error}" '.'
+            --emph "${HYBRID_internal_exit_code}" '.'
         return 1
     fi
     mv 'Afterburner' 'Afterburner-invalid-IC-events-with-spectators'

@@ -171,10 +171,9 @@ function __static__Create_Sampled_Particles_File_Or_Symbolic_Link()
         else
             case $? in
                 ${HYBRID_fatal_value_error})
-                    exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
+                    Print_Internal_And_Exit \
                         'It was attempted to add spectators from multiple IC events to the sampled particles file. ' \
-                        'Only running one IC event is supported when using the Afterburner config key ' \
-                        --emph "Add_spectators_from_IC: true" '.'
+                        'This should be forbidden by the handler in the initial sanity checks!'
                     ;;
                 2)
                     Print_Internal_And_Exit \

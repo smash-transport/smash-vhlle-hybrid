@@ -10,13 +10,13 @@
 function Functional_Test__do-everything-wo-spectators-old-IC()
 {
     __static__Set_IC_Software_Version_To 3.2
-    __static__Test_Full_Workflow 'FALSE' 1
+    __static__Test_Full_Workflow 'FALSE'
 }
 
 function Functional_Test__do-everything-wo-spectators-new-IC()
 {
     __static__Set_IC_Software_Version_To 3.3
-    __static__Test_Full_Workflow 'FALSE' 1
+    __static__Test_Full_Workflow 'FALSE'
 }
 
 function __static__Set_IC_Software_Version_To()
@@ -27,7 +27,7 @@ function __static__Set_IC_Software_Version_To()
 
 function Functional_Test__do-everything-with-spectators()
 {
-    __static__Test_Full_Workflow 'TRUE' 1
+    __static__Test_Full_Workflow 'TRUE'
 }
 
 function __static__Test_Full_Workflow()
@@ -36,7 +36,7 @@ function __static__Test_Full_Workflow()
     local -r \
         config_filename='Handler_config.yaml' \
         mocks_folder="${HYBRIDT_tests_folder}/mocks"
-    __static__Prepare_Full_Handler_Configuration_File "$1"
+    __static__Prepare_Full_Handler_Configuration_File "$1" 1
     __static__Create_Auxiliaries_For_Hydro
     # Expect success and test absence of "SMASH" unfinished file
     Print_Info 'Running full workflow with Hybrid-handler expecting success'
