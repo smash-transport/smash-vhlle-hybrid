@@ -35,7 +35,6 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             fi
         fi
     done
-    __static__Perform_Logic_Checks_For_Exclusive_Options
     __static__Set_Software_Input_Data_File 'Spectators'
     __static__Set_Software_Input_Data_File 'Corona'
     __static__Set_Global_Variables_As_Readonly
@@ -237,6 +236,12 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
                         --emph 'parameter-scan' ' execution mode.'
                 fi
             done
+            if [[ "${HYBRID_optional_feature[Add_corona_from_IC_and_Hydro]}" = 'TRUE' ]] \
+                && [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
+                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                    'The Afterburner keys ' --emph 'Add_spectators_from_IC' ' and ' --emph \
+                    'Add_corona_from_IC_and_Hydro' ' cannot both be set to true simultaneously.'
+            fi
             ;;
         prepare-scan)
             if [[ "${HYBRID_number_of_samples}" -eq ${HYBRID_default_number_of_samples} ]]; then
@@ -258,15 +263,6 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
     esac
 }
 
-function __static__Perform_Logic_Checks_For_Exclusive_Options()
-{
-    if [[ "${HYBRID_optional_feature[Add_corona_from_IC_and_Hydro]}" = 'TRUE' ]] \
-        && [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            'The Afterburner keys ' --emph 'Add_spectators_from_IC' ' and ' --emph 'Add_corona_from_IC_and_Hydro' \
-            ' cannot both be set to true simultaneously.'
-    fi
-}
 
 function __static__Exit_If_Some_Further_Needed_Python_Requirement_Is_Missing()
 {
