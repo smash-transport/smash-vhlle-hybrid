@@ -56,6 +56,10 @@ Given a version number `X.Y.Z`,
 
     :new: &nbsp; The `Input_file` configuration key in the `Hydro` and `Afterburner` modules can now be used to modify the expected file names from the appropriate :file_folder: ***IC*** and :file_folder: ***Sampler*** sub-folders, when a string without a `/` character is given.
 
+    :warning: &nbsp; The parameters extracted by the [Bayesian analysis](Phys. Rev. C 112, 014910) are now set as default for the base configs. The old parameters were kept in :file_folder: ***configs/predef_configs/vhlle_hydro_EPJA_58-11-230***.
+
+    :new: &nbsp; Added configuration files for a dynamic fluidization run in :file_folder: ***configs/predef_configs/dynamic_fluidization***. This requires the specific branch [merge-review in vHLLE](https://github.com/yukarpenko/vhlle/tree/merge-review).
+
 ### SMASH-vHLLE-hybrid-2.1.3
 
 ???+ success "&nbsp; :date: &nbsp; Release date: 2025-06-05 &emsp; :left_right_arrow: &nbsp; [Compare changes to previous version](https://github.com/smash-transport/smash-vhlle-hybrid/compare/SMASH-vHLLE-hybrid-2.1.2...SMASH-vHLLE-hybrid-2.1.3)"
