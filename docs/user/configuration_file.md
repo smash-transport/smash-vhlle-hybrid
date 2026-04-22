@@ -76,8 +76,8 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
 <i id="Config-file"></i>
 ???+ config-key "`Config_file`"
 
-    Path to the software specific configuration file.
-    If not specified, the file shipped in the ***configs*** folder is used.
+    Each stage is evolved by a separate framework, which requires a specific base configuration file defined by this key.
+    If not specified, the file shipped in the ***configs*** folder is used. The default values are taken from the Bayesian analysis described in [:newspaper: *Götz et al. Phys. Rev. C 112, 014910*](https://journals.aps.org/prc/abstract/10.1103/rzml-rjxz).
 
 <i id="Software-keys"></i>
 ???+ config-key "`Software_keys`"

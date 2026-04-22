@@ -56,7 +56,7 @@ Given a version number `X.Y.Z`,
 
     :new: &nbsp; The `Input_file` configuration key in the `Hydro` and `Afterburner` modules can now be used to modify the expected file names from the appropriate :file_folder: ***IC*** and :file_folder: ***Sampler*** sub-folders, when a string without a `/` character is given.
 
-    :warning: &nbsp; The parameters extracted by the [Bayesian analysis](Phys. Rev. C 112, 014910) are now set as default for the base configs. The old parameters for the hydro evolution were kept in :file_folder: ***configs/predef_configs/vhlle_hydro_EPJA_58-11-230***, and the other parameters are adjusted by each handler configuration file in :file_folder: *** predef_configs***.
+    :warning: &nbsp; The parameters extracted by the [Bayesian analysis in :newspaper: *Phys. Rev. C 112, 014910*](https://journals.aps.org/prc/abstract/10.1103/rzml-rjxz) are now set as default for the base configs. The old parameters for the hydro evolution were kept in :file_folder: ***configs/predef_configs/vhlle_hydro_EPJA_58-11-230***, and the other parameters are adjusted by each handler configuration file in :file_folder: *** predef_configs***.
 
     :new: &nbsp; Added configuration files for a dynamic fluidization run in :file_folder: ***configs/predef_configs/dynamic_fluidization***. This requires the specific branch [merge-review in vHLLE](https://github.com/yukarpenko/vhlle/tree/merge-review).
 
