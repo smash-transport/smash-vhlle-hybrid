@@ -25,6 +25,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             __static__Set_Software_Input_Data_File "${key}"
             __static__Set_Software_Version "${key}"
             __static__Set_Base_Configuration_File_If_Unset "${key}"
+            __static__Set_Default_Input_File_If_Unset "${key}"
             if [[ "${key}" = "Sampler" ]]; then
                 __static__Ensure_Valid_Module_Given_For_Sampler
                 __static__Ensure_Additional_Paths_Given_For_Sampler
@@ -162,6 +163,42 @@ function __static__Set_Base_Configuration_File_If_Unset()
             "${key}" "${prefix}" "${extension}" "${HYBRID_software_version[${key}]}")"
     fi
     HYBRID_software_base_config_file[${key}]="${path}"
+}
+
+function __static__Set_Default_Input_File_If_Unset()
+{
+    local -r key=$1
+    # Skip for IC, if already set, or if user specified custom input
+    if [[ "${key}" = 'IC' \
+        || "${HYBRID_software_default_input_filename[${key}]}" != '' \
+        || "${HYBRID_software_user_custom_input_file[${key}]}" != '' ]]; then
+        return
+    fi
+    
+    case "${key}" in
+        Hydro)
+            # If IC is not being run, we can't determine its version to pick the right input filename
+            if ! Element_In_Array_Equals_To 'IC' "${HYBRID_given_software_sections[@]}"; then
+                Print_Warning \
+                    'It is not possible to deduce which input file should be used for the ' \
+                    --emph 'Hydro' ' stage, since the IC stage is not run. Falling back to default ' \
+                    --emph 'SMASH_IC_For_vHLLE.dat' '. Use the ' --emph 'Input_File' \
+                    ' key in the Hydro section to explicitly specify a filename.'
+                HYBRID_software_default_input_filename[${key}]='SMASH_IC_For_vHLLE.dat'
+            else
+                Ensure_That_Given_Variables_Are_Set_And_Not_Empty "HYBRID_software_version[IC]"
+                if Is_Version "${HYBRID_software_version[IC]}" -ge '3.3'; then
+                    HYBRID_software_default_input_filename[${key}]='SMASH_IC_For_vHLLE.dat'
+                else
+                    HYBRID_software_default_input_filename[${key}]='SMASH_IC.dat'
+                fi
+            fi
+            ;;
+        *)
+            Print_Internal_And_Exit 'Default input file unset for ' --emph "${key}" \
+                '\nstage, although this should not be the case!'
+            ;;
+    esac
 }
 
 function __static__Perform_Command_Line_VS_Configuration_Consistency_Checks()

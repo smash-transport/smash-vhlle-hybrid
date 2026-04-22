@@ -36,9 +36,9 @@ function Define_Further_Global_Variables()
         [Add_corona_from_IC_and_Hydro]="${HYBRID_python_folder}/add_corona.py"
         [Latin_hypercube_sampling]="${HYBRID_python_folder}/latin_hypercube_sampling.py"
     )
-    declare -rgA HYBRID_software_default_input_filename=(
+    declare -gA HYBRID_software_default_input_filename=(
         [IC]=''
-        [Hydro]="SMASH_IC.dat"
+        [Hydro]="" # This will be sat in the sanity checks as it depends on the IC executable version
         [Sampler]="freezeout.dat" # Not used at the moment for how the sampler works
         [Spectators]="SMASH_IC.oscar"
         [Afterburner]="particle_lists.oscar"

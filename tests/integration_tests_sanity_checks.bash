@@ -9,6 +9,7 @@
 
 function Make_Test_Preliminary_Operations__pick-correct-base-config()
 {
+    local -r ic_mock=${1:-echo.py}
     local file_to_be_sourced list_of_files
     list_of_files=(
         'common_functionality.bash'
@@ -19,7 +20,7 @@ function Make_Test_Preliminary_Operations__pick-correct-base-config()
         source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
     done
     Define_Further_Global_Variables
-    HYBRID_software_executable[IC]="${HYBRIDT_tests_folder}/mocks/echo.py"
+    HYBRID_software_executable[IC]="${HYBRIDT_tests_folder}/mocks/${ic_mock}"
     HYBRID_software_executable[Sampler]="${HYBRIDT_tests_folder}/mocks/echo.py"
     # Touch dummy empty handler config as this is always there in sanity checks
     touch "${HYBRID_configuration_file}"
@@ -70,24 +71,13 @@ function Integration_Test__pick-correct-base-config()
 
 function Make_Test_Preliminary_Operations__pick-correct-default-input-file()
 {
-    local file_to_be_sourced list_of_files
-    list_of_files=(
-        'common_functionality.bash'
-        'global_variables.bash'
-        'sanity_checks.bash'
-    )
-    for file_to_be_sourced in "${list_of_files[@]}"; do
-        source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
-    done
-    Define_Further_Global_Variables
-    HYBRID_software_executable[IC]="${HYBRIDT_tests_folder}/mocks/echo.py"
-    # Touch dummy empty handler config as this is always there in sanity checks
-    touch "${HYBRID_configuration_file}"
+    Make_Test_Preliminary_Operations__pick-correct-base-config 'smash_IC_black-box.py'
+    HYBRID_given_software_sections=('IC' 'Hydro')
 }
 
 function __static__Test_Picked_Default_Input_File_For_Version()
 {
-    export MOCK_ECHO_VERSION="$1"
+    export MOCK_IC_VERSION="$1"
     local -r \
         expected_filename="$2" \
         key="$3"
