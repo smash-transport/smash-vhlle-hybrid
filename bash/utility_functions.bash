@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
+#    Copyright (c) 2023-2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -657,7 +657,7 @@ function Make_Functions_Defined_In_This_File_Readonly()
     # Make this function a no-op if sed or grep are not available, so that
     # the system-requirements check does not weirdly fail in those cases just
     # because this function is called when sourcing the files at the end.
-    if ! hash sed &> /dev/null || ! hash grep &> /dev/null; then
+    if ! type sed &> /dev/null || ! type grep &> /dev/null; then
         return
     fi
     # Here we assume all functions are defined with the same stile,

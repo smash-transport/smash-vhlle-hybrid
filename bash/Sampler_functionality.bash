@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
+#    Copyright (c) 2023-2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -140,18 +140,20 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
         bulk_hydro_param=0
         ecrit_hydro=0.5
         while read key value; do
+            # NOTE: Without parentheses, awk interprets 'print v > 0' as redirecting
+            #       output to a file named "0", rather than evaluating (v > 0).
             case "${key}" in
                 etaS)
-                    shear_hydro=$(bc -l <<< "${value}>0")
+                    shear_hydro=$(awk -v v="${value}" 'BEGIN { print (v > 0) }')
                     ;;
                 etaSparam)
-                    shear_hydro_param=$(bc -l <<< "${value}>0")
+                    shear_hydro_param=$(awk -v v="${value}" 'BEGIN { print (v > 0) }')
                     ;;
                 zetaS)
-                    bulk_hydro=$(bc -l <<< "${value}>0")
+                    bulk_hydro=$(awk -v v="${value}" 'BEGIN { print (v > 0) }')
                     ;;
                 zetaSparam)
-                    bulk_hydro_param=$(bc -l <<< "${value}>0")
+                    bulk_hydro_param=$(awk -v v="${value}" 'BEGIN { print (v > 0) }')
                     ;;
                 e_crit)
                     ecrit_hydro=${value}
@@ -167,8 +169,7 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
         if [[ "${bulk_hydro}" -eq 1 || "${bulk_hydro_param}" -eq 1 ]]; then
             is_hydro_bulk=1
         fi
-        local is_sampler_shear is_sampler_bulk \
-            ecrit_sampler
+        local is_sampler_shear is_sampler_bulk ecrit_sampler
         is_sampler_shear=1
         is_sampler_bulk=0
         ecrit_sampler=0.5

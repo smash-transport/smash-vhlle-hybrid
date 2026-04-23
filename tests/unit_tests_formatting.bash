@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
+#    Copyright (c) 2023-2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -10,7 +10,7 @@
 function Unit_Test__codebase-formatting-Bash()
 {
     local formatter_found='FALSE'
-    if hash shfmt &> /dev/null; then
+    if type shfmt &> /dev/null; then
         formatter_found='TRUE'
     else
         Print_Error 'Command ' --emph 'shfmt' \
@@ -70,7 +70,7 @@ function Unit_Test__codebase-formatting-Bash()
 function Unit_Test__codebase-formatting-Python()
 {
     local formatter_found='FALSE'
-    if hash autopep8 &> /dev/null; then
+    if type autopep8 &> /dev/null; then
         formatter_found='TRUE'
     else
         Print_Error 'Command ' --emph 'autopep8' \

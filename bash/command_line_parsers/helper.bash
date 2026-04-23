@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
+#    Copyright (c) 2023-2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -98,7 +98,7 @@ function __static__Print_Modes_Description()
                     "${list_of_modes[${mode}]}"
             )"$'\n'
         done
-        if hash sort &> /dev/null; then
+        if type sort &> /dev/null; then
             # Remember that the 'here-string' adds a newline to the string when
             # feeding it into the command -> get rid of it here
             sort --ignore-leading-blanks <<< "${section_string%?}"

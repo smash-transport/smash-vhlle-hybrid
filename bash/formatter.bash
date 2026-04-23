@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
+#    Copyright (c) 2023-2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -14,7 +14,7 @@ function Format_Codebase()
     local bash_format_succeeded='FALSE'
     local python_format_succeeded='FALSE'
     Ensure_That_Given_Variables_Are_Set_And_Not_Empty HYBRID_top_level_path
-    if ! hash shfmt &> /dev/null; then
+    if ! type shfmt &> /dev/null; then
         Print_Error \
             'Command ' --emph 'shfmt' ' not available. Please install it (https://github.com/mvdan/sh#shfmt)' \
             'to format the ' --emph 'Bash' ' files of the codebase.\n'
@@ -23,7 +23,7 @@ function Format_Codebase()
         shfmt -w -ln bash -i 4 -bn -ci -sr -fn "${HYBRID_top_level_path}" &> /dev/null \
             || Print_Internal_And_Exit 'Bash formatter ' --emph 'shfmt' ' unexpectedly failed.'
     fi
-    if ! hash autopep8 &> /dev/null; then
+    if ! type autopep8 &> /dev/null; then
         Print_Error \
             'Command ' --emph 'autopep8' ' not available. Please install it (https://pypi.org/project/autopep8)' \
             'to format the ' --emph 'Python' ' files of the codebase.\n'
