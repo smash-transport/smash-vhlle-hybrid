@@ -47,7 +47,7 @@ function __static__Declare_System_Requirements()
     fi
 }
 
-function Check_System_Requirements()
+function Check_System_Requirements_And_Exit_If_Any_Is_Missing()
 {
     __static__Declare_System_Requirements
     # NOTE: The following associative array will be used to store system information
@@ -85,7 +85,7 @@ function Check_System_Requirements_And_Make_Report()
     __static__Declare_System_Requirements
     local system_report=()
     local -r single_field_length=18 # This variable is used to prepare the report correctly formatted
-    declare -A system_information   # Same use of this variable as in 'Check_System_Requirements' function
+    declare -A system_information   # Same use as in 'Check_System_Requirements_And_Exit_If_Any_Is_Missing' function
     # Define colors for all reports
     local -r \
         emph_color='\e[96m' \

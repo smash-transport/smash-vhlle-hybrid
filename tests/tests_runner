@@ -114,7 +114,7 @@ function Print_Helper_And_Exit_If_Requested()
 
 function Check_System_Requirements_For_Tests()
 {
-    Check_System_Requirements
+    Check_System_Requirements_And_Exit_If_Any_Is_Missing
     if ! Is_Python_Requirement_Satisfied 'packaging' &> /dev/null; then
         exit_code=${HYBRID_fatal_missing_requirement} Print_Fatal_And_Exit \
             'Python ' --emph 'packaging' ' module needed to run tests.'

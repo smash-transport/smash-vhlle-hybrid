@@ -31,7 +31,7 @@ function Main()
     Define_Further_Global_Variables
     Parse_Execution_Mode
     Act_And_Exit_If_User_Ran_Auxiliary_Modes
-    Check_System_Requirements
+    Check_System_Requirements_And_Exit_If_Any_Is_Missing
     Parse_Command_Line_Options
     Make_Needed_Operations_Depending_On_Execution_Mode
 }

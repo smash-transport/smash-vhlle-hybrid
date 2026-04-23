@@ -96,7 +96,7 @@ function Unit_Test__system-requirements()
     sed_version=4.2.1
     tput_version=5.9
     yq_version=4.24.2
-    Call_Codebase_Function_In_Subshell Check_System_Requirements
+    Call_Codebase_Function_In_Subshell Check_System_Requirements_And_Exit_If_Any_Is_Missing
     if [[ $? -ne 0 ]]; then
         Print_Error "Check system requirements of good system failed."
         return 1
@@ -125,7 +125,7 @@ function Unit_Test__system-requirements()
     tput_version=''
     yq_version=3.9.98
     printf '\n'
-    Call_Codebase_Function_In_Subshell Check_System_Requirements &> /dev/null
+    Call_Codebase_Function_In_Subshell Check_System_Requirements_And_Exit_If_Any_Is_Missing &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error "Check system requirements of bad system succeeded."
         return 1
