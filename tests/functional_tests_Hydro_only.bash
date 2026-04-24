@@ -1,11 +1,23 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
+#    Copyright (c) 2023-2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
 #===================================================
+
+function Make_Test_Preliminary_Operations__do-Hydro-only()
+{
+    local file_to_be_sourced list_of_files
+    list_of_files=(
+        'global_variables.bash'
+    )
+    for file_to_be_sourced in "${list_of_files[@]}"; do
+        source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
+    done
+    Define_Further_Global_Variables
+}
 
 function Functional_Test__do-Hydro-only()
 {
