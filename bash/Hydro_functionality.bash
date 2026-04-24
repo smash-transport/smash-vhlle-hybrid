@@ -25,7 +25,7 @@ function Ensure_All_Needed_Input_Exists_Hydro()
         "${HYBRID_software_input_file[Hydro]}"
     Ensure_Given_Files_Exist \
         "${HYBRID_software_configuration_file[Hydro]}"
-    Internally_Ensure_Given_Files_Exist "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+    Internally_Ensure_Given_Files_Exist "${HYBRID_software_output_directory[Hydro]}/SMASH_IC_For_vHLLE.dat"
 }
 
 function Ensure_Run_Reproducibility_Hydro()
@@ -41,7 +41,7 @@ function Run_Software_Hydro()
     cd "${HYBRID_software_output_directory[Hydro]}"
     local -r \
         hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}" \
-        ic_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+        ic_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC_For_vHLLE.dat"
     "${HYBRID_software_executable[Hydro]}" \
         "-params" "${hydro_config_file_path}" \
         "-ISinput" "${ic_output_file_path}" \
@@ -54,7 +54,7 @@ function Run_Software_Hydro()
 
 function __static__Create_Symbolic_Link_To_IC_File()
 {
-    local -r target_link_name="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+    local -r target_link_name="${HYBRID_software_output_directory[Hydro]}/SMASH_IC_For_vHLLE.dat"
     if [[ ! -f "${target_link_name}" || -L "${target_link_name}" ]]; then
         ln -s -f "${HYBRID_software_input_file[Hydro]}" "${target_link_name}"
     elif [[ ! "${target_link_name}" -ef "${HYBRID_software_input_file[Hydro]}" ]]; then

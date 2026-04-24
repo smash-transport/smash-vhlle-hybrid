@@ -161,7 +161,7 @@ IC:
 ???+ config-key "`Input_file`"
 
     The hydrodynamics simulation needs an additional input file which contains the system's initial conditions.
-    This is the main output of the previous stage and, therefore, if not specified, a :material-file: *SMASH_IC.dat* file is expected to exist in the :file_folder: ***IC*** output sub-folder with the same `Run_ID`.
+    This is the main output of the previous stage and, therefore, if not specified, a :material-file: *SMASH_IC_For_vHLLE.dat* file is expected to exist in the :file_folder: ***IC*** output sub-folder with the same `Run_ID`.
 
     However, using this key, any file can be specified and used.
     If the key is a simple file name (without any `/`), the Hybrid-handler looks for this name in the corresponding :file_folder: ***IC*** output sub-folder, but if it is a path (i.e. it contains a `/`), that specific file will be used.

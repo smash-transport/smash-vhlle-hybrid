@@ -9,7 +9,6 @@
 
 function Make_Test_Preliminary_Operations__pick-correct-base-config()
 {
-    local -r ic_mock=${1:-echo.py}
     local file_to_be_sourced list_of_files
     list_of_files=(
         'common_functionality.bash'
@@ -20,7 +19,7 @@ function Make_Test_Preliminary_Operations__pick-correct-base-config()
         source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
     done
     Define_Further_Global_Variables
-    HYBRID_software_executable[IC]="${HYBRIDT_tests_folder}/mocks/${ic_mock}"
+    HYBRID_software_executable[IC]="${HYBRIDT_tests_folder}/mocks/echo.py"
     HYBRID_software_executable[Sampler]="${HYBRIDT_tests_folder}/mocks/echo.py"
     # Touch dummy empty handler config as this is always there in sanity checks
     touch "${HYBRID_configuration_file}"
@@ -44,13 +43,13 @@ function __static__Test_Picked_Base_Config_For_Version()
 function Integration_Test__pick-correct-base-config()
 {
     declare -A IC_cases=(
-        [3.1]='smash_IC__v3.1.yaml'
-        [3.2]='smash_IC__v3.2.yaml'
-        [3.2.1]='smash_IC__v3.2.yaml'
+        ['3.1']='smash_IC__v3.1.yaml'
+        ['3.2']='smash_IC__v3.2.yaml'
+        ['3.2.1']='smash_IC__v3.2.yaml'
     )
     declare -A Sampler_cases=(
-        [2.42.666]='hadron_sampler__v0.0'
-        [3.2]='hadron_sampler__v3.2'
+        ['2.42.666']='hadron_sampler__v0.0'
+        ['3.2']='hadron_sampler__v3.2'
     )
     local key v
     for key in 'IC' 'Sampler'; do
@@ -71,13 +70,14 @@ function Integration_Test__pick-correct-base-config()
 
 function Make_Test_Preliminary_Operations__pick-correct-default-input-file()
 {
-    Make_Test_Preliminary_Operations__pick-correct-base-config 'smash_IC_black-box.py'
+    Make_Test_Preliminary_Operations__pick-correct-base-config
+    # Pretend sanity checks are done in a scenario where both IC and Hydro are run
     HYBRID_given_software_sections=('IC' 'Hydro')
 }
 
 function __static__Test_Picked_Default_Input_File_For_Version()
 {
-    export MOCK_IC_VERSION="$1"
+    export MOCK_ECHO_VERSION="$1"
     local -r \
         expected_filename="$2" \
         key="$3"
@@ -93,8 +93,8 @@ function __static__Test_Picked_Default_Input_File_For_Version()
 function Integration_Test__pick-correct-default-input-file()
 {
     declare -A Hydro_cases=(
-        [3.2]='SMASH_IC.dat'
-        [3.3]='SMASH_IC_For_vHLLE.dat'
+        ['3.2']='SMASH_IC.dat'
+        ['3.3']='SMASH_IC_For_vHLLE.dat'
     )
     local v
     for v in "${!Hydro_cases[@]}"; do

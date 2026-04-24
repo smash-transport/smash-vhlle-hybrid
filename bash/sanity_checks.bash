@@ -22,10 +22,10 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
         if Element_In_Array_Equals_To "${key}" "${HYBRID_given_software_sections[@]}"; then
             __static__Ensure_Executable_Exists "${key}"
             __static__Set_Software_Configuration_File "${key}"
-            __static__Set_Software_Input_Data_File "${key}"
             __static__Set_Software_Version "${key}"
             __static__Set_Base_Configuration_File_If_Unset "${key}"
             __static__Set_Default_Input_File_If_Unset "${key}"
+            __static__Set_Software_Input_Data_File "${key}"
             if [[ "${key}" = "Sampler" ]]; then
                 __static__Ensure_Valid_Module_Given_For_Sampler
                 __static__Ensure_Additional_Paths_Given_For_Sampler
@@ -181,8 +181,8 @@ function __static__Set_Default_Input_File_If_Unset()
             if ! Element_In_Array_Equals_To 'IC' "${HYBRID_given_software_sections[@]}"; then
                 Print_Warning \
                     'It is not possible to deduce which input file should be used for the ' \
-                    --emph 'Hydro' ' stage, since the IC stage is not run. Falling back to default ' \
-                    --emph 'SMASH_IC_For_vHLLE.dat' '. Use the ' --emph 'Input_File' \
+                    --emph 'Hydro' ' stage, \nsince the IC stage is not run. Falling back to default ' \
+                    --emph 'SMASH_IC_For_vHLLE.dat' '.\nUse the ' --emph 'Input_File' \
                     ' key in the Hydro section to explicitly specify a filename.'
                 HYBRID_software_default_input_filename[${key}]='SMASH_IC_For_vHLLE.dat'
             else
