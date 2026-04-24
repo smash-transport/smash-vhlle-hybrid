@@ -152,7 +152,6 @@ function Define_Further_Global_Variables()
     declare -gA HYBRID_software_user_custom_input_file=(
         [IC]=''
         [Hydro]=''
-        [Sampler]=''
         [Spectators]=''
         [IC_corona]=''
         [Hydro_corona]=''
