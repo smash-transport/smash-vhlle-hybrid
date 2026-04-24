@@ -332,7 +332,7 @@ function __static__Set_Software_Configuration_File()
 
 function __static__Set_Software_Input_Data_File()
 {
-    local key=$1
+    local -r key=$1
     if [[ ${key} =~ ^(Hydro|Afterburner)$ ]]; then
         local filename relative_key
         filename="${HYBRID_software_user_custom_input_file[${key}]}"
@@ -345,6 +345,7 @@ function __static__Set_Software_Input_Data_File()
                 ;;
         esac
         if [[ "${filename}" = '' ]]; then
+            Ensure_That_Given_Variables_Are_Set_And_Not_Empty "HYBRID_software_default_input_filename[${key}]"
             printf -v filename '%s/%s' \
                 "${HYBRID_software_output_directory[${relative_key}]}" \
                 "${HYBRID_software_default_input_filename[${key}]}"
