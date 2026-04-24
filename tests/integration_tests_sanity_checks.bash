@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2025
+#    Copyright (c) 2025-2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -35,7 +35,7 @@ function __static__Test_Picked_Base_Config_For_Version()
     Call_Codebase_Function __static__Set_Base_Configuration_File_If_Unset "${key}"
     Print_Debug "${expected_filename} ==? $(basename "${HYBRID_software_base_config_file[${key}]}")"
     if [[ $(basename "${HYBRID_software_base_config_file[${key}]}") != ${expected_filename} ]]; then
-        Print_Error 'Picking base configuration failed for ' --emph "${key}" ' and version ' --emph "${v}" '.'
+        Print_Error 'Picking base configuration failed for ' --emph "${key}" ' and version ' --emph "$1" '.'
         return 1
     fi
 }
