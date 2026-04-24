@@ -112,20 +112,30 @@ function __static__Set_Sampler_Configuration_Key_Names()
 
 function __static__Set_Sampler_Input_Key_Paths()
 {
+    # The following local variable is just meant to keep the array assignment short and make formatter happy
+    # NOTE: It would be wrong to try to use here the 'HYBRID_software_input_file[Afterburner]' variable,
+    #        because this is going to be set __static__Set_Software_Input_Data_File after this function is
+    #        called. Also remember that 'HYBRID_software_input_file[Sampler]' does not exist.
+    local hydro_output_file
+    printf -v hydro_output_file '%s/%s' \
+        "${HYBRID_software_output_directory[Hydro]}" \
+        "${HYBRID_software_default_input_filename[Sampler]}"
     # As the user may set particle_list_file and decays_list_file through the HYBRID_fist_module
     # array, we set the input_key_default_path array here and not in global_variables.bash.
     if [[ "${HYBRID_module[Sampler]}" = 'FIST' ]]; then
+        local sampler_output_file
+        printf -v sampler_output_file '%s/%s' \
+            "${HYBRID_software_output_directory[Sampler]}" \
+            "${HYBRID_software_default_input_filename[Afterburner]}"
         declare -rgA HYBRID_sampler_input_key_default_paths=(
-            [hypersurface_file]="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
-            [output_file]="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"
+            [hypersurface_file]="${hydro_output_file}"
+            [output_file]="${sampler_output_file}"
             [particle_list_file]="${HYBRID_fist_module[Particle_file]}"
             [decays_list_file]="${HYBRID_fist_module[Decays_file]}"
         )
     else
-        # The following local variable is just meant to keep the array assignment short and make formatter happy
-        local -r freezeout="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
         declare -rgA HYBRID_sampler_input_key_default_paths=(
-            [${HYBRID_sampler_input_key_names[surface_filename]}]="${freezeout}"
+            [${HYBRID_sampler_input_key_names[surface_filename]}]="${hydro_output_file}"
             [${HYBRID_sampler_input_key_names[output_folder]}]="${HYBRID_software_output_directory[Sampler]}"
         )
     fi
