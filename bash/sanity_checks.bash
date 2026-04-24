@@ -169,12 +169,12 @@ function __static__Set_Default_Input_File_If_Unset()
 {
     local -r key=$1
     # Skip for IC, if already set, or if user specified custom input
-    if [[ "${key}" = 'IC' \
-        || "${HYBRID_software_default_input_filename[${key}]}" != '' \
-        || "${HYBRID_software_user_custom_input_file[${key}]}" != '' ]]; then
+    if [[ "${key}" = 'IC' ||
+        "${HYBRID_software_default_input_filename[${key}]}" != '' ||
+        "${HYBRID_software_user_custom_input_file[${key}]}" != '' ]]; then
         return
     fi
-    
+
     case "${key}" in
         Hydro)
             # If IC is not being run, we can't determine its version to pick the right input filename
