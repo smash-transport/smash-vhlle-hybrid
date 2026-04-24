@@ -25,6 +25,9 @@ function Ensure_All_Needed_Input_Exists_Sampler()
 {
     Ensure_Given_Folders_Exist "${HYBRID_software_output_directory[Sampler]}"
     Ensure_Given_Files_Exist "${HYBRID_software_configuration_file[Sampler]}"
+    Ensure_Input_File_Exists_And_Alert_If_Unfinished \
+        $(Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_For_${HYBRID_module[Sampler]})
+    Internally_Ensure_Given_Files_Exist "${HYBRID_input_symlink_internal_global_path[Sampler]}"
     # This is already done preparing the input file, but it's logically belonging here.
     # Therefore, we repeat the validation, as its cost is substantially negligible.
     __static__Validate_Sampler_Config_File
@@ -85,7 +88,7 @@ function __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File_Ensuring_I
     Ensure_Input_File_Exists_And_Alert_If_Unfinished "${freezeout_path}"
     if [[ "$(dirname "${freezeout_path}")" != "${HYBRID_software_output_directory[Sampler]}" ]]; then
         ln -s "${freezeout_path}" \
-            "${HYBRID_software_output_directory[Sampler]}/freezeout.dat"
+            "${HYBRID_input_symlink_internal_global_path[Sampler]}"
     fi
 }
 
