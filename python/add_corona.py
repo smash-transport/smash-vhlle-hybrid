@@ -130,7 +130,7 @@ def read_sampled_and_write_full_particle_list(args, corona_particles, n_events_i
                     f.write("# event {} out {}\n".format(event_s, particle_number))
                     np.savetxt(f, sampled_particles, delimiter=' ', fmt='%s')   # write sampled
                     np.savetxt(f, corona_filter[:, 1:], delimiter=' ', fmt='%s')  # write corona
-                    f.write("# event {} end\n".format(event_s))
+                    f.write("# event {} end \n".format(event_s))
                 # reset relevant variables
                 if event_c < (n_events_ic - 1):
                     event_c += 1
