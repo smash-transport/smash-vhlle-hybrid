@@ -9,6 +9,27 @@ If you are new to YAML, be reassured, our YAML usage is definitely basic.
 Each key has to be followed by a colon and each section content has to be indented in a consistent way.
 In the following documentation you will find examples, too, and they are probably enough to understand how to create your configuration file.
 
+!!! info "Nomenclature"    
+    Since the Hybrid-handler is a software that aims at integrating different codebases, two types of configuration files are involved. First, each stage requires a configuration, formatted accordingly to the specific codebase of the chosen executable. Second, the Hybrid-handler itself has a YAML configuration file, whose syntax is introduced here below. We usually refer to the former as *base* configuration files, as they act as a base for the latter to create the actual setup for the evolution.
+
+## An example of a complete Hybrid-handler configuration file
+
+If you wish to run a simulation of the full model using the default behavior of all the stages of the Hybrid-handler, then the following simple configuration file can be used.
+
+```yaml title="Example"
+IC:
+    Executable: /path/to/smash
+
+Hydro:
+    Executable: /path/to/vHLLE
+
+Sampler:
+    Executable: /path/to/Hadron-sampler
+
+Afterburner:
+    Executable: /path/to/smash
+```
+
 ## The generic section
 
 There is a generic section that contains general information which is not specific to one stage only.
@@ -248,24 +269,6 @@ Afterburner:
 ```
 
 1. :bulb: If this key does not contain a `/` and is for example specified as `My_Sampler.out`, then the `Sampler` stage output file will take the specified name and it will be used as input for the `Afterburner` stage.
-
-## An example of a complete Hybrid-handler configuration file
-
-If you wish to run a simulation of the full model using the default behavior of all the stages of the Hybrid-handler, then the following configuration file can be used.
-
-```yaml title="Example"
-IC:
-    Executable: /path/to/smash
-
-Hydro:
-    Executable: /path/to/vHLLE
-
-Sampler:
-    Executable: /path/to/Hadron-sampler
-
-Afterburner:
-    Executable: /path/to/smash
-```
 
 !!! warning "This is going to be costly!"
     Such a configuration file will execute all the modules in production mode, involving a fine hydrodynamic grid and a large statistic of sampled events.
