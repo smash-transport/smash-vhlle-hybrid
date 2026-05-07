@@ -34,7 +34,7 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
 
 function Unit_Test__Hydro-create-input-file()
 {
-    local -r ic_file="${HYBRID_software_output_directory[Hydro]}/SMASH_IC_For_vHLLE.dat"
+    local -r ic_file="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     touch "${HYBRID_software_base_config_file[Hydro]}"
     mkdir 'eos'
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
@@ -46,7 +46,7 @@ function Unit_Test__Hydro-create-input-file()
         return 1
     fi
     rm "${HYBRID_software_output_directory[Hydro]}"/*
-    touch "${HYBRID_software_output_directory[Hydro]}/SMASH_IC_For_vHLLE.dat"
+    touch "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro &> /dev/null
     if [[ ! -f "${ic_file}" ]]; then
         Print_Error 'The already existing ic regular file was somehow lost.'
@@ -129,7 +129,7 @@ function Unit_Test__Hydro-check-all-input()
         Print_Error 'Ensuring existence of not-existing link to IC file succeeded.'
         return 1
     fi
-    ln -s 'not-existing-target' "${HYBRID_software_output_directory[Hydro]}/SMASH_IC_For_vHLLE.dat"
+    ln -s 'not-existing-target' "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of broken link to IC file succeeded.'
@@ -138,7 +138,7 @@ function Unit_Test__Hydro-check-all-input()
     touch "${HYBRID_software_output_directory[IC]}/SMASH_IC_For_vHLLE.dat"
     ln -s -f \
         "${HYBRID_software_output_directory[IC]}/SMASH_IC_For_vHLLE.dat" \
-        "${HYBRID_software_output_directory[Hydro]}/SMASH_IC_For_vHLLE.dat"
+        "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of existing folder/file failed.'
@@ -162,7 +162,7 @@ function Unit_Test__Hydro-test-run-software()
     local -r \
         hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/${HYBRID_terminal_output["Hydro"]}" \
         Hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}" \
-        IC_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC_For_vHLLE.dat"
+        IC_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     local terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_Hydro
     if [[ ! -f "${hydro_terminal_output}" ]]; then

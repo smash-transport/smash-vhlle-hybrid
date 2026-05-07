@@ -165,8 +165,8 @@ function Unit_Test__scan-global-validation()
         || ! Element_In_Array_Equals_To 'Hydro.Software_keys.etaS' "${!list_of_parameters_values[@]}"; then
         Print_Error 'Storing of scanning information unexpectedly failed (missing/wrong keys).'
         return 1
-    elif [[ "${list_of_parameters_values['IC.Software_keys.Modi.Collider.Sqrtsnn']}" != '{Values: [4.3, 7.7]}' ]] \
-        || [[ "${list_of_parameters_values['Hydro.Software_keys.etaS']}" != '{Values: [0.13, 0.15, 0.17]}' ]]; then
+    elif [[ "${list_of_parameters_values[IC.Software_keys.Modi.Collider.Sqrtsnn]}" != '{Values: [4.3, 7.7]}' ]] \
+        || [[ "${list_of_parameters_values[Hydro.Software_keys.etaS]}" != '{Values: [0.13, 0.15, 0.17]}' ]]; then
         Print_Error 'Storing of scanning information unexpectedly failed (wrong values).'
         return 1
     fi
