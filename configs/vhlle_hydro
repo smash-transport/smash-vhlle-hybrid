@@ -26,8 +26,8 @@ eosTypeHadron        1
 e_crit               0.3339
 
 etaSparam            3
-ah                   -10.9149
-al                   -10.5116
+ah                   -10.5116
+al                   -10.9149
 T0                   0.1480
 etaSMin              0.2214
 etaSShiftMuB         0.1379
