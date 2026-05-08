@@ -67,3 +67,40 @@ function Integration_Test__pick-correct-base-config()
         return 1
     fi
 }
+
+function Make_Test_Preliminary_Operations__pick-correct-default-input-file()
+{
+    Make_Test_Preliminary_Operations__pick-correct-base-config
+    # Pretend sanity checks are done in a scenario where both IC and Hydro are run
+    HYBRID_given_software_sections=('IC' 'Hydro')
+}
+
+function __static__Test_Picked_Default_Input_File_For_Version()
+{
+    export MOCK_ECHO_VERSION="$1"
+    local -r \
+        expected_filename="$2" \
+        key="$3"
+    Call_Codebase_Function __static__Set_Software_Version 'IC'
+    Call_Codebase_Function __static__Set_Default_Input_File_If_Unset "${key}"
+    Print_Debug "${expected_filename} ==? ${HYBRID_software_default_input_filename[${key}]}"
+    if [[ "${HYBRID_software_default_input_filename[${key}]}" != "${expected_filename}" ]]; then
+        Print_Error 'Picking default input file failed for ' --emph "${key}" ' and IC version ' --emph "$1" '.'
+        return 1
+    fi
+}
+
+function Integration_Test__pick-correct-default-input-file()
+{
+    declare -A Hydro_cases=(
+        [3.2]='SMASH_IC.dat'
+        [3.3]='SMASH_IC_For_vHLLE.dat'
+    )
+    local v
+    for v in "${!Hydro_cases[@]}"; do
+        (__static__Test_Picked_Default_Input_File_For_Version "${v}" "${Hydro_cases[${v}]}" 'Hydro')
+        if [[ $? -ne 0 ]]; then
+            return 1
+        fi
+    done
+}

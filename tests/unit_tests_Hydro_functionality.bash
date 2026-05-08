@@ -135,9 +135,9 @@ function Unit_Test__Hydro-check-all-input()
         Print_Error 'Ensuring existence of broken link to IC file succeeded.'
         return 1
     fi
-    touch "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
+    touch "${HYBRID_software_output_directory[IC]}/SMASH_IC_For_vHLLE.dat"
     ln -s -f \
-        "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat" \
+        "${HYBRID_software_output_directory[IC]}/SMASH_IC_For_vHLLE.dat" \
         "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
     if [[ $? -ne 0 ]]; then

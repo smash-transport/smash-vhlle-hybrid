@@ -36,15 +36,6 @@ function Define_Further_Global_Variables()
         [Add_corona_from_IC_and_Hydro]="${HYBRID_python_folder}/add_corona.py"
         [Latin_hypercube_sampling]="${HYBRID_python_folder}/latin_hypercube_sampling.py"
     )
-    declare -rgA HYBRID_software_default_input_filename=(
-        [IC]=''
-        [Hydro]="SMASH_IC.dat"
-        [Sampler]="freezeout.dat" # Not used at the moment for how the sampler works
-        [Spectators]="SMASH_IC.oscar"
-        [Afterburner]="particle_lists.oscar"
-        [IC_corona]="particle_lists.oscar"
-        [Hydro_corona]="particle_lists.oscar"
-    )
     declare -rgA HYBRID_software_configuration_filename=(
         [IC]='IC_config.yaml'
         [Hydro]='hydro_config.txt'
@@ -140,6 +131,15 @@ function Define_Further_Global_Variables()
         [Hydro]=''
         [Sampler]=''
         [Afterburner]=''
+    )
+    declare -gA HYBRID_software_default_input_filename=(
+        [IC]=''
+        [Hydro]=''                # This will be set in the sanity checks as it depends on the IC executable version
+        [Sampler]="freezeout.dat" # Not used at the moment for how the sampler works
+        [Spectators]="SMASH_IC.oscar"
+        [Afterburner]="particle_lists.oscar"
+        [IC_corona]="particle_lists.oscar"
+        [Hydro_corona]="particle_lists.oscar"
     )
     declare -gA HYBRID_software_user_custom_input_file=(
         [IC]=''

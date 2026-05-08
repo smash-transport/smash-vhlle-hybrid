@@ -146,7 +146,13 @@ if __name__ == '__main__':
     name_unfinished = ".unfinished"
     name_oscar = ".oscar"
     name_dat = ".dat"
-    name_particles_file = "SMASH_IC"
+    name_spectators_file = "SMASH_IC"
+
+    from packaging.version import Version
+    if Version(ic_version) >= Version("3.3"):
+        name_particles_file = "SMASH_IC_For_vHLLE"
+    else:
+        name_particles_file = "SMASH_IC"
 
     print_version_and_exit_if_requested()
 
@@ -155,7 +161,7 @@ if __name__ == '__main__':
     create_folders_structure()
     validate_output_folder()
 
-    SMASH_output_file_with_participants_and_spectators = args.o + name_particles_file + name_oscar
+    SMASH_output_file_with_participants_and_spectators = args.o + name_spectators_file + name_oscar
     SMASH_special_output_file_for_vHLLE_with_participants_only = args.o + name_particles_file + name_dat
 
     # smash is now ready to run

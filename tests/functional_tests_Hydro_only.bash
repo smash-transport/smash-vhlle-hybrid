@@ -25,7 +25,7 @@ function Functional_Test__do-Hydro-only()
     ' "${run_id}" "$(pwd)" > "${config_filename}"
     # Run the hydro stage and check if freezeout is successfully generated
     mkdir -p "IC/${run_id}"
-    touch "IC/${run_id}/SMASH_IC.dat"
+    touch "IC/${run_id}/SMASH_IC_For_vHLLE.dat"
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     if [[ $? -ne 0 ]]; then
@@ -81,7 +81,7 @@ function Functional_Test__do-Hydro-only()
       Input_file: %s/test/input
     ' "${run_id}" "$(pwd)" "$(pwd)" > "${config_filename}"
     # Run the hydro stage and check if freezeout is successfully generated
-    rm "IC/${run_id}/SMASH_IC.dat"
+    rm "IC/${run_id}/SMASH_IC_For_vHLLE.dat"
     mkdir -p test
     touch 'test/input'
     Print_Info 'Running Hybrid-handler expecting success'
@@ -148,8 +148,8 @@ function Functional_Test__do-Hydro-only()
     Hydro:
       Executable: %s/vhlle_black-box.py
       Input_file: %s
-    ' "${run_id}" "$(pwd)" "IC/${run_id}/SMASH_IC.dat" > "${config_filename}"
-    touch "IC/${run_id}/SMASH_IC.dat.unfinished"
+    ' "${run_id}" "$(pwd)" "IC/${run_id}/SMASH_IC_For_vHLLE.dat" > "${config_filename}"
+    touch "IC/${run_id}/SMASH_IC_For_vHLLE.dat.unfinished"
     Print_Info 'Running Hybrid-handler expecting failure'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     if [[ $? -ne ${HYBRID_fatal_file_not_found} ]]; then

@@ -7,9 +7,22 @@
 #
 #===================================================
 
-function Functional_Test__do-everything-without-spectators()
+function Functional_Test__do-everything-wo-spectators-old-IC()
 {
+    __static__Set_IC_Software_Version_To 3.2
     __static__Test_Full_Workflow 'FALSE'
+}
+
+function Functional_Test__do-everything-wo-spectators-new-IC()
+{
+    __static__Set_IC_Software_Version_To 3.3
+    __static__Test_Full_Workflow 'FALSE'
+}
+
+function __static__Set_IC_Software_Version_To()
+{
+    Print_Debug "Set IC software version to $1"
+    export MOCK_IC_VERSION=$1
 }
 
 function Functional_Test__do-everything-with-spectators()
