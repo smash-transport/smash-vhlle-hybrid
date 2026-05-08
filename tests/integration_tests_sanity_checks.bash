@@ -93,8 +93,8 @@ function __static__Test_Picked_Default_Input_File_For_Version()
 function Integration_Test__pick-correct-default-input-file()
 {
     declare -A Hydro_cases=(
-        ['3.2']='SMASH_IC.dat'
-        ['3.3']='SMASH_IC_For_vHLLE.dat'
+        [3.2]='SMASH_IC.dat'
+        [3.3]='SMASH_IC_For_vHLLE.dat'
     )
     local v
     for v in "${!Hydro_cases[@]}"; do
