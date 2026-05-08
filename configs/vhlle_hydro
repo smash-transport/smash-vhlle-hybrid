@@ -23,6 +23,9 @@ freezeoutOnly        1
 eosType              4
 eosTypeHadron        1
 
+freezeoutExtend      0
+vorticity            0
+
 e_crit               0.3339
 
 etaSparam            3
