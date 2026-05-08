@@ -369,7 +369,7 @@ function __static__Print_Report_Of_Requirements_With_Minimum_version()
         # The sorting column must take into account hidden color codes seen by sort and
         # here we want to sort using either the program/module name; remember that the
         # the 'here-string' adds a newline to the string when feeding it into the command.
-        sort -b -f -k${sorting_column} <<< "${report_string%?}"
+        LC_ALL=C sort -b -f -k${sorting_column} <<< "${report_string%?}"
     else
         printf '%s' "${report_string}"
     fi

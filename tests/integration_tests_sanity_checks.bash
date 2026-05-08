@@ -43,13 +43,13 @@ function __static__Test_Picked_Base_Config_For_Version()
 function Integration_Test__pick-correct-base-config()
 {
     declare -A IC_cases=(
-        [3.1]='smash_IC__v3.1.yaml'
-        [3.2]='smash_IC__v3.2.yaml'
-        [3.2.1]='smash_IC__v3.2.yaml'
+        ['3.1']='smash_IC__v3.1.yaml'
+        ['3.2']='smash_IC__v3.2.yaml'
+        ['3.2.1']='smash_IC__v3.2.yaml'
     )
     declare -A Sampler_cases=(
-        [2.42.666]='hadron_sampler__v0.0'
-        [3.2]='hadron_sampler__v3.2'
+        ['2.42.666']='hadron_sampler__v0.0'
+        ['3.2']='hadron_sampler__v3.2'
     )
     local key v
     for key in 'IC' 'Sampler'; do

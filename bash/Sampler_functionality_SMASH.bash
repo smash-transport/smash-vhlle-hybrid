@@ -48,7 +48,8 @@ function Validate_Configuration_File_Of_SMASH()
     )
     if Is_Version "${HYBRID_software_version[Sampler]}" -ge '3.2'; then
         allowed_keys+=('create_root_output')
-    elif Is_Version "${HYBRID_software_version[Sampler]}" -ge '3.3'; then
+    fi
+    if Is_Version "${HYBRID_software_version[Sampler]}" -ge '3.3'; then
         allowed_keys+=('hydro_coordinate_system' 'compute_spin_vector' 'create_vorticity_vector_output')
     fi
 
