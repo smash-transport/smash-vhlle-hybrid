@@ -1,30 +1,41 @@
-eosType       1
-eosTypeHadron 1
 
-etaS       0.2
-etaSparam  0
-zetaS      0.0
-zetaSparam 0
-e_crit     0.5
+icModel              6
+Rg                   0.6535
+Rgz                  1.6577
+smearing_mode        fixed
 
-nx        161
-ny        161
-nz        71
-xmin     -20.0
-xmax      20.0
-ymin     -20.0
-ymax      20.0
-etamin   -5.0
-etamax    5.0
+nx                   161
+ny                   161
+nz                   71
+xmin                -20.0
+xmax                 20.0
+ymin                -20.0
+ymax                 20.0
+etamin              -5.0
+etamax               5.0
 
-tauGridResize 20.0
+tau0                 2.7842
+tauMax               25.0
+dtau                 0.05
+tauGridResize        20.0
 
-icModel    6
-Rg         1.4
-Rgz        1.0
+freezeoutOnly        1
+eosType              4
+eosTypeHadron        1
 
-tau0       2.7842
-tauMax     25.0
-dtau       0.05
+e_crit               0.3339
 
-freezeoutOnly 1
+etaSparam            3
+ah                   -10.5116
+al                   -10.9149
+T0                   0.1480
+etaSMin              0.2214
+etaSShiftMuB         0.1379
+etaSScaleMuB         2.8399
+
+zetaSparam           4
+zetaS                0.0816
+zetaSScaleBeta       0.103
+zetaSPeakEpsilon     24.039
+zetaSSigmaMinus      0.0725
+zetaSSigmaPlus       0.0378

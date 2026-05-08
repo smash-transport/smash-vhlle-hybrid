@@ -12,12 +12,9 @@ IC:
 Hydro:
     Executable: /path/to/vHLLE
     Software_keys:
-        etaS: 0.2
-        Rg: 1.4
-        Rgz: 1.2
-        nx: 81
-        ny: 81
-        nz: 151
+        nx: 51
+        ny: 51
+        nz: 51
 
 Sampler:
     Executable: /path/to/hadron-sampler

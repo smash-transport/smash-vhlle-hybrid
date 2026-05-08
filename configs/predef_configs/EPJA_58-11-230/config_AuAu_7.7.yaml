@@ -7,21 +7,27 @@ IC:
                     Particles: {2212: 79, 2112: 118} #Gold197
                 Target:
                     Particles: {2212: 79, 2112: 118} #Gold197
-                Sqrtsnn: 39.0
+                Sqrtsnn: 7.7
+                Initial_Conditions:
+                    Type: "Constant_Tau"
+                    Proper_Time_Scaling: 1
 
 Hydro:
     Executable: /path/to/vHLLE
+    Config_file: /path/to/handler/configs/predef_configs/EPJA_58-11-230/vhlle_hydro
     Software_keys:
-        etaS: 0.08
-        Rg: 1.0
-        Rgz: 0.3
-        # These settings are needed to reproduce the results of Eur.Phys.J.A 58 (2022) 11, 230
-        # nx: 201
-        # ny: 201
-        # nz: 401
+        etaS: 0.2
+        Rg: 1.4
+        Rgz: 1.2
 
 Sampler:
     Executable: /path/to/hadron-sampler
+    Software_keys:
+        bulk: 0
+        ecrit: 0.5
 
 Afterburner:
     Executable: /path/to/smash
+    Software_keys:
+        Collision_Term:
+            Cross_Section_Scaling: 1

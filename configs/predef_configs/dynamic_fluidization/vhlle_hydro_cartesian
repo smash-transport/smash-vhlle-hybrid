@@ -1,6 +1,9 @@
-icModel              9
+icModel              10
+cartesian            1
 Gaussian_Sigma       0.7
 smearing_mode        fixed
+
+minParticlesFO       15
 
 nx                   86
 ny                   86
@@ -37,4 +40,3 @@ zetaSPeakEpsilon     24.039
 zetaSSigmaMinus      0.0725
 zetaSSigmaPlus       0.0378
 
-minParticlesFO       15
