@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
+#    Copyright (c) 2023-2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -26,6 +26,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             __static__Set_Base_Configuration_File_If_Unset "${key}"
             __static__Set_Default_Input_File_If_Unset "${key}"
             __static__Set_Software_Input_Data_File "${key}"
+            __static__Set_Software_Input_Internal_Link_Path "${key}"
             if [[ "${key}" = "Sampler" ]]; then
                 __static__Ensure_Valid_Module_Given_For_Sampler
                 __static__Ensure_Additional_Paths_Given_For_Sampler
@@ -47,6 +48,7 @@ function __static__Set_Global_Variables_As_Readonly()
         HYBRID_software_output_directory \
         HYBRID_software_configuration_file \
         HYBRID_software_input_file \
+        HYBRID_input_symlink_internal_global_path \
         HYBRID_software_executable \
         HYBRID_software_user_custom_input_file \
         HYBRID_software_base_config_file \
@@ -404,6 +406,16 @@ function __static__Set_Software_Input_Data_File()
                     "${HYBRID_software_default_input_filename[Hydro_corona]}"
             fi
         fi
+    fi
+}
+
+function __static__Set_Software_Input_Internal_Link_Path()
+{
+    local -r key=$1
+    if [[ ${key} =~ ^(Hydro|Sampler|Afterburner)$ ]]; then
+        printf -v HYBRID_input_symlink_internal_global_path[${key}] '%s/%s' \
+            "${HYBRID_software_output_directory[${key}]}" \
+            "${HYBRID_input_symlink_internal_name[${key}]}"
     fi
 }
 

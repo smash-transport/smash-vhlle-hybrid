@@ -218,6 +218,11 @@ function Define_Further_Global_Variables()
         [IC_corona]=''
         [Hydro_corona]=''
     )
+    declare -gA HYBRID_input_symlink_internal_global_path=(
+        [Hydro]=''
+        [Spectators]=''
+        [Afterburner]=''
+    )
     HYBRID_scan_strategy='Combinations'
 }
 
