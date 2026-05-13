@@ -28,9 +28,9 @@ Once cloned the repository, you can simply run the `Hybrid-handler` script[^1].
     ```
 
     1. Git will clone using HTTPS protocol and locally create a :file_folder: ***smash-vhlle-hybrid*** folder.
-    2. :warning: At this point you will discover whether your OS is ready to go. If it is, you will see green version numbers and green ticks :white_check_mark: as in the image shown here below. If you see some red version number or red cross :x:, you need to take action. ![Image title](../images/Helper-example.png)
+    2. :warning: At this point you will discover whether your OS is ready to go. If it is, you will see green version numbers and green ticks :white_check_mark: as in the image shown here below. If you see some red version number or red cross :x:, you need to install or update the corresponding requirement. ![Image title](../images/Helper-example.png)
 
-??? abstract "Once the OS is ready"
+??? abstract "Setting up your run once the OS is ready"
 
     ```bash hl_lines="5 6"
     # Make sure all the software to be installed is compiled/installed (1)
@@ -48,7 +48,7 @@ Once cloned the repository, you can simply run the `Hybrid-handler` script[^1].
     Alternatively to run these two highlighted lines, you can simply open the :material-file: _hybrid.yaml_ file and specify the paths there by hand at the 4 `Executable:` keys.
     3. This should print the four executable paths in the `IC`, `Hydro`, `Sampler`, `Afterburner` order.
 
-??? tip "Finally running!"
+??? tip "Running everything!"
 
     ```bash
     # From your my-first-hybrid-run folder
