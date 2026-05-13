@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
+#    Copyright (c) 2023-2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -22,12 +22,9 @@ function Prepare_Software_Input_File_Afterburner()
 function Ensure_All_Needed_Input_Exists_Afterburner()
 {
     Ensure_Given_Folders_Exist "${HYBRID_software_output_directory[Afterburner]}"
-    Ensure_Input_File_Exists_And_Alert_If_Unfinished \
-        "${HYBRID_software_input_file[Afterburner]}"
-    Ensure_Given_Files_Exist \
-        "${HYBRID_software_configuration_file[Afterburner]}"
-    Internally_Ensure_Given_Files_Exist \
-        "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
+    Ensure_Input_File_Exists_And_Alert_If_Unfinished "${HYBRID_software_input_file[Afterburner]}"
+    Ensure_Given_Files_Exist "${HYBRID_software_configuration_file[Afterburner]}"
+    Internally_Ensure_Given_Files_Exist "${HYBRID_input_symlink_internal_global_path[Afterburner]}"
 }
 
 function Ensure_Run_Reproducibility_Afterburner()
@@ -101,6 +98,8 @@ function __static__Run_Add_Corona_Python_Script()
 
 function __static__Create_Symbolic_Link()
 {
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'target_link_name'
+    Ensure_Given_Files_Exist "${HYBRID_software_input_file[Afterburner]}"
     if [[ ! -f "${target_link_name}" || -L "${target_link_name}" ]]; then
         ln -s -f "${HYBRID_software_input_file[Afterburner]}" "${target_link_name}"
     elif [[ ! "${target_link_name}" -ef "${HYBRID_software_input_file[Afterburner]}" ]]; then
@@ -112,7 +111,7 @@ function __static__Create_Symbolic_Link()
 
 function __static__Create_Sampled_Particles_File_Or_Symbolic_Link()
 {
-    local -r target_link_name="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
+    local -r target_link_name="${HYBRID_input_symlink_internal_global_path[Afterburner]}"
     if [[ "${HYBRID_optional_feature[Add_corona_from_IC_and_Hydro]}" = 'TRUE' ]]; then
         Ensure_Given_Files_Do_Not_Exist "${target_link_name}"
         Ensure_Given_Files_Exist \

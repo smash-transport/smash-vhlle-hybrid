@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
+#    Copyright (c) 2023-2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -26,6 +26,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             __static__Set_Base_Configuration_File_If_Unset "${key}"
             __static__Set_Default_Input_File_If_Unset "${key}"
             __static__Set_Software_Input_Data_File "${key}"
+            __static__Set_Software_Input_Internal_Link_Path "${key}"
             if [[ "${key}" = "Sampler" ]]; then
                 __static__Ensure_Valid_Module_Given_For_Sampler
                 __static__Ensure_Additional_Paths_Given_For_Sampler
@@ -47,6 +48,7 @@ function __static__Set_Global_Variables_As_Readonly()
         HYBRID_software_output_directory \
         HYBRID_software_configuration_file \
         HYBRID_software_input_file \
+        HYBRID_input_symlink_internal_global_path \
         HYBRID_software_executable \
         HYBRID_software_user_custom_input_file \
         HYBRID_software_base_config_file \
@@ -110,20 +112,30 @@ function __static__Set_Sampler_Configuration_Key_Names()
 
 function __static__Set_Sampler_Input_Key_Paths()
 {
+    # The following local variable is just meant to keep the array assignment short and make formatter happy
+    # NOTE: It would be wrong to try to use here the 'HYBRID_software_input_file[Afterburner]' variable,
+    #        because this is going to be set __static__Set_Software_Input_Data_File after this function is
+    #        called. Also remember that 'HYBRID_software_input_file[Sampler]' does not exist.
+    local hydro_output_file
+    printf -v hydro_output_file '%s/%s' \
+        "${HYBRID_software_output_directory[Hydro]}" \
+        "${HYBRID_software_default_input_filename[Sampler]}"
     # As the user may set particle_list_file and decays_list_file through the HYBRID_fist_module
     # array, we set the input_key_default_path array here and not in global_variables.bash.
     if [[ "${HYBRID_module[Sampler]}" = 'FIST' ]]; then
+        local sampler_output_file
+        printf -v sampler_output_file '%s/%s' \
+            "${HYBRID_software_output_directory[Sampler]}" \
+            "${HYBRID_software_default_input_filename[Afterburner]}"
         declare -rgA HYBRID_sampler_input_key_default_paths=(
-            [hypersurface_file]="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
-            [output_file]="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"
+            [hypersurface_file]="${hydro_output_file}"
+            [output_file]="${sampler_output_file}"
             [particle_list_file]="${HYBRID_fist_module[Particle_file]}"
             [decays_list_file]="${HYBRID_fist_module[Decays_file]}"
         )
     else
-        # The following local variable is just meant to keep the array assignment short and make formatter happy
-        local -r freezeout="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
         declare -rgA HYBRID_sampler_input_key_default_paths=(
-            [${HYBRID_sampler_input_key_names[surface_filename]}]="${freezeout}"
+            [${HYBRID_sampler_input_key_names[surface_filename]}]="${hydro_output_file}"
             [${HYBRID_sampler_input_key_names[output_folder]}]="${HYBRID_software_output_directory[Sampler]}"
         )
     fi
@@ -330,7 +342,7 @@ function __static__Set_Software_Configuration_File()
 
 function __static__Set_Software_Input_Data_File()
 {
-    local key=$1
+    local -r key=$1
     if [[ ${key} =~ ^(Hydro|Afterburner)$ ]]; then
         local filename relative_key
         filename="${HYBRID_software_user_custom_input_file[${key}]}"
@@ -343,6 +355,7 @@ function __static__Set_Software_Input_Data_File()
                 ;;
         esac
         if [[ "${filename}" = '' ]]; then
+            Ensure_That_Given_Variables_Are_Set_And_Not_Empty "HYBRID_software_default_input_filename[${key}]"
             printf -v filename '%s/%s' \
                 "${HYBRID_software_output_directory[${relative_key}]}" \
                 "${HYBRID_software_default_input_filename[${key}]}"
@@ -404,6 +417,16 @@ function __static__Set_Software_Input_Data_File()
                     "${HYBRID_software_default_input_filename[Hydro_corona]}"
             fi
         fi
+    fi
+}
+
+function __static__Set_Software_Input_Internal_Link_Path()
+{
+    local -r key=$1
+    if [[ ${key} =~ ^(Hydro|Sampler|Afterburner)$ ]]; then
+        printf -v HYBRID_input_symlink_internal_global_path[${key}] '%s/%s' \
+            "${HYBRID_software_output_directory[${key}]}" \
+            "${HYBRID_input_symlink_internal_name[${key}]}"
     fi
 }
 

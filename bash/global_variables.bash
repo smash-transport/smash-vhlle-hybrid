@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
+#    Copyright (c) 2023-2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -28,13 +28,19 @@ function Define_Further_Global_Variables()
     )
     readonly HYBRID_default_configurations_folder="${HYBRID_top_level_path}/configs"
     readonly HYBRID_python_folder="${HYBRID_top_level_path}/python"
-    readonly HYBRID_afterburner_list_filename="sampled_particles.oscar"
     readonly HYBRID_default_number_of_samples=0
     readonly HYBRID_default_sampler_module="SMASH"
     declare -rgA HYBRID_external_python_scripts=(
         [Add_spectators_from_IC]="${HYBRID_python_folder}/add_spectators.py"
         [Add_corona_from_IC_and_Hydro]="${HYBRID_python_folder}/add_corona.py"
         [Latin_hypercube_sampling]="${HYBRID_python_folder}/latin_hypercube_sampling.py"
+    )
+    declare -rgA HYBRID_input_symlink_internal_name=(
+        # This is the name of the input at each stage folder, which is usually a symlink to the output of the
+        # previous stage. In this sense this is an internal irrelevant name from the user perspective.
+        [Hydro]="SMASH_IC.dat"
+        [Sampler]="freezeout.dat"
+        [Afterburner]="sampled_particles.oscar"
     )
     declare -rgA HYBRID_software_configuration_filename=(
         [IC]='IC_config.yaml'
@@ -133,9 +139,10 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
     )
     declare -gA HYBRID_software_default_input_filename=(
+        # This is the output filename looked for in the previous stage folder
         [IC]=''
         [Hydro]=''                # This will be set in the sanity checks as it depends on the IC executable version
-        [Sampler]="freezeout.dat" # Not used at the moment for how the sampler works
+        [Sampler]="freezeout.dat" # Sampler has no 'Input_file' key, yet use this to avoid hard-coding this name around
         [Spectators]="SMASH_IC.oscar"
         [Afterburner]="particle_lists.oscar"
         [IC_corona]="particle_lists.oscar"
@@ -144,7 +151,6 @@ function Define_Further_Global_Variables()
     declare -gA HYBRID_software_user_custom_input_file=(
         [IC]=''
         [Hydro]=''
-        [Sampler]=''
         [Spectators]=''
         [IC_corona]=''
         [Hydro_corona]=''
@@ -210,6 +216,11 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
         [IC_corona]=''
         [Hydro_corona]=''
+    )
+    declare -gA HYBRID_input_symlink_internal_global_path=(
+        [Hydro]=''
+        [Spectators]=''
+        [Afterburner]=''
     )
     HYBRID_scan_strategy='Combinations'
 }
