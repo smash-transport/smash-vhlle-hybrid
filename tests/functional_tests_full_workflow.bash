@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
+#    Copyright (c) 2023-2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
@@ -36,7 +36,7 @@ function __static__Test_Full_Workflow()
     local -r \
         config_filename='Handler_config.yaml' \
         mocks_folder="${HYBRIDT_tests_folder}/mocks"
-    __static__Prepare_Full_Handler_Configuration_File "$1"
+    __static__Prepare_Full_Handler_Configuration_File "$1" 1
     __static__Create_Auxiliaries_For_Hydro
     # Expect success and test absence of "SMASH" unfinished file
     Print_Info 'Running full workflow with Hybrid-handler expecting success'
@@ -58,6 +58,9 @@ function __static__Prepare_Full_Handler_Configuration_File()
     printf '
       IC:
         Executable: %s/smash_IC_black-box.py
+        Software_keys:
+            General:
+                Nevents: %d
       Hydro:
         Executable: %s/vhlle_black-box.py
       Sampler:
@@ -69,7 +72,7 @@ function __static__Prepare_Full_Handler_Configuration_File()
           Modi:
             List:
               File_Directory: "."
-    ' "${mocks_folder}" "$(pwd)" "${mocks_folder}" "${mocks_folder}" "$1" > "${config_filename}"
+    ' "${mocks_folder}" "$2" "$(pwd)" "${mocks_folder}" "${mocks_folder}" "$1" > "${config_filename}"
 }
 
 function __static__Check_Outcome_Of_Full_Run()
@@ -86,4 +89,21 @@ function __static__Check_Outcome_Of_Full_Run()
             Check_If_Software_Produced_Expected_Output "${block}" "$(pwd)/${block}"
         fi
     done
+}
+
+function Functional_Test__do-everything-with-spectators-and-multiple-events()
+{
+    shopt -s nullglob
+    local -r \
+        config_filename='Handler_config.yaml' \
+        mocks_folder="${HYBRIDT_tests_folder}/mocks"
+    __static__Prepare_Full_Handler_Configuration_File 'TRUE' 42
+    __static__Create_Auxiliaries_For_Hydro
+    # Expect success and test absence of "SMASH" unfinished file
+    Print_Info 'Running full workflow with Hybrid-handler expecting failure'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
+    if [[ $? -eq 0 ]]; then
+        Print_Error 'Hybrid-handler unexpectedly succeeded with spectators and ' --emph 'IC Nevents>1' '.'
+        return 1
+    fi
 }

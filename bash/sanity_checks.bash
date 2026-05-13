@@ -35,7 +35,7 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             fi
         fi
     done
-    __static__Perform_Logic_Checks_For_Exclusive_Options
+    __static__Perform_Further_Logic_Checks
     __static__Set_Software_Input_Data_File 'Spectators'
     __static__Set_Software_Input_Data_File 'Corona'
     __static__Set_Global_Variables_As_Readonly
@@ -237,6 +237,12 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
                         --emph 'parameter-scan' ' execution mode.'
                 fi
             done
+            if [[ "${HYBRID_optional_feature[Add_corona_from_IC_and_Hydro]}" = 'TRUE' ]] \
+                && [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
+                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                    'The Afterburner keys ' --emph 'Add_spectators_from_IC' ' and ' --emph \
+                    'Add_corona_from_IC_and_Hydro' ' cannot both be set to true simultaneously.'
+            fi
             ;;
         prepare-scan)
             if [[ "${HYBRID_number_of_samples}" -eq ${HYBRID_default_number_of_samples} ]]; then
@@ -258,13 +264,33 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
     esac
 }
 
-function __static__Perform_Logic_Checks_For_Exclusive_Options()
+function __static__Get_Nevents_Value_From_Configuration_File_For()
 {
-    if [[ "${HYBRID_optional_feature[Add_corona_from_IC_and_Hydro]}" = 'TRUE' ]] \
+    local -r key="$1"
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
+        "HYBRID_software_new_input_keys[${key}]" "HYBRID_software_base_config_file[${key}]"
+    if Has_YAML_String_Given_Key "${HYBRID_software_new_input_keys[${key}]}" 'General.Nevents'; then
+        printf '%s' "$(Read_From_YAML_String_Given_Key "${HYBRID_software_new_input_keys[${key}]}" 'General.Nevents')"
+        return
+    fi
+    # Unconditionally take from base config file, as the key is assumed to be there
+    printf '%s' \
+        "$(Read_From_YAML_String_Given_Key "$(< "${HYBRID_software_base_config_file[${key}]}")" 'General.Nevents')"
+}
+
+function __static__Perform_Further_Logic_Checks()
+{
+    if Element_In_Array_Equals_To 'IC' "${HYBRID_given_software_sections[@]}" \
+        && Element_In_Array_Equals_To 'Afterburner' "${HYBRID_given_software_sections[@]}" \
         && [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
-        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-            'The Afterburner keys ' --emph 'Add_spectators_from_IC' ' and ' --emph 'Add_corona_from_IC_and_Hydro' \
-            ' cannot both be set to true simultaneously.'
+        local -r ic_nevents=$(__static__Get_Nevents_Value_From_Configuration_File_For 'IC')
+        if [[ "${ic_nevents}" -gt 1 ]]; then
+            exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
+                'It was requested to add spectators from multiple IC events to' \
+                'the sampled particles file. Only running one IC event is supported' \
+                'when using the Afterburner config key ' --emph "Add_spectators_from_IC: true" \
+                '\nbut ' --emph "${ic_nevents}" ' IC events were specified.'
+        fi
     fi
 }
 
