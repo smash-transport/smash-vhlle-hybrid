@@ -50,6 +50,7 @@ function Integration_Test__pick-correct-base-config()
     declare -A Sampler_cases=(
         ['2.42.666']='hadron_sampler__v0.0'
         ['3.2']='hadron_sampler__v3.2'
+        ['3.3']='hadron_sampler__v3.3'
     )
     local key v
     for key in 'IC' 'Sampler'; do
