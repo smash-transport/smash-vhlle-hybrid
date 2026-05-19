@@ -44,6 +44,9 @@ Given a version number `X.Y.Z`,
     This symbol indicates _changes that deserve particular attention by the user_.
 
 
+!!! work-in-progress "Unreleased"
+
+
 ### Hybrid-handler-2.2
 
 ???+ success "&nbsp; :date: &nbsp; Release date: 2026-05-19 &emsp; :left_right_arrow: &nbsp; [Compare changes to previous version](https://github.com/smash-transport/smash-vhlle-hybrid/compare/SMASH-vHLLE-hybrid-2.1.3...Hybrid-handler-2.2)"
