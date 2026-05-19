@@ -1,6 +1,6 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024,2026
+#    Copyright (c) 2023-2026
 #      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
