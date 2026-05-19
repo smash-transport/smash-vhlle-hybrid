@@ -44,11 +44,13 @@ Given a version number `X.Y.Z`,
     This symbol indicates _changes that deserve particular attention by the user_.
 
 
-!!! work-in-progress "Unreleased"
+### Hybrid-handler-2.2
+
+???+ success "&nbsp; :date: &nbsp; Release date: 2026-05-19 &emsp; :left_right_arrow: &nbsp; [Compare changes to previous version](https://github.com/smash-transport/smash-vhlle-hybrid/compare/SMASH-vHLLE-hybrid-2.1.3...Hybrid-handler-2.2)"
 
     **Changes:**
 
-    :new: &nbsp; The name of the framework is changed from SMASH-vHLLE-hybrid to Hybrid-handler. Since the handler is a tool to facilitate running hybrid simulations and the underlying stage modules can be varied, this generic name is more precise. Nevertheless, the SMASH-vHLLE-hybrid approach is still part of this framework.
+    :boom: &nbsp; The name of the framework is changed from SMASH-vHLLE-hybrid to Hybrid-handler. Since the handler is a tool to facilitate running hybrid simulations and the underlying stage modules can be varied, this generic name is more precise. Nevertheless, the SMASH-vHLLE-hybrid approach is still part of this framework.
 
     :new: &nbsp; Added `Add_corona_from_IC_and_Hydro` configuration key in the `Afterburner` module, which merges the files containing corona particles from :file_folder: ***IC*** and :file_folder: ***Hydro*** into the particle lists sampled in :file_folder: ***Sampler***.
 

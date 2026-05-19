@@ -19,7 +19,7 @@
 #                                                                            #
 #----------------------------------------------------------------------------#
 
-readonly HYBRID_codebase_version='Hybrid-handler-2.1.3-unreleased'
+readonly HYBRID_codebase_version='Hybrid-handler-2.2'
 
 function Main()
 {
