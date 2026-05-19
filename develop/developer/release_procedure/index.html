@@ -1253,7 +1253,7 @@ Closing the branch means to merge it into <code>main</code>, which will be tagge
 <p class="admonition-title">Don't forget to update the version string</p>
 <p>In the codebase there is a global <code>HYBRID_codebase_version</code> variable, which contains the version label.
 This should be bumped on the <code>release</code> branch, i.e. when it is clear which will be the following version number.
-Analogously, it should be bumped into a dirt state<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> on <code>develop</code> as soon as the <code>release</code> is closed.</p>
+Analogously, it should be bumped into a dirty state<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> on <code>develop</code> as soon as the <code>release</code> is closed.</p>
 </div>
 <h2 id="release-checklist">Release checklist<a class="headerlink" href="#release-checklist" title="Link to this section">&para;</a></h2>
 <ul class="task-list">
@@ -1276,10 +1276,10 @@ Before closing the branch you will remove such a suffix.</p>
 </ul>
 </li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Bump version number global variable in main script to a <strong>stable state</strong>.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Close the <code>release</code> branch in the git-flow sense:<ul>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Close the <code>release</code> branch in the following sense:<ul>
 <li>merge it into the <code>main</code> branch;</li>
 <li>switch to <code>main</code> and tag the last commit;</li>
-<li>switch to <code>develop</code> and merge the <code>release</code> back into it<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>.</li>
+<li>switch to <code>develop</code> and merge the <code>main</code> back into it<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>.</li>
 </ul>
 </li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Publish the new release by pushing the changes and the new tag on <code>main</code>.</li>
@@ -1297,19 +1297,23 @@ Before closing the branch you will remove such a suffix.</p>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Git-flow extension</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>git<span class="w"> </span>flow<span class="w"> </span>release<span class="w"> </span>finish<span class="w"> </span><span class="m">1</span>.2.0<span class="w"> </span><span class="c1"># (1)!</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Vanilla Git commands</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>git<span class="w"> </span>switch<span class="w"> </span>main
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>git<span class="w"> </span>merge<span class="w"> </span>--no-ff<span class="w"> </span>release/1.2.0
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>Hybrid-handler-1.2.0
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>git<span class="w"> </span>switch<span class="w"> </span>develop
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>git<span class="w"> </span>merge<span class="w"> </span>--no-ff<span class="w"> </span>release/1.2.0
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>git<span class="w"> </span>branch<span class="w"> </span>-d<span class="w"> </span>release/1.2.0
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Vanilla Git commands</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>git<span class="w"> </span>switch<span class="w"> </span>main
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>git<span class="w"> </span>merge<span class="w"> </span>--no-ff<span class="w"> </span>release/1.2.0
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>Hybrid-handler-1.2.0
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>git<span class="w"> </span>switch<span class="w"> </span>develop
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>git<span class="w"> </span>merge<span class="w"> </span>--no-ff<span class="w"> </span>main
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>git<span class="w"> </span>branch<span class="w"> </span>-d<span class="w"> </span>release/1.2.0
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="c1"># Git-flow extension</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>git<span class="w"> </span>flow<span class="w"> </span>release<span class="w"> </span>finish<span class="w"> </span><span class="m">1</span>.2.0<span class="w"> </span><span class="c1"># (1)!</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>git<span class="w"> </span>switch<span class="w"> </span>develop
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>git<span class="w"> </span>merge<span class="w"> </span>main
 </span></code></pre></div>
 <ol>
-<li>This assumes that the tag prefix <code>Hybrid-handler</code> has been set at initialisation time in the Git-flow extension!</li>
+<li>Using Git-flow extension in this case is discouraged because we want to merge <code>main</code> into <code>develop</code> to have the new tag done on <code>main</code> reachable from <code>develop</code> via <code>git-describe</code>.
+   However, if you still want to use Git-flow, you need to run <code>git switch develop &amp;&amp; git merge main</code> after having closed the <code>release</code> branch.
+   Furthermore, the <code>git flow release finish</code> command assumes that the tag prefix <code>Hybrid-handler</code> has been set at initialization time in the Git-flow extension!</li>
 </ol>
 </div>
 <div class="tabbed-block">
@@ -1335,7 +1339,7 @@ Usually a suffix like <code>-next</code> or <code>-unreleased</code> is added to
 </li>
 <li id="fn:3">
 <p>This might lead to conflicts if the codebase has evolved on the <code>develop</code> branch.
-Please note as well that merging <code>main</code> into <code>develop</code> would be equivalent as the <code>main</code> branch is meant for stable releases only and it should not contain anything new w.r.t. the <code>develop</code> branch.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
+Please note as well that merging the <code>release</code> branch into <code>develop</code> would be equivalent in terms of code changes, but the tagged commit would not be reachable from the <code>develop</code> branch when using <code>git-describe</code>.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
