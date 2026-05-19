@@ -234,7 +234,7 @@ function __static__Test_Section_Parsing_In_Subshell()
     if [[ ${HYBRID_software_base_config_file[${section}]} != "${config_file}" ]]; then
         Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (config file).'
     fi
-    if [[ ${input_file} != '' ]]; then # The Sampler does not support input files.
+    if [[ ${input_file} != '' ]]; then # E.g., the Sampler does not support input files.
         if [[ ${HYBRID_software_user_custom_input_file[${section}]} != "${input_file}" ]]; then
             Print_Fatal_And_Exit 'Parsing of ' --emph "${section}" ' section failed (input file).'
         fi

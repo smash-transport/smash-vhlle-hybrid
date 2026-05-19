@@ -148,12 +148,8 @@ function Define_Further_Global_Variables()
         [IC_corona]="particle_lists.oscar"
         [Hydro_corona]="particle_lists.oscar"
     )
-    declare -gA HYBRID_software_user_custom_input_file=(
-        [IC]=''
+    declare -gA HYBRID_software_user_custom_input_file=( # Only for stages for which it makes sense to have this feature
         [Hydro]=''
-        [Spectators]=''
-        [IC_corona]=''
-        [Hydro_corona]=''
         [Afterburner]=''
     )
     declare -gA HYBRID_software_base_config_file=(
