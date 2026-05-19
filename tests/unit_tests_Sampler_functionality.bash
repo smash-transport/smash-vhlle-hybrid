@@ -262,6 +262,15 @@ function Unit_Test__Sampler-validate-config-file-SMASH()
             --emph "${HYBRID_software_version[Sampler]}" ' failed.'
         return 1
     fi
+    HYBRID_software_version[Sampler]='3.3'
+    __static__Validate_Config_File_For_Fixed_Version_SMASH
+    if [[ $? -ne 0 ]]; then
+        Print_Error \
+            'Validation of sampler configuration file for version ' \
+            --emph "${HYBRID_software_version[Sampler]}" ' failed.'
+        return 1
+    fi
+
     # Config file with incorrect value type for optional keys
     for wrong_key_value in \
         'bulk true' \
@@ -269,7 +278,9 @@ function Unit_Test__Sampler-validate-config-file-SMASH()
         'cs2 +-1' \
         'ratio_pressure_energydensity +-1' \
         'create_root_output True' \
-        'hydro_coordinate_system +-1'; do
+        'hydro_coordinate_system +-1' \
+        'compute_spin_vector True' \
+        'create_vorticity_vector_output True'; do
         __static__Validate_Given_Configuration_File_SMASH \
             "'${wrong_key_value}' should not be accepted" "${mandatory_config_keys[@]}" "${wrong_key_value}"
         __static__Possibly_Fail_Validation_Test $? || return 1
@@ -326,6 +337,24 @@ function Unit_Test__Sampler-validate-shipped-config-file-SMASH-ge-3.2()
 }
 
 function Clean_Tests_Environment_For_Following_Test__Sampler-validate-shipped-config-file-SMASH-lt-3.2()
+{
+    Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-SMASH
+}
+
+function Make_Test_Preliminary_Operations__Sampler-validate-shipped-config-file-SMASH-ge-3.3()
+{
+    __static__Do_Preliminary_Sampler_Setup_Operations
+    export MOCK_ECHO_VERSION=3.3
+    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
+    readonly HYBRIDT_sampler_base_config_filename='hadron_sampler__v3.3'
+}
+
+function Unit_Test__Sampler-validate-shipped-config-file-SMASH-ge-3.3()
+{
+    Unit_Test__Sampler-validate-shipped-config-file-SMASH-lt-3.2
+}
+
+function Clean_Tests_Environment_For_Following_Test__Sampler-validate-shipped-config-file-SMASH-ge-3.3()
 {
     Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-SMASH
 }

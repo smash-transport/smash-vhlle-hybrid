@@ -47,8 +47,12 @@ function Validate_Configuration_File_Of_SMASH()
         'ratio_pressure_energydensity'
     )
     if Is_Version "${HYBRID_software_version[Sampler]}" -ge '3.2'; then
-        allowed_keys+=('create_root_output' 'hydro_coordinate_system')
+        allowed_keys+=('create_root_output')
     fi
+    if Is_Version "${HYBRID_software_version[Sampler]}" -ge '3.3'; then
+        allowed_keys+=('hydro_coordinate_system' 'compute_spin_vector' 'create_vorticity_vector_output')
+    fi
+
     readonly allowed_keys
     local keys_to_be_found
     keys_to_be_found=4
@@ -88,7 +92,7 @@ function Validate_Configuration_File_Of_SMASH()
                 fi
                 ((keys_to_be_found--))
                 ;;
-            shear | bulk | create_root_output)
+            shear | bulk | create_root_output | compute_spin_vector | create_vorticity_vector_output)
                 if [[ ! "${value}" =~ ^[01]$ ]]; then
                     Print_Error 'Key ' --emph "${key}" ' must be either ' \
                         --emph '0' ' or ' --emph '1' '.'
