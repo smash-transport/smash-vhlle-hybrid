@@ -1,6 +1,6 @@
 cff-version: "1.2.0"
 message: "If you use this software, please cite it using these metadata."
-title: "smash-transport/smash-vhlle-hybrid: Hybrid-handler"
+title: "smash-transport/smash-vhlle-hybrid: Hybrid-handler 2.2"
 version: "Hybrid-handler-2.2"
 date-released: "2026-05-19"
 doi: "10.5281/zenodo.15880336"

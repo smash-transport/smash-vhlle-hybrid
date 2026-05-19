@@ -40,7 +40,7 @@ Closing the branch means to merge it into `main`, which will be tagged and conta
       - changing the type of box;
       - adding release date and link to changes from previous version.
 - [x] Bump version number global variable in main script to a **stable state**.
-- [x] Update `CITATION.cff` file w.r.t version number, release date and possibly authors information
+- [x] Update `CITATION.cff` file w.r.t version number (everywhere), release date and possibly authors information
 - [x] Close the `release` branch in the following sense:
       - merge it into the `main` branch;
       - switch to `main` and tag the last commit;
