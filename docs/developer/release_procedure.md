@@ -15,7 +15,7 @@ Closing the branch means to merge it into `main`, which will be tagged and conta
 !!! warning "Don't forget to update the version string"
     In the codebase there is a global `HYBRID_codebase_version` variable, which contains the version label.
     This should be bumped on the `release` branch, i.e. when it is clear which will be the following version number.
-    Analogously, it should be bumped into a dirt state[^2] on `develop` as soon as the `release` is closed.
+    Analogously, it should be bumped into a dirty state[^2] on `develop` as soon as the `release` is closed.
 
 [^1]:
     Alessandro has offered a trilogy of talks about Git and these are available on his GitHub profile :material-arrow-right-box: [:material-github: AxelKrypton](https://github.com/AxelKrypton/Git-crash-course).
