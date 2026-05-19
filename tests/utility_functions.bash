@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
-#      SMASH Hybrid Team
+#    Copyright (c) 2023,2025
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -38,7 +38,7 @@ function Define_Available_Tests_For()
         return
     fi
     for file_to_be_sourced in "${files_to_be_sourced[@]}"; do
-        Print_Debug 'Sourcing ' --emph "${file_to_be_sourced}"
+        Print_Trace 'Sourcing ' --emph "${file_to_be_sourced}"
         source "${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
     done
     # Available tests are based on functions in this file whose names begins with "${functions_prefix}"

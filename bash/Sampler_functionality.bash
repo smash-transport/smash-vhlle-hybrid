@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -25,6 +25,9 @@ function Ensure_All_Needed_Input_Exists_Sampler()
 {
     Ensure_Given_Folders_Exist "${HYBRID_software_output_directory[Sampler]}"
     Ensure_Given_Files_Exist "${HYBRID_software_configuration_file[Sampler]}"
+    Ensure_Input_File_Exists_And_Alert_If_Unfinished \
+        $(Get_Surface_Path_Field_From_Sampler_Config_As_Global_Path_For_${HYBRID_module[Sampler]})
+    Internally_Ensure_Given_Files_Exist "${HYBRID_input_symlink_internal_global_path[Sampler]}"
     # This is already done preparing the input file, but it's logically belonging here.
     # Therefore, we repeat the validation, as its cost is substantially negligible.
     __static__Validate_Sampler_Config_File
@@ -85,7 +88,7 @@ function __static__Create_Superfluous_Symbolic_Link_To_Freezeout_File_Ensuring_I
     Ensure_Input_File_Exists_And_Alert_If_Unfinished "${freezeout_path}"
     if [[ "$(dirname "${freezeout_path}")" != "${HYBRID_software_output_directory[Sampler]}" ]]; then
         ln -s "${freezeout_path}" \
-            "${HYBRID_software_output_directory[Sampler]}/freezeout.dat"
+            "${HYBRID_input_symlink_internal_global_path[Sampler]}"
     fi
 }
 
@@ -140,18 +143,20 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
         bulk_hydro_param=0
         ecrit_hydro=0.5
         while read key value; do
+            # NOTE: Without parentheses, awk interprets 'print v > 0' as redirecting
+            #       output to a file named "0", rather than evaluating (v > 0).
             case "${key}" in
                 etaS)
-                    shear_hydro=$(bc -l <<< "${value}>0")
+                    shear_hydro=$(awk -v v="${value}" 'BEGIN { print (v > 0) }')
                     ;;
                 etaSparam)
-                    shear_hydro_param=$(bc -l <<< "${value}>0")
+                    shear_hydro_param=$(awk -v v="${value}" 'BEGIN { print (v > 0) }')
                     ;;
                 zetaS)
-                    bulk_hydro=$(bc -l <<< "${value}>0")
+                    bulk_hydro=$(awk -v v="${value}" 'BEGIN { print (v > 0) }')
                     ;;
                 zetaSparam)
-                    bulk_hydro_param=$(bc -l <<< "${value}>0")
+                    bulk_hydro_param=$(awk -v v="${value}" 'BEGIN { print (v > 0) }')
                     ;;
                 e_crit)
                     ecrit_hydro=${value}
@@ -167,8 +172,7 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
         if [[ "${bulk_hydro}" -eq 1 || "${bulk_hydro_param}" -eq 1 ]]; then
             is_hydro_bulk=1
         fi
-        local is_sampler_shear is_sampler_bulk \
-            ecrit_sampler
+        local is_sampler_shear is_sampler_bulk ecrit_sampler
         is_sampler_shear=1
         is_sampler_bulk=0
         ecrit_sampler=0.5
@@ -210,7 +214,7 @@ function __static__Check_If_Sampler_Configuration_Is_Consistent_With_Hydro()
 
 function __static__State_Inconsistency_Of_Sampler_With_Hydro()
 {
-    PrintAttention 'The sampler and hydrodynamics parameters' \
+    Print_Attention 'The sampler and hydrodynamics parameters' \
         'are inconsistent in values for ' --emph "$1" ' correction.' \
         'Viscous corrections are present in hydrodynamic stage,' \
         'but will not be applied in the Cooper-Frye sampling,' \

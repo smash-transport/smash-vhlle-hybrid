@@ -1,4 +1,4 @@
-# Hybrid handler CHANGELOG
+# Hybrid-handler CHANGELOG
 
 All notable changes to this project will be documented in this changelog.
 This project does not strictly adhere to [Semantic Versioning](https://semver.org/spec/v2.0.0.html), but it uses versioning inspired by it.
@@ -44,11 +44,38 @@ Given a version number `X.Y.Z`,
     This symbol indicates _changes that deserve particular attention by the user_.
 
 
+### Hybrid-handler-2.2
+
+???+ success "&nbsp; :date: &nbsp; Release date: 2026-05-19 &emsp; :left_right_arrow: &nbsp; [Compare changes to previous version](https://github.com/smash-transport/smash-vhlle-hybrid/compare/SMASH-vHLLE-hybrid-2.1.3...Hybrid-handler-2.2)"
+
+    **Changes:**
+
+    :boom: &nbsp; The name of the framework is changed from SMASH-vHLLE-hybrid to Hybrid-handler. Since the handler is a tool to facilitate running hybrid simulations and the underlying stage modules can be varied, this generic name is more precise. Nevertheless, the SMASH-vHLLE-hybrid approach is still part of this framework.
+
+    :new: &nbsp; Added `Add_corona_from_IC_and_Hydro` configuration key in the `Afterburner` module, which merges the files containing corona particles from :file_folder: ***IC*** and :file_folder: ***Hydro*** into the particle lists sampled in :file_folder: ***Sampler***.
+
+    :new: &nbsp; Added new valid config key `hydro_coordinate_system` for SMASH sampler `3.3` to handle hydrodynamic simulations in Cartesian coordinates properly, additional to the runs in tau-eta frame.
+
+    :new: &nbsp; Added new valid config keys `compute_spin_vector`, and `create_vorticity_vector_output` for SMASH sampler `3.3` to enable spin vector calculation all sampled particles.
+
+    :new: &nbsp; The `Input_file` configuration key in the `Hydro` and `Afterburner` modules can now be used to modify the expected file names from the appropriate :file_folder: ***IC*** and :file_folder: ***Sampler*** sub-folders, when a string without a `/` character is given.
+
+    :warning: &nbsp; The parameters extracted by the [Bayesian analysis in :newspaper: *Phys. Rev. C 112, 014910*](https://journals.aps.org/prc/abstract/10.1103/rzml-rjxz) are now set as default for the base configs. The old parameters for the hydro evolution were kept in :file_folder: ***configs/predef_configs/vhlle_hydro_EPJA_58-11-230***, and the other parameters are adjusted by each handler configuration file in :file_folder: *** predef_configs***.
+
+    :new: &nbsp; Added configuration files for a dynamic fluidization run in :file_folder: ***configs/predef_configs/dynamic_fluidization***. This requires the specific branch [merge-review in vHLLE](https://github.com/yukarpenko/vhlle/tree/merge-review).
+
+### SMASH-vHLLE-hybrid-2.1.3
+
+???+ success "&nbsp; :date: &nbsp; Release date: 2025-06-05 &emsp; :left_right_arrow: &nbsp; [Compare changes to previous version](https://github.com/smash-transport/smash-vhlle-hybrid/compare/SMASH-vHLLE-hybrid-2.1.2...SMASH-vHLLE-hybrid-2.1.3)"
+
+    :sos: &nbsp; Fix Hybrid-handler crash due to accessing an unbound variable when trying to run both the `Sampler` and the `Afterburner` stages using the FIST sampler.
+
+
 ### SMASH-vHLLE-hybrid-2.1.2
 
 ???+ success "&nbsp; :date: &nbsp; Release date: 2025-05-16 &emsp; :left_right_arrow: &nbsp; [Compare changes to previous version](https://github.com/smash-transport/smash-vhlle-hybrid/compare/SMASH-vHLLE-hybrid-2.1.1...SMASH-vHLLE-hybrid-2.1.2)"
 
-    :sos: &nbsp; The previous hot-fix introduced a subtle bug, making the hybrid handler ignore a user-customized base configuration file for the `IC` stage. This is fixed now.
+    :sos: &nbsp; The previous hot-fix introduced a subtle bug, making the Hybrid-handler ignore a user-customized base configuration file for the `IC` stage. This is fixed now.
 
 
 ### SMASH-vHLLE-hybrid-2.1.1

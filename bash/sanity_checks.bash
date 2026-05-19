@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -22,9 +22,11 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
         if Element_In_Array_Equals_To "${key}" "${HYBRID_given_software_sections[@]}"; then
             __static__Ensure_Executable_Exists "${key}"
             __static__Set_Software_Configuration_File "${key}"
-            __static__Set_Software_Input_Data_File_If_Not_Set_By_User "${key}"
             __static__Set_Software_Version "${key}"
             __static__Set_Base_Configuration_File_If_Unset "${key}"
+            __static__Set_Default_Input_File_If_Unset "${key}"
+            __static__Set_Software_Input_Data_File "${key}"
+            __static__Set_Software_Input_Internal_Link_Path "${key}"
             if [[ "${key}" = "Sampler" ]]; then
                 __static__Ensure_Valid_Module_Given_For_Sampler
                 __static__Ensure_Additional_Paths_Given_For_Sampler
@@ -33,7 +35,9 @@ function Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Var
             fi
         fi
     done
-    __static__Set_Software_Input_Data_File_If_Not_Set_By_User 'Spectators'
+    __static__Perform_Further_Logic_Checks
+    __static__Set_Software_Input_Data_File 'Spectators'
+    __static__Set_Software_Input_Data_File 'Corona'
     __static__Set_Global_Variables_As_Readonly
 }
 
@@ -44,6 +48,7 @@ function __static__Set_Global_Variables_As_Readonly()
         HYBRID_software_output_directory \
         HYBRID_software_configuration_file \
         HYBRID_software_input_file \
+        HYBRID_input_symlink_internal_global_path \
         HYBRID_software_executable \
         HYBRID_software_user_custom_input_file \
         HYBRID_software_base_config_file \
@@ -54,14 +59,14 @@ function __static__Set_Global_Variables_As_Readonly()
 function Perform_Internal_Sanity_Checks()
 {
     Internally_Ensure_Given_Files_Exist \
-        'These Python scripts should be shipped within the hybrid handler codebase.' '--' \
+        'These Python scripts should be shipped within the Hybrid-handler codebase.' '--' \
         "${HYBRID_external_python_scripts[@]}"
     for key in "${!HYBRID_software_base_config_file[@]}"; do
         # The IC/Sampler entry in the associative array here is still empty and does not point to a
-        # shipped configuration file. It will be chosen later according to the verion or module.
+        # shipped configuration file. It will be chosen later according to the version or module.
         if [[ ! ${key} =~ ^(IC|Sampler)$ ]]; then
             Internally_Ensure_Given_Files_Exist \
-                'These base configuration files should be shipped within the hybrid handler codebase.' '--' \
+                'These base configuration files should be shipped within the Hybrid-handler codebase.' '--' \
                 "${HYBRID_software_base_config_file[${key}]}"
         fi
     done
@@ -107,20 +112,30 @@ function __static__Set_Sampler_Configuration_Key_Names()
 
 function __static__Set_Sampler_Input_Key_Paths()
 {
+    # The following local variable is just meant to keep the array assignment short and make formatter happy
+    # NOTE: It would be wrong to try to use here the 'HYBRID_software_input_file[Afterburner]' variable,
+    #        because this is going to be set __static__Set_Software_Input_Data_File after this function is
+    #        called. Also remember that 'HYBRID_software_input_file[Sampler]' does not exist.
+    local hydro_output_file
+    printf -v hydro_output_file '%s/%s' \
+        "${HYBRID_software_output_directory[Hydro]}" \
+        "${HYBRID_software_default_input_filename[Sampler]}"
     # As the user may set particle_list_file and decays_list_file through the HYBRID_fist_module
     # array, we set the input_key_default_path array here and not in global_variables.bash.
     if [[ "${HYBRID_module[Sampler]}" = 'FIST' ]]; then
+        local sampler_output_file
+        printf -v sampler_output_file '%s/%s' \
+            "${HYBRID_software_output_directory[Sampler]}" \
+            "${HYBRID_software_default_input_filename[Afterburner]}"
         declare -rgA HYBRID_sampler_input_key_default_paths=(
-            [hypersurface_file]="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
-            [output_file]="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"
+            [hypersurface_file]="${hydro_output_file}"
+            [output_file]="${sampler_output_file}"
             [particle_list_file]="${HYBRID_fist_module[Particle_file]}"
             [decays_list_file]="${HYBRID_fist_module[Decays_file]}"
         )
     else
-        # The following local variable is just meant to keep the array assignment short and make formatter happy
-        local -r freezeout="${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
         declare -rgA HYBRID_sampler_input_key_default_paths=(
-            [${HYBRID_sampler_input_key_names[surface_filename]}]="${freezeout}"
+            [${HYBRID_sampler_input_key_names[surface_filename]}]="${hydro_output_file}"
             [${HYBRID_sampler_input_key_names[output_folder]}]="${HYBRID_software_output_directory[Sampler]}"
         )
     fi
@@ -132,33 +147,67 @@ function __static__Set_Base_Configuration_File_If_Unset()
     if [[ "${HYBRID_software_base_config_file[${key}]}" != '' ]]; then
         return
     fi
+    local prefix extension path
+    prefix="${HYBRID_default_configurations_folder}/"
+    extension=''
+    path=''
     case "${key}" in
         IC)
-            Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_version[IC]'
-            local ic_key
-            if Is_Version "${HYBRID_software_version[IC]}" -lt '3.2'; then
-                ic_key='IC_lt_3.2'
-            else
-                ic_key='IC_ge_3.2'
-            fi
-            HYBRID_software_base_config_file[IC]="${HYBRID_software_base_config_file[${ic_key}]}"
+            prefix+="smash_IC__v"
+            extension='.yaml'
             ;;
         Sampler)
-            local sampler_key
-            if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
-                Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'HYBRID_software_version[Sampler]'
-                if Is_Version "${HYBRID_software_version[Sampler]}" -lt '3.2'; then
-                    sampler_key='Sampler_SMASH_lt_3.2'
-                else
-                    sampler_key='Sampler_SMASH_ge_3.2'
-                fi
-            else
-                sampler_key='Sampler_FIST'
+            if [[ "${HYBRID_module[Sampler]}" = 'FIST' ]]; then
+                path="${HYBRID_software_base_config_file[Sampler_FIST]}"
             fi
-            HYBRID_software_base_config_file[Sampler]="${HYBRID_software_base_config_file[${sampler_key}]}"
+            prefix+="hadron_sampler__v"
             ;;
         *)
             Print_Internal_And_Exit 'Base configuration file unset for ' --emph "${key}" \
+                '\nstage, although this should not be the case!'
+            ;;
+    esac
+    readonly prefix extension
+    # If path is still unset, it means the decision is to be taken based on software version
+    if [[ ${path} = '' ]]; then
+        Ensure_That_Given_Variables_Are_Set_And_Not_Empty "HYBRID_software_version[${key}]"
+        path="$(__static__Pick_Base_Config_To_Be_Used \
+            "${key}" "${prefix}" "${extension}" "${HYBRID_software_version[${key}]}")"
+    fi
+    HYBRID_software_base_config_file[${key}]="${path}"
+}
+
+function __static__Set_Default_Input_File_If_Unset()
+{
+    local -r key=$1
+    # Skip for IC, if already set, or if user specified custom input
+    if [[ "${key}" = 'IC' ||
+        "${HYBRID_software_default_input_filename[${key}]}" != '' ||
+        "${HYBRID_software_user_custom_input_file[${key}]}" != '' ]]; then
+        return
+    fi
+
+    case "${key}" in
+        Hydro)
+            # If IC is not being run, we can't determine its version to pick the right input filename
+            if ! Element_In_Array_Equals_To 'IC' "${HYBRID_given_software_sections[@]}"; then
+                Print_Warning \
+                    'It is not possible to deduce which input file should be used for the ' \
+                    --emph 'Hydro' ' stage, \nsince the IC stage is not run. Falling back to default ' \
+                    --emph 'SMASH_IC_For_vHLLE.dat' '.\nUse the ' --emph 'Input_File' \
+                    ' key in the Hydro section to explicitly specify a filename.'
+                HYBRID_software_default_input_filename[${key}]='SMASH_IC_For_vHLLE.dat'
+            else
+                Ensure_That_Given_Variables_Are_Set_And_Not_Empty "HYBRID_software_version[IC]"
+                if Is_Version "${HYBRID_software_version[IC]}" -ge '3.3'; then
+                    HYBRID_software_default_input_filename[${key}]='SMASH_IC_For_vHLLE.dat'
+                else
+                    HYBRID_software_default_input_filename[${key}]='SMASH_IC.dat'
+                fi
+            fi
+            ;;
+        *)
+            Print_Internal_And_Exit 'Default input file unset for ' --emph "${key}" \
                 '\nstage, although this should not be the case!'
             ;;
     esac
@@ -188,6 +237,12 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
                         --emph 'parameter-scan' ' execution mode.'
                 fi
             done
+            if [[ "${HYBRID_optional_feature[Add_corona_from_IC_and_Hydro]}" = 'TRUE' ]] \
+                && [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
+                exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                    'The Afterburner keys ' --emph 'Add_spectators_from_IC' ' and ' --emph \
+                    'Add_corona_from_IC_and_Hydro' ' cannot both be set to true simultaneously.'
+            fi
             ;;
         prepare-scan)
             if [[ "${HYBRID_number_of_samples}" -eq ${HYBRID_default_number_of_samples} ]]; then
@@ -207,6 +262,36 @@ function __static__Perform_Logic_Checks_Depending_On_Execution_Mode()
             Print_Internal_And_Exit 'Unknown execution mode passed to ' --emph "${FUNCNAME}" ' function.'
             ;;
     esac
+}
+
+function __static__Get_Nevents_Value_From_Configuration_File_For()
+{
+    local -r key="$1"
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty \
+        "HYBRID_software_new_input_keys[${key}]" "HYBRID_software_base_config_file[${key}]"
+    if Has_YAML_String_Given_Key "${HYBRID_software_new_input_keys[${key}]}" 'General.Nevents'; then
+        printf '%s' "$(Read_From_YAML_String_Given_Key "${HYBRID_software_new_input_keys[${key}]}" 'General.Nevents')"
+        return
+    fi
+    # Unconditionally take from base config file, as the key is assumed to be there
+    printf '%s' \
+        "$(Read_From_YAML_String_Given_Key "$(< "${HYBRID_software_base_config_file[${key}]}")" 'General.Nevents')"
+}
+
+function __static__Perform_Further_Logic_Checks()
+{
+    if Element_In_Array_Equals_To 'IC' "${HYBRID_given_software_sections[@]}" \
+        && Element_In_Array_Equals_To 'Afterburner' "${HYBRID_given_software_sections[@]}" \
+        && [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
+        local -r ic_nevents=$(__static__Get_Nevents_Value_From_Configuration_File_For 'IC')
+        if [[ "${ic_nevents}" -gt 1 ]]; then
+            exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
+                'It was requested to add spectators from multiple IC events to' \
+                'the sampled particles file. Only running one IC event is supported' \
+                'when using the Afterburner config key ' --emph "Add_spectators_from_IC: true" \
+                '\nbut ' --emph "${ic_nevents}" ' IC events were specified.'
+        fi
+    fi
 }
 
 function __static__Exit_If_Some_Further_Needed_Python_Requirement_Is_Missing()
@@ -281,9 +366,9 @@ function __static__Set_Software_Configuration_File()
         "${HYBRID_software_output_directory[${label}]}/${HYBRID_software_configuration_filename[${label}]}"
 }
 
-function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
+function __static__Set_Software_Input_Data_File()
 {
-    local key=$1
+    local -r key=$1
     if [[ ${key} =~ ^(Hydro|Afterburner)$ ]]; then
         local filename relative_key
         filename="${HYBRID_software_user_custom_input_file[${key}]}"
@@ -296,15 +381,24 @@ function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
                 ;;
         esac
         if [[ "${filename}" = '' ]]; then
+            Ensure_That_Given_Variables_Are_Set_And_Not_Empty "HYBRID_software_default_input_filename[${key}]"
             printf -v filename '%s/%s' \
                 "${HYBRID_software_output_directory[${relative_key}]}" \
                 "${HYBRID_software_default_input_filename[${key}]}"
-        else
+        elif [[ "${filename}" =~ / ]]; then
             if Element_In_Array_Equals_To "${relative_key}" "${HYBRID_given_software_sections[@]}"; then
                 exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
                     'Requesting custom ' --emph "${key}" ' input file although executing ' \
                     --emph "${relative_key}" ' with default output name.'
             fi
+        else
+            if [[ "${filename}" =~ ^[.][.]?$ ]]; then
+                exit_code=${HYBRID_fatal_wrong_config_file} Print_Fatal_And_Exit \
+                    'Input_File of ' --emph "${key}" ' cannot be ' --emph "${filename}" '.'
+            fi
+            printf -v filename '%s/%s' \
+                "${HYBRID_software_output_directory[${relative_key}]}" \
+                "${filename}"
         fi
         HYBRID_software_input_file[${key}]="${filename}"
     elif [[ "${key}" = 'Spectators' ]]; then
@@ -322,6 +416,43 @@ function __static__Set_Software_Input_Data_File_If_Not_Set_By_User()
                     "${HYBRID_software_default_input_filename[Spectators]}"
             fi
         fi
+    elif [[ "${key}" = 'Corona' ]]; then
+        if [[ "${HYBRID_optional_feature[Add_corona_from_IC_and_Hydro]}" = 'TRUE' ]]; then
+            if [[ "${HYBRID_optional_feature[IC_corona_source]}" != '' ]]; then
+                HYBRID_software_input_file['IC_corona']="${HYBRID_optional_feature[IC_corona_source]}"
+                if Element_In_Array_Equals_To "IC" "${HYBRID_given_software_sections[@]}"; then
+                    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                        'Requesting custom ' --emph 'IC_corona' ' input file although executing ' \
+                        --emph 'IC' ' with default output name.'
+                fi
+            else
+                printf -v HYBRID_software_input_file[IC_corona] '%s/%s' \
+                    "${HYBRID_software_output_directory[IC]}" \
+                    "${HYBRID_software_default_input_filename[IC_corona]}"
+            fi
+            if [[ "${HYBRID_optional_feature[Hydro_corona_source]}" != '' ]]; then
+                HYBRID_software_input_file['Hydro_corona']="${HYBRID_optional_feature[Hydro_corona_source]}"
+                if Element_In_Array_Equals_To "Hydro" "${HYBRID_given_software_sections[@]}"; then
+                    exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+                        'Requesting custom ' --emph 'Hydro_corona' ' input file although executing ' \
+                        --emph 'Hydro' ' with default output name.'
+                fi
+            else
+                printf -v HYBRID_software_input_file[Hydro_corona] '%s/%s' \
+                    "${HYBRID_software_output_directory[Hydro]}" \
+                    "${HYBRID_software_default_input_filename[Hydro_corona]}"
+            fi
+        fi
+    fi
+}
+
+function __static__Set_Software_Input_Internal_Link_Path()
+{
+    local -r key=$1
+    if [[ ${key} =~ ^(Hydro|Sampler|Afterburner)$ ]]; then
+        printf -v HYBRID_input_symlink_internal_global_path[${key}] '%s/%s' \
+            "${HYBRID_software_output_directory[${key}]}" \
+            "${HYBRID_input_symlink_internal_name[${key}]}"
     fi
 }
 
@@ -389,6 +520,43 @@ function __static__Set_Software_Version()
             # Nothing to do in the other cases
             ;;
     esac
+}
+
+#===================================================================================================
+
+function __static__Pick_Base_Config_To_Be_Used()
+{
+    local -r \
+        key=$1 \
+        prefix=$2 \
+        extension=$3 \
+        software_version=$4
+    local list_of_versions version selected_version
+    local -r string_to_restore_nullglob=$(shopt -p nullglob || true)
+    shopt -s nullglob
+    list_of_versions=("${prefix}"*)
+    eval "${string_to_restore_nullglob}" # NOTE: This eval usage is fine
+    if [[ ${#list_of_versions[@]} -eq 0 ]]; then
+        Print_Internal_And_Exit \
+            'Unable to find any base configuration file for ' --emph "${key}" \
+            ' matching ' --emph "$(basename ${prefix})*" '.'
+    fi
+    list_of_versions=("${list_of_versions[@]//${prefix}/}")
+    list_of_versions=("${list_of_versions[@]//${extension}/}")
+    # Sort array w.r.t. versions list of files matching the prefix
+    readarray -t -d $'\0' list_of_versions < <(printf '%s\0' "${list_of_versions[@]}" | sort -z -V)
+    if Is_Version "${software_version}" -lt "${list_of_versions[0]}"; then
+        exit_code=${HYBRID_fatal_file_not_found} Print_Fatal_And_Exit \
+            'Unable to find base configuration file for ' --emph "${key}" \
+            ' stage compatible with software version ' --emph "${software_version}" '.'
+    fi
+    for version in "${list_of_versions[@]}"; do
+        if Is_Version "${software_version}" -lt "${version}"; then
+            break
+        fi
+        selected_version=${version}
+    done
+    printf "${prefix}${selected_version}${extension}"
 }
 
 Make_Functions_Defined_In_This_File_Readonly

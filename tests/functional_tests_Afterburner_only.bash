@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -16,6 +16,28 @@ function __static__Check_Successful_Handler_Run()
     Check_If_Software_Produced_Expected_Output 'Afterburner' "$(pwd)/Afterburner"
 }
 
+function __static__Check_Existence_Sampled_Particles()
+{
+    local -r expected_file="$1/${HYBRID_input_symlink_internal_name[Afterburner]}"
+    if [[ ! -f "${expected_file}" ]]; then
+        exit_code=1 Print_Fatal_And_Exit 'The ' --emph "${expected_file}" \
+            ' file is expected to exist, but was not found.'
+        return 1
+    fi
+}
+
+function Make_Test_Preliminary_Operations__do-Afterburner-only()
+{
+    local file_to_be_sourced list_of_files
+    list_of_files=(
+        'global_variables.bash'
+    )
+    for file_to_be_sourced in "${list_of_files[@]}"; do
+        source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
+    done
+    Define_Further_Global_Variables
+}
+
 function Functional_Test__do-Afterburner-only()
 {
     shopt -s nullglob
@@ -26,7 +48,7 @@ function Functional_Test__do-Afterburner-only()
     local unfinished_files output_files terminal_output_file failure_message
 
     mkdir -p "Sampler/${run_id}"
-    touch "Sampler/${run_id}/particle_lists.oscar"
+    touch "Sampler/${run_id}/${HYBRID_software_default_input_filename[Afterburner]}"
     printf '
     Hybrid_handler:
       Run_ID: %s
@@ -39,10 +61,27 @@ function Functional_Test__do-Afterburner-only()
             File_Directory: "."
     ' "${run_id}" "${HYBRIDT_repository_top_level_path}" > "${config_filename}"
     # Expect success and test absence of "SMASH" unfinished file
-    Print_Info 'Running Hybrid-handler expecting success'
+    Print_Info 'Running Hybrid-handler with custom input filename expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     __static__Check_Successful_Handler_Run $?
     mv 'Afterburner' 'Afterburner-success'
+    # Expect success with custom input file name from Sampler
+    local -r custom_input="afterburner_input.dat"
+    mkdir -p "Sampler/${run_id}"
+    touch "Sampler/${run_id}/${custom_input}"
+    printf '
+    Hybrid_handler:
+      Run_ID: %s
+    Afterburner:
+      Executable: %s/tests/mocks/smash_afterburner_black-box.py
+      Add_spectators_from_IC: false
+      Input_file: %s
+    ' "${run_id}" "${HYBRIDT_repository_top_level_path}" "${custom_input}" > "${config_filename}"
+    # Run the hydro stage and check if freezeout is successfully generated
+    Print_Info 'Running Hybrid-handler expecting success'
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
+    __static__Check_Successful_Handler_Run $?
+    mv 'Afterburner' 'Afterburner-success-custom-input-file-name'
     # Expect failure and test "SMASH" message
     Print_Info 'Running Hybrid-handler expecting invalid Afterburner input file failure'
     local -r terminal_output_file="Afterburner/${run_id}/Afterburner.log"
@@ -76,7 +115,7 @@ function Functional_Test__do-Afterburner-only()
     fi
     mv 'Afterburner' 'Afterburner-software-crash'
     #Test with custom input
-    rm "Sampler/${run_id}/particle_lists.oscar"
+    rm "Sampler/${run_id}/${HYBRID_software_default_input_filename[Afterburner]}"
     mkdir -p test
     touch 'test/particle_lists_2.oscar'
     printf '
@@ -92,7 +131,7 @@ function Functional_Test__do-Afterburner-only()
     # Expect success and test absence of "SMASH" unfinished file
     Print_Info 'Running Hybrid-handler expecting success'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
-    __static__Check_Successful_Handler_Run $? || return 1
+    __static__Check_Successful_Handler_Run $?
     mv 'Afterburner' 'Afterburner-success-custom-input'
     # Expect failure when using custom input while also running the sampler
     printf '
@@ -158,11 +197,35 @@ function Functional_Test__do-Afterburner-only()
             --emph "${HYBRID_fatal_logic_error}" '.'
         return 1
     fi
+    # Expect failure if both corona and spectators are expected
+    Print_Info 'Running Hybrid-handler expecting failure from requesting' \
+        'to add both corona and spectators simultaneously.'
+    printf '
+    Hybrid_handler:
+      Run_ID: %s
+    Afterburner:
+      Executable: %s/smash_afterburner_black-box.py
+      Add_spectators_from_IC: true
+      Add_corona_from_IC_and_Hydro: true
+      Software_keys:
+        Modi:
+          List:
+            File_Directory: "."
+    ' "${run_id}" "${mocks_folder}" > "${config_filename}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
+    if [[ $? -ne ${HYBRID_fatal_logic_error} ]]; then
+        Print_Error \
+            'Hybrid-handler did not fail as expected with exit code ' \
+            --emph "${HYBRID_fatal_logic_error}" '.'
+        return 1
+    fi
     # Expect success and test the add_spectator functionality
     Print_Info 'Running Hybrid-handler expecting success with the add_spectator option'
     mkdir -p "IC/${run_id}"
-    touch "IC/${run_id}/SMASH_IC.oscar" "Sampler/${run_id}/particle_lists.oscar"
-    cp "${HYBRIDT_repository_top_level_path}/configs/smash_initial_conditions__ge_v3.2.yaml" "IC/${run_id}/config.yaml"
+    touch \
+        "IC/${run_id}/${HYBRID_software_default_input_filename[Spectators]}" \
+        "Sampler/${run_id}/${HYBRID_software_default_input_filename[Afterburner]}"
+    cp "${HYBRIDT_repository_top_level_path}/configs/smash_IC__v3.2.yaml" "IC/${run_id}/config.yaml"
     printf '
     Hybrid_handler:
       Run_ID: %s
@@ -176,11 +239,15 @@ function Functional_Test__do-Afterburner-only()
     ' "${run_id}" "${mocks_folder}" > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     __static__Check_Successful_Handler_Run $?
+    __static__Check_Existence_Sampled_Particles "Afterburner/${run_id}"
     mv 'Afterburner' 'Afterburner-success-with-spectators'
     # Expect failure and test the add_spectator functionality combined with more than one IC event
     Print_Info 'Running Hybrid-handler expecting failure with the add_spectator option and more than one IC event'
     mkdir -p "IC/${run_id}"
-    touch "IC/${run_id}/config.yaml" "IC/${run_id}/SMASH_IC.oscar" "Sampler/${run_id}/particle_lists.oscar"
+    touch \
+        "IC/${run_id}/config.yaml" \
+        "IC/${run_id}/${HYBRID_software_default_input_filename[Spectators]}" \
+        "Sampler/${run_id}/${HYBRID_software_default_input_filename[Afterburner]}"
     printf '
     General:
       Nevents: 42
@@ -203,10 +270,10 @@ function Functional_Test__do-Afterburner-only()
             File_Directory: "."
     ' "${run_id}" "${mocks_folder}" > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
-    if [[ $? -ne ${HYBRID_fatal_value_error} ]]; then
+    if [[ $? -ne ${HYBRID_internal_exit_code} ]]; then
         Print_Error \
             'Hybrid-handler did not fail as expected with exit code ' \
-            --emph "${HYBRID_fatal_value_error}" '.'
+            --emph "${HYBRID_internal_exit_code}" '.'
         return 1
     fi
     mv 'Afterburner' 'Afterburner-invalid-IC-events-with-spectators'
@@ -215,7 +282,7 @@ function Functional_Test__do-Afterburner-only()
     rm -r "IC"/*
     mkdir -p 'test' "IC/${run_id}"
     touch 'test/SMASH_IC_2.oscar'
-    cp "${HYBRIDT_repository_top_level_path}/configs/smash_initial_conditions__ge_v3.2.yaml" "IC/${run_id}/config.yaml"
+    cp "${HYBRIDT_repository_top_level_path}/configs/smash_IC__v3.2.yaml" "IC/${run_id}/config.yaml"
     printf '
     Hybrid_handler:
       Run_ID: %s
@@ -229,7 +296,8 @@ function Functional_Test__do-Afterburner-only()
             File_Directory: "."
     ' "${run_id}" "${mocks_folder}" "$(pwd)" > "${config_filename}"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
-    __static__Check_Successful_Handler_Run $? || return 1
+    __static__Check_Successful_Handler_Run $?
+    __static__Check_Existence_Sampled_Particles "Afterburner/${run_id}"
     mv 'Afterburner' 'Afterburner-success-custom-spectators-input'
     # Expect failure when combining custom spectator lists and running IC
     Print_Info 'Running Hybrid-handler expecting failure with the add_spectator option and IC at the same time'
@@ -262,7 +330,7 @@ function Functional_Test__do-Afterburner-only()
       Executable: %s/smash_afterburner_black-box.py
       Input_file: %s/test/particle_lists_2.oscar
     ' "${mocks_folder}" "${HYBRIDT_tests_folder}" > "${config_filename}"
-    touch "Sampler/particle_lists.oscar.unfinished"
+    touch "Sampler/${HYBRID_software_default_input_filename[Afterburner]}.unfinished"
     Print_Info 'Running Hybrid-handler expecting failure'
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
     if [[ $? -ne ${HYBRID_fatal_file_not_found} ]]; then
@@ -271,4 +339,63 @@ function Functional_Test__do-Afterburner-only()
             --emph "${HYBRID_fatal_file_not_found}" ' finding unfinished files.'
         return 1
     fi
+    mv 'Afterburner' 'Afterburner-failure-unfinished-Sampler'
+    # Expect success and test the add_corona functionality, without corona particles
+    Print_Info 'Running Hybrid-handler expecting success with the add_corona option without corona particles'
+    mkdir -p "IC/${run_id}" "Hydro/${run_id}" "Sampler/${run_id}"
+    printf '%s\n' '# event 9 end' > "IC/${run_id}/${HYBRID_software_default_input_filename[IC_corona]}"
+    touch \
+        "Hydro/${run_id}/${HYBRID_software_default_input_filename[Hydro_corona]}" \
+        "Sampler/${run_id}/${HYBRID_software_default_input_filename[Afterburner]}"
+    printf '
+    Hybrid_handler:
+      Run_ID: %s
+    Afterburner:
+      Executable: %s/smash_afterburner_black-box.py
+      Add_spectators_from_IC: false
+      Add_corona_from_IC_and_Hydro: true
+      Software_keys:
+        Modi:
+          List:
+            File_Directory: "."
+    ' "${run_id}" "${mocks_folder}" > "${config_filename}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
+    __static__Check_Successful_Handler_Run $?
+    __static__Check_Existence_Sampled_Particles "Afterburner/${run_id}"
+    if [[ ! -L "Afterburner/${run_id}/${HYBRID_input_symlink_internal_name[Afterburner]}" ]]; then
+        Print_Error \
+            'Created file is not a symlink but should be.'
+        return 1
+    fi
+    mv 'Afterburner' 'Afterburner-success-with-empty-corona'
+    # Expect success and test the add_corona functionality, with corona particles
+    Print_Info 'Running Hybrid-handler expecting success with the add_corona option with corona particles'
+    mkdir -p "IC/${run_id}" "Hydro/${run_id}" "Sampler/${run_id}"
+    printf '%s\n' \
+        "0 0 0 0 3 5 0 0 4 669 0 0\n" \
+        "# event 0 end" >> "IC/${run_id}/${HYBRID_software_default_input_filename[IC_corona]}"
+    touch \
+        "Hydro/${run_id}/${HYBRID_software_default_input_filename[Hydro_corona]}" \
+        "Sampler/${run_id}/${HYBRID_software_default_input_filename[Afterburner]}"
+    printf '
+    Hybrid_handler:
+      Run_ID: %s
+    Afterburner:
+      Executable: %s/smash_afterburner_black-box.py
+      Add_spectators_from_IC: false
+      Add_corona_from_IC_and_Hydro: true
+      Software_keys:
+        Modi:
+          List:
+            File_Directory: "."
+    ' "${run_id}" "${mocks_folder}" > "${config_filename}"
+    Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${config_filename}" '-o' '.'
+    __static__Check_Successful_Handler_Run $?
+    __static__Check_Existence_Sampled_Particles "Afterburner/${run_id}"
+    if [[ -L "Afterburner/${run_id}/${HYBRID_input_symlink_internal_name[Afterburner]}" ]]; then
+        Print_Error \
+            'Created file is a symlink but should not be.'
+        return 1
+    fi
+    mv 'Afterburner' 'Afterburner-success-with-filled-corona'
 }

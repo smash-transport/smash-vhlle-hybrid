@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2024-2025
-#      SMASH Hybrid Team
+#    Copyright (c) 2024-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -11,8 +11,8 @@
 # of most of the setup done here (cf. in particular the 'Setup' and 'Reference'
 # tabs in the documentation).
 
-site_name: SMASH-vHLLE-Hybrid
-copyright: Copyright &copy; 2024-2025 - SMASH team
+site_name: Hybrid-handler
+copyright: Copyright &copy; 2024-2026 - Hybrid-handler Team
 
 repo_url: https://github.com/smash-transport/smash-vhlle-hybrid
 repo_name: 'Repository'
@@ -97,6 +97,7 @@ theme:
   logo: images/logo.png
   features:
     - content.code.copy
+    - content.code.annotate
     - content.tooltips
     - header.autohide
     - navigation.indexes
@@ -123,6 +124,7 @@ theme:
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
+  custom_dir: docs/overrides
 
 extra:
   social:
@@ -131,6 +133,10 @@ extra:
       name: SMASH transport organization
   version:
     provider: mike
+    default:
+      - latest
+      - develop
+    alias: true
 
 extra_css:
   - stylesheets/extra.css

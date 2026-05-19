@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+#===================================================
+#
+#    Copyright (c) 2023,2025
+#      Hybrid-handler Team
+#
+#    GNU General Public License (GPLv3 or later)
+#
+#===================================================
+
 import argparse
 import os
 import sys
@@ -8,9 +17,11 @@ import time
 import datetime
 import textwrap
 
+
 def print_terminal_start():
     print("\nRunning Hydro:\n")
     return
+
 
 def read_parameters(configFile):
     # list of possible parameters
@@ -44,7 +55,7 @@ def read_parameters(configFile):
         "etaSMin": ["etaSMin", 0],
         "T0": ["T0", 0],
         "eEtaSmin": ["eEtaSmin", 0],
-        "zetaS": ["zeta/s" , 0],
+        "zetaS": ["zeta/s", 0],
         "epsilon0": ["epsilon0", 0],
         "Rg": ["Rgt", 0],
         "Rgz": ["Rgz", 0],
@@ -60,8 +71,10 @@ def read_parameters(configFile):
         for line in open(configFile, "r"):
             line = line.split()
             for key in parameters:
-                if key in line: parameters[key][1] = line[1]
+                if key in line:
+                    parameters[key][1] = line[1]
     return parameters
+
 
 def print_parameters():
     print("vhlle: reading parameters from ", args.params)
@@ -77,6 +90,7 @@ def print_parameters():
     print("======= end parameters =======")
     return
 
+
 def create_folder(outputDirSpecified):
     # create path if needed
     if outputDirSpecified:
@@ -90,6 +104,7 @@ def create_folder(outputDirSpecified):
         print("mkdir: missing operand")
     return
 
+
 def check_command_line():
     # check if there are command# check if there is a config file
     if len(sys.argv) < 2:
@@ -102,6 +117,7 @@ def check_command_line():
             sys.exit(1)
     return
 
+
 def check_eos():
     # no real check at this point we assume the eos folder exists
     # where hlle_visc executable is
@@ -112,11 +128,13 @@ def check_eos():
     if eosExists:
         print("EoSaux: table eos/chiraleos.dat read, [emin,emax,nmin,nmax] = 0  146  0  6")
         print("EoSaux: table eos/chiralsmall.dat read, [emin,emax,nmin,nmax] = 0  1.46  0  0.3")
-        print("EoSSMASH: table eos/hadgas_eos_SMASH.dat read, [emin,emax,nbmin,nbmax,qmin,qmax] = 0  1  0  0.5 -0.1  0.4")
+        print(
+            "EoSSMASH: table eos/hadgas_eos_SMASH.dat read, [emin,emax,nbmin,nbmax,qmin,qmax] = 0  1  0  0.5 -0.1  0.4")
     else:
         print("I/O error with eos/chiraleos.dat")
         sys.exit(1)
     return
+
 
 def exit_without_config(outputDirSpecified):
     if args.params == "":
@@ -133,6 +151,7 @@ Init time = 6 [sec]""")
         sys.exit(1)
     return
 
+
 def read_initial_state():
     messageExample = """particle E = 1442.11  Nbar = 367  Ncharge = 148 Ns = 0
 IC SMASH, center: 0  0  4.36586  1.18914
@@ -146,8 +165,9 @@ Init time = 9 [sec]"""
     if os.path.exists(args.ISinput) and input_is_valid:
         print(messageExample)
     else:
-        print("I/O error with",args.ISinput)
+        print("I/O error with", args.ISinput)
         sys.exit(1)
+
 
 def print_timestep(timestep):
     randomList = []
@@ -163,14 +183,15 @@ def print_timestep(timestep):
 def run_hydro(outputDirSpecified):
     # create freezout hypersurface file
     # only if output directory is specified
-    if outputDirSpecified: freezeout = open(args.outputDir+"freezeout.dat", "w")
+    if outputDirSpecified:
+        freezeout = open(args.outputDir + "freezeout.dat", "w")
     variableList = ["tau", "E", "Efull", "Nb", "Sfull", "EtotSurf", "elements", "susp.", "%cut"]
     # run the black box
     print("{: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10} {: >10}".format(*variableList))
     if crash:
         print("Crash happened in vHLLE")
         sys.exit(1)
-    for ts in range(1,13):
+    for ts in range(1, 13):
         print_timestep(ts)
         time.sleep(0.1)
     if outputDirSpecified:

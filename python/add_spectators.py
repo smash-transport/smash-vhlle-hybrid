@@ -2,8 +2,8 @@
 
 #===================================================
 #
-#    Copyright (c) 2023-2025
-#      SMASH Hybrid Team
+#    Copyright (c) 2020,2022-2025
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -52,7 +52,7 @@ def get_initial_nucleons_from_config():
 
         for particle in target_particles.keys():
             N_initial_nucleons += target_particles[particle]
-    except:
+    except KeyError:
         print("The config file does not contain the necessary information "
               "about the projectile and/or target nuclei.")
         sys.exit(1)
@@ -73,7 +73,8 @@ def extract_spectators():
     spectator_list = []
     with open(args.initial_particle_list, 'r') as f:
         for line in f:
-            if line[0] == "#": continue  # Comment line
+            if len(line) == 0 or line[0] == "#":
+                continue  # Skip empty lines and comments
             # Is initial nucleon and has not interacted
             particle_id = int(line.split()[10])
             N_collisions = int(line.split()[12])
@@ -106,7 +107,7 @@ def write_full_particle_list(spectator_list):
     with open(args.sampled_particle_list, 'r') as sampler_output_file:
         for line in sampler_output_file:
             # Find header of each new event
-            if (line.startswith('# event') and ("out" in line) and (not "end" in line)):
+            if (line.startswith('# event') and ('out' in line) and ('end' not in line)):
                 # The string after 'out' contains the number of sampled particles for
                 # each event. The number of spectators needs to be added to this value.
                 partitioned_line = line.partition('out ')
@@ -137,16 +138,15 @@ def write_full_particle_list(spectator_list):
 if __name__ == '__main__':
     # pass arguments from the command line to the script
     parser = argparse.ArgumentParser()
-    parser.add_argument("--sampled_particle_list", required = True,
+    parser.add_argument("--sampled_particle_list", required=True,
                         help="File containing the sampled particle lists.")
-    parser.add_argument("--initial_particle_list", required = True,
+    parser.add_argument("--initial_particle_list", required=True,
                         help="Particle list from the initial conditions SMASH run.")
-    parser.add_argument("--output_file", required = True,
+    parser.add_argument("--output_file", required=True,
                         help="Resulting particle list containing sampled and spectator particles.")
-    parser.add_argument("--smash_config", required = True,
+    parser.add_argument("--smash_config", required=True,
                         help="SMASH config file employed for the initial conditions.")
     args = parser.parse_args()
-
 
     spectators = extract_spectators()
     write_full_particle_list(spectators)

@@ -1,4 +1,4 @@
-# SMASH-vHLLE-Hybrid
+# Hybrid-handler
 
 <img src="https://github.com/smash-transport/smash-vhlle-hybrid/blob/main/docs/images/logo.png" align="right" width="25%"/>
 

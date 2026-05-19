@@ -17,9 +17,10 @@ Before describing how the framework works and how to run tests, it is worth spen
     So far so good.
     However, you would also like to make the test fail if the called function fails.
     You might then innocently add a trailing `|| return 1` to the function call.
+    Or call your function as command of an `if` clause.
     :boom: Gotcha!
     What did you just do?
-    You made the called function code, and hence the handler code, run in a context were `errexit` is ignored (i.e. on the left of a `||` operator). :melting_face:
+    You made the called function code, and hence the handler code, run in a context were `errexit` is ignored (i.e. on the left of a `||` operator or as command of an `if` clause). :melting_face:
     **Keep this in mind!**
     If you really want to make the test fail, you have to do so in a different way, for example passing the exit code of your delegated task to a dedicated new function which can then harmlessly support a trailing `|| return 1`.
 
@@ -28,7 +29,7 @@ Before describing how the framework works and how to run tests, it is worth spen
 In the :file_folder: **tests** folder there is a :simple-gnubash: `tests_runner` executable, which shall be used to run tests.
 This can be run with the `--help` command line option to obtain a self-explanatory helper message.
 
-Using the test runner it is possible to either run **unit** or **functional** tests.
+Using the test runner it is possible to either run **unit**, **integration**, or **functional** tests.
 This is achieved via a first positional argument.
 By default all available running tests are run and a detailed report is printed to the standard output.
 However, it is possible to only get a list of tests, run some of them, decrease the verbosity of the report and/or explicitly ask to keep the produced output files.
@@ -37,6 +38,8 @@ However, it is possible to only get a list of tests, run some of them, decrease 
     ```bash
     # Run unit tests
     ./tests_runner unit
+    # Run integration tests
+    ./tests_runner integration
     # Run functional tests
     ./tests_runner functional
     ```
@@ -103,7 +106,7 @@ The developer can decide what should be done in each phase and the runner will i
 The existence of a test and its name is automatically deduced from the function to run it, which has to follow a given pattern (see examples below).
 If such a function exists, the runner will check for existence of the corresponding setup and teardown functions, invoking them before and after the test, respectively, if existing.
 
-=== "Setup function"
+=== "Test setup"
     ```bash
     function Make_Test_Preliminary_Operations__test-name()
     {
@@ -111,7 +114,7 @@ If such a function exists, the runner will check for existence of the correspond
     }
     ```
 
-=== "Unit test function"
+=== "Unit test"
     ```bash
     function Unit_Test__test-name()
     {
@@ -119,7 +122,15 @@ If such a function exists, the runner will check for existence of the correspond
     }
     ```
 
-=== "Functional test function"
+=== "Integration test"
+    ```bash
+    function Integration_Test__test-name()
+    {
+        # Integration test code
+    }
+    ```
+
+=== "Functional test"
     ```bash
     function Functional_Test__test-name()
     {
@@ -127,7 +138,7 @@ If such a function exists, the runner will check for existence of the correspond
     }
     ```
 
-=== "Teardown function"
+=== "Test teardown"
     ```bash
     function Clean_Tests_Environment_For_Following_Test__test-name()
     {
@@ -137,7 +148,12 @@ If such a function exists, the runner will check for existence of the correspond
 
 !!! tip "Use the framework functionality to invoke code to test"
     * Codebase functions to be invoked in unit tests should be called through the `Call_Codebase_Function` and `Call_Codebase_Function_In_Subshell` interface functions (passing the name of the function to be invoked as first argument and the arguments to be forward afterwards).
-    *  In functional tests you'll probably want to run the hybrid handler with some options and this can be easily achieved by using the `Run_Hybrid_Handler_With_Given_Options_In_Subshell` function.
+    * Functions in integration tests should be called using the `Call_Codebase_Function` interface function.
+      Since integration tests involve testing the interplay of different functionalities, they usually consist of chains of function calls.
+      Therefore, the side effects of a function call (e.g., variable changes) should persist beyond the call.
+      This would not be the case if the function were run in a sub-shell.
+      If a sub-shell is desired, it is often the developer's responsibility to manually introduce a sub-shell around the integration using `(...)`.
+    * In functional tests you'll probably want to run the Hybrid-handler with some options and this can be easily achieved by using the `Run_Hybrid_Handler_With_Given_Options_In_Subshell` function.
 
 !!! warning "Each test is run in its own subshell"
     The full test flow, including setup and teardown, is run in a subshell in order to isolate its changes from the external environment.

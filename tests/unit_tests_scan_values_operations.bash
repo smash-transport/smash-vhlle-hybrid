@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2024
-#      SMASH Hybrid Team
+#    Copyright (c) 2024-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -23,12 +23,12 @@ function Make_Test_Preliminary_Operations__scan-create-list()
 function Unit_Test__scan-create-list()
 {
     declare -A list_of_parameters_values=(
-        ['IC.Software_keys.Modi.Collider.Sqrtsnn']='{Values: [4.3, 7.7]}'
-        ['Hydro.Software_keys.etaS']='{Values: [0.13, 0.15, 0.17]}'
+        [IC.Software_keys.Modi.Collider.Sqrtsnn]='{Values: [4.3, 7.7]}'
+        [Hydro.Software_keys.etaS]='{Values: [0.13, 0.15, 0.17]}'
     )
     Call_Codebase_Function Create_List_Of_Parameters_Values
-    if [[ "${list_of_parameters_values[IC.Software_keys.Modi.Collider.Sqrtsnn]}" != '[4.3, 7.7]' ]] \
-        || [[ "${list_of_parameters_values[Hydro.Software_keys.etaS]}" != '[0.13, 0.15, 0.17]' ]]; then
+    if [[ "${list_of_parameters_values['IC.Software_keys.Modi.Collider.Sqrtsnn']}" != '[4.3, 7.7]' ]] \
+        || [[ "${list_of_parameters_values['Hydro.Software_keys.etaS']}" != '[0.13, 0.15, 0.17]' ]]; then
         Print_Error 'Parameters values list was not correctly created.'
         return 1
     fi
@@ -52,15 +52,15 @@ function Make_Test_Preliminary_Operations__scan-create-list-LHS()
 function Unit_Test__scan-create-list-LHS()
 {
     declare -A list_of_parameters_values=(
-        ['IC.Software_keys.Modi.Collider.Sqrtsnn']='{Range: [4.3, 7.7]}'
-        ['Hydro.Software_keys.etaS']='{Range: [-0.13, 0.17]}'
+        [IC.Software_keys.Modi.Collider.Sqrtsnn]='{Range: [4.3, 7.7]}'
+        [Hydro.Software_keys.etaS]='{Range: [-0.13, 0.17]}'
     )
     declare -A ranges=(
-        ['IC.Software_keys.Modi.Collider.Sqrtsnn']='[4.3, 7.7]'
-        ['Hydro.Software_keys.etaS']='[-0.13, 0.17]'
+        [IC.Software_keys.Modi.Collider.Sqrtsnn]='[4.3, 7.7]'
+        [Hydro.Software_keys.etaS]='[-0.13, 0.17]'
     )
     Call_Codebase_Function Create_List_Of_Parameters_Values
-    local lower_bound upper_bound actual_values value
+    local lower_bound upper_bound actual_values value out_of_bounds
     for key in "${!list_of_parameters_values[@]}"; do
         lower_bound=$(yq '.[0]' <<< "${ranges[${key}]}")
         upper_bound=$(yq '.[1]' <<< "${ranges[${key}]}")
@@ -71,7 +71,12 @@ function Unit_Test__scan-create-list-LHS()
             return 1
         fi
         for value in "${actual_values[@]}"; do
-            if (($(bc <<< "${value} < ${lower_bound}"))) || (($(bc <<< "${value} > ${upper_bound}"))); then
+            out_of_bounds=$(
+                awk -v v="${value}" \
+                    -v low="${lower_bound}" \
+                    -v high="${upper_bound}" 'BEGIN { print (v < low || v > high) }'
+            )
+            if ((${out_of_bounds})); then
                 Print_Error "Parameter values list for key ${key} was not correctly created."
                 return 1
             fi

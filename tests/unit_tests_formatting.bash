@@ -1,16 +1,16 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
 #===================================================
 
-function Unit_Test__codebase-formatting()
+function Unit_Test__codebase-formatting-Bash()
 {
     local formatter_found='FALSE'
-    if hash shfmt &> /dev/null; then
+    if type shfmt &> /dev/null; then
         formatter_found='TRUE'
     else
         Print_Error 'Command ' --emph 'shfmt' \
@@ -26,7 +26,6 @@ function Unit_Test__codebase-formatting()
     for file in "${list_of_source_files[@]}"; do
         if [[ $(wc -L < "${file}") -gt ${max_length} ]]; then
             files_with_too_long_lines+=("${file}")
-            continue
         fi
     done
     files_with_wrong_formatting=()
@@ -41,7 +40,7 @@ function Unit_Test__codebase-formatting()
     local report_before='FALSE'
     if [[ ${#files_with_too_long_lines[@]} -gt 0 ]]; then
         Print_Error \
-            'There are ' --emph "${#files_with_too_long_lines[@]}" ' file(s) with lines longer than ' \
+            'There are ' --emph "${#files_with_too_long_lines[@]} Bash" ' file(s) with lines longer than ' \
             --emph "${max_length}" ' characters:'
         for file in "${files_with_too_long_lines[@]}"; do
             Print_Error -l -- ' - ' \
@@ -55,7 +54,7 @@ function Unit_Test__codebase-formatting()
             printf '\n'
         fi
         Print_Error \
-            'There are ' --emph "${#files_with_wrong_formatting[@]}" ' file(s) wrongly formatted:'
+            'There are ' --emph "${#files_with_wrong_formatting[@]} Bash" ' file(s) wrongly formatted:'
         for file in "${files_with_wrong_formatting[@]}"; do
             Print_Error -l -- ' - ' \
                 --emph "$(realpath --relative-base="${HYBRIDT_repository_top_level_path}" "${file}")"
@@ -63,6 +62,45 @@ function Unit_Test__codebase-formatting()
         Print_Info '\nRun ' --emph 'Hybrid-handler format' ' to correctly format the codebase.'
     fi
     if ((${#files_with_too_long_lines[@]} + ${#files_with_wrong_formatting[@]} > 0)) \
+        || [[ ${formatter_found} = 'FALSE' ]]; then
+        return 1
+    fi
+}
+
+function Unit_Test__codebase-formatting-Python()
+{
+    local formatter_found='FALSE'
+    if type autopep8 &> /dev/null; then
+        formatter_found='TRUE'
+    else
+        Print_Error 'Command ' --emph 'autopep8' \
+            ' not available, unable to fully check codebase formatting.'
+    fi
+    local list_of_python_files files_with_wrong_formatting file
+    list_of_python_files=(
+        "${HYBRIDT_repository_top_level_path}/"{python,tests}/**/*.py
+    )
+    files_with_wrong_formatting=()
+    if [[ ${formatter_found} = 'TRUE' ]]; then
+        for file in "${list_of_python_files[@]}"; do
+            # Ignoring rule E265, i.e. not enforcing a single whitespace after the # of block comments
+            if autopep8 --ignore "E265" --max-line-length 119 -d --exit-code "${file}" &> /dev/null; then
+                continue
+            else
+                files_with_wrong_formatting+=("${file}")
+            fi
+        done
+    fi
+    if [[ ${#files_with_wrong_formatting[@]} -gt 0 ]]; then
+        Print_Error \
+            'There are ' --emph "${#files_with_wrong_formatting[@]} Python" ' file(s) wrongly formatted:'
+        for file in "${files_with_wrong_formatting[@]}"; do
+            Print_Error -l -- ' - ' \
+                --emph "$(realpath --relative-base="${HYBRIDT_repository_top_level_path}" "${file}")"
+        done
+        Print_Info '\nRun ' --emph 'Hybrid-handler format' ' to correctly format the codebase.'
+    fi
+    if ((${#files_with_wrong_formatting[@]} > 0)) \
         || [[ ${formatter_found} = 'FALSE' ]]; then
         return 1
     fi

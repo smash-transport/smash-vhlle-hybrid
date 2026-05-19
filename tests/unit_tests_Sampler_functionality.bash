@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -43,7 +43,7 @@ function Unit_Test__Sampler-create-input-file-SMASH()
 {
     HYBRID_module[Sampler]='SMASH'
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
-    touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+    touch "${HYBRID_software_output_directory[Hydro]}/${HYBRID_software_default_input_filename[Sampler]}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Sampler
     if [[ $? -ne 0 ]]; then
         Print_Error 'Preparation of input unexpectedly failed.'
@@ -88,7 +88,7 @@ function Unit_Test__Sampler-create-input-file-FIST()
 {
     HYBRID_module[Sampler]='FIST'
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
-    touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+    touch "${HYBRID_software_output_directory[Hydro]}/${HYBRID_software_default_input_filename[Sampler]}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Sampler
     if [[ $? -ne 0 ]]; then
         Print_Error 'Preparation of input unexpectedly failed.'
@@ -142,6 +142,7 @@ function Unit_Test__Sampler-check-all-input-SMASH()
         "spectra_dir ${HOME}" \
         'ecrit 0.5' \
         'number_of_events 42' > "${HYBRID_software_configuration_file[Sampler]}"
+    ln -s "$(which ls)" "${HYBRID_input_symlink_internal_global_path[Sampler]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Sampler
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of all input files unexpectedly failed.'
@@ -261,13 +262,25 @@ function Unit_Test__Sampler-validate-config-file-SMASH()
             --emph "${HYBRID_software_version[Sampler]}" ' failed.'
         return 1
     fi
+    HYBRID_software_version[Sampler]='3.3'
+    __static__Validate_Config_File_For_Fixed_Version_SMASH
+    if [[ $? -ne 0 ]]; then
+        Print_Error \
+            'Validation of sampler configuration file for version ' \
+            --emph "${HYBRID_software_version[Sampler]}" ' failed.'
+        return 1
+    fi
+
     # Config file with incorrect value type for optional keys
     for wrong_key_value in \
         'bulk true' \
         'shear true' \
         'cs2 +-1' \
         'ratio_pressure_energydensity +-1' \
-        'create_root_output True'; do
+        'create_root_output True' \
+        'hydro_coordinate_system +-1' \
+        'compute_spin_vector True' \
+        'create_vorticity_vector_output True'; do
         __static__Validate_Given_Configuration_File_SMASH \
             "'${wrong_key_value}' should not be accepted" "${mandatory_config_keys[@]}" "${wrong_key_value}"
         __static__Possibly_Fail_Validation_Test $? || return 1
@@ -282,7 +295,7 @@ function Clean_Tests_Environment_For_Following_Test__Sampler-validate-config-fil
 function Make_Test_Preliminary_Operations__Sampler-validate-shipped-config-file-SMASH-lt-3.2()
 {
     Make_Test_Preliminary_Operations__Sampler-create-input-file-SMASH
-    readonly HYBRIDT_sampler_base_config_file_label='Sampler_SMASH_lt_3.2'
+    readonly HYBRIDT_sampler_base_config_filename='hadron_sampler__v0.0'
 }
 
 function Unit_Test__Sampler-validate-shipped-config-file-SMASH-lt-3.2()
@@ -292,10 +305,10 @@ function Unit_Test__Sampler-validate-shipped-config-file-SMASH-lt-3.2()
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     cd "${HYBRID_software_output_directory[Sampler]}"
     cp \
-        "${HYBRID_software_base_config_file["${HYBRIDT_sampler_base_config_file_label}"]}" \
+        "${HYBRID_default_configurations_folder}/${HYBRIDT_sampler_base_config_filename}" \
         "${HYBRID_software_configuration_file[Sampler]}"
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
-    touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+    touch "${HYBRID_software_output_directory[Hydro]}/${HYBRID_software_default_input_filename[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid
     if [[ $? -ne 0 ]]; then
         Print_Error \
@@ -315,7 +328,7 @@ function Make_Test_Preliminary_Operations__Sampler-validate-shipped-config-file-
     __static__Do_Preliminary_Sampler_Setup_Operations
     export MOCK_ECHO_VERSION=3.2
     Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
-    readonly HYBRIDT_sampler_base_config_file_label='Sampler_SMASH_ge_3.2'
+    readonly HYBRIDT_sampler_base_config_filename='hadron_sampler__v3.2'
 }
 
 function Unit_Test__Sampler-validate-shipped-config-file-SMASH-ge-3.2()
@@ -324,6 +337,24 @@ function Unit_Test__Sampler-validate-shipped-config-file-SMASH-ge-3.2()
 }
 
 function Clean_Tests_Environment_For_Following_Test__Sampler-validate-shipped-config-file-SMASH-lt-3.2()
+{
+    Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-SMASH
+}
+
+function Make_Test_Preliminary_Operations__Sampler-validate-shipped-config-file-SMASH-ge-3.3()
+{
+    __static__Do_Preliminary_Sampler_Setup_Operations
+    export MOCK_ECHO_VERSION=3.3
+    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
+    readonly HYBRIDT_sampler_base_config_filename='hadron_sampler__v3.3'
+}
+
+function Unit_Test__Sampler-validate-shipped-config-file-SMASH-ge-3.3()
+{
+    Unit_Test__Sampler-validate-shipped-config-file-SMASH-lt-3.2
+}
+
+function Clean_Tests_Environment_For_Following_Test__Sampler-validate-shipped-config-file-SMASH-ge-3.3()
 {
     Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-SMASH
 }
@@ -411,7 +442,7 @@ function Unit_Test__Sampler-validate-config-file-FIST()
     # Validate base configuration file we ship in the codebase
     cp "${HYBRID_software_base_config_file[Sampler_FIST]}" "${HYBRID_software_configuration_file[Sampler]}"
     mkdir -p "${HYBRID_software_output_directory[Hydro]}"
-    touch "${HYBRID_software_output_directory[Hydro]}/freezeout.dat"
+    touch "${HYBRID_software_output_directory[Hydro]}/${HYBRID_software_default_input_filename[Sampler]}"
     Call_Codebase_Function_In_Subshell __static__Is_Sampler_Config_Valid
     if [[ $? -ne 0 ]]; then
         Print_Error 'Shipped sampler configuration unexpectedly detected as incorrect.'

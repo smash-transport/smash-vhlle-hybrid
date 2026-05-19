@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2023-2024
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -21,11 +21,9 @@ function Prepare_Software_Input_File_Hydro()
 function Ensure_All_Needed_Input_Exists_Hydro()
 {
     Ensure_Given_Folders_Exist "${HYBRID_software_output_directory[Hydro]}"
-    Ensure_Input_File_Exists_And_Alert_If_Unfinished \
-        "${HYBRID_software_input_file[Hydro]}"
-    Ensure_Given_Files_Exist \
-        "${HYBRID_software_configuration_file[Hydro]}"
-    Internally_Ensure_Given_Files_Exist "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+    Ensure_Given_Files_Exist "${HYBRID_software_configuration_file[Hydro]}"
+    Ensure_Input_File_Exists_And_Alert_If_Unfinished "${HYBRID_software_input_file[Hydro]}"
+    Internally_Ensure_Given_Files_Exist "${HYBRID_input_symlink_internal_global_path[Hydro]}"
 }
 
 function Ensure_Run_Reproducibility_Hydro()
@@ -41,7 +39,7 @@ function Run_Software_Hydro()
     cd "${HYBRID_software_output_directory[Hydro]}"
     local -r \
         hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}" \
-        ic_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+        ic_output_file_path="${HYBRID_input_symlink_internal_global_path[Hydro]}"
     "${HYBRID_software_executable[Hydro]}" \
         "-params" "${hydro_config_file_path}" \
         "-ISinput" "${ic_output_file_path}" \
@@ -54,7 +52,8 @@ function Run_Software_Hydro()
 
 function __static__Create_Symbolic_Link_To_IC_File()
 {
-    local -r target_link_name="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+    Ensure_Input_File_Exists_And_Alert_If_Unfinished "${HYBRID_software_input_file[Hydro]}"
+    local -r target_link_name="${HYBRID_input_symlink_internal_global_path[Hydro]}"
     if [[ ! -f "${target_link_name}" || -L "${target_link_name}" ]]; then
         ln -s -f "${HYBRID_software_input_file[Hydro]}" "${target_link_name}"
     elif [[ ! "${target_link_name}" -ef "${HYBRID_software_input_file[Hydro]}" ]]; then
@@ -89,14 +88,14 @@ function __static__Create_Symbolic_Link_To_EOS_Folder()
                 exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
                     'A ' --emph 'eos' ' folder called already exists at ' \
                     --emph "${HYBRID_software_output_directory[Hydro]}" \
-                    '.' 'Please remove it and run the hybrid handler again.'
+                    '.' 'Please remove it and run the Hybrid-handler again.'
             fi
         fi
     elif [[ -e "${link_to_eos_folder}" ]]; then
         exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
             'A ' --emph 'eos' ' file already exists at ' \
             --emph "${HYBRID_software_output_directory[Hydro]}" \
-            '.' 'Please remove it and run the hybrid handler again.'
+            '.' 'Please remove it and run the Hybrid-handler again.'
     else
         ln -s "${eos_folder}" "${link_to_eos_folder}"
     fi

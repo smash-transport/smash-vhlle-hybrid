@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -28,19 +28,19 @@ function Define_Further_Global_Variables()
     )
     readonly HYBRID_default_configurations_folder="${HYBRID_top_level_path}/configs"
     readonly HYBRID_python_folder="${HYBRID_top_level_path}/python"
-    readonly HYBRID_afterburner_list_filename="sampled_particles.oscar"
     readonly HYBRID_default_number_of_samples=0
     readonly HYBRID_default_sampler_module="SMASH"
     declare -rgA HYBRID_external_python_scripts=(
         [Add_spectators_from_IC]="${HYBRID_python_folder}/add_spectators.py"
+        [Add_corona_from_IC_and_Hydro]="${HYBRID_python_folder}/add_corona.py"
         [Latin_hypercube_sampling]="${HYBRID_python_folder}/latin_hypercube_sampling.py"
     )
-    declare -rgA HYBRID_software_default_input_filename=(
-        [IC]=''
+    declare -rgA HYBRID_input_symlink_internal_name=(
+        # This is the name of the input at each stage folder, which is usually a symlink to the output of the
+        # previous stage. In this sense this is an internal irrelevant name from the user perspective.
         [Hydro]="SMASH_IC.dat"
-        [Sampler]="freezeout.dat" # Not used at the moment for how the sampler works
-        [Spectators]="SMASH_IC.oscar"
-        [Afterburner]="particle_lists.oscar"
+        [Sampler]="freezeout.dat"
+        [Afterburner]="sampled_particles.oscar"
     )
     declare -rgA HYBRID_software_configuration_filename=(
         [IC]='IC_config.yaml'
@@ -104,13 +104,17 @@ function Define_Further_Global_Variables()
         [Scan_parameters]='HYBRID_scan_parameters[Afterburner]'
         [Software_keys]='HYBRID_software_new_input_keys[Afterburner]'
         [Add_spectators_from_IC]='HYBRID_optional_feature[Add_spectators_from_IC]'
+        [Add_corona_from_IC_and_Hydro]='HYBRID_optional_feature[Add_corona_from_IC_and_Hydro]'
         [Spectators_source]='HYBRID_optional_feature[Spectators_source]'
+        [IC_corona_source]='HYBRID_optional_feature[IC_corona_source]'
+        [Hydro_corona_source]='HYBRID_optional_feature[Hydro_corona_source]'
     )
     # This array declares a list of boolean keys. Here we do not keep track of sections
     # as it would be strange to use the same key name in different sections once as
     # boolean and once as something else.
     declare -rg HYBRID_boolean_keys=(
         'Add_spectators_from_IC'
+        'Add_corona_from_IC_and_Hydro'
     )
     # This array will be filled by the parser as option-to-value(s) map and it is intended
     # to track information given on the command line. For information like the run ID that
@@ -134,11 +138,18 @@ function Define_Further_Global_Variables()
         [Sampler]=''
         [Afterburner]=''
     )
-    declare -gA HYBRID_software_user_custom_input_file=(
+    declare -gA HYBRID_software_default_input_filename=(
+        # This is the output filename looked for in the previous stage folder
         [IC]=''
+        [Hydro]=''                # This will be set in the sanity checks as it depends on the IC executable version
+        [Sampler]="freezeout.dat" # Sampler has no 'Input_file' key, yet use this to avoid hard-coding this name around
+        [Spectators]="SMASH_IC.oscar"
+        [Afterburner]="particle_lists.oscar"
+        [IC_corona]="particle_lists.oscar"
+        [Hydro_corona]="particle_lists.oscar"
+    )
+    declare -gA HYBRID_software_user_custom_input_file=( # Only for stages for which it makes sense to have this feature
         [Hydro]=''
-        [Sampler]=''
-        [Spectators]=''
         [Afterburner]=''
     )
     declare -gA HYBRID_software_base_config_file=(
@@ -146,14 +157,10 @@ function Define_Further_Global_Variables()
         [Hydro]="${HYBRID_default_configurations_folder}/vhlle_hydro"
         [Sampler]=""
         [Afterburner]="${HYBRID_default_configurations_folder}/smash_afterburner.yaml"
-        # For the IC, the default base configuration file depends on the SMASH version
-        [IC_lt_3.2]="${HYBRID_default_configurations_folder}/smash_initial_conditions__lt_v3.2.yaml"
-        [IC_ge_3.2]="${HYBRID_default_configurations_folder}/smash_initial_conditions__ge_v3.2.yaml"
-        # For the Sampler, the default configs depend on the module (and possibly on the sampler
-        # version). The user may give their own base config, so we have to wait and see if the
-        # user chose a base config and only replace it if none was given.
-        [Sampler_SMASH_lt_3.2]="${HYBRID_default_configurations_folder}/hadron_sampler__lt_v3.2"
-        [Sampler_SMASH_ge_3.2]="${HYBRID_default_configurations_folder}/hadron_sampler__ge_v3.2"
+        # For the IC and Sampler, the default base configuration file depends on the software
+        # version and/or on the module used. The user may give their own base config, so we have to
+        # wait and see if the user chose a base config and only replace it if none was given.
+        # This is done as part of the sanity checks, where the selecting mechanism is implemented.
         [Sampler_FIST]="${HYBRID_default_configurations_folder}/fist_config"
     )
     declare -gA HYBRID_scan_parameters=(
@@ -173,7 +180,10 @@ function Define_Further_Global_Variables()
     )
     declare -gA HYBRID_optional_feature=(
         [Add_spectators_from_IC]='TRUE'
+        [Add_corona_from_IC_and_Hydro]='FALSE'
         [Spectators_source]=''
+        [IC_corona_source]=''
+        [Hydro_corona_source]=''
     )
     # Variables to be set (and possibly made readonly) after all sanity checks on input succeeded
     declare -gA HYBRID_software_output_directory=(
@@ -197,6 +207,13 @@ function Define_Further_Global_Variables()
         [Afterburner]=''
     )
     declare -gA HYBRID_software_input_file=(
+        [Hydro]=''
+        [Spectators]=''
+        [Afterburner]=''
+        [IC_corona]=''
+        [Hydro_corona]=''
+    )
+    declare -gA HYBRID_input_symlink_internal_global_path=(
         [Hydro]=''
         [Spectators]=''
         [Afterburner]=''

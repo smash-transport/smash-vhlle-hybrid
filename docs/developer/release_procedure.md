@@ -15,7 +15,7 @@ Closing the branch means to merge it into `main`, which will be tagged and conta
 !!! warning "Don't forget to update the version string"
     In the codebase there is a global `HYBRID_codebase_version` variable, which contains the version label.
     This should be bumped on the `release` branch, i.e. when it is clear which will be the following version number.
-    Analogously, it should be bumped into a dirt state[^2] on `develop` as soon as the `release` is closed.
+    Analogously, it should be bumped into a dirty state[^2] on `develop` as soon as the `release` is closed.
 
 [^1]:
     Alessandro has offered a trilogy of talks about Git and these are available on his GitHub profile :material-arrow-right-box: [:material-github: AxelKrypton](https://github.com/AxelKrypton/Git-crash-course).
@@ -40,10 +40,11 @@ Closing the branch means to merge it into `main`, which will be tagged and conta
       - changing the type of box;
       - adding release date and link to changes from previous version.
 - [x] Bump version number global variable in main script to a **stable state**.
-- [x] Close the `release` branch in the git-flow sense:
+- [x] Update `CITATION.cff` file w.r.t version number, release date and possibly authors information
+- [x] Close the `release` branch in the following sense:
       - merge it into the `main` branch;
       - switch to `main` and tag the last commit;
-      - switch to `develop` and merge the `release` back into it[^3].
+      - switch to `develop` and merge the `main` back into it[^3].
 - [x] Publish the new release by pushing the changes and the new tag on `main`.
 - [x] From `main` [build and deploy the documentation](building_docs.md).
 - [x] From `develop` bump version number global variable in main script to an **unstable state** and prepare a `!!! work-in-progress "Unreleased"` box in the CHANGELOG file.
@@ -59,17 +60,23 @@ Closing the branch means to merge it into `main`, which will be tagged and conta
 
 === "Close the release branch"
     ```bash
-    # Git-flow extension
-    git flow release finish 1.2.0
-
     # Vanilla Git commands
     git switch main
     git merge --no-ff release/1.2.0
-    git tag -a 1.2.0
+    git tag -a Hybrid-handler-1.2.0
     git switch develop
-    git merge --no-ff release/1.2.0
+    git merge --no-ff main
     git branch -d release/1.2.0
+
+    # Git-flow extension
+    git flow release finish 1.2.0 # (1)!
+    git switch develop
+    git merge main
     ```
+
+    1. Using Git-flow extension in this case is discouraged because we want to merge `main` into `develop` to have the new tag done on `main` reachable from `develop` via `git-describe`.
+       However, if you still want to use Git-flow, you need to run `git switch develop && git merge main` after having closed the `release` branch.
+       Furthermore, the `git flow release finish` command assumes that the tag prefix `Hybrid-handler` has been set at initialization time in the Git-flow extension!
 
 === "Publish new release"
     ```bash
@@ -82,4 +89,4 @@ Closing the branch means to merge it into `main`, which will be tagged and conta
 
 [^3]:
     This might lead to conflicts if the codebase has evolved on the `develop` branch.
-    Please note as well that merging `main` into `develop` would be equivalent as the `main` branch is meant for stable releases only and it should not contain anything new w.r.t. the `develop` branch.
+    Please note as well that merging the `release` branch into `develop` would be equivalent in terms of code changes, but the tagged commit would not be reachable from the `develop` branch when using `git-describe`.

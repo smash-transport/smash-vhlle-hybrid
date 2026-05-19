@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -15,19 +15,16 @@ function Prepare_Software_Input_File_Afterburner()
     Ensure_Given_Files_Exist "${HYBRID_software_base_config_file[Afterburner]}"
     Copy_Base_Configuration_To_Output_Folder_For 'Afterburner'
     Replace_Keys_In_Configuration_File_If_Needed_For 'Afterburner'
-    __static__Create_Sampled_Particles_File_Or_Symbolic_Link_With_Or_Without_Spectators
+    __static__Create_Sampled_Particles_File_Or_Symbolic_Link
     __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
 }
 
 function Ensure_All_Needed_Input_Exists_Afterburner()
 {
     Ensure_Given_Folders_Exist "${HYBRID_software_output_directory[Afterburner]}"
-    Ensure_Input_File_Exists_And_Alert_If_Unfinished \
-        "${HYBRID_software_input_file[Afterburner]}"
-    Ensure_Given_Files_Exist \
-        "${HYBRID_software_configuration_file[Afterburner]}"
-    Internally_Ensure_Given_Files_Exist \
-        "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
+    Ensure_Input_File_Exists_And_Alert_If_Unfinished "${HYBRID_software_input_file[Afterburner]}"
+    Ensure_Given_Files_Exist "${HYBRID_software_configuration_file[Afterburner]}"
+    Internally_Ensure_Given_Files_Exist "${HYBRID_input_symlink_internal_global_path[Afterburner]}"
 }
 
 function Ensure_Run_Reproducibility_Afterburner()
@@ -90,10 +87,70 @@ function __static__Run_Add_Spectators_Python_Script()
         '--smash_config' "${HYBRID_software_output_directory[IC]}/config.yaml" 2> /dev/null
 }
 
-function __static__Create_Sampled_Particles_File_Or_Symbolic_Link_With_Or_Without_Spectators()
+function __static__Run_Add_Corona_Python_Script()
 {
-    local -r target_link_name="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
-    if [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
+    "${HYBRID_external_python_scripts[Add_corona_from_IC_and_Hydro]}" \
+        '--sampled_particle_list' "${HYBRID_software_input_file[Afterburner]}" \
+        '--corona_particle_lists' "${HYBRID_software_input_file[IC_corona]}" \
+        "${HYBRID_software_input_file[Hydro_corona]}" \
+        '--output_file' "${target_link_name}" 2> /dev/null
+}
+
+function __static__Create_Symbolic_Link()
+{
+    Ensure_That_Given_Variables_Are_Set_And_Not_Empty 'target_link_name'
+    Ensure_Given_Files_Exist "${HYBRID_software_input_file[Afterburner]}"
+    if [[ ! -f "${target_link_name}" || -L "${target_link_name}" ]]; then
+        ln -s -f "${HYBRID_software_input_file[Afterburner]}" "${target_link_name}"
+    elif [[ ! "${target_link_name}" -ef "${HYBRID_software_input_file[Afterburner]}" ]]; then
+        exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
+            'File ' --emph "${target_link_name}" ' exists but it is not the Afterburner input file ' \
+            --emph "${HYBRID_software_input_file[Afterburner]}" ' to be used.'
+    fi
+}
+
+function __static__Create_Sampled_Particles_File_Or_Symbolic_Link()
+{
+    local -r target_link_name="${HYBRID_input_symlink_internal_global_path[Afterburner]}"
+    if [[ "${HYBRID_optional_feature[Add_corona_from_IC_and_Hydro]}" = 'TRUE' ]]; then
+        Ensure_Given_Files_Do_Not_Exist "${target_link_name}"
+        Ensure_Given_Files_Exist \
+            "${HYBRID_software_input_file[Afterburner]}" \
+            "${HYBRID_software_input_file[IC_corona]}"
+        # NOTE: Since the errexit option enabled, the python script to add the spectators is run in the if-statement
+        #       and the possible exit code is accessed at the very beginning of the else-clause.
+        if __static__Run_Add_Corona_Python_Script; then
+            # BE AWARE: The negation of the if-clause does not work because then the exit code cannot
+            #           be extracted properly (it will always be 0 because of the true if-statement).
+            :
+        else
+            case $? in
+                2)
+                    Print_Internal_And_Exit \
+                        --emph "${HYBRID_software_input_file[IC_corona]}" \
+                        'or' --emph "${HYBRID_software_input_file[Afterburner]}" \
+                        'not found even if it was ensured to exist.'
+                    ;;
+                3)
+                    Print_Fatal_And_Exit \
+                        'Could not determine number of events from last line of at least one input file.'
+                    ;;
+                4)
+                    Print_Warning \
+                        'No corona particles were found, creating a symbolic link for the sampled particles.'
+                    __static__Create_Symbolic_Link
+                    ;;
+                5)
+                    Print_Internal_And_Exit \
+                        --emph "${target_link_name}" 'already exists even if it was ensured not to.'
+                    ;;
+                *)
+                    Print_Fatal_And_Exit \
+                        'Adding corona from IC and Hydro to the sampled particles file failed.'
+                    ;;
+            esac
+        fi
+    elif [[ "${HYBRID_optional_feature[Add_spectators_from_IC]}" = 'TRUE' ]]; then
         Ensure_Given_Files_Do_Not_Exist "${target_link_name}"
         # Here the config.yaml file is expected to be produced by SMASH in the output folder
         # during the IC run. It is used to determine the initial number of particles.
@@ -107,35 +164,30 @@ function __static__Create_Sampled_Particles_File_Or_Symbolic_Link_With_Or_Withou
         # Run Python script to add spectators
         # NOTE: Since the errexit option enabled, the python script to add the spectators is run in the if-statement
         #       and the possible exit code is accessed at the very beginning of the else-clause.
-        local python_exit_code
         if __static__Run_Add_Spectators_Python_Script; then
             # BE AWARE: The negation of the if-clause does not work because then the exit code cannot
             #           be extracted properly (it will always be 0 because of the true if-statement).
             :
         else
-            python_exit_code=$?
-            if [[ ${python_exit_code} -eq ${HYBRID_fatal_value_error} ]]; then
-                exit_code=${HYBRID_fatal_value_error} Print_Fatal_And_Exit \
-                    'It was attempted to add spectators from multiple IC events to the sampled particles file. Only' \
-                    'running one IC event is supported when using the Afterburner config key ' \
-                    --emph "Add_spectators_from_IC: true" '.'
-            elif [[ ${python_exit_code} -eq 2 ]]; then
-                Print_Internal_And_Exit \
-                    'The handing over of the ' --emph "python_fatal_value_error" \
-                    ' to the Python script that adds spectators from the IC did not work.'
-            else
-                Print_Fatal_And_Exit \
-                    'Adding spectators from the IC particles to the sampled particles file failed.'
-            fi
+            case $? in
+                ${HYBRID_fatal_value_error})
+                    Print_Internal_And_Exit \
+                        'It was attempted to add spectators from multiple IC events to the sampled particles file. ' \
+                        'This should be forbidden by the handler in the initial sanity checks!'
+                    ;;
+                2)
+                    Print_Internal_And_Exit \
+                        'The handing over of the ' --emph "python_fatal_value_error" \
+                        ' to the Python script that adds spectators from the IC did not work.'
+                    ;;
+                *)
+                    Print_Fatal_And_Exit \
+                        'Adding spectators from the IC particles to the sampled particles file failed.'
+                    ;;
+            esac
         fi
     else
-        if [[ ! -f "${target_link_name}" || -L "${target_link_name}" ]]; then
-            ln -s -f "${HYBRID_software_input_file[Afterburner]}" "${target_link_name}"
-        elif [[ ! "${target_link_name}" -ef "${HYBRID_software_input_file[Afterburner]}" ]]; then
-            exit_code=${HYBRID_fatal_logic_error} Print_Fatal_And_Exit \
-                'File ' --emph "${target_link_name}" ' exists but it is not the Afterburner input file ' \
-                --emph "${HYBRID_software_input_file[Afterburner]}" ' to be used.'
-        fi
+        __static__Create_Symbolic_Link
     fi
 }
 
@@ -144,8 +196,18 @@ function __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
     local -r config_afterburner="${HYBRID_software_configuration_file[Afterburner]}"
     if Element_In_Array_Equals_To 'Sampler' "${HYBRID_given_software_sections[@]}"; then
         local -r config_sampler="${HYBRID_software_configuration_file[Sampler]}"
+        local number_of_events_config_key_sampler
+        if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
+            number_of_events_config_key_sampler='number_of_events'
+        elif [[ "${HYBRID_module[Sampler]}" = 'FIST' ]]; then
+            number_of_events_config_key_sampler='nevents'
+        else
+            Print_Internal_And_Exit 'The used sampler module ' --emph "${HYBRID_module[Sampler]}" \
+                ' is not recognized by the function\n' --emph "${FUNCNAME}" \
+                '. This should not have happened.'
+        fi
         while read key value; do
-            if [[ "${key}" = 'number_of_events' ]]; then
+            if [[ "${key}" = "${number_of_events_config_key_sampler}" ]]; then
                 local events_sampler
                 events_sampler="${value}"
             fi
@@ -153,7 +215,7 @@ function __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
         local events_afterburner
         events_afterburner=$(Read_From_YAML_String_Given_Key "$(< "${config_afterburner}")" 'General.Nevents')
         if [[ "${events_afterburner}" -gt "${events_sampler}" ]]; then
-            PrintAttention 'The number of events set to run in the afterburner (' \
+            Print_Attention 'The number of events set to run in the afterburner (' \
                 --emph "${events_afterburner}" ')\nis greater than the number of events sampled (' \
                 --emph "${events_sampler}" ').\n' \
                 --emph 'Nevents' ' in the afterburner configuration file is reset to ' --emph "${events_sampler}" '!'
@@ -161,7 +223,7 @@ function __static__Check_If_Afterburner_Configuration_Is_Consistent_With_Sampler
                 'YAML' "${config_afterburner}" \
                 "$(printf "%s:\n  %s:  %s\n" 'General' 'Nevents' "${events_sampler}")"
         elif [[ "${events_afterburner}" -lt "${events_sampler}" ]]; then
-            PrintAttention 'The number of events set to run in the afterburner (' \
+            Print_Attention 'The number of events set to run in the afterburner (' \
                 --emph "${events_afterburner}" ')\nis smaller than the number of events sampled (' \
                 --emph "${events_sampler}" ').' \
                 'Excess sampled events remain unused.' \

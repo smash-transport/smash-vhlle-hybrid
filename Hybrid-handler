@@ -2,8 +2,8 @@
 
 #===================================================
 #
-#    Copyright (c) 2023-2025
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -19,7 +19,7 @@
 #                                                                            #
 #----------------------------------------------------------------------------#
 
-readonly HYBRID_codebase_version='SMASH-vHLLE-hybrid-2.1.2'
+readonly HYBRID_codebase_version='Hybrid-handler-2.2'
 
 function Main()
 {
@@ -31,7 +31,7 @@ function Main()
     Define_Further_Global_Variables
     Parse_Execution_Mode
     Act_And_Exit_If_User_Ran_Auxiliary_Modes
-    Check_System_Requirements
+    Check_System_Requirements_And_Exit_If_Any_Is_Missing
     Parse_Command_Line_Options
     Make_Needed_Operations_Depending_On_Execution_Mode
 }
@@ -40,7 +40,7 @@ function Enable_Desired_Shell_Behavior()
 {
     # Set stricter bash mode (see CONTRIBUTING for more information)
     set -o pipefail -o nounset -o errexit
-    shopt -s extglob inherit_errexit
+    shopt -s extglob globstar inherit_errexit
 }
 
 function Setup_Initial_And_Final_Output_Space()
@@ -57,7 +57,7 @@ function Define_Repository_Global_Path()
     #       might be problematic. Hence we basically only use 'readlink' to resolve possible
     #       symbolic links. Note that we require 'readlink' to exist as this was introduced in
     #       OpenBSD and GNU around 2000, see comments to https://unix.stackexchange.com/a/136527/370049.
-    if ! hash readlink &> /dev/null; then
+    if ! type readlink &> /dev/null; then
         exit_code=${HYBRID_fatal_builtin} Print_Fatal_And_Exit \
             "No 'readlink' command found. Please install it and run the Hybrid-handler again."
     fi
@@ -96,7 +96,6 @@ function Act_And_Exit_If_User_Ran_Auxiliary_Modes()
             ;;&
         format)
             Format_Codebase
-            Run_Formatting_Unit_Test
             ;;&
         version)
             Print_Software_Version

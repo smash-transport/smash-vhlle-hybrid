@@ -9,6 +9,27 @@ If you are new to YAML, be reassured, our YAML usage is definitely basic.
 Each key has to be followed by a colon and each section content has to be indented in a consistent way.
 In the following documentation you will find examples, too, and they are probably enough to understand how to create your configuration file.
 
+!!! info "Nomenclature"    
+    Since the Hybrid-handler is a software that aims at integrating different codebases, two types of configuration files are involved. First, each stage requires a configuration, formatted accordingly to the specific codebase of the chosen executable. Second, the Hybrid-handler itself has a YAML configuration file, whose syntax is introduced here below. We usually refer to the former as *base* configuration files, as they act as a base for the latter to create the actual setup for the evolution.
+
+## An example of a complete Hybrid-handler configuration file
+
+If you wish to run a simulation of the full model using the default behavior of all the stages of the Hybrid-handler, then the following simple configuration file can be used.
+
+```yaml title="Example"
+IC:
+    Executable: /path/to/smash
+
+Hydro:
+    Executable: /path/to/vHLLE
+
+Sampler:
+    Executable: /path/to/Hadron-sampler
+
+Afterburner:
+    Executable: /path/to/smash
+```
+
 ## The generic section
 
 There is a generic section that contains general information which is not specific to one stage only.
@@ -60,7 +81,7 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
     Refer to the [:material-arrow-right-box: `Software_keys`](configuration_file.md#Software-keys) description for further information.
 
 !!! info "Enforced sanity rules"
-    Since the hybrid handler understands which software should be run from the presence of the corresponding section, there are a couple of totally natural rules that are enforced and will make the handler fail if violated.
+    Since the Hybrid-handler understands which software should be run from the presence of the corresponding section, there are a couple of totally natural rules that are enforced and will make the handler fail if violated.
 
     1. At least one software section must be present in the configuration file.
     2. Software sections must be specified in order and without gaps.
@@ -76,8 +97,8 @@ However, **it is strongly encouraged to exclusively use absolute paths** as rela
 <i id="Config-file"></i>
 ???+ config-key "`Config_file`"
 
-    Path to the software specific configuration file.
-    If not specified, the file shipped in the ***configs*** folder is used.
+    Each stage is evolved by a separate framework, which requires a specific base configuration file defined by this key.
+    If not specified, the file shipped in the ***configs*** folder is used. The default values are taken from the Bayesian analysis described in [:newspaper: *Götz et al. Phys. Rev. C 112, 014910*](https://journals.aps.org/prc/abstract/10.1103/rzml-rjxz).
 
 <i id="Software-keys"></i>
 ???+ config-key "`Software_keys`"
@@ -140,8 +161,10 @@ IC:
 ???+ config-key "`Input_file`"
 
     The hydrodynamics simulation needs an additional input file which contains the system's initial conditions.
-    This is the main output of the previous stage and, therefore, if not specified, a :material-file: *SMASH_IC.dat* file is expected to exist in the :file_folder: ***IC*** output sub-folder with the same `Run_ID`.
+    This is the main output of the previous stage and, therefore, if not specified, a :material-file: *SMASH_IC_For_vHLLE.dat* file is expected to exist in the :file_folder: ***IC*** output sub-folder with the same `Run_ID`.
+
     However, using this key, any file can be specified and used.
+    If the key is a simple file name (without any `/`), the Hybrid-handler looks for this name in the corresponding :file_folder: ***IC*** output sub-folder, but if it is a path (i.e. it contains a `/`), that specific file will be used.
 
 ```yaml title="Example"
 Hydro:
@@ -149,17 +172,19 @@ Hydro:
     Config_file: /path/to/vHLLE_config
     Software_keys:
         etaS: 0.42
-    Input_file: /path/to/IC_output.dat
+    Input_file: /path/to/IC_output.dat # Path or single file (1)
 ```
+
+1. :bulb: If this key does not contain a `/` and is for example specified as `My_IC.out`, then the `IC` stage output file will take the specified name and it will be used as input for the `Hydro` stage.
 
 ## :seedling: &nbsp; The hadron sampler section
 
 Also the hadron sampler needs in input the freezeout surface file, which is produced at the previous hydrodynamics stage.
-However, there is no dedicated `Input_file` key in the hadron sampler section of the hybrid handler configuration file, because the hadron sampler must receive the path to this file in its own configuration file already.
+However, there is no dedicated `Input_file` key in the hadron sampler section of the Hybrid-handler configuration file, because the hadron sampler must receive the path to this file in its own configuration file already.
 Therefore, the user can set any path to the freezeout surface file by specifying it in the `Software_keys` subsection, as shown in the example below.
 
-By default, if the user does not use a custom configuration file for the hadron sampler and does not specify the path to the freezeout surface file via `Software_keys`, the hybrid handler will use the configuration file for the hadron sampler which is contained in the :file_folder: ***configs*** folder and in which the path to the freezeout surface is set to `=DEFAULT=`.
-This will be internally resolved by the hybrid handler to the path of a :material-file: *freezeout.dat* file in the :file_folder: ***Hydro*** output sub-folder with the same `Run_ID`,  which is expected to exist.
+By default, if the user does not use a custom configuration file for the hadron sampler and does not specify the path to the freezeout surface file via `Software_keys`, the Hybrid-handler will use the configuration file for the hadron sampler which is contained in the :file_folder: ***configs*** folder and in which the path to the freezeout surface is set to `=DEFAULT=`.
+This will be internally resolved by the Hybrid-handler to the path of a :material-file: *freezeout.dat* file in the :file_folder: ***Hydro*** output sub-folder with the same `Run_ID`,  which is expected to exist.
 A mechanism like this one is technically needed to be able by default to refer to the same run ID and pick up the correct file from the previous stage.
 As a side-effect, it is not possible for the user to name the freezeout surface file as `=DEFAULT=`, which anyways would not probably be a very clever choice. :sweat_smile:
 
@@ -168,7 +193,7 @@ Sampler:
     Executable: /path/to/Hadron-sampler
     Config_file: /path/to/Hadron-sampler_config
     Software_keys:
-        surface: /path/to/custom/freezeout.dat
+        surface_file: /path/to/custom/freezeout.dat
 ```
 
 For the hadron sampler section, there is the additional option to use an alternative sampling software, the FIST sampler. By default, the SMASH-hadron-sampler is used.
@@ -199,7 +224,7 @@ Sampler:
     Particle_file: /path/to/list.dat
     Decays_file: /path/to/decays.dat
     Software_keys:
-        hypersurface: /path/to/custom/freezeout.dat
+        hypersurface_file: /path/to/custom/freezeout.dat
 ```
 
 ## :fire: &nbsp; The afterburner section
@@ -208,8 +233,10 @@ Sampler:
 
     As other stages, the afterburner run needs an additional input file as well, one which contains the sampled particles list.
     This is the main output of the previous sampler stage and, therefore, if not specified, a *particle_lists.oscar* file is expected to exist in the ***Sampler*** output sub-folder with the same `Run_ID`.
-    However, using this key, any file can be specified and used.
-    Note that although it is possible to specify the input for the list modus in SMASH via the `Software_keys`, this is not allowed here and will result in an error.
+
+    However, using this key, any file can be specified and used. If the key is a simple file name (without any `/`), the Hybrid-handler looks for this name in the corresponding :file_folder: ***Sampler*** output sub-folder, but if it is a path (i.e. it contains a `/`), that specific file will be used.
+
+    :warning: Note that although it is possible to specify the input for the list modus in SMASH via the `Software_keys`, this is not allowed here and will result in an error.
     Always specify the customized input file for the afterburner stage using this key, if needed.
 
 ???+ config-key "`Add_spectators_from_IC`"
@@ -223,6 +250,12 @@ Sampler:
     However, using this key any file path can be specified.
     This key is ignored if `Add_spectators_from_IC` is set to `false`.
 
+???+ config-key "`Add_corona_from_IC_and_Hydro`"
+
+    Append the corona particles from the `IC` and `Hydro` stages to the particles sampled in the `Sampler` in an event using dynamic fluidization. If `true`, a :material-file: *particle_lists.oscar* file is expected to exist in the :file_folder: ***IC*** output sub-folder with the same `Run_ID`. The :file_folder: ***Hydro*** folder may contain such a file as well. The default value is `false`.
+
+    ⚠️ This key is mutually exclusive with the `Add_spectators_from_IC` key. If both are set to `true`, it will result in an error.
+
 ```yaml title="Example"
 Afterburner:
     Executable: /path/to/smash
@@ -230,27 +263,12 @@ Afterburner:
     Software_keys:
         General:
             Delta_Time: 0.25
+    Input_file: /path/to/Sampler_output.dat # Path or single file (1)
     Add_spectators_from_IC: true
     Spectators_source: /path/to/spectators-file.oscar
 ```
 
-## An example of a complete hybrid handler configuration file
-
-If you wish to run a simulation of the full model using the default behavior of all the stages of the hybrid handler, then the following configuration file can be used.
-
-```yaml title="Example"
-IC:
-    Executable: /path/to/smash
-
-Hydro:
-    Executable: /path/to/vHLLE
-
-Sampler:
-    Executable: /path/to/Hadron-sampler
-
-Afterburner:
-    Executable: /path/to/smash
-```
+1. :bulb: If this key does not contain a `/` and is for example specified as `My_Sampler.out`, then the `Sampler` stage output file will take the specified name and it will be used as input for the `Afterburner` stage.
 
 !!! warning "This is going to be costly!"
     Such a configuration file will execute all the modules in production mode, involving a fine hydrodynamic grid and a large statistic of sampled events.

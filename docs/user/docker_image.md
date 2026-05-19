@@ -1,8 +1,8 @@
 # An Ubuntu-based framework
 
-Next to the hybrid handler repository, a Docker image based on Ubuntu to compile all SMASH-vHLLE-hybrid software and use the hybrid handler [is available](https://github.com/smash-transport/smash-vhlle-hybrid/pkgs/container/smash-vhlle-hybrid).
+Next to the Hybrid-handler repository, a Docker image based on Ubuntu to compile all SMASH-vHLLE-hybrid software and use the Hybrid-handler [is available](https://github.com/smash-transport/smash-vhlle-hybrid/pkgs/container/smash-vhlle-hybrid).
 Feel free to download it and use it.
-In the container all prerequisites of the hybrid handler are satisfied and the user can easily use it.
+In the container all prerequisites of the Hybrid-handler are satisfied and the user can easily use it.
 The image does not contain the supported software and its installation is left to the user.
 However, most libraries are available in the image an a list of them can be obtained inspecting the container.
 ```console title="A possible output of docker inspect"

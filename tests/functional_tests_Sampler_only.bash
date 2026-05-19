@@ -1,11 +1,23 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
 #===================================================
+
+function Make_Test_Preliminary_Operations__do-Sampler-only()
+{
+    local file_to_be_sourced list_of_files
+    list_of_files=(
+        'global_variables.bash'
+    )
+    for file_to_be_sourced in "${list_of_files[@]}"; do
+        source "${HYBRIDT_repository_top_level_path}/bash/${file_to_be_sourced}" || exit ${HYBRID_fatal_builtin}
+    done
+    Define_Further_Global_Variables
+}
 
 function __static__Execute_FIST_Sampler_Test()
 {
@@ -41,7 +53,7 @@ function Functional_Test__do-Sampler-only()
         run_id='Sampler_only'
     local output_files
     mkdir -p "Hydro/${run_id}"
-    touch "Hydro/${run_id}/freezeout.dat"
+    touch "Hydro/${run_id}/${HYBRID_software_default_input_filename[Sampler]}"
     particle_list="./Sampler/${run_id}/list.dat"
     decays_list="./Sampler/${run_id}/decays.dat"
     printf '
@@ -115,8 +127,8 @@ function Functional_Test__do-Sampler-only()
     Sampler:
        Executable: %s/tests/mocks/sampler_black-box.py
     ' "${run_id}" "${HYBRIDT_repository_top_level_path}" > "${hybrid_handler_config}"
-    rm "Hydro/${run_id}/freezeout.dat"
-    touch "Hydro/${run_id}/freezeout.dat.unfinished"
+    rm "Hydro/${run_id}/${HYBRID_software_default_input_filename[Sampler]}"
+    touch "Hydro/${run_id}/${HYBRID_software_default_input_filename[Sampler]}.unfinished"
     Run_Hybrid_Handler_With_Given_Options_In_Subshell 'do' '-c' "${hybrid_handler_config}" '-o' '.'
     if [[ $? -ne ${HYBRID_fatal_file_not_found} ]]; then
         Print_Error \
@@ -125,8 +137,8 @@ function Functional_Test__do-Sampler-only()
         return 1
     fi
     mv 'Sampler' 'Sampler-SMASH-unfinished-hydro-3.2'
-    rm "Hydro/${run_id}/freezeout.dat.unfinished"
-    touch "Hydro/${run_id}/freezeout.dat"
+    rm "Hydro/${run_id}/${HYBRID_software_default_input_filename[Sampler]}.unfinished"
+    touch "Hydro/${run_id}/${HYBRID_software_default_input_filename[Sampler]}"
     # FIST part
     export BLACK_BOX_TYPE_SAMPLER="FIST"
     printf '

@@ -82,7 +82,7 @@ This might be done in a single swipe but would make it basically impossible to l
 Therefore the scan YAML maps are first stored and then used at a later point to produce the list of values of each parameter.
 
 A single Bash associative array has been chosen for this purpose.
-Its keys are the parameters stored as a period-separated list of YAML keys as they appear in the hybrid handler configuration file, and precisely in the 'Software_keys' sections.
+Its keys are the parameters stored as a period-separated list of YAML keys as they appear in the Hybrid-handler configuration file, and precisely in the 'Software_keys' sections.
 The value of each array entry is, in a first phase, the YAML scan map.
 Later, this is replaced by a string containing a list of parameter values.
 In this case a YAML sequence style is kept, i.e. with squares and commas.

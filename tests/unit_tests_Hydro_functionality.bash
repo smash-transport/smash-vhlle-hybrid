@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -34,21 +34,22 @@ function Make_Test_Preliminary_Operations__Hydro-create-input-file()
 
 function Unit_Test__Hydro-create-input-file()
 {
-    local -r ic_file="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+    local -r ic_file_in_hydro_folder="${HYBRID_input_symlink_internal_global_path[Hydro]}"
     touch "${HYBRID_software_base_config_file[Hydro]}"
-    mkdir 'eos'
+    mkdir -p 'eos' "${HYBRID_software_output_directory[IC]}"
+    touch "${HYBRID_software_input_file[Hydro]}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro
     if [[ ! -f "${HYBRID_software_configuration_file[Hydro]}" ]]; then
         Print_Error 'The config was not properly created in the output folder.'
         return 1
-    elif [[ ! -L "${ic_file}" ]]; then
+    elif [[ ! -L "${ic_file_in_hydro_folder}" ]]; then
         Print_Error 'The symbolic link to the IC file was not properly created in the output folder.'
         return 1
     fi
     rm "${HYBRID_software_output_directory[Hydro]}"/*
-    touch "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+    touch "${ic_file_in_hydro_folder}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Hydro &> /dev/null
-    if [[ ! -f "${ic_file}" ]]; then
+    if [[ ! -f "${ic_file_in_hydro_folder}" ]]; then
         Print_Error 'The already existing ic regular file was somehow lost.'
         return 1
     fi
@@ -129,16 +130,16 @@ function Unit_Test__Hydro-check-all-input()
         Print_Error 'Ensuring existence of not-existing link to IC file succeeded.'
         return 1
     fi
-    ln -s 'not-existing-target' "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+    ln -s 'not-existing-target' "${HYBRID_input_symlink_internal_global_path[Hydro]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of broken link to IC file succeeded.'
         return 1
     fi
-    touch "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat"
+    touch "${HYBRID_software_input_file[Hydro]}"
     ln -s -f \
-        "${HYBRID_software_output_directory[IC]}/SMASH_IC.dat" \
-        "${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+        "${HYBRID_software_input_file[Hydro]}" \
+        "${HYBRID_input_symlink_internal_global_path[Hydro]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Hydro &> /dev/null
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of existing folder/file failed.'
@@ -162,7 +163,7 @@ function Unit_Test__Hydro-test-run-software()
     local -r \
         hydro_terminal_output="${HYBRID_software_output_directory[Hydro]}/${HYBRID_terminal_output["Hydro"]}" \
         Hydro_config_file_path="${HYBRID_software_configuration_file[Hydro]}" \
-        IC_output_file_path="${HYBRID_software_output_directory[Hydro]}/SMASH_IC.dat"
+        IC_output_file_path="${HYBRID_input_symlink_internal_global_path[Hydro]}"
     local terminal_output_result correct_result
     Call_Codebase_Function_In_Subshell Run_Software_Hydro
     if [[ ! -f "${hydro_terminal_output}" ]]; then

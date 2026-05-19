@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -351,7 +351,7 @@ In particular:
     This function considers as comments anything coming after _any_ occurrence of
     the specified comment character and **you should not use it if there might
     be occurrences of that character that do not start a comment!**
-    For the hybrid handler configuration such a basic implementation is enough.
+    For the Hybrid-handler configuration such a basic implementation is enough.
 --8<-- [end:Remove_Comments_In_File-desc]
 --8<-- [start:Remove_Comments_In_File-ex]
 Remove_Comments_In_File 'config.yaml'
@@ -657,7 +657,7 @@ function Make_Functions_Defined_In_This_File_Readonly()
     # Make this function a no-op if sed or grep are not available, so that
     # the system-requirements check does not weirdly fail in those cases just
     # because this function is called when sourcing the files at the end.
-    if ! hash sed &> /dev/null || ! hash grep &> /dev/null; then
+    if ! type sed &> /dev/null || ! type grep &> /dev/null; then
         return
     fi
     # Here we assume all functions are defined with the same stile,
@@ -669,7 +669,8 @@ function Make_Functions_Defined_In_This_File_Readonly()
     #
     # NOTE: The file from which this function is called is ${BASH_SOURCE[1]}
     local declared_functions
-    declared_functions=( # Here word splitting can split names, no space allowed in function name!
+    # Here word splitting can split names, no space allowed in function name!
+    declared_functions=(
         $(grep -E '^[[:space:]]*function[[:space:]]+[-[:alnum:]_:]+\(\)[[:space:]]*$' "${BASH_SOURCE[1]}" \
             | sed -E 's/^[[:space:]]*function[[:space:]]+([^(]+)\(\)[[:space:]]*$/\1/')
     )

@@ -13,6 +13,7 @@ Collision_Term:
     Strings: True
     String_Parameters:
         Use_Monash_Tune: False
+    Cross_Section_Scaling: 0.9565
 
 Output:
     Particles:

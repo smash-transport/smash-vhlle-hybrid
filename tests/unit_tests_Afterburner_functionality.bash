@@ -1,7 +1,7 @@
 #===================================================
 #
-#    Copyright (c) 2023-2025
-#      SMASH Hybrid Team
+#    Copyright (c) 2023-2026
+#      Hybrid-handler Team
 #
 #    GNU General Public License (GPLv3 or later)
 #
@@ -43,8 +43,8 @@ function Unit_Test__Afterburner-create-input-file()
     touch "${HYBRID_software_base_config_file[Afterburner]}" "${HYBRID_configuration_file}"
     mkdir -p "${HYBRID_software_output_directory[Sampler]}"
     local -r \
-        plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar" \
-        plist_Final="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
+        plist_Sampler="${HYBRID_software_input_file[Afterburner]}" \
+        plist_Final="${HYBRID_input_symlink_internal_global_path[Afterburner]}"
     touch "${plist_Sampler}"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner
     if [[ ! -f "${HYBRID_software_configuration_file[Afterburner]}" ]]; then
@@ -83,9 +83,9 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
         "${HYBRID_software_output_directory[IC]}" \
         "${HYBRID_software_output_directory[Afterburner]}"
     local -r \
-        plist_Sampler="${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar" \
-        plist_IC="${HYBRID_software_output_directory[IC]}/SMASH_IC.oscar" \
-        plist_Final="${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
+        plist_Sampler="${HYBRID_software_input_file[Afterburner]}" \
+        plist_IC="${HYBRID_software_input_file[Spectators]}" \
+        plist_Final="${HYBRID_input_symlink_internal_global_path[Afterburner]}"
     touch \
         "${HYBRID_software_base_config_file[Afterburner]}" \
         "${plist_Sampler}" \
@@ -107,13 +107,13 @@ function Unit_Test__Afterburner-create-input-file-with-spectators()
         return 1
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/"*
-    cp "${HYBRID_default_configurations_folder}/smash_initial_conditions__ge_v3.2.yaml" \
+    cp "${HYBRID_default_configurations_folder}/smash_IC__v3.2.yaml" \
         "${HYBRID_software_output_directory[IC]}/config.yaml"
     Call_Codebase_Function_In_Subshell Prepare_Software_Input_File_Afterburner &> /dev/null
     if [[ $? -ne ${HYBRID_fatal_file_not_found} ]]; then
         Print_Error \
             'Files preparation did not fail with exit code ' --emph "${HYBRID_fatal_file_not_found}" \
-            ' even though the SMASH_IC.oscar does not exist.'
+            ' even though the spectators file does not exist.'
         return 1
     fi
     rm "${HYBRID_software_output_directory[Afterburner]}/"*
@@ -155,8 +155,8 @@ function Unit_Test__Afterburner-check-all-input()
         return 1
     fi
     touch \
-        "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}" \
-        "${HYBRID_software_output_directory[Sampler]}/particle_lists.oscar"
+        "${HYBRID_input_symlink_internal_global_path[Afterburner]}" \
+        "${HYBRID_software_input_file[Afterburner]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner
     if [[ $? -ne 0 ]]; then
         Print_Error \
@@ -164,16 +164,19 @@ function Unit_Test__Afterburner-check-all-input()
             'although all files were provided.'
         return 1
     fi
-    rm "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
-    touch "${HYBRID_software_output_directory[Sampler]}/original_${HYBRID_afterburner_list_filename}"
-    ln -s "${HYBRID_software_output_directory[Sampler]}/original_${HYBRID_afterburner_list_filename}" \
-        "${HYBRID_software_output_directory[Afterburner]}/${HYBRID_afterburner_list_filename}"
+    rm "${HYBRID_input_symlink_internal_global_path[Afterburner]}"
+    local original_sampler_output_filename
+    printf -v original_sampler_output_filename '%s/%s' \
+        "${HYBRID_software_output_directory[Sampler]}" \
+        "$(basename "${HYBRID_input_symlink_internal_global_path[Afterburner]}")"
+    touch "${original_sampler_output_filename}"
+    ln -s "${original_sampler_output_filename}" "${HYBRID_input_symlink_internal_global_path[Afterburner]}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner &> /dev/null
     if [[ $? -ne 0 ]]; then
         Print_Error 'Ensuring existence of existing file unexpectedly failed.'
         return 1
     fi
-    rm "${HYBRID_software_output_directory[Sampler]}/original_${HYBRID_afterburner_list_filename}"
+    rm "${original_sampler_output_filename}"
     Call_Codebase_Function_In_Subshell Ensure_All_Needed_Input_Exists_Afterburner &> /dev/null
     if [[ $? -eq 0 ]]; then
         Print_Error 'Ensuring existence of a link to a non-existing file unexpectedly succeeded.'
@@ -186,23 +189,20 @@ function Clean_Tests_Environment_For_Following_Test__Afterburner-check-all-input
     rm -r "${HYBRID_output_directory}"
 }
 
-function Make_Test_Preliminary_Operations__Afterburner-config-consistent-with-sampler()
+function __static__Set_Events_Config_Key_For_Sampler_And_Run_Consistency_Check()
 {
-    Do_Preliminary_Afterburner_Setup_Operations
-    HYBRID_given_software_sections+=('Sampler')
-    HYBRID_software_executable[Sampler]=$(which echo) # Use command as fake executable
-    HYBRID_optional_feature[Add_spectators_from_IC]='FALSE'
-    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
-}
-
-function Unit_Test__Afterburner-config-consistent-with-sampler()
-{
-    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
-    # Sampler config file with default number_of_events
+    local number_of_events_config_key_sampler
     local -r events_sampler=1000
-    printf '%s   %s\n' "number_of_events" "${events_sampler}" > "${HYBRID_software_configuration_file[Sampler]}"
+    if [[ "${HYBRID_module[Sampler]}" = 'SMASH' ]]; then
+        number_of_events_config_key_sampler='number_of_events'
+    elif [[ "${HYBRID_module[Sampler]}" = 'FIST' ]]; then
+        number_of_events_config_key_sampler='nevents'
+    fi
+    mkdir -p "${HYBRID_software_output_directory[Sampler]}"
+    printf '%s   %s\n' "${number_of_events_config_key_sampler}" "${events_sampler}" > \
+        "${HYBRID_software_configuration_file[Sampler]}"
     mkdir -p "${HYBRID_software_output_directory[Afterburner]}"
-    # Afterburner config file with higher number_of_events
+    # Afterburner config file with higher number of events
     local -r events_entered=1500
     printf '%s:\n  %s:  %s\n' 'General' 'Nevents' "${events_entered}" > \
         "${HYBRID_software_configuration_file[Afterburner]}"
@@ -217,8 +217,46 @@ function Unit_Test__Afterburner-config-consistent-with-sampler()
     fi
 }
 
-function Clean_Tests_Environment_For_Following_Test__Afterburner-config-consistent-with-sampler()
+function Make_Test_Preliminary_Operations__Afterburner-config-consistent-with-sampler-SMASH()
 {
+    Do_Preliminary_Afterburner_Setup_Operations
+    HYBRID_module[Sampler]='SMASH'
+    HYBRID_given_software_sections+=('Sampler')
+    HYBRID_software_executable[Sampler]="${HYBRIDT_tests_folder}/mocks/echo.py"
+    HYBRID_optional_feature[Add_spectators_from_IC]='FALSE'
+    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
+}
+
+function Unit_Test__Afterburner-config-consistent-with-sampler-SMASH()
+{
+    __static__Set_Events_Config_Key_For_Sampler_And_Run_Consistency_Check
+}
+
+function Clean_Tests_Environment_For_Following_Test__Afterburner-config-consistent-with-sampler-SMASH()
+{
+    rm -r "${HYBRID_output_directory}"
+}
+
+function Make_Test_Preliminary_Operations__Afterburner-config-consistent-with-sampler-FIST()
+{
+    Do_Preliminary_Afterburner_Setup_Operations
+    HYBRID_module[Sampler]='FIST'
+    touch "${HYBRID_fist_module[Particle_file]}" "${HYBRID_fist_module[Decays_file]}"
+    HYBRID_given_software_sections+=('Sampler')
+    HYBRID_software_executable[Sampler]="${HYBRIDT_tests_folder}/mocks/echo.py"
+    HYBRID_optional_feature[Add_spectators_from_IC]='FALSE'
+    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
+}
+
+function Unit_Test__Afterburner-config-consistent-with-sampler-FIST()
+{
+    __static__Set_Events_Config_Key_For_Sampler_And_Run_Consistency_Check
+}
+
+function Clean_Tests_Environment_For_Following_Test__Afterburner-config-consistent-with-sampler-FIST()
+{
+    rm "${HYBRID_fist_module[Decays_file]}"
+    rm "${HYBRID_fist_module[Particle_file]}"
     rm -r "${HYBRID_output_directory}"
 }
 

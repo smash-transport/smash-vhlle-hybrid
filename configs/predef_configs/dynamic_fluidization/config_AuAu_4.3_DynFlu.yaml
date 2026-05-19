@@ -1,0 +1,38 @@
+IC:
+    Executable: /path/to/smash
+    Config_file: /path/to/handler/configs/predef_configs/dynamic_fluidization/smash_IC_DynFlu.yaml
+    Software_keys:
+        General:
+            Gaussian_Sigma: 0.7
+        Modi:
+            Collider:
+                Projectile:
+                    Particles: {2212: 79, 2112: 118} #Gold197
+                Target:
+                    Particles: {2212: 79, 2112: 118} #Gold197
+                Sqrtsnn: 4.3
+                Impact:
+                    Range: [0.0,3.3] # 0-5%
+                Initial_Conditions:
+                    Type: "Dynamic"
+                    Energy_Density_Threshold: 0.5
+                    Formation_Time_Fraction: 0.2
+                    Fluidizable_Processes: ["All"]
+                    Delay_Initial_Elastic: true
+
+Hydro:
+    Executable: /path/to/vHLLE
+    Config_file: /path/to/handler/configs/predef_configs/dynamic_fluidization/vhlle_hydro_cartesian
+    Input_file: SMASH_IC.oscar
+    Software_keys:
+        Gaussian_Sigma: 0.7
+        minParticlesFO: 15
+
+Sampler:
+    Executable: /path/to/hadron-sampler
+    Config_file: /path/to/handler/configs/predef_configs/dynamic_fluidization/hadron_sampler_cartesian
+
+Afterburner:
+    Executable: /path/to/smash
+    Add_corona_from_IC_and_Hydro: true
+    Add_spectators_from_IC: false

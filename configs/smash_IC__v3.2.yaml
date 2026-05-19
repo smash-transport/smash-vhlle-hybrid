@@ -14,7 +14,6 @@ Output:
       Format: ["ASCII","Oscar2013"]
       Extended: True
 
-
 Modi:
     Collider:
         Projectile:
@@ -25,7 +24,8 @@ Modi:
         Sqrtsnn: 200.0
         Fermi_Motion: frozen
         Impact:
-            Max: 2.3
+            Max: 3.3    # 0-5% in Au+Au at 200 GeV
 
         Initial_Conditions:
             Type: "Constant_Tau"
+            Proper_Time_Scaling: 1.4741
