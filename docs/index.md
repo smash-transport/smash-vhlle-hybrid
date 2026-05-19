@@ -30,9 +30,9 @@ It consists of the following stages and supported software modules are listed wi
 
 :   :simple-ticktick: &nbsp; *SMASH* (hadronic transport approach)
 
-!!! info "Give credit appropriately &nbsp; [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15880337.svg){ align=right }](https://doi.org/10.5281/zenodo.15880337)"
+!!! info "Give credit appropriately &nbsp; [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15880336.svg){ align=right }](https://doi.org/10.5281/zenodo.15880336)"
 
-    If you are using the Hybrid-handler, please cite the corresponding [:simple-doi: software DOI](https://doi.org/10.5281/zenodo.15880337) of the specific code version employed.
+    If you are using the Hybrid-handler, please cite the corresponding [:simple-doi: software DOI](https://doi.org/10.5281/zenodo.15880336) of the specific code version employed.
     Depending on the stages and modules you are using, please cite the appropriate papers and software DOIs as well.
 
     For example, if you use the SMASH-vHLLE-hybrid approach, besides citing the Hybrid-handler itself, you should cite [:newspaper: Eur.Phys.J.A 58(2022)11, 230](https://arxiv.org/abs/2112.08724) for the physics aspects.
