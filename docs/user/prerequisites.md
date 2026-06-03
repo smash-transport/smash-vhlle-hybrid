@@ -38,7 +38,7 @@
     If you plan to use recent features of the physics software, make sure you use the appropriate version of said software that might be different than the stated prerequisites.
     Since Hybrid-handler is developed to provide the user with a complete chain in heavy ion collision modeling, an improvement in modeling can affect more than one of the software packages.
     Check all the software for compatibility with the desired feature.
-    So far, we are highlighting **Dynamic Fluidization** as a recent feature and documenting its specific requirements here below.
+    So far, we are highlighting **Dynamic Fluidization** as a recent feature and documenting its specific requirements [here below](#dynamic-fluidization).
 
 Instructions on how to compile or install the software above can be found at the provided links either in the official documentation or in the corresponding README files.
 
@@ -60,19 +60,18 @@ Currently, this is realized for some of the different stages and the supported s
 | [FIST sampler](https://github.com/vlvovch/fist-sampler) | Commit `af99229` or later |
 
 </div>
----
 
 ### Dynamic Fluidization
 
-The dynamic initial conditions setup described in [:newspaper: *Góes-Hirayama et al.: Phys.Rev.C 113 (2026) 4, 044906*](https://journals.aps.org/prc/abstract/10.1103/w87d-ps6f) requires more recent versions of the various software packages. 
+The dynamic initial conditions setup described in [:newspaper: *Góes-Hirayama et al.: Phys.Rev.C 113 (2026) 4, 044906*](https://journals.aps.org/prc/abstract/10.1103/w87d-ps6f) requires more recent versions of the various software packages.
 We note that it also uses a specific set of base configuration files.
-To learn more about running it, consult the relevant section of [The predefined configuration files](predefined_configs.md).
+To learn more about running it, consult [the relevant section](predefined_configs.md#dynamic-fluidization-setup) of the predefined configuration files.
 
 <div class="center-table" markdown>
 
 | Physics software | Required version |
 | :----------------: | :--------------: |
-| [SMASH](https://github.com/smash-transport/smash) | 3.3 |
+| [SMASH](https://github.com/smash-transport/smash) | 3.3 or higher |
 | [vHLLE](https://github.com/yukarpenko/vhlle) | Tag `vhlle-smash-hybrid-2` |
 | [vHLLE parameters](https://github.com/yukarpenko/vhlle_params) | Tag `vhlle-smash-hybrid-1` |
 | [SMASH hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | 3.3 |
