@@ -74,7 +74,7 @@ To learn more about running it, consult [the relevant section](predefined_config
 | [SMASH](https://github.com/smash-transport/smash) | 3.3 or higher |
 | [vHLLE](https://github.com/yukarpenko/vhlle) | Tag `vhlle-smash-hybrid-2` |
 | [vHLLE parameters](https://github.com/yukarpenko/vhlle_params) | Tag `vhlle-smash-hybrid-1` |
-| [SMASH hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | 3.3 |
+| [SMASH hadron sampler](https://github.com/smash-transport/smash-hadron-sampler) | Same as SMASH[^2] |
 
 </div>
 ---
