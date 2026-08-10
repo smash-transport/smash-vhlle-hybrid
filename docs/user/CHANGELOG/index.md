@@ -46,6 +46,8 @@ Given a version number `X.Y.Z`,
 
 !!! work-in-progress "Unreleased"
 
+    :sos: &nbsp; The spin configuration key `sample_spin` for SMASH sampler `3.3` was omitted in the allowed keys for the sampler, i.e. Hybrid-handler `2.2` is not working with this specific sampler config key and hence not with sampler version `3.3` when using the base config. This configuration key was renamed in `SMASH sampler `3.4` to `compute_spin_vector` (breaking change) and only this new key name was mistakenly introduced as an allowed sampler configuration key in Hybrid-handler `2.2`. Now, the handler is compatible with both versions of the sampler, permitting the corresponding key for each version.
+
 
 ### Hybrid-handler-2.2
 

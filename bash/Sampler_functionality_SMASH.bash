@@ -50,7 +50,12 @@ function Validate_Configuration_File_Of_SMASH()
         allowed_keys+=('create_root_output')
     fi
     if Is_Version "${HYBRID_software_version[Sampler]}" -ge '3.3'; then
-        allowed_keys+=('hydro_coordinate_system' 'compute_spin_vector' 'create_vorticity_vector_output')
+        allowed_keys+=('hydro_coordinate_system' 'create_vorticity_vector_output')
+    fi
+    if Is_Version "${HYBRID_software_version[Sampler]}" -ge '3.4'; then
+        allowed_keys+=('compute_spin_vector')
+    elif Is_Version "${HYBRID_software_version[Sampler]}" -ge '3.3'; then
+        allowed_keys+=('sample_spin')
     fi
 
     readonly allowed_keys
@@ -92,7 +97,7 @@ function Validate_Configuration_File_Of_SMASH()
                 fi
                 ((keys_to_be_found--))
                 ;;
-            shear | bulk | create_root_output | compute_spin_vector | create_vorticity_vector_output)
+            shear | bulk | create_root_output | sample_spin | compute_spin_vector | create_vorticity_vector_output)
                 if [[ ! "${value}" =~ ^[01]$ ]]; then
                     Print_Error 'Key ' --emph "${key}" ' must be either ' \
                         --emph '0' ' or ' --emph '1' '.'
