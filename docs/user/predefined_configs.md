@@ -36,8 +36,8 @@ They can be executed in the standard manner using `-c` option in the execution m
 
 ## Dynamic fluidization setup
 
-In order to use the dynamic initial conditions described in  [:newspaper: *Góes-Hirayama et al.: Phys.Rev.C 113 (2026) 4, 044906*](https://journals.aps.org/prc/abstract/10.1103/w87d-ps6f), very different base configuration files and are necessary.
-The base configuration files are provided in the :file_folder: **predef_configs/dynamic_fluidization** folder along with an example for central Au+Au collisions at $\small\sqrt{s} = 4.3\;\mathrm{GeV}$. 
+In order to use the dynamic initial conditions described in [:newspaper: *Góes-Hirayama et al.: Phys.Rev.C 113 (2026) 4, 044906*](https://journals.aps.org/prc/abstract/10.1103/w87d-ps6f), very different base configuration files are necessary.
+The base configuration files are provided in the :file_folder: **predef_configs/dynamic_fluidization** folder along with an example for central Au+Au collisions at $\small\sqrt{s} = 4.3\;\mathrm{GeV}$.
 After adjusting the paths to executables and the handler, it can be run in the usual manner.
 
 ``` title="Running Hybrid-handler with dynamic fluidization: Au+Au collision @ 4.3 GeV"
