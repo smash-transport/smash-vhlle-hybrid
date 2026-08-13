@@ -66,7 +66,7 @@ Given a version number `X.Y.Z`,
 
     :sos: &nbsp; Fix how spectators are added from the `IC` output into the `Afterburner` input file. This now works for all SMASH versions. The spectators from the target were not properly considered beforehand. Additionally, the adding of spectators is currently only allowed if only one `IC` event was run.
 
-    :recycle: &nbsp; Renamed the copied/linked afterburner inputfile containing the sampled particles (and possibly spectators) from :material-file: _sampled_particles_list.oscar_ to :material_file: _sampled_particles.oscar_. Note that this is not a breaking change because this file is created into the :file_folder: **Afterburner** folder at the beginning of such a stage.
+    :recycle: &nbsp; Renamed the copied/linked afterburner inputfile containing the sampled particles (and possibly spectators) from :material-file: _sampled_particles_list.oscar_ to :material-file: _sampled_particles.oscar_. Note that this is not a breaking change because this file is created into the :file_folder: **Afterburner** folder at the beginning of such a stage.
 
 
 ### SMASH-vHLLE-hybrid-2.1
