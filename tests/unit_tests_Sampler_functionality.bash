@@ -359,6 +359,24 @@ function Clean_Tests_Environment_For_Following_Test__Sampler-validate-shipped-co
     Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-SMASH
 }
 
+function Make_Test_Preliminary_Operations__Sampler-validate-shipped-config-file-SMASH-ge-3.4()
+{
+    __static__Do_Preliminary_Sampler_Setup_Operations
+    export MOCK_ECHO_VERSION=3.4
+    Perform_Sanity_Checks_On_Provided_Input_And_Define_Auxiliary_Global_Variables
+    readonly HYBRIDT_sampler_base_config_filename='hadron_sampler__v3.4'
+}
+
+function Unit_Test__Sampler-validate-shipped-config-file-SMASH-ge-3.4()
+{
+    Unit_Test__Sampler-validate-shipped-config-file-SMASH-lt-3.2
+}
+
+function Clean_Tests_Environment_For_Following_Test__Sampler-validate-shipped-config-file-SMASH-ge-3.4()
+{
+    Clean_Tests_Environment_For_Following_Test__Sampler-create-input-file-SMASH
+}
+
 function Make_Test_Preliminary_Operations__Sampler-validate-config-file-FIST()
 {
     Make_Test_Preliminary_Operations__Sampler-create-input-file-FIST
