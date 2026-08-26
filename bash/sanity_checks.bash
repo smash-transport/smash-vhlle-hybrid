@@ -193,8 +193,8 @@ function __static__Set_Default_Input_File_If_Unset()
             if ! Element_In_Array_Equals_To 'IC' "${HYBRID_given_software_sections[@]}"; then
                 Print_Warning \
                     'It is not possible to deduce which input file should be used for the ' \
-                    --emph 'Hydro' ' stage, \nsince the IC stage is not run. Falling back to default ' \
-                    --emph 'SMASH_IC_For_vHLLE.dat' '.\nUse the ' --emph 'Input_File' \
+                    --emph 'Hydro' ' stage,\nsince the IC stage is not run. Falling back to default ' \
+                    --emph 'SMASH_IC_For_vHLLE.dat' '.\nUse the ' --emph 'Input_file' \
                     ' key in the Hydro section to explicitly specify a filename.'
                 HYBRID_software_default_input_filename[${key}]='SMASH_IC_For_vHLLE.dat'
             else

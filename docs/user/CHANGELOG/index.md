@@ -65,9 +65,9 @@ Given a version number `X.Y.Z`,
 
     :new: &nbsp; The `Input_file` configuration key in the `Hydro` and `Afterburner` modules can now be used to modify the expected file names from the appropriate :file_folder: ***IC*** and :file_folder: ***Sampler*** sub-folders, when a string without a `/` character is given.
 
-    :warning: &nbsp; The parameters extracted by the [Bayesian analysis in :newspaper: *Phys. Rev. C 112, 014910*](https://journals.aps.org/prc/abstract/10.1103/rzml-rjxz) are now set as default for the base configs. The old parameters for the hydro evolution were kept in :file_folder: ***configs/predef_configs/vhlle_hydro_EPJA_58-11-230***, and the other parameters are adjusted by each handler configuration file in :file_folder: *** predef_configs***.
+    :warning: &nbsp; The parameters extracted by the [Bayesian analysis in :newspaper: *Phys. Rev. C 112, 014910*](https://journals.aps.org/prc/abstract/10.1103/rzml-rjxz) are now set as default for the base configs. The old parameters for the hydro evolution are kept in :file_folder: ***configs/predef_configs/EPJA_58-11-230***, and the other parameters are adjusted by each handler configuration file in :file_folder: ***predef_configs***.
 
-    :new: &nbsp; Added configuration files for a dynamic fluidization run in :file_folder: ***configs/predef_configs/dynamic_fluidization***. This requires the specific branch [merge-review in vHLLE](https://github.com/yukarpenko/vhlle/tree/merge-review).
+    :new: &nbsp; Added configuration files for a dynamic fluidization run in :file_folder: ***configs/predef_configs/dynamic_fluidization***.
 
 ### SMASH-vHLLE-hybrid-2.1.3
 
@@ -91,7 +91,7 @@ Given a version number `X.Y.Z`,
 
     :sos: &nbsp; Fix how spectators are added from the `IC` output into the `Afterburner` input file. This now works for all SMASH versions. The spectators from the target were not properly considered beforehand. Additionally, the adding of spectators is currently only allowed if only one `IC` event was run.
 
-    :recycle: &nbsp; Renamed the copied/linked afterburner inputfile containing the sampled particles (and possibly spectators) from :material-file: _sampled_particles_list.oscar_ to :material_file: _sampled_particles.oscar_. Note that this is not a breaking change because this file is created into the :file_folder: **Afterburner** folder at the beginning of such a stage.
+    :recycle: &nbsp; Renamed the copied/linked afterburner inputfile containing the sampled particles (and possibly spectators) from :material-file: _sampled_particles_list.oscar_ to :material-file: _sampled_particles.oscar_. Note that this is not a breaking change because this file is created into the :file_folder: **Afterburner** folder at the beginning of such a stage.
 
 
 ### SMASH-vHLLE-hybrid-2.1

@@ -7,7 +7,7 @@ hide:
 # A unique wonderful tool
 
 The Hybrid-handler is a :simple-gnubash: **Bash script** and therefore it does not need any installation.
-Once cloned the repository, you can simply run the `Hybrid-handler` script[^1].
+After cloning the repository or downloading the source code attached to a release, you can simply run the `Hybrid-handler` script[^1].
 
 [^1]: Be aware, that this might not work straightaway if only a very old Bash installation is available on your OS.
       However, if your Bash version is `4.x` or higher, the main script will be able to give you a complete overview of system requirements.
