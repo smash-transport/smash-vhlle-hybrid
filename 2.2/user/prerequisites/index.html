@@ -609,6 +609,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#dynamic-fluidization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Fluidization
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1504,6 +1515,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#dynamic-fluidization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Fluidization
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1607,6 +1629,13 @@ Be aware that the mentioned physics software is merely the default and other opt
 </table>
 </div>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Use more recent features</p>
+<p>If you plan to use recent features of the physics software, make sure you use the appropriate version of said software that might be different than the stated prerequisites.
+Since Hybrid-handler is developed to provide the user with a complete chain in heavy ion collision modeling, an improvement in modeling can affect more than one of the software packages.
+Check all the software for compatibility with the desired feature.
+So far, we are highlighting <strong>Dynamic Fluidization</strong> as a recent feature and documenting its specific requirements <a href="#dynamic-fluidization">here below</a>.</p>
+</div>
 <p>Instructions on how to compile or install the software above can be found at the provided links either in the official documentation or in the corresponding README files.</p>
 <div class="admonition warning">
 <p class="admonition-title">Be consistent about dependencies</p>
@@ -1633,6 +1662,38 @@ Currently, this is realized for some of the different stages and the supported s
 <tr>
 <td style="text-align: center;"><a href="https://github.com/vlvovch/fist-sampler">FIST sampler</a></td>
 <td style="text-align: center;">Commit <code>af99229</code> or later</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="dynamic-fluidization">Dynamic Fluidization<a class="headerlink" href="#dynamic-fluidization" title="Link to this section">&para;</a></h3>
+<p>The dynamic initial conditions setup described in <a href="https://journals.aps.org/prc/abstract/10.1103/w87d-ps6f"><img alt="📰" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@16.0.1/assets/svg/1f4f0.svg" title=":newspaper:" /> <em>Góes-Hirayama et al.: Phys.Rev.C 113 (2026) 4, 044906</em></a> requires more recent versions of the various software packages.
+We note that it also uses a specific set of base configuration files.
+To learn more about running it, consult <a href="../predefined_configs/#dynamic-fluidization-setup">the relevant section</a> of the predefined configuration files.</p>
+<div class="center-table">
+<table>
+<thead>
+<tr>
+<th style="text-align: center;">Physics software</th>
+<th style="text-align: center;">Required version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;"><a href="https://github.com/smash-transport/smash">SMASH</a></td>
+<td style="text-align: center;">3.3 or higher</td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://github.com/yukarpenko/vhlle">vHLLE</a></td>
+<td style="text-align: center;">Tag <code>vhlle-smash-hybrid-2</code></td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://github.com/yukarpenko/vhlle_params">vHLLE parameters</a></td>
+<td style="text-align: center;">Tag <code>vhlle-smash-hybrid-1</code></td>
+</tr>
+<tr>
+<td style="text-align: center;"><a href="https://github.com/smash-transport/smash-hadron-sampler">SMASH hadron sampler</a></td>
+<td style="text-align: center;">Same as SMASH<sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
 </tr>
 </tbody>
 </table>
@@ -1682,7 +1743,7 @@ to install the requirements globally for your user.</p>
 </li>
 <li id="fn:2">
 <p>As SMASH is a dependency of the hadron sampler codebase, different versions of the latter have to be compiled with corresponding given versions of SMASH.
-However, if you need to use a different version of the hadron sampler software, this is probably not making a difference from the Hybrid-handler perspective and it is likely to work.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+However, if you need to use a different version of the hadron sampler software, this is probably not making a difference from the Hybrid-handler perspective and it is likely to work.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
