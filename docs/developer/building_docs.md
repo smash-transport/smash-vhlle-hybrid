@@ -86,3 +86,14 @@ For this purpose, developers should run
 mike deploy --push develop
 ```
 reasonably often, since this documentation is thought to reflect the state of the :octicons-git-branch-16: `develop` branch.
+
+#### Fixing older documentation versions
+
+A few documentation fixes were made to earlier versions of the Hybrid-handler in the past.
+Since some of these fixes were crucial, such as the removal of the malicious polyfill include, branches are kept with all the commits which where used to deploy these documentation versions (on top of each tag).
+If this is not done, outdated or even potentially malicious parts of the documentation could be introduced again.
+
+!!! info "Maintain `fix-doc-X.X` branches with all documentation fixes for each release!"
+    When releasing a documentation fix for an older version `X.X`, update the `fix-doc-X.X` branch with the relevant commits using the `git-cherry-pick` command.
+    If the corresponding branch does not yet exist, create it from the corresponding tag before updating.
+    Then, deploy the documentation patch as described above.
