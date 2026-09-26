@@ -1,7 +1,5 @@
 # Hybrid-handler
 
-<img src="https://github.com/smash-transport/smash-vhlle-hybrid/blob/main/docs/images/logo.png" align="right" width="25%"/>
-
 Refer to [the project documentation](https://smash-transport.github.io/smash-vhlle-hybrid/) for any information.
 
 ### LICENSE
